@@ -32,7 +32,6 @@ MAP = {
     "Kuzmin-Machine-Document-Review-and-Audit-Rules-UA.md": "process/review-rules.md",
     "Kuzmin-Machine-Safety-and-Security-Standards-Position-UA.md": "process/standards-position.md",
     "Kuzmin-Machine-ASPICE4-Improvement-Steps-UA.md": "process/aspice-steps.md",
-    f"{QA}/Kuzmin-Machine-TRL-Assessment-Matrix-UA.md": "process/trl/matrix.md",
     # requirements / architecture
     "Kuzmin-Machine-Requirements-UA.md": "requirements/requirements.md",
     "01-concepts-and-theory/Kuzmin-Machine-Refactoring-and-Evolution-Plan-UA.md": "architecture/refactoring-plan.md",
@@ -47,6 +46,9 @@ MAP = {
     f"{HW}/Kuzmin-Machine-Open-Source-XC7-Toolchain-Architecture-UA.md": "docs/toolchain/xc7.md",
     "07-scientific-opposition/Пример для АН.pptx": "docs/sources/author/kuzmin-2024-example-for-AN.pptx",
     "07-scientific-opposition/Пример для АН.pdf": "docs/sources/author/kuzmin-2024-example-for-AN.pdf",
+    # TRL 2 evidence (MIGRATION-REGISTER §3.10)
+    "07-scientific-opposition/KUZMIN_MACHINE_APPLICATION_PROSPECTS_MEMO_UA_v1.2.md": "docs/trl-evidence/application-prospects-memo.md",
+    "07-scientific-opposition/SCIENTIFIC_OPPOSITION_REPORT_UA.md": "docs/trl-evidence/scientific-opposition-report.md",
     # hw: rtl
     **{f"{HW}/rtl/{f}": f"hw/rtl/core/{f}" for f in (
         "kpol_txn_gate.sv", "kpol_txn_gate_v2.sv", "km_predicate_evaluator.sv",
@@ -122,7 +124,7 @@ RAW_FILES = {
         "av08_console.txt", "av08_console_reparse.txt")},
 }
 
-VERSION_RE = re.compile(r"^(\s*[*-]\s*\*\*Версія:\*\*\s*)v?(\d+)\.(\d+)(?!\.\d)", re.M)
+VERSION_RE = re.compile(r"^(\s*(?:[*-]\s*)?\*\*Версія:\*\*\s*)v?(\d+)\.(\d+)(?!\.\d)", re.M)
 SEMVER_RE = re.compile(r"\*\*Версія:\*\*\s*\d+\.\d+\.\d+")
 LINK_RE = re.compile(r"(\]\()([^)\s]+)(\))")
 
@@ -163,6 +165,10 @@ def rewrite_links(text: str, old: str, new: str, mapping: dict, commit: str) -> 
         if resolved in mapping:
             rel = os.path.relpath(mapping[resolved], new_dir)
             return f"{mo.group(1)}{rel}{anchor}{mo.group(3)}"
+        if resolved.startswith("../") and not resolved.startswith("../../"):
+            # файл поза KuzminMachine, але в репо drafts
+            url = DRAFTS_URL.format(commit=commit, path="").replace("/KuzminMachine/", "/")
+            return f"{mo.group(1)}{url}{resolved[3:]}{anchor}{mo.group(3)}"
         if resolved.startswith(".."):
             return mo.group(0)
         return f"{mo.group(1)}{DRAFTS_URL.format(commit=commit, path=resolved)}{anchor}{mo.group(3)}"
@@ -198,8 +204,11 @@ def add_header(text: str, old: str, new: str, commit: str) -> str:
 def main():
     src = Path(sys.argv[1])
     commit = sys.argv[2]
+    only = set(sys.argv[3:])  # optional: migrate only these destination paths
     mapping = full_map(src)
     for old, new in sorted(mapping.items()):
+        if only and new not in only:
+            continue
         s, d = src / old, REPO / new
         if not s.is_file():
             sys.exit(f"missing source: {old}")
@@ -211,7 +220,7 @@ def main():
             d.write_text(text, encoding="utf-8")
         else:
             shutil.copy2(s, d)
-    print(f"migrated {len(mapping)} files")
+    print(f"migrated {len(only) if only else len(mapping)} files")
 
 
 if __name__ == "__main__":

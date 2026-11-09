@@ -3,8 +3,8 @@
 * **Версія:** 1.0.0
 * **Дата:** 2026-11-09
 * **Виконавець (автор):** Gemini (розробник-верифікатор)
-* **Підстава:** Звіт незалежного аудиту [`../Review_Reports/KPOL-v0.2-v0.9_Audit_Review_Report_UA.md`](../../specs/kpol/reviews/kpol-0.2-0.9-audit-review.md)
-* **Review Report:** [`../Review_Reports/KPOL-v0.2-v0.9_Audit_Review_Report_UA.md`](../../specs/kpol/reviews/kpol-0.2-0.9-audit-review.md)
+* **Підстава:** Звіт незалежного аудиту [kpol-0.2-0.9-audit-review.md](../../specs/kpol/reviews/kpol-0.2-0.9-audit-review.md)
+* **Review Report:** [kpol-0.2-0.9-audit-review.md](../../specs/kpol/reviews/kpol-0.2-0.9-audit-review.md)
 * **Принцип:** **«Жодної бутафорії — лише реальна компіляція, симуляція та математичний детермінізм»** (No Mocking, No Dummy Stubs).
 * **Результат:** **100% PASS** (44/44 тестів `test_kpol_reference.py`, 129/129 репозиторію).
 * **Перенесено з:** `drafts/KuzminMachine/04-verification-and-qa/Reports/KPOL_Verification_Program_Report_UA.md` @ `a4738bc` (2026-11-09)
