@@ -1,6 +1,6 @@
 # Статичний аналізатор графа підписок Машини Кузьміна: виявлення нескінченних каскадів (Livelock), станів гонитви (Data Race) та розрахунок WCET
 
-* **Версія:** 0.1.0
+* **Версія:** 0.1.1
 * **Перенесено з:** `drafts/KuzminMachine/04-verification-and-qa/Kuzmin-Machine-Static-Analysis-and-Termination-Checker-UA.md` @ `a4738bc` (2026-11-09)
 
 > [!IMPORTANT]
@@ -24,7 +24,7 @@
 
 ## 1. Чому подієвій мові Машини Кузьміна необхідний спеціалізований статичний аналізатор
 
-Як показано у [Специфікації високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/04-verification-and-qa/Kuzmin-Machine-High-Level-Language-Specification-UA.md) та [Посібнику розробника](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/04-verification-and-qa/Kuzmin-Machine-Developers-Guide-UA.md), Машина Кузьміна має вбудований апаратний захист від **прямої рефлексивної рекурсії довжини 1**: коли підписка концепту `Distance` на запис `←` виконує `Distance += x`, повторна подія запису для `Distance` не генерується.
+Як показано у [Специфікації високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-High-Level-Language-Specification-UA.md) та [Посібнику розробника](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/05-applications-and-guides/Kuzmin-Machine-Developers-Guide-UA.md), Машина Кузьміна має вбудований апаратний захист від **прямої рефлексивної рекурсії довжини 1**: коли підписка концепту `Distance` на запис `←` виконує `Distance += x`, повторна подія запису для `Distance` не генерується.
 
 Однак у складних промислових програмах розробник може випадково створити **непрямі цикли довжини $`k \ge 2`$** або конфлікти паралельного доступу:
 
@@ -429,3 +429,12 @@ if __name__ == "__main__":
     print(f"Оцінка WCET каскаду (8 ядер PE @ 100 МГц): T_1 = {t1} тактів | WCET = {wcet_cyc} тактів ({wcet_us:.2f} мкс)")
     print("=" * 84)
 ```
+
+---
+
+## Історія версій
+
+| Версія | Дата | Зміни |
+| :--- | :--- | :--- |
+| 0.1.0 | 2026-11-09 | Перенесено з `drafts/KuzminMachine/04-verification-and-qa/Kuzmin-Machine-Static-Analysis-and-Termination-Checker-UA.md` @ `a4738bc` |
+| 0.1.1 | 2026-11-09 | Виправлено шляхи в посиланнях на `drafts@a4738bc`: `Kuzmin-Machine-High-Level-Language-Specification-UA.md` → `03-engineering-software/`, `Kuzmin-Machine-Developers-Guide-UA.md` → `05-applications-and-guides/` (#51) |
