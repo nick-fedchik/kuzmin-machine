@@ -1,6 +1,7 @@
 # Правила документів, рецензування й аудиту Машини Кузьміна
 
 * **Версія:** 1.1.0
+* **Дата:** 2026-11-09
 * **Сфера:** уся документація репозиторію `kuzmin-machine` згідно з [PROJECT-MANUAL §5.1](PROJECT-MANUAL.md#51-структура-репозиторію): вимоги ([requirements/](../requirements/requirements.md)), архітектура ([architecture/](../architecture/refactoring-plan.md)), специфікації ([specs/](../specs/kpol/README.md)), експерименти ([experiments/](../experiments/PLAN.md)), апаратні та програмні модулі ([hw/](../hw/RUNBOOK.md), [sw/](../sw/tools/static-analyzer/README.md)), процес ([process/](PROJECT-MANUAL.md)), докази й джерела ([docs/](../docs/sources/README.md)).
 * **Мета:** щоб завжди було однозначно, хто що виконав, хто це перевірив, яку саме версію перевірено і з яким висновком.
 * **Перенесено з:** `drafts/KuzminMachine/Kuzmin-Machine-Document-Review-and-Audit-Rules-UA.md` @ `a4738bc` (2026-11-09)
@@ -85,7 +86,7 @@ kuzmin-machine/
 
 ### 4.2. Один документ — один Review Report
 - На кожен Report або Specification ведеться **один** Review Report.
-- Кілька рецензентів пишуть в одному Review Report окремими розділами: наприклад, «Рецензія версії 1.0 — рецензент Copilot (Claude Opus)», «Рецензія версії 1.0 — рецензент Gemini (Gemini 2.5 Pro)».
+- Кілька рецензентів пишуть в одному Review Report окремими розділами: наприклад, «Рецензія версії 1.0 — рецензент Copilot (Claude Opus)», «Рецензія версії 1.0 — рецензент Gemini (Gemini)».
 - Відповідь автора на знахідки й повторна рецензія — нові розділи в тому самому Review Report, а не нові файли.
 
 ### 4.3. Виняток: зведений аудит
@@ -179,7 +180,7 @@ kuzmin-machine/
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
 | 1.0.0 | 2026-11-09 | Перша редакція: ролі, класи документів, структура папок, 1 : 1, версіонування, перехідні положення, джерела |
-| 1.1.0 | 2026-11-09 | Адаптація сфери та нормативних правил під структуру MVP ([PROJECT-MANUAL §5.1](PROJECT-MANUAL.md#51-структура-репозиторію), `experiments/AV-xx/`, `process/templates/`); правило вибору рецензента за родинами моделей ([PROJECT-MANUAL §2.1](PROJECT-MANUAL.md#21-агенти-проєкту)); примітка щодо історичних шляхів drafts (#24). |
+| 1.1.0 | 2026-11-09 | Адаптація сфери та нормативних правил під структуру MVP ([PROJECT-MANUAL §5.1](PROJECT-MANUAL.md#51-структура-репозиторію), `experiments/AV-xx/`, `process/templates/`); правило вибору рецензента за родинами моделей ([PROJECT-MANUAL §2.1](PROJECT-MANUAL.md#21-агенти-проєкту)); вирівнювання з чинними PROJECT-MANUAL та шаблонами: перейменування вердиктів (§6), власна версія Review Report 0.1.0 (рецензує версію X.Y.Z, коміт SHA) замість «= версії документа», схема комітів Conventional Commits замість префіксів `AV-NN:`, рівні серйозності `sev:*` за Issue Tracker; примітка щодо історичних шляхів drafts (#24). |
 
 ---
 
@@ -191,7 +192,7 @@ kuzmin-machine/
 | :--- | :--- | :--- |
 | AQAP | Allied Quality Assurance Publication | Стандарти НАТО щодо забезпечення якості. AQAP-2110 — вимоги до якості в проєктуванні, розробленні й виробництві |
 | ASPICE | Automotive SPICE (Software Process Improvement and Capability dEtermination) | Модель оцінювання процесів розроблення в автомобільній галузі; видає VDA QMC |
-| AV-NN | — | Ідентифікатор експерименту в [плані експериментів на наявому обладнанні](../experiments/PLAN.md) |
+| AV-NN | — | Ідентифікатор експерименту в [плані експериментів на наявному обладнанні](../experiments/PLAN.md) |
 | BP | Base Practice | Базова практика процесу в ASPICE |
 | DO-178C | — | Стандарт RTCA на програмне забезпечення бортових авіаційних систем |
 | HIL | Hardware-in-the-Loop | Перевірка з реальною апаратурою в контурі |
