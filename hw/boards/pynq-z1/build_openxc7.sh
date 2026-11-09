@@ -19,7 +19,7 @@ if ! command -v fpga-as >/dev/null 2>&1 \
 fi
 mkdir -p "$BUILD_DIR"
 
-RTL_DIR="$SCRIPT_DIR/rtl"
+RTL_DIR="$(cd "$SCRIPT_DIR/../../rtl" && pwd)"
 YOSYS_JSON="$BUILD_DIR/kpol_pynq.json"
 CHIPDB_BBA="$BUILD_DIR/xc7z020.bba"
 CHIPDB="${CHIPDB:-$OPENXC7_DIR/share/nextpnr/himbaechel/xilinx/chipdb-xc7z020.bin}"
@@ -30,17 +30,17 @@ BITSTREAM_TMP="$BITSTREAM.tmp.$$"
 trap 'rm -f "$BITSTREAM_TMP"' EXIT
 
 yosys -p "read_verilog -sv \
-  $RTL_DIR/km_predicate_evaluator.sv \
-  $RTL_DIR/km_euclid_core.sv \
-  $RTL_DIR/km_concept_bram.sv \
-  $RTL_DIR/km_concept_bram_core.sv \
-  $RTL_DIR/km_rcfc_engine.sv \
-  $RTL_DIR/km_cascade_arbiter_engine.sv \
-  $RTL_DIR/km_stream_pipeline_engine.sv \
-  $RTL_DIR/km_io_trigger_engine.sv \
-  $RTL_DIR/kpol_txn_gate.sv \
-  $RTL_DIR/kpol_txn_gate_axi_lite.sv \
-  $RTL_DIR/kpol_txn_gate_pynq_z1_top.v; \
+  $RTL_DIR/core/km_predicate_evaluator.sv \
+  $RTL_DIR/poc-demo/km_euclid_core.sv \
+  $RTL_DIR/core/km_concept_bram.sv \
+  $RTL_DIR/core/km_concept_bram_core.sv \
+  $RTL_DIR/poc-demo/km_rcfc_engine.sv \
+  $RTL_DIR/poc-demo/km_cascade_arbiter_engine.sv \
+  $RTL_DIR/poc-demo/km_stream_pipeline_engine.sv \
+  $RTL_DIR/io/km_io_trigger_engine.sv \
+  $RTL_DIR/core/kpol_txn_gate.sv \
+  $RTL_DIR/bus/kpol_txn_gate_axi_lite.sv \
+  $SCRIPT_DIR/kpol_txn_gate_pynq_z1_top.v; \
   synth_xilinx -flatten -abc9 -arch xc7 -top kpol_txn_gate_pynq_z1_top; \
   stat; check; write_json $YOSYS_JSON" \
   2>&1 | tee "$BUILD_DIR/yosys.log"

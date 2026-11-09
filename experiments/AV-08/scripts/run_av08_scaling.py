@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """AV-08: resource and f_max scaling vs N on xc7z020 (openXC7: yosys + nextpnr-himbaechel).
 
-Series (all RTL from 02-engineering-hardware/rtl is used unmodified):
+Series (all RTL from hw/rtl is used unmodified):
   S1_lanes  N parallel concept lanes, each = km_predicate_evaluator + kpol_txn_gate
             (invariant from the evaluator, current_state fed back from the gate).
   S1_stub   control: same harness, lanes replaced by wires (no DUT logic).
@@ -34,9 +34,19 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KM = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-RTL = os.path.join(KM, "02-engineering-hardware", "rtl")
-OUT = os.path.join(KM, "04-verification-and-qa", "Reports", "raw", "av08_scaling")
+REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+KM = REPO_ROOT
+RTL = os.path.join(REPO_ROOT, "hw", "rtl")
+# Повторний прогін пише в окремий каталог (сирі дані незмінні): AV08_OUT_DIR=/tmp/av08
+OUT = os.environ.get("AV08_OUT_DIR", os.path.join(HERE, "..", "raw", "av08_scaling"))
+
+
+def rtl_path(name):
+    """Шукає RTL-файл за іменем у hw/rtl/**."""
+    for root, _, files in sorted(os.walk(RTL)):
+        if name in files:
+            return os.path.join(root, name)
+    raise FileNotFoundError(name)
 OPENXC7 = os.environ.get("OPENXC7_DIR", os.path.expanduser("~/opt/openxc7"))
 BUILD = os.environ.get("AV08_BUILD_DIR", os.path.expanduser("~/opt/openxc7-build/av08"))
 CHIPDB = os.path.join(OPENXC7, "share/nextpnr/himbaechel/xilinx/chipdb-xc7z020.bin")
@@ -213,7 +223,7 @@ def synth(series, n):
         f.write(src)
     with open(os.path.join(d, "av08.xdc"), "w") as f:
         f.write(XDC)
-    files = " ".join(os.path.join(RTL, x) for x in deps)
+    files = " ".join(rtl_path(x) for x in deps)
     script = (f"read_verilog -sv {files} av08_top.v; "
               "synth_xilinx -flatten -abc9 -nosrl -arch xc7 -top av08_top; "
               "tee -o stat.txt stat; tee -q -o stat.json stat -json; write_json synth.json")
@@ -344,7 +354,7 @@ def main():
         "host": platform.node(), "platform": platform.platform(), "cpus": os.cpu_count(),
         "git_commit": git("rev-parse", "HEAD"),
         "git_dirty_rtl": bool(git("status", "--porcelain", "--", RTL)),
-        "rtl_sha256": {x: sha(os.path.join(RTL, x)) for x in sorted(os.listdir(RTL))},
+        "rtl_sha256": {os.path.relpath(os.path.join(r, x), RTL): sha(os.path.join(r, x)) for r, _, fs in sorted(os.walk(RTL)) for x in sorted(fs)},
         "script_sha256": sha(os.path.abspath(__file__)),
         "yosys": ver(["yosys", "-V"]),
         "nextpnr": ver(["nextpnr-himbaechel", "--version"]),

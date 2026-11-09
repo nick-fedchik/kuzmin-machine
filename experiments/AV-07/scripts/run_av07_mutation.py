@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Автоматизований рушій мутаційного тестування для експерименту AV-07:
-Перевіряє чутливість тестбенчів у 02-engineering-hardware/tb/
+Перевіряє чутливість тестбенчів у hw/tb/
 шляхом внесення навмисних дефектів (мутантів) у RTL-модулі.
 
 Вимоги згідно з §4.2, AV-07:
@@ -20,11 +20,22 @@ import subprocess
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-RTL_DIR = BASE_DIR / "02-engineering-hardware" / "rtl"
-TB_DIR = BASE_DIR / "02-engineering-hardware" / "tb"
-REPORTS_DIR = BASE_DIR / "04-verification-and-qa" / "Reports"
+import os
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+TB_DIR = REPO_ROOT / "hw" / "tb"
+# Повторний прогін пише в окремий каталог (сирі дані незмінні): AV07_OUT_DIR=/tmp/av07
+REPORTS_DIR = Path(os.environ.get("AV07_OUT_DIR", Path(__file__).resolve().parents[1]))
 RAW_DIR = REPORTS_DIR / "raw"
+
+def find_rtl(name):
+    """Шукає RTL-файл за іменем у hw/rtl/** і hw/boards/**."""
+    for base in ("hw/rtl", "hw/boards"):
+        hits = sorted((REPO_ROOT / base).rglob(name))
+        if hits:
+            return hits[0]
+    raise FileNotFoundError(name)
+
 TMP_DIR = Path("/tmp/av07_mutation")
 
 # Визначення мутантів заздалегідь згідно з правилом попередньої реєстрації (§2 п. 1)
@@ -330,7 +341,7 @@ def main():
 
     for suite in MUTATION_SUITE:
         mod_name = suite["module"]
-        rtl_path = RTL_DIR / suite["rtl_file"]
+        rtl_path = find_rtl(suite["rtl_file"])
         tb_path = TB_DIR / suite["tb_file"]
 
         print(f"\nМодуль: {mod_name} ({suite['tb_file']})")
@@ -397,7 +408,7 @@ def main():
         json.dump(raw_data, f, indent=2)
 
     # Генерація фінального звіту Markdown
-    report_path = REPORTS_DIR / "AV-07_Mutation_Testing_Report_UA.md"
+    report_path = REPORTS_DIR / "report.md"
     ts_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     # Підрахунок стадій вбивства
@@ -411,7 +422,7 @@ def main():
 * **Review Report:** `AV-07_Mutation_Testing_Review_Report_UA.md` у `Review_Reports/`.
 * **Дата виконання:** {ts_str}
 * **Виконавець:** агент Gemini. Рецензент: Copilot.
-* **Мета:** Об'єктивна фізична перевірка чутливості та повноти верифікаційного набору тестбенчів у `02-engineering-hardware/tb/` шляхом внесення навмисних дефектів (мутантів) згідно з [Kuzmin-Machine-Experiment-Plan-Available-Hardware-UA.md](../Kuzmin-Machine-Experiment-Plan-Available-Hardware-UA.md) (§4.2, AV-07).
+* **Мета:** Об'єктивна фізична перевірка чутливості та повноти верифікаційного набору тестбенчів у `hw/tb/` шляхом внесення навмисних дефектів (мутантів) згідно з [Kuzmin-Machine-Experiment-Plan-Available-Hardware-UA.md](../Kuzmin-Machine-Experiment-Plan-Available-Hardware-UA.md) (§4.2, AV-07).
 * **Правило об'єктивності:** «Кожен тест має провалитися на навмисно зламаній версії (мутанті). Перевірку, яка не ловить жодного мутанта, доказом не вважають» (§2 п. 7).
 * **Підсумковий результат:** **Mutation Score = {mutation_score:.1f}% ({killed_mutants}/{total_mutants} мутантів спіймано: {killed_assert} через асерти симуляції, {killed_timeout} через таймаут, {killed_compile} через компіляцію; {survived_mutants} вижило)**.
 
@@ -458,7 +469,7 @@ def main():
    - Загальний бал мутаційного покриття становить **{mutation_score:.1f}%** ({killed_mutants}/{total_mutants}).
    - Жоден мутант не залишився непоміченим (0 вижилих мутантів).
 3. **Сирі дані:**
-   - JSON-звіт: [`04-verification-and-qa/Reports/raw/av07_mutation_results.json`](raw/av07_mutation_results.json).
+   - JSON-звіт: [`experiments/AV-07/raw/av07_mutation_results.json`](raw/av07_mutation_results.json).
 """
     with open(report_path, "w") as f:
         f.write(md)

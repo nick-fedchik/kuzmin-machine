@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import json
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from kpol_reference import (
     EventInput,
@@ -54,7 +54,8 @@ from kpol_reference import (
 )
 
 
-SPEC_PATH = Path(__file__).with_name("Kuzmin-Machine-KPOL-Language-Draft-UA.md")
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SPEC_PATH = REPO_ROOT / "specs" / "kpol" / "kpol-0.1.0.md"
 
 
 def examples_from_spec():
@@ -918,8 +919,7 @@ class KpolReferenceTests(unittest.TestCase):
         """
         mod = parse_module(source)
         ic_sv = compile_verilog_interconnect(mod)
-        repo_root = Path(__file__).resolve().parent.parent
-        gate_v2_path = repo_root / "02-engineering-hardware" / "rtl" / "kpol_txn_gate_v2.sv"
+        gate_v2_path = REPO_ROOT / "hw" / "rtl" / "core" / "kpol_txn_gate_v2.sv"
         self.assertTrue(gate_v2_path.exists(), f"Missing {gate_v2_path}")
 
         tb_code = """`timescale 1ns / 1ps

@@ -8,10 +8,7 @@ import subprocess
 import os
 import pytest
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-C_SOURCE = os.path.join(
-    REPO_ROOT, "03-engineering-software", "km_mcu_fpga_bridge.c"
-)
+C_SOURCE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "km_mcu_fpga_bridge.c"))
 BIN_PATH = "/tmp/km_mcu_fpga_bridge_test_bin"
 
 

@@ -27,10 +27,12 @@ import tempfile
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KM = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-RTL = os.path.join(KM, "02-engineering-hardware", "rtl", "kpol_txn_gate.sv")
+REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+KM = REPO_ROOT
+RTL = os.path.join(REPO_ROOT, "hw", "rtl", "core", "kpol_txn_gate.sv")
 PROPS = os.path.join(HERE, "av04_gate_props.sv")
-OUT = os.path.join(KM, "04-verification-and-qa", "Reports", "raw", "av04_formal")
+# Повторний прогін пише в окремий каталог (сирі дані незмінні): AV04_OUT_DIR=/tmp/av04
+OUT = os.environ.get("AV04_OUT_DIR", os.path.join(HERE, "..", "raw", "av04_formal"))
 
 # (id, description, exact source fragment, replacement)
 # a..d are pre-registered in the plan; e..h are additional.

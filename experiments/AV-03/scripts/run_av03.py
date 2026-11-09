@@ -20,11 +20,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-QA_DIR = BASE_DIR / "04-verification-and-qa"
-BENCH_DIR = QA_DIR / "benchmarks" / "av03_sw_gate"
-REPORTS_DIR = QA_DIR / "Reports"
-RAW_DIR = REPORTS_DIR / "raw"
+import os
+
+BENCH_DIR = Path(__file__).resolve().parent
+EXP_DIR = BENCH_DIR.parent
+# Повторний прогін пише в окремий каталог (сирі дані незмінні): AV03_OUT_DIR=/tmp/av03
+OUT_DIR = Path(os.environ.get("AV03_OUT_DIR", EXP_DIR))
+REPORTS_DIR = OUT_DIR
+RAW_DIR = OUT_DIR / "raw"
 
 TARGETS = [
     {"name": "host", "type": "local", "ssh_host": None},
@@ -121,7 +124,7 @@ def benchmark_target(target):
 
 
 def generate_report(results):
-    report_file = REPORTS_DIR / "AV-03_SW_Gate_Decision_Report_UA.md"
+    report_file = REPORTS_DIR / "report.md"
     ts_now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     md = f"""# Звіт з експерименту AV-03: Програмна функція рішення шлюзу KPOL
@@ -196,10 +199,10 @@ def generate_report(results):
 ## 5. Доступ до сирих даних
 
 * Сирі CSV-вибірки всіх $10\,000$ окремих замірів збережено в каталозі:
-  * `04-verification-and-qa/Reports/raw/av03_host_raw_samples.csv`
-  * `04-verification-and-qa/Reports/raw/av03_jetson_orin_raw_samples.csv`
-  * `04-verification-and-qa/Reports/raw/av03_pynq2_cortex_a9_raw_samples.csv`
-* Виконуваний скрипт експерименту: [`04-verification-and-qa/benchmarks/av03_sw_gate/run_av03.py`](file:///home/mfedchyk/GitHub/nick-fedchik/drafts/KuzminMachine/04-verification-and-qa/benchmarks/av03_sw_gate/run_av03.py).
+  * `experiments/AV-03/raw/av03_host_raw_samples.csv`
+  * `experiments/AV-03/raw/av03_jetson_orin_raw_samples.csv`
+  * `experiments/AV-03/raw/av03_pynq2_cortex_a9_raw_samples.csv`
+* Виконуваний скрипт експерименту: [`experiments/AV-03/scripts/run_av03.py`](scripts/run_av03.py).
 """
     with open(report_file, "w") as f:
         f.write(md)

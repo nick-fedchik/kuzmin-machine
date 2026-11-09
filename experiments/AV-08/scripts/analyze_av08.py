@@ -9,7 +9,7 @@ import statistics as st
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-RAW = os.path.abspath(os.path.join(HERE, "..", "..", "Reports", "raw", "av08_scaling"))
+RAW = os.environ.get("AV08_OUT_DIR", os.path.abspath(os.path.join(HERE, "..", "raw", "av08_scaling")))
 
 
 def fit(xs, ys):

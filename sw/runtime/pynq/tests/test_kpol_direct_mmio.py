@@ -16,8 +16,8 @@ import os
 import sys
 import pytest
 
-# Add deploy path to sys.path
-DEPLOY_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "02-engineering-hardware", "deploy"))
+# Тест на mock-MMIO: перевіряє логіку драйвера без плати (не HIL).
+DEPLOY_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if DEPLOY_DIR not in sys.path:
     sys.path.insert(0, DEPLOY_DIR)
 
