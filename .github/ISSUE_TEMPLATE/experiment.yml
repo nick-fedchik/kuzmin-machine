@@ -1,0 +1,19 @@
+name: Експеримент (AV-xx)
+description: Перевірка гіпотези з критеріями, зафіксованими до виконання
+labels: ["type:experiment"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes: {label: Гіпотеза, description: Що саме перевіряємо і що її спростує}
+    validations: {required: true}
+  - type: textarea
+    id: criteria
+    attributes: {label: Критерії успіху й провалу, description: Фіксуються ДО виконання}
+    validations: {required: true}
+  - type: textarea
+    id: method
+    attributes: {label: Метод, description: Інструменти, плата, обсяг вибірки}
+    validations: {required: true}
+  - type: input
+    id: reviewer
+    attributes: {label: Рецензент, description: Хто пише Review Report (не виконавець)}

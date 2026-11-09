@@ -1,0 +1,19 @@
+name: Знахідка
+description: Дефект, невідповідність або бутафорія
+labels: ["type:finding"]
+body:
+  - type: dropdown
+    id: sev
+    attributes: {label: Серйозність, options: ["sev:critical", "sev:major", "sev:minor"]}
+    validations: {required: true}
+  - type: textarea
+    id: fact
+    attributes: {label: Факт, description: Що спостерігається}
+    validations: {required: true}
+  - type: textarea
+    id: evidence
+    attributes: {label: Доказ, description: Файл і рядок, команда, вивід}
+    validations: {required: true}
+  - type: textarea
+    id: impact
+    attributes: {label: Наслідок і рекомендація}

@@ -1,0 +1,19 @@
+name: Задача
+description: Робота з кодом, документами або процесом
+labels: ["type:task"]
+body:
+  - type: textarea
+    id: goal
+    attributes: {label: Мета, description: Навіщо ця задача}
+    validations: {required: true}
+  - type: textarea
+    id: scope
+    attributes: {label: Межі, description: Що входить і що НЕ входить}
+    validations: {required: true}
+  - type: textarea
+    id: acceptance
+    attributes: {label: Критерії приймання, description: Кількісні або булеві}
+    validations: {required: true}
+  - type: input
+    id: trace
+    attributes: {label: Трасування, description: "REQ-*, H*, крок маршруту S1…S6"}
