@@ -13,9 +13,9 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq iverilog verilator gcc python3-pytest
+          sudo apt-get install -y -qq iverilog verilator yosys gcc python3-pytest
       - name: Tool versions
-        run: iverilog -V 2>&1 | head -1; verilator --version; gcc --version | head -1; python3 --version
+        run: iverilog -V 2>&1 | head -1; verilator --version; yosys -V; gcc --version | head -1; python3 --version
       - name: Link check
         run: python3 tools/check_links.py
       - name: Tests (sw, testbenches, AV-03 differential)
@@ -25,4 +25,12 @@ jobs:
         run: |
           for m in kpol_txn_gate kpol_txn_gate_v2 km_predicate_evaluator km_concept_bram km_concept_bram_core; do
             verilator --lint-only -Wall --top-module "$m" "rtl/core/$m.sv"
+          done
+      - name: Logic synthesis (Yosys synth_xilinx, core RTL)
+        working-directory: hw
+        run: |
+          set -euo pipefail
+          for m in kpol_txn_gate kpol_txn_gate_v2 km_predicate_evaluator km_concept_bram km_concept_bram_core; do
+            echo "== synth: $m =="
+            yosys -q -l /dev/stdout -p "read_verilog -sv rtl/core/$m.sv; hierarchy -check -top $m; synth_xilinx -top $m; stat"
           done
