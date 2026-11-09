@@ -32,5 +32,5 @@ jobs:
           set -euo pipefail
           for m in kpol_txn_gate kpol_txn_gate_v2 km_predicate_evaluator km_concept_bram km_concept_bram_core; do
             echo "== synth: $m =="
-            yosys -q -l /dev/stdout -p "read_verilog -sv rtl/core/$m.sv; hierarchy -check -top $m; synth_xilinx -top $m; stat"
+            yosys -q -p "read_verilog -sv rtl/core/$m.sv; hierarchy -check -top $m; synth_xilinx -top $m; tee -o /dev/stdout stat"
           done
