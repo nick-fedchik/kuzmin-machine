@@ -1,0 +1,1 @@
+$ yosys -q M_e_W32.ys

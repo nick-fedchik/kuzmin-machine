@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq iverilog verilator gcc python3-pytest
+      - name: Tool versions
+        run: iverilog -V 2>&1 | head -1; verilator --version; gcc --version | head -1; python3 --version
+      - name: Link check
+        run: python3 tools/check_links.py
+      - name: Tests (sw, testbenches, AV-03 differential)
+        run: python3 -m pytest -q
+      - name: Strict lint of core RTL
+        working-directory: hw
+        run: |
+          for m in kpol_txn_gate kpol_txn_gate_v2 km_predicate_evaluator km_concept_bram km_concept_bram_core; do
+            verilator --lint-only -Wall --top-module "$m" "rtl/core/$m.sv"
+          done

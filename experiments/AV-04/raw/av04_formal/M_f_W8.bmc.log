@@ -1,0 +1,8 @@
+$ yosys-smtbmc -s z3 -t 25 --presat --dump-vcd 04-verification-and-qa/reports/raw/av04_formal/M_f_W8.bmc.vcd M_f_W8.smt2
+##   0:00:00  Solver: z3
+##   0:00:00  Checking assumptions in step 0..
+##   0:00:00  Checking assertions in step 0..
+##   0:00:00  BMC failed!
+##   0:00:00  Assert failed in av04_gate_formal: P4_reset_state
+##   0:00:00  Writing trace to VCD file: 04-verification-and-qa/reports/raw/av04_formal/M_f_W8.bmc.vcd
+##   0:00:00  Status: FAILED

@@ -1,0 +1,43 @@
+{
+  "experiment": "AV-08",
+  "utc": "2026-11-08T21:32:46+00:00",
+  "host": "AORUS-5-SE",
+  "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+  "cpus": 20,
+  "git_commit": "62219ef0927bc0ca427deabc533833fa41960e43",
+  "git_dirty_rtl": false,
+  "rtl_sha256": {
+    "km_cascade_arbiter_engine.sv": "79e3418de1fe68b521274acd5c09759ee2e8febab6741a3bb0a3fdbfef0d1dd7",
+    "km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297",
+    "km_concept_bram_core.sv": "136e2e03fb28eeec9546ab4af336bf09517d4b0763d2998bbfcf9e51e08fc704",
+    "km_euclid_core.sv": "a5c0b31a2f9c2b239ed3eddad225177e3d379f69dc911fb8efe15343d984b1f4",
+    "km_io_trigger_engine.sv": "3f257ec2f26b9683f5cf0845a31b76cc546aed31004f3d58e6973fd44d1c5eba",
+    "km_predicate_evaluator.sv": "1220fae1196c0cad240751f7d558ad9608c3e56832d0ab8c4c32d63e32c46d35",
+    "km_rcfc_engine.sv": "65a118e411087695aab34c620918e0b92dc0ec5356351f60a80398c4011f482b",
+    "km_stream_pipeline_engine.sv": "a0d04b870024c1f89cd7a9480ce20aab977354e343767ffa5fafa7d0b0e784f1",
+    "kpol_txn_gate.sv": "b77438e216c7a770b8c206b678d27523c52f8e1d1216d51a2bd38dbe7cb20943",
+    "kpol_txn_gate_axi_lite.sv": "ce193f5a37809e2d8e3f8def1f40c0b1f86d5666bde959d34e9476a161407764",
+    "kpol_txn_gate_pynq_z1_top.v": "c9bb756fdcb5ed79dd85e83a02ce3ff72ab930a8de2ca9bf9121e684b2589e42",
+    "kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6"
+  },
+  "script_sha256": "e53f23510212a503311d9a12fa215122595bddeb38f73246e653930ab34f66aa",
+  "yosys": "Yosys 0.69 (git sha1 9f75ca1f9, Release, GNU /usr/bin/c++ 15.2.0)",
+  "nextpnr": "\"nextpnr-himbaechel\" -- Next Generation Place and Route (Version 1.0.0-41-g3e5c2cdd)",
+  "chipdb_sha256": "9f234d3b060d21222a2362061fd68093a637670c7b90824c81331ff12b007a5c",
+  "device": "xc7z020clg400-1",
+  "freq_constraint_mhz": 100,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "series": [
+    "S1_lanes",
+    "S1_stub",
+    "S2_bram",
+    "S3_rcfc"
+  ],
+  "ns": "default",
+  "pnr_timeout_s": 3600,
+  "reparse_only": true
+}

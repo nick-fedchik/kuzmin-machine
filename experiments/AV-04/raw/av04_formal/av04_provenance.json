@@ -1,0 +1,53 @@
+{
+  "experiment": "AV-04",
+  "utc": "2026-11-08T19:45:30+00:00",
+  "host": "AORUS-5-SE",
+  "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+  "git_commit": "20b63a9faaacbb371bad0d34c1f7519d1bcf63e7",
+  "git_dirty_rtl": false,
+  "rtl_sha256": "b77438e216c7a770b8c206b678d27523c52f8e1d1216d51a2bd38dbe7cb20943",
+  "props_sha256": "9d8988d4310e3060f4b347bf52b83f3ba0dfb81bbc0805f6c7ca559345c57f35",
+  "yosys": "Yosys 0.52 (git sha1 fee39a3284c90249e1d9684cf6944ffbbcbb8f90)",
+  "solver": "z3",
+  "solver_version": "Z3 version 4.13.3 - 64 bit",
+  "python": "3.14.4",
+  "depth": 25,
+  "widths": [
+    8,
+    32
+  ],
+  "mutants": [
+    {
+      "id": "M_a",
+      "desc": "ignore invariant_known"
+    },
+    {
+      "id": "M_b",
+      "desc": "decide without event_valid"
+    },
+    {
+      "id": "M_c",
+      "desc": "ignore assumption_true"
+    },
+    {
+      "id": "M_d",
+      "desc": "never raise unknown_hazard"
+    },
+    {
+      "id": "M_e",
+      "desc": "changed always 1 on commit"
+    },
+    {
+      "id": "M_f",
+      "desc": "reset state to 0 instead of RESET_VALUE"
+    },
+    {
+      "id": "M_g",
+      "desc": "ignore hazard_known in unknown-hazard check"
+    },
+    {
+      "id": "M_h",
+      "desc": "report invariant reason for input rejection"
+    }
+  ]
+}

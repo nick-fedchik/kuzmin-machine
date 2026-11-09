@@ -1,0 +1,26 @@
+{
+  "experiment": "AV-03",
+  "batch_n": 1000000,
+  "batch_avg_ns": 47.08,
+  "batch_ops_sec": 21238834.45,
+  "single_n": 10000,
+  "min_ns": 1230.0,
+  "mean_ns": 1359.89,
+  "median_ns": 1342.0,
+  "p99_ns": 1502.0,
+  "p999_ns": 2019.0,
+  "max_ns": 98910.0,
+  "stddev_ns": 977.35,
+  "metadata": {
+    "target": "pynq2_cortex_a9",
+    "timestamp_iso": "2026-11-08T19:30:28.058927+00:00",
+    "git_commit": "unknown",
+    "hostname": "pynq-2",
+    "uname": "Linux pynq-2 6.6.10-xilinx-v2024.1-g916a1f7c7222 #1 SMP PREEMPT Sat Apr 27 05:22:24 UTC 2024 armv7l armv7l armv7l GNU/Linux",
+    "mac": "76:ce:63:65:3a:55",
+    "cpu_model": "model name\t: ARMv7 Processor rev 0 (v7l)",
+    "compiler": "gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0",
+    "governor": "N/A",
+    "loadavg": "0.09 0.02 0.01 1/99 3582"
+  }
+}
