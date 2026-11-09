@@ -1,6 +1,6 @@
 # Архітектура відкритого інструментального стека для XC7Z020 (PYNQ-Z1) без Vivado/Vitis
 
-* **Версія:** 0.1.0
+* **Версія:** 0.1.1
 * **Перенесено з:** `drafts/KuzminMachine/02-engineering-hardware/Kuzmin-Machine-Open-Source-XC7-Toolchain-Architecture-UA.md` @ `a4738bc` (2026-11-09)
 
 > [!IMPORTANT]
@@ -222,11 +222,11 @@ new_state = kpol_ip.read(0x10)
 print(f"[+] Транзакція: статус={hex(status)}, новий стан={hex(new_state)}")
 ```
 
-#### 3. Використання локального репозиторію PYNQ (`~/PYNQ`)
-На робочій станції у каталозі `~/PYNQ` (`/home/mfedchyk/PYNQ`) розгорнуто повний вихідний код бібліотеки PYNQ:
-- [`~/PYNQ/pynq/pl.py`](file:///home/mfedchyk/PYNQ/pynq/pl.py): еталонна реалізація класу `PL` (керування станом, скидання `PL.reset()`, відстеження стану через sysfs).
-- [`~/PYNQ/pynq/mmio.py`](file:///home/mfedchyk/PYNQ/pynq/mmio.py): еталонна реалізація прямого відображення пам'яті через C-розширення `/dev/mem` (`mmap`).
-- [`~/PYNQ/pynq/bitstream.py`](file:///home/mfedchyk/PYNQ/pynq/bitstream.py): механізм завантаження безпосередньо в ядра Linux `/sys/class/fpga_manager`.
+#### 3. Використання репозиторію PYNQ
+На робочій станції у каталозі `~/PYNQ` (`/home/mfedchyk/PYNQ`) розгорнуто повний вихідний код бібліотеки PYNQ. Публічне джерело тих самих файлів — репозиторій [Xilinx/PYNQ](https://github.com/Xilinx/PYNQ):
+- [`pynq/pl.py`](https://github.com/Xilinx/PYNQ/blob/master/pynq/pl.py): еталонна реалізація класу `PL` (керування станом, скидання `PL.reset()`, відстеження стану через sysfs).
+- [`pynq/mmio.py`](https://github.com/Xilinx/PYNQ/blob/master/pynq/mmio.py): еталонна реалізація прямого відображення пам'яті через C-розширення `/dev/mem` (`mmap`).
+- [`pynq/bitstream.py`](https://github.com/Xilinx/PYNQ/blob/master/pynq/bitstream.py): механізм завантаження безпосередньо в ядра Linux `/sys/class/fpga_manager`.
 
 Готовий інженерний драйвер із валідацією логіки контракту в режимі емуляції (`MockMMIO`) знаходиться у файлі:  
 👉 [`02-engineering-hardware/deploy/kpol_direct_mmio_driver.py`](../../sw/runtime/pynq/kpol_direct_mmio_driver.py).
@@ -345,3 +345,12 @@ flowchart TD
 1. Запропонований відкритий стек (**Yosys + nextpnr-xilinx + Project X-Ray + openFPGALoader + Icarus Verilog + Verilator**) є життєздатною та технічно обґрунтованою альтернативою пропрієтарному пакету AMD/Xilinx Vivado.
 2. Для плати PYNQ-Z1 наявність уже розгорнутого дистрибутива Linux на SD-карті значно полегшує завдання, дозволяючи використовувати готову ініціалізацію PS (ARM Cortex-A9 та DDR3) і зосередитися на відкритій збірці та динамічному завантаженні PL-матриці Машини Кузьміна.
 3. Документована архітектура усуває «чорні скриньки» та гарантує наукову відтворюваність експериментів відповідно до принципів відкритої науки та відкритого апаратного забезпечення (Open Source Hardware).
+
+---
+
+## Історія версій
+
+| Версія | Дата | Зміни |
+| :--- | :--- | :--- |
+| 0.1.0 | 2026-11-09 | Перенесено з `drafts/KuzminMachine` @ `a4738bc` |
+| 0.1.1 | 2026-11-09 | Посилання `file:///` на локальні файли PYNQ замінено публічними URL репозиторію Xilinx/PYNQ (#31) |

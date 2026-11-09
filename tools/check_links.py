@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Перевіряє, що відносні посилання в усіх .md репозиторію ведуть на наявні файли.
 
-Зовнішні посилання (http, https, mailto) і якорі (#...) не перевіряються.
-Код виходу 1, якщо є хоча б одне бите посилання.
+Посилання зі схемою `file:` заборонені: вони ведуть на локальні шляхи поза
+репозиторієм і не працюють у клонах та на GitHub.
+Інші зовнішні посилання (http, https, mailto) і якорі (#...) не перевіряються.
+Код виходу 1, якщо є хоча б одне бите посилання або посилання `file:`.
 """
 import re
 import sys
@@ -28,22 +30,30 @@ def links(md: Path):
 
 def main() -> int:
     broken = []
+    file_links = []
     for md in sorted(ROOT.rglob("*.md")):
         if ".git" in md.parts:
             continue
+        rel = md.relative_to(ROOT)
         for n, target in links(md):
-            if re.match(r"^[a-z]+:", target) or target.startswith("#"):
+            if re.match(r"^[a-z][a-z0-9+.-]*:", target, re.IGNORECASE):
+                if target.lower().startswith("file:"):
+                    file_links.append(f"{rel}:{n}: {target}")
+                continue
+            if target.startswith("#"):
                 continue
             path = unquote(target.split("#", 1)[0])
             if not path:
                 continue
             dest = (ROOT / path.lstrip("/")) if path.startswith("/") else (md.parent / path)
             if not dest.exists():
-                broken.append(f"{md.relative_to(ROOT)}:{n}: {target}")
+                broken.append(f"{rel}:{n}: {target}")
+    for f in file_links:
+        print(f"Заборонене посилання file: {f}")
     for b in broken:
         print(b)
-    print(f"Битих посилань: {len(broken)}")
-    return 1 if broken else 0
+    print(f"Битих посилань: {len(broken)}; посилань file:: {len(file_links)}")
+    return 1 if broken or file_links else 0
 
 
 if __name__ == "__main__":
