@@ -7,7 +7,7 @@ module kpol_txn_gate_axi_lite_tb;
 
     logic clk = 1'b0;
     logic resetn = 1'b0;
-    logic [5:0] awaddr = 6'b0;
+    logic [12:0] awaddr = 13'b0;
     logic awvalid = 1'b0;
     logic awready;
     logic [31:0] wdata = 32'b0;
@@ -17,7 +17,7 @@ module kpol_txn_gate_axi_lite_tb;
     logic [1:0] bresp;
     logic bvalid;
     logic bready = 1'b0;
-    logic [5:0] araddr = 6'b0;
+    logic [12:0] araddr = 13'b0;
     logic arvalid = 1'b0;
     logic arready;
     logic [31:0] rdata;
@@ -54,7 +54,7 @@ module kpol_txn_gate_axi_lite_tb;
         .ext_conditions_i(7'b0)
     );
 
-    task automatic send_aw(input logic [5:0] address);
+    task automatic send_aw(input logic [12:0] address);
         begin
             @(negedge clk);
             awaddr = address;
@@ -81,7 +81,7 @@ module kpol_txn_gate_axi_lite_tb;
     endtask
 
     task automatic axi_write(
-        input logic [5:0] address,
+        input logic [12:0] address,
         input logic [31:0] data,
         input logic [3:0] strobe,
         input logic data_first,
@@ -109,7 +109,7 @@ module kpol_txn_gate_axi_lite_tb;
         end
     endtask
 
-    task automatic send_ar(input logic [5:0] address);
+    task automatic send_ar(input logic [12:0] address);
         begin
             @(negedge clk);
             araddr = address;
@@ -121,7 +121,7 @@ module kpol_txn_gate_axi_lite_tb;
     endtask
 
     task automatic axi_read(
-        input logic [5:0] address,
+        input logic [12:0] address,
         output logic [31:0] data,
         output logic [1:0] response
     );
@@ -323,9 +323,20 @@ module kpol_txn_gate_axi_lite_tb;
         // 8. Error handling checks
         axi_write(6'h0C, 32'h00000000, 4'b1111, 1'b0, AXI_RESP_DECERR);
         axi_write(6'h08, 32'h00000002, 4'b1111, 1'b1, AXI_RESP_SLVERR);
-        axi_read(6'h2C, value, response);
+        // 0x2C is REG_CYCLE_CNT_LO (EXP-04): mapped, must return OKAY
+        axi_read(13'h002C, value, response);
+        if (response !== AXI_RESP_OKAY) begin
+            $fatal(1, "mapped read address 0x2C (REG_CYCLE_CNT_LO) did not return OKAY");
+        end
+        // 0x7C: aligned gap between 0x78 (RCFC_RESULT) and 0x80 (SUITE_B_CTRL)
+        axi_read(13'h007C, value, response);
         if (response !== AXI_RESP_DECERR) begin
-            $fatal(1, "unknown read address 0x2C did not return DECERR");
+            $fatal(1, "unmapped read address 0x7C did not return DECERR");
+        end
+        // 0x0100: [12:8] != 0 and outside the BRAM window (addr[12:10] != 3'b100)
+        axi_read(13'h0100, value, response);
+        if (response !== AXI_RESP_DECERR) begin
+            $fatal(1, "unmapped read address 0x0100 did not return DECERR");
         end
 
         $display("========================================================================");

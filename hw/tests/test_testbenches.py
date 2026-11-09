@@ -56,11 +56,7 @@ def test_all_testbenches_registered():
 
 # Відомі провали, що існували ще в drafts@a4738bc. strict=True: якщо тест
 # почне проходити, позначку треба зняти разом із закриттям Issue.
-KNOWN_FAILURES = {
-    "kpol_txn_gate_axi_lite_tb.sv":
-        "F12: тестбенч звертається 6-бітними адресами до 13-бітної AXI-обгортки "
-        "(upper bound default mismatch). Issue: #11",
-}
+KNOWN_FAILURES: dict[str, str] = {}
 
 
 def _params():

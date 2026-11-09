@@ -541,7 +541,7 @@ module kpol_txn_gate_axi_lite (
             busy_q                  <= 1'b0;
             event_valid_q           <= 1'b0;
             lower_bound_q           <= '0;
-            upper_bound_q           <= '0;
+            upper_bound_q           <= 32'sh7FFFFFFF;
             rule_cfg_q              <= '0;
             // EXP-04: Reset cycle counters
             hw_cycle_cnt_q          <= 64'd0;
