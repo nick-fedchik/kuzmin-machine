@@ -92,6 +92,36 @@ def test_missing_sha_fails(tmp_path, drafts, monkeypatch):
     assert load_tool().main(root) == 1
 
 
+@pytest.mark.parametrize("kind", ["blob", "tree"])
+@pytest.mark.parametrize(
+    "suffix", ["", "/", "//docs/a.md", "/a4738bc", "/a4738bc/", "/a4738bc/#section"]
+)
+@pytest.mark.parametrize("with_repo", [False, True])
+def test_incomplete_drafts_url_fails(
+    tmp_path, drafts, monkeypatch, capsys, kind, suffix, with_repo
+):
+    repo, _ = drafts
+    if with_repo:
+        monkeypatch.setenv("KM_DRAFTS_REPO", str(repo))
+    else:
+        monkeypatch.delenv("KM_DRAFTS_REPO", raising=False)
+    url = f"https://github.com/nick-fedchik/drafts/{kind}{suffix}"
+    root = make_root(tmp_path, url)
+    assert load_tool().main(root) == 1
+    assert url in capsys.readouterr().out
+
+
+def test_encoded_hash_in_filename_with_anchor(tmp_path, drafts, monkeypatch):
+    repo, _ = drafts
+    (repo / "docs" / "a#b.md").write_text("# b\n", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "add hash")
+    sha = git(repo, "rev-parse", "HEAD")
+    monkeypatch.setenv("KM_DRAFTS_REPO", str(repo))
+    root = make_root(tmp_path, drafts_url(sha, "docs/a%23b.md#section"))
+    assert load_tool().main(root) == 0
+
+
 def test_without_env_skips_with_warning(tmp_path, drafts, monkeypatch, capsys):
     _, sha = drafts
     monkeypatch.delenv("KM_DRAFTS_REPO", raising=False)

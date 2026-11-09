@@ -8,7 +8,9 @@
    `https://github.com/nick-fedchik/drafts/(blob|tree)/<sha>/<шлях>`
    перевіряються в локальному клоні `drafts`, шлях до якого задає змінна
    середовища `KM_DRAFTS_REPO`, командою `git cat-file -e <sha>:<шлях>`
-   (шлях після `unquote`, без якоря і кінцевого `/`). Якщо змінна не задана або
+   (якір відокремлюється перед `unquote`, кінцевий `/` прибирається).
+   URL без SHA або шляху вважається битим незалежно від доступності клону.
+   Якщо змінна не задана або
    це не git-репозиторій, такі посилання пропускаються з одним попередженням:
    у CI клону `drafts` немає.
 Інші зовнішні посилання (http, https, mailto) і якорі (#...) не перевіряються.
@@ -26,6 +28,9 @@ LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 FENCE = re.compile(r"^(```|~~~)")
 DRAFTS = re.compile(
     r"^https?://github\.com/nick-fedchik/drafts/(?:blob|tree)/([0-9a-f]{7,40})/(.+)$"
+)
+DRAFTS_ROUTE = re.compile(
+    r"^https?://github\.com/nick-fedchik/drafts/(?:blob|tree)(?:/|$)"
 )
 
 
@@ -79,13 +84,17 @@ def main(root: Path | None = None) -> int:
             continue
         rel = md.relative_to(root)
         for n, target in links(md):
-            drafts = DRAFTS.match(target)
-            if drafts:
+            target_without_anchor = target.split("#", 1)[0]
+            if DRAFTS_ROUTE.match(target_without_anchor):
+                drafts = DRAFTS.fullmatch(target_without_anchor)
+                path = unquote(drafts.group(2)).rstrip("/") if drafts else ""
+                if not drafts or not path:
+                    broken.append(f"{rel}:{n}: {target} — некоректний SHA або відсутній шлях")
+                    continue
                 if repo is None:
                     drafts_skipped += 1
                     continue
                 drafts_checked += 1
-                path = unquote(drafts.group(2)).split("#", 1)[0].rstrip("/")
                 if not drafts_exists(repo, drafts.group(1), path):
                     broken.append(f"{rel}:{n}: {target}")
                 continue
