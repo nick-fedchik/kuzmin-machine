@@ -1,0 +1,28 @@
+# AV-04 probe of kuzmin_sva_checker.sv, 2026-11-08T19:45:15Z, host AORUS-5-SE
+## yosys Yosys 0.52 (git sha1 fee39a3284c90249e1d9684cf6944ffbbcbb8f90)
+$ yosys -q -p "read_verilog -sv -formal kuzmin_sva_checker.sv; prep -top kuzmin_sva_checker"
+04-verification-and-qa/kuzmin_sva_checker.sv:35: ERROR: syntax error, unexpected '[', expecting ',' or '=' or ')'
+
+## Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+$ verilator --lint-only -Wall kuzmin_sva_checker.sv
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.023 MB sources in 2 modules, into 0.009 MB in 4 C++ files needing 0.000 MB
+rc=0 (note: lines 84-96 (a_slot_live) are inside `ifndef VERILATOR and are not compiled by verilator)
+
+## checker signals present in 02-engineering-hardware/rtl/*.sv (count of files)
+ev_eval_valid: 0
+is_undef_in: 0
+val_new: 0
+val_old: 0
+ev_vec: 0
+commit_we: 0
+commit_target_cid: 0
+active_owner_cid: 0
+flag_self_suppress: 0
+flag_silent_reset: 0
+dot_flag_false: 0
+post_phase_enqueued: 0
+slot_state: 0
+
+## bind / instantiation of kuzmin_sva_checker anywhere in repo
+none

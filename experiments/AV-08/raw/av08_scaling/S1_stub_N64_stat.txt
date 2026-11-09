@@ -1,0 +1,23 @@
+
+5. Printing statistics.
+
+=== av08_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      712 wires
+    15395 wire bits
+       80 public wires
+    14654 public wire bits
+        4 ports
+        4 port bits
+     8518 cells
+        1   BUFG
+     7777   FDRE
+        3   IBUF
+      110   LUT2
+        3   LUT3
+        2   LUT4
+      621   LUT6
+        1   OBUF
+

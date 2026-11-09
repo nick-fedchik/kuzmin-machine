@@ -1,0 +1,137 @@
+`timescale 1ns/1ps
+module av08_top (input wire clk, input wire rst_btn, input wire din, output reg dout);
+    reg [1:0] rsync;
+    always @(posedge clk) rsync <= {rsync[0], ~rst_btn};
+    wire rst_n = rsync[1];
+    reg [109:0] sr;
+    always @(posedge clk) sr <= {sr[108:0], din};
+    wire [1613:0] dut_o;
+    reg [109:0] w0;
+    always @(posedge clk) w0 <= sr ^ {sr[0], sr[109:1]};
+    assign dut_o[0 +: 47] = w0[46:0];
+    reg [109:0] w1;
+    always @(posedge clk) w1 <= {w0[6:0], w0[109:7]};
+    assign dut_o[47 +: 47] = w1[46:0];
+    reg [109:0] w2;
+    always @(posedge clk) w2 <= {w1[6:0], w1[109:7]};
+    assign dut_o[94 +: 47] = w2[46:0];
+    reg [109:0] w3;
+    always @(posedge clk) w3 <= {w2[6:0], w2[109:7]};
+    assign dut_o[141 +: 47] = w3[46:0];
+    reg [109:0] w4;
+    always @(posedge clk) w4 <= {w3[6:0], w3[109:7]};
+    assign dut_o[188 +: 47] = w4[46:0];
+    reg [109:0] w5;
+    always @(posedge clk) w5 <= {w4[6:0], w4[109:7]};
+    assign dut_o[235 +: 47] = w5[46:0];
+    reg [109:0] w6;
+    always @(posedge clk) w6 <= {w5[6:0], w5[109:7]};
+    assign dut_o[282 +: 47] = w6[46:0];
+    reg [109:0] w7;
+    always @(posedge clk) w7 <= {w6[6:0], w6[109:7]};
+    assign dut_o[329 +: 47] = w7[46:0];
+    reg [109:0] w8;
+    always @(posedge clk) w8 <= {w7[6:0], w7[109:7]};
+    assign dut_o[376 +: 47] = w8[46:0];
+    reg [109:0] w9;
+    always @(posedge clk) w9 <= {w8[6:0], w8[109:7]};
+    assign dut_o[423 +: 47] = w9[46:0];
+    reg [109:0] w10;
+    always @(posedge clk) w10 <= {w9[6:0], w9[109:7]};
+    assign dut_o[470 +: 47] = w10[46:0];
+    reg [109:0] w11;
+    always @(posedge clk) w11 <= {w10[6:0], w10[109:7]};
+    assign dut_o[517 +: 47] = w11[46:0];
+    reg [109:0] w12;
+    always @(posedge clk) w12 <= {w11[6:0], w11[109:7]};
+    assign dut_o[564 +: 47] = w12[46:0];
+    reg [109:0] w13;
+    always @(posedge clk) w13 <= {w12[6:0], w12[109:7]};
+    assign dut_o[611 +: 47] = w13[46:0];
+    reg [109:0] w14;
+    always @(posedge clk) w14 <= {w13[6:0], w13[109:7]};
+    assign dut_o[658 +: 47] = w14[46:0];
+    reg [109:0] w15;
+    always @(posedge clk) w15 <= {w14[6:0], w14[109:7]};
+    assign dut_o[705 +: 47] = w15[46:0];
+    reg [109:0] w16;
+    always @(posedge clk) w16 <= {w15[6:0], w15[109:7]};
+    assign dut_o[752 +: 47] = w16[46:0];
+    reg [109:0] w17;
+    always @(posedge clk) w17 <= {w16[6:0], w16[109:7]};
+    assign dut_o[799 +: 47] = w17[46:0];
+    reg [109:0] w18;
+    always @(posedge clk) w18 <= {w17[6:0], w17[109:7]};
+    assign dut_o[846 +: 47] = w18[46:0];
+    reg [109:0] w19;
+    always @(posedge clk) w19 <= {w18[6:0], w18[109:7]};
+    assign dut_o[893 +: 47] = w19[46:0];
+    reg [109:0] w20;
+    always @(posedge clk) w20 <= {w19[6:0], w19[109:7]};
+    assign dut_o[940 +: 47] = w20[46:0];
+    reg [109:0] w21;
+    always @(posedge clk) w21 <= {w20[6:0], w20[109:7]};
+    assign dut_o[987 +: 47] = w21[46:0];
+    reg [109:0] w22;
+    always @(posedge clk) w22 <= {w21[6:0], w21[109:7]};
+    assign dut_o[1034 +: 47] = w22[46:0];
+    reg [109:0] w23;
+    always @(posedge clk) w23 <= {w22[6:0], w22[109:7]};
+    assign dut_o[1081 +: 47] = w23[46:0];
+    reg [109:0] w24;
+    always @(posedge clk) w24 <= {w23[6:0], w23[109:7]};
+    assign dut_o[1128 +: 47] = w24[46:0];
+    reg [109:0] w25;
+    always @(posedge clk) w25 <= {w24[6:0], w24[109:7]};
+    assign dut_o[1175 +: 47] = w25[46:0];
+    reg [109:0] w26;
+    always @(posedge clk) w26 <= {w25[6:0], w25[109:7]};
+    assign dut_o[1222 +: 47] = w26[46:0];
+    reg [109:0] w27;
+    always @(posedge clk) w27 <= {w26[6:0], w26[109:7]};
+    assign dut_o[1269 +: 47] = w27[46:0];
+    reg [109:0] w28;
+    always @(posedge clk) w28 <= {w27[6:0], w27[109:7]};
+    assign dut_o[1316 +: 47] = w28[46:0];
+    reg [109:0] w29;
+    always @(posedge clk) w29 <= {w28[6:0], w28[109:7]};
+    assign dut_o[1363 +: 47] = w29[46:0];
+    reg [109:0] w30;
+    always @(posedge clk) w30 <= {w29[6:0], w29[109:7]};
+    assign dut_o[1410 +: 47] = w30[46:0];
+    reg [109:0] w31;
+    always @(posedge clk) w31 <= {w30[6:0], w30[109:7]};
+    assign dut_o[1457 +: 47] = w31[46:0];
+    assign dut_o[1504 +: 110] = w31;
+    wire [1613:0] xp0 = dut_o;
+    reg  [268:0] xr0;
+    genvar xg0;
+    for (xg0 = 0; xg0 < 269; xg0 = xg0 + 1) begin : gx0
+        always @(posedge clk) xr0[xg0] <= ^xp0[xg0*6 +: 6];
+    end
+    wire [269:0] xp1 = {1'b0, xr0};
+    reg  [44:0] xr1;
+    genvar xg1;
+    for (xg1 = 0; xg1 < 45; xg1 = xg1 + 1) begin : gx1
+        always @(posedge clk) xr1[xg1] <= ^xp1[xg1*6 +: 6];
+    end
+    wire [47:0] xp2 = {3'b0, xr1};
+    reg  [7:0] xr2;
+    genvar xg2;
+    for (xg2 = 0; xg2 < 8; xg2 = xg2 + 1) begin : gx2
+        always @(posedge clk) xr2[xg2] <= ^xp2[xg2*6 +: 6];
+    end
+    wire [11:0] xp3 = {4'b0, xr2};
+    reg  [1:0] xr3;
+    genvar xg3;
+    for (xg3 = 0; xg3 < 2; xg3 = xg3 + 1) begin : gx3
+        always @(posedge clk) xr3[xg3] <= ^xp3[xg3*6 +: 6];
+    end
+    wire [5:0] xp4 = {4'b0, xr3};
+    reg  [0:0] xr4;
+    genvar xg4;
+    for (xg4 = 0; xg4 < 1; xg4 = xg4 + 1) begin : gx4
+        always @(posedge clk) xr4[xg4] <= ^xp4[xg4*6 +: 6];
+    end
+    always @(posedge clk) dout <= xr4;
+endmodule
