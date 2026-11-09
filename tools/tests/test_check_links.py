@@ -5,6 +5,7 @@
 """
 import importlib.util
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -120,6 +121,26 @@ def test_encoded_hash_in_filename_with_anchor(tmp_path, drafts, monkeypatch):
     monkeypatch.setenv("KM_DRAFTS_REPO", str(repo))
     root = make_root(tmp_path, drafts_url(sha, "docs/a%23b.md#section"))
     assert load_tool().main(root) == 0
+
+
+def test_existing_blob_with_anchor_passes(tmp_path, drafts, monkeypatch):
+    repo, sha = drafts
+    monkeypatch.setenv("KM_DRAFTS_REPO", str(repo))
+    root = make_root(tmp_path, drafts_url(sha, "docs/a.md#section"))
+    assert load_tool().main(root) == 0
+
+
+def test_cli_uses_same_root_from_other_cwd(tmp_path, monkeypatch):
+    monkeypatch.delenv("KM_DRAFTS_REPO", raising=False)
+    results = [
+        subprocess.run(
+            [sys.executable, str(TOOL)], cwd=cwd, capture_output=True, text=True
+        )
+        for cwd in (TOOL.parents[1], tmp_path)
+    ]
+    assert results[0].returncode == results[1].returncode == 0
+    assert results[0].stdout == results[1].stdout
+    assert "посилань на drafts:" in results[1].stdout
 
 
 def test_without_env_skips_with_warning(tmp_path, drafts, monkeypatch, capsys):
