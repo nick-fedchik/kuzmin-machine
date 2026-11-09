@@ -1,6 +1,6 @@
 # Машина Кузьміна (kuzmin-machine)
 
-* **Версія репозиторію:** див. [`VERSION`](VERSION) (SemVer 2; теги `vX.Y.Z` ставить власник)
+* **Версія репозиторію:** див. [`VERSION`](VERSION) (SemVer 2; теги `vX.Y.Z` ставить Lead Engineer за [PROJECT-MANUAL §7.1](process/PROJECT-MANUAL.md#71-тегування))
 * **Власник:** Микола Мартинович Федчик
 * **Автор концепції:** Михайло Ювеналійович Кузьмін — [первинні джерела](docs/sources/README.md)
 
