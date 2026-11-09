@@ -2,7 +2,7 @@
 
 * **Перенесено з:** `drafts/KuzminMachine/07-scientific-opposition/KUZMIN_MACHINE_APPLICATION_PROSPECTS_MEMO_UA_v1.2.md` @ `a4738bc` (2026-11-09)
 
-**Версія:** 1.2.0
+**Версія:** 1.2.1
 **Дата:** 6 листопада 2026 року
 **Статус:** дослідницькі гіпотези для майбутньої перевірки, не рекомендація до впровадження
 **Об’єкт:** Машина Кузьміна (МК) та описана концептно-орієнтована подієва мова
@@ -17,7 +17,7 @@
 
 ## Потенційні напрями: від відомої задачі до спростовного тесту
 
-Таблиця не є рейтингом ринкових шансів. «Найкращий перший тест» означає контрольований обсяг і можливість відокремити внесок МК; «висока потенційна цінність» означає лише масштаб можливого ефекту, не його ймовірність. Попередній звіт про ECA, реактивні мови, dataflow, Linda, Gamma та акторів вказує на аналогії окремих рис, але не встановлює тотожності чи повної новизни їхньої комбінації ([локальний звіт «Подієві мови та пріоритет»](https://github.com/nick-fedchik/drafts/blob/a4738bc/reports/Подієві%20мови%20та%20пріоритет.md)).
+Таблиця не є рейтингом ринкових шансів. «Найкращий перший тест» означає контрольований обсяг і можливість відокремити внесок МК; «висока потенційна цінність» означає лише масштаб можливого ефекту, не його ймовірність. Попередній звіт про ECA, реактивні мови, dataflow, Linda, Gamma та акторів вказує на аналогії окремих рис, але не встановлює тотожності чи повної новизни їхньої комбінації ([локальний звіт «Подієві мови та пріоритет»](event-languages-prior-art.md)).
 
 | Домен | (а) Що встановлюють джерела: проблема/наявна межа | (б) Можливий механізм МК — гіпотеза | (в) Відсутні передумови | (г) Справедливий baseline | (д) Спростовний тест | (е) Економічний шлях / домінантні витрати |
 |---|---|---|---|---|---|---|
@@ -122,7 +122,7 @@
 - Sensor/control: W. P. M. H. Heemels, K. H. Johansson & P. Tabuada, “An Introduction to Event-Triggered and Self-Triggered Control,” *Automatica* 2012, [DOI](https://doi.org/10.1016/j.automatica.2012.01.008); Open Robotics, *ROS 2 Jazzy Executors* and *Quality of Service*, accessed 2026-11-06, [Executors](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html), [QoS](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html).
 - Media: FFmpeg, *ffmpeg documentation*, accessed 2026-11-06, [URL](https://ffmpeg.org/ffmpeg.html); x265, “Threading,” accessed 2026-11-06, [URL](https://x265.readthedocs.io/en/master/threading.html); ARM, *CMSIS-DSP*, accessed 2026-11-06, [URL](https://arm-software.github.io/CMSIS-DSP/main/); GStreamer, “Quality-of-Service,” accessed 2026-11-06, [URL](https://gstreamer.freedesktop.org/documentation/additional/design/qos.html).
 - TCO framework: ISO/IEC/IEEE 15288:2023, *Systems and software engineering — System life cycle processes*, [official record](https://www.iso.org/standard/81702.html); U.S. GAO-20-195G, *Cost Estimating and Assessment Guide*, 2020, [official record](https://www.gao.gov/products/gao-20-195g); B. Boehm et al., *Software Cost Estimation with COCOMO II*, 2000, [DOI](https://doi.org/10.1007/978-1-4615-4625-5).
-- Локальні аналітичні джерела: [`SCIENTIFIC_OPPOSITION_REPORT_UA.md`](scientific-opposition-report.md), попередній огляд [`Подієві мови та пріоритет`](https://github.com/nick-fedchik/drafts/blob/a4738bc/reports/Подієві%20мови%20та%20пріоритет.md) та дослідницькі нотатки у `research_notes/Економічні перспективи застосувань МК/`.
+- Локальні аналітичні джерела: [`SCIENTIFIC_OPPOSITION_REPORT_UA.md`](scientific-opposition-report.md), попередній огляд [`Подієві мови та пріоритет`](event-languages-prior-art.md) та дослідницькі нотатки у `research_notes/Економічні перспективи застосувань МК/`.
 
 ## Історія версій
 
@@ -131,3 +131,4 @@
 | 1.0 | 2026-11-06 | Перша редакція карти перспективних напрямів і планів майбутніх експериментів. |
 | 1.1 | 2026-11-06 | Додано критичну модельну рецензію Claude Opus 5.5; виправлено ранжування, baseline-дизайн, джерельну атрибуцію та термінологію; уточнено межі можливих висновків. |
 | 1.2 | 2026-11-06 | Додано джерельно обґрунтований синтез правил/CEP, знаннєвих систем і proof, incremental/concurrency, CPU/FPGA, сенсорики/промисловості/робототехніки, медіапайплайнів та TCO; для кожного напряму розмежовано проблему, механізм-гіпотезу, передумови, baseline, тест/спростування й економічні витрати. Уточнено локальний статус і F-01/F-02/F-05/F-06/F-08/F-10; збережено попередню критику й застереження v1.1. |
+| 1.2.1 | 2026-11-09 | Посилання на попередній огляд «Подієві мови та пріоритет» замінено з GitHub-посилання на `drafts@a4738bc` (404) на відносне `event-languages-prior-art.md` (#13, F14). Текст навколо не змінено |
