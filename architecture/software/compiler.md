@@ -1,10 +1,10 @@
 # Архітектура компілятора, розщеплювача графів виразів та стекового асемблера Машини Кузьміна
 
-* **Версія:** 0.1.0
+* **Версія:** 0.1.1
 * **Перенесено з:** `drafts/KuzminMachine/03-engineering-software/Kuzmin-Machine-Compiler-and-Assembler-Architecture-UA.md` @ `a4738bc` (2026-11-09)
 
 > [!IMPORTANT]
-> **Призначення документа:** Цей інженерний документ визначає повну архітектуру інструментального ланцюжка компіляції (**Compiler & Assembler Toolchain**) для високорівневої мови програмування Машини Кузьміна (МК). Документ формалізує багатопрохідний конвеєр перетворення вихідного коду `.km` через алгебраїчне дерево абстрактного синтаксису ([ASDL / ASN.1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-ASN-Specification-UA.md)) у паралельні підписні лінії $`O + SR`$ та бінарний образ `.kmc`, готовий до безпосереднього завантаження у блочну пам'ять BRAM [апаратного прискорювача на FPGA PYNQ-Z1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md) або [еталонної віртуальної машини](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-Reference-VM-and-Cycle-Accurate-Simulator-UA.md).
+> **Призначення документа:** Цей інженерний документ визначає повну архітектуру інструментального ланцюжка компіляції (**Compiler & Assembler Toolchain**) для високорівневої мови програмування Машини Кузьміна (МК). Документ формалізує багатопрохідний конвеєр перетворення вихідного коду `.km` через алгебраїчне дерево абстрактного синтаксису ([ASDL / ASN.1](../../docs/theory/asn.md)) у паралельні підписні лінії $`O + SR`$ та бінарний образ `.kmc`, готовий до безпосереднього завантаження у блочну пам'ять BRAM [апаратного прискорювача на FPGA PYNQ-Z1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/02-engineering-hardware/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md) або [еталонної віртуальної машини](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-Reference-VM-and-Cycle-Accurate-Simulator-UA.md).
 
 ---
 
@@ -709,3 +709,12 @@ if __name__ == "__main__":
     kmc_bytes = compiler.pack_kmc_binary()
     print(f"\nРозмір згенерованого бінарного образу .kmc: {len(kmc_bytes)} байтів.")
 ```
+
+---
+
+## Історія версій
+
+| Версія | Дата | Зміни |
+| :--- | :--- | :--- |
+| 0.1.0 | 2026-11-09 | Перенесено з `drafts/KuzminMachine/03-engineering-software/Kuzmin-Machine-Compiler-and-Assembler-Architecture-UA.md` @ `a4738bc` |
+| 0.1.1 | 2026-11-09 | Посилання на специфікацію ASN замінено відносним на [`docs/theory/asn.md`](../../docs/theory/asn.md); посилання на FPGA-архітектуру веде на `02-engineering-hardware/` у `drafts@a4738bc` (#51) |

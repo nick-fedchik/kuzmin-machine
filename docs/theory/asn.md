@@ -1,10 +1,10 @@
 # Формальна специфікація мови та протоколу Машини Кузьміна в нотації абстрактного синтаксису (ASN / ASDL та ITU-T X.680 ASN.1)
 
-* **Версія:** 0.1.0
+* **Версія:** 0.1.1
 * **Перенесено з:** `drafts/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-ASN-Specification-UA.md` @ `a4738bc` (2026-11-09)
 
 > [!IMPORTANT]
-> **Призначення документа:** Цей документ доповнює [Специфікацію високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-High-Level-Language-Specification-UA.md) та [Архітектуру апаратного прискорювача на FPGA PYNQ-Z1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md), переводячи опис мови Машини Кузьміна (МК) із рівня поверхневої текстової граматики (**EBNF**) на рівень класичної **Нотації абстрактного синтаксису (Abstract Syntax Notation — ASN)**. Документ охоплює обидві фундаментальні інженерні парадигми ASN:
+> **Призначення документа:** Цей документ доповнює [Специфікацію високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-High-Level-Language-Specification-UA.md) та [Архітектуру апаратного прискорювача на FPGA PYNQ-Z1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/02-engineering-hardware/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md), переводячи опис мови Машини Кузьміна (МК) із рівня поверхневої текстової граматики (**EBNF**) на рівень класичної **Нотації абстрактного синтаксису (Abstract Syntax Notation — ASN)**. Документ охоплює обидві фундаментальні інженерні парадигми ASN:
 > 1. **Алгебраїчну абстрактну синтаксичну нотацію компілятора (McCarthy ASN / Zephyr ASDL)** — для формалізації дерева абстрактного синтаксису (AST), вільного від дужок, роздільників і синтаксичного цукру.
 > 2. **Міжнародний стандарт ITU-T X.680 / ISO/IEC 8824 (ASN.1)** — для строгої типізації концептів, подій, фазових перехоплень Великої крапки (`•`), підписних ліній $`O + SR`$ та компактного бінарного кодування (**UPER / DER**) під час віддаленого створення концептів і динамічного обміну між хостом та апаратним ядром МК.
 
@@ -22,7 +22,7 @@
 
 ## 1. Чому вихідний опис спирався на EBNF і навіщо Машині Кузьміна потрібна класична нотація ASN
 
-У попередньому документі ([Специфікація високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-High-Level-Language-Specification-UA.md)) граматику було подано в розширеній нотації Бекуса — Наура (**EBNF**). Такий вибір на першому етапі був зумовлений трьома причинами:
+У попередньому документі ([Специфікація високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-High-Level-Language-Specification-UA.md)) граматику було подано в розширеній нотації Бекуса — Наура (**EBNF**). Такий вибір на першому етапі був зумовлений трьома причинами:
 
 1. **Авторська текстова нотація словників:** Оригінальні таблиці `Type { ... }` та `Operation { ... }` у першоджерелах М. Кузьміна записані як ієрархічні символьні дерева з фігурними `{}` і круглими `()` дужками, позиційними індексами та вбудованими коментарями `# '...»`. Для лексичного аналізатора (токенайзера) та парсера тексту першим кроком завжди є формалізація **конкретного синтаксису** (Concrete Syntax) через EBNF.
 2. **Неоднозначність поверхневих токенів:** У текстовому записі МК один і той самий символ виконує різні синтаксичні ролі залежно від оточення (наприклад, `~` — це і бінарне порівняння, і подія зміни значення `:: ~`, і побітова інверсія `Do ~`; символи `<` та `>` позначають і відношення порядку, і зсуви бітів `Do <` / `Do >`, і межі локального циклу `<i ... >`). EBNF дозволяє явно зафіксувати правила розмежування цих контекстів під час читання вихідного тексту.
@@ -761,7 +761,7 @@ $$
 B_{\mathrm{UPER}}(N) = \lceil \log_2(N) \rceil \text{ бітів}
 $$
 
-Підставивши потужності словників Машини Кузьміна з нашого ASN.1-модуля, отримуємо **точний ізоморфізм між кодуванням ASN.1 UPER та апаратними регістрами FPGA PYNQ-Z1** (описаними у [дослідницькому документі з FPGA-архітектури](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md)):
+Підставивши потужності словників Машини Кузьміна з нашого ASN.1-модуля, отримуємо **точний ізоморфізм між кодуванням ASN.1 UPER та апаратними регістрами FPGA PYNQ-Z1** (описаними у [дослідницькому документі з FPGA-архітектури](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/02-engineering-hardware/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md)):
 
 | Тип у модулі ASN.1 | Діапазон / Потужність $`N`$ | Розмір у JSON / Тексті | Розмір у ASN.1 UPER ($`\lceil \log_2 N \rceil`$) | Пряме відображення в апаратній логіці PYNQ-Z1 (SystemVerilog) |
 | :--- | :---: | :---: | :---: | :--- |
@@ -1061,6 +1061,15 @@ remoteDynamicSubscriptionPacket KuzminMachinePDU ::= attachSubscriptionReq : {
 
 Завдяки поєднанню трьох документів інженерний опис Машини Кузьміна тепер має повну класичну тріаду формальних специфікацій:
 
-1. **Конкретний синтаксис (EBNF)** у [Специфікації високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-High-Level-Language-Specification-UA.md) — визначає, як людина пише код у текстовому редакторі та як парсер розбирає дужки й операторні вирази.
+1. **Конкретний синтаксис (EBNF)** у [Специфікації високорівневої мови МК](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/03-engineering-software/Kuzmin-Machine-High-Level-Language-Specification-UA.md) — визначає, як людина пише код у текстовому редакторі та як парсер розбирає дужки й операторні вирази.
 2. **Абстрактний синтаксис компілятора (Zephyr ASDL)** у Розділі 2 цього документа — визначає чисту алгебраїчну структуру дерева AST, над якою працюють аналізатор семантики Великої крапки (`•`) та генератор підписних ліній.
-3. **Стандартна нотація абстрактного синтаксису ITU-T X.680 (ASN.1 + UPER/DER)** у Розділах 3–5 цього документа — визначає строгий бінарний контракт даних і команд, який безпосередньо зв'язує компілятор із апаратними таблицями BRAM та конвеєром подій у [FPGA-архітектурі на PYNQ-Z1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md).
+3. **Стандартна нотація абстрактного синтаксису ITU-T X.680 (ASN.1 + UPER/DER)** у Розділах 3–5 цього документа — визначає строгий бінарний контракт даних і команд, який безпосередньо зв'язує компілятор із апаратними таблицями BRAM та конвеєром подій у [FPGA-архітектурі на PYNQ-Z1](https://github.com/nick-fedchik/drafts/blob/a4738bc/KuzminMachine/02-engineering-hardware/Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md).
+
+---
+
+## Історія версій
+
+| Версія | Дата | Зміни |
+| :--- | :--- | :--- |
+| 0.1.0 | 2026-11-09 | Перенесено з `drafts/KuzminMachine/01-concepts-and-theory/Kuzmin-Machine-ASN-Specification-UA.md` @ `a4738bc` |
+| 0.1.1 | 2026-11-09 | Виправлено шляхи в посиланнях на `drafts@a4738bc`: `Kuzmin-Machine-High-Level-Language-Specification-UA.md` → `03-engineering-software/`, `Kuzmin-Machine-FPGA-PYNQ-Z1-Architecture-UA.md` → `02-engineering-hardware/` (#51) |
