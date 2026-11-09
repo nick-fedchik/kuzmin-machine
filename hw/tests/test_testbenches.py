@@ -59,7 +59,7 @@ def test_all_testbenches_registered():
 KNOWN_FAILURES = {
     "kpol_txn_gate_axi_lite_tb.sv":
         "F12: тестбенч звертається 6-бітними адресами до 13-бітної AXI-обгортки "
-        "(upper bound default mismatch). Issue: ISSUE_F12",
+        "(upper bound default mismatch). Issue: #11",
 }
 
 
