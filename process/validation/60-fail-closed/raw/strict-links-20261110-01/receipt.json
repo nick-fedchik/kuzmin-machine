@@ -1,0 +1,16 @@
+{
+  "commit": "c44a970ac8c49ff9507a5dcee94c353b55ffaefa",
+  "host": "AORUS-5-SE",
+  "started_at": "2026-11-10T17:47:18.914038+00:00",
+  "completed_at": "2026-11-10T17:47:19.093240+00:00",
+  "command": [
+    "/usr/bin/python",
+    "tools/check_links.py"
+  ],
+  "environment": {
+    "KM_DRAFTS_REPO": "/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-rfc"
+  },
+  "exit_code": 0,
+  "raw_file": "links.txt",
+  "sha256": "a395ce93ca2c1b8e925d66bdea2f3d65e3c0ca307c870de33ea359a3c3fcc58b"
+}

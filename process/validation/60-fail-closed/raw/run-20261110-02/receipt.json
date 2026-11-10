@@ -1,0 +1,95 @@
+{
+  "commit": "c44a970ac8c49ff9507a5dcee94c353b55ffaefa",
+  "host": "AORUS-5-SE",
+  "python": "3.14.4",
+  "started_at": "2026-11-10T17:45:50.268407+00:00",
+  "kind": "local software tests; no physical hardware",
+  "inputs": {
+    "sw/kpol-ref/kpol_reference.py": "ea6456a58c9ef09dc4491ad77073938efc3078f467da261a594372a68507a750",
+    "sw/kpol-ref/tests/test_kpol_reference.py": "590ef0c26921688b52e8b1240b9e5c57be8d3224a23012a23e75df5630c6d5dd",
+    "specs/kpol/kpol-0.2.0.md": "9aa80193a6b824e02ddf969cab7252553206c5a0d5750ae5d06f2638059c8a23",
+    "process/validation/60-fail-closed/protocol.md": "c8281f69877120a0510923f5c70a29cf57c518a973fbf437d572fa521be6a9f6"
+  },
+  "runs": [
+    {
+      "name": "focused",
+      "command": [
+        "/usr/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_alert_observation_and_fail_closed_hazard",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof"
+      ],
+      "started_at": "2026-11-10T17:45:50.268619+00:00",
+      "completed_at": "2026-11-10T17:45:50.562389+00:00",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "raw_file": "focused.txt",
+      "sha256": "965caafd93347c8395e9502019bd63523c6af22e75eea036b4fd9eb3d0f3b070"
+    },
+    {
+      "name": "mutant-interpreter-default-false",
+      "command": [
+        "/usr/bin/python",
+        "-c",
+        "import sys; sys.path.insert(0, 'sw/kpol-ref'); import kpol_reference as ref; ref.Interpreter.__init__.__defaults__ = (None, False); import pytest; raise SystemExit(pytest.main(sys.argv[1:]))",
+        "-q",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_alert_observation_and_fail_closed_hazard",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof"
+      ],
+      "started_at": "2026-11-10T17:45:50.562436+00:00",
+      "completed_at": "2026-11-10T17:45:50.889205+00:00",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "raw_file": "mutant-interpreter-default-false.txt",
+      "sha256": "9e784f71cb95d97bf844a598c7af837709ca25198968e40e013cf62134e451da"
+    },
+    {
+      "name": "mutant-verifier-default-false",
+      "command": [
+        "/usr/bin/python",
+        "-c",
+        "import sys; sys.path.insert(0, 'sw/kpol-ref'); import kpol_reference as ref; ref.verify_module.__defaults__ = (False,); import pytest; raise SystemExit(pytest.main(sys.argv[1:]))",
+        "-q",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_alert_observation_and_fail_closed_hazard",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof"
+      ],
+      "started_at": "2026-11-10T17:45:50.889257+00:00",
+      "completed_at": "2026-11-10T17:45:51.185810+00:00",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "raw_file": "mutant-verifier-default-false.txt",
+      "sha256": "99de2b7cbdee9cc5bc99d952f8e6deb3f0e7c94f980ff10c3a0a1bd71dea1ef1"
+    },
+    {
+      "name": "full-pytest",
+      "command": [
+        "/usr/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "started_at": "2026-11-10T17:45:51.185860+00:00",
+      "completed_at": "2026-11-10T17:45:54.981467+00:00",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "raw_file": "full-pytest.txt",
+      "sha256": "2665f2549fd5f2a4f885f57bec0f25b054e6463c708b68ae5ce88986c06729bd"
+    },
+    {
+      "name": "links",
+      "command": [
+        "/usr/bin/python",
+        "tools/check_links.py"
+      ],
+      "started_at": "2026-11-10T17:45:54.981511+00:00",
+      "completed_at": "2026-11-10T17:45:55.045528+00:00",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "raw_file": "links.txt",
+      "sha256": "e2214df4dc23851982ed345ec5e8dd6d912a5833ee111346666da4821f2dd330"
+    }
+  ],
+  "completed_at": "2026-11-10T17:45:55.045570+00:00"
+}

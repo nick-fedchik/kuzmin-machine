@@ -1,0 +1,132 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+____ KpolReferenceTests.test_default_hazard_policy_applies_to_run_and_proof ____
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_default_hazard_policy_applies_to_run_and_proof>
+
+    def test_default_hazard_policy_applies_to_run_and_proof(self):
+        source = """
+        Problem SafeDefaults {
+            Hazards {
+                Overheat on Sample to Trip: Temp > 100;
+            }
+        }
+        Solution SafeDefaults {
+            event Sample(Temp: Int32);
+            state Counter: Int32 = 0;
+            state Trip: Bool = false;
+            rule normal_write on Sample {
+                set Counter := Counter + 1;
+            }
+            rule reject_write on reject Sample covers Overheat {
+                set Trip := true;
+            }
+        }
+        Proof SafeDefaults {
+            scenario HazardBlocksNormalWrite {
+                step Sample(Temp = 101);
+                expect Counter == 0;
+                expect Trip == true;
+            }
+        }
+        """
+>       module = parse_module(source)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+sw/kpol-ref/tests/test_kpol_reference.py:357: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sw/kpol-ref/kpol_reference.py:1272: in parse_module
+    check_module(module)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+module = Module(name='SafeDefaults', requirements=(Requirement(kind='Hazard', name='Overheat', event='Sample', target='Trip', e...'==', left=Name(value='Trip'), right=Literal(value=True))))),), problem_hash=None, solution_hash=None, proof_hash=None)
+
+    def check_module(module: Module) -> None:
+        if len({event.name for event in module.events}) != len(module.events):
+            raise KpolError("duplicate event declaration")
+        if len({state.name for state in module.states}) != len(module.states):
+            raise KpolError("duplicate state declaration")
+        if len({rule.name for rule in module.rules}) != len(module.rules):
+            raise KpolError("duplicate rule declaration")
+    
+        event_map = {event.name: event for event in module.events}
+        state_map = {state.name: state for state in module.states}
+        state_types = {name: as_ktype(state.type_ref) for name, state in state_map.items()}
+    
+        for event in module.events:
+            if event.name == "change":
+                raise KpolError("'change' is reserved for generated state-change events")
+            names = [name for name, _ in event.parameters]
+            if len(set(names)) != len(names) or set(names) & set(state_types):
+                raise KpolError(f"duplicate/colliding parameters in event {event.name!r}")
+    
+        init_types: dict[str, KType] = {}
+        for state in module.states:
+            actual = infer(state.initial, init_types)
+            expected = as_ktype(state.type_ref)
+            if not _compatible_expression(expected, actual, state.initial):
+                raise KpolError(f"initial value of {state.name!r} has type {actual}, expected {expected}")
+            init_types[state.name] = expected
+    
+        requirements = {(req.kind, req.name): req for req in module.requirements}
+        if len(requirements) != len(module.requirements):
+            raise KpolError("duplicate requirement name within a contract kind")
+        for req in module.requirements:
+            if req.event is not None and req.event not in event_map:
+                raise KpolError(f"requirement {req.name!r} references unknown event {req.event!r}")
+            if req.kind in {"Invariant", "Goal"} and req.event is not None:
+                raise KpolError(f"{req.kind} {req.name!r} must be a state-only predicate")
+            if req.kind in {"Hazard", "Alert"} and req.event is None:
+                raise KpolError(f"{req.kind} {req.name!r} must be scoped to an event")
+            if req.target is not None and req.kind != "Hazard":
+                raise KpolError(f"only Hazard may declare a response target ({req.name!r})")
+            if req.kind == "Hazard":
+                if req.target is None:
+                    raise KpolError(f"Hazard {req.name!r} must declare a response target")
+                if req.target not in state_types or state_types[req.target] != BOOL:
+                    raise KpolError(f"Hazard {req.name!r} target must be a declared Bool state")
+            context = dict(state_types)
+            if req.event:
+                context.update({name: as_ktype(typ) for name, typ in event_map[req.event].parameters})
+            if infer(req.expression, context) != BOOL:
+                raise KpolError(f"{req.kind} {req.name!r} must have type Bool")
+    
+        covered: set[str] = set()
+        for rule in module.rules:
+            if rule.event == "change":
+                if rule.reject or not rule.watch:
+                    raise KpolError(f"invalid change rule {rule.name!r}")
+                if any(name not in state_types for name in rule.watch):
+                    raise KpolError(f"change rule {rule.name!r} watches unknown state")
+            elif rule.event not in event_map:
+                raise KpolError(f"rule {rule.name!r} references unknown event {rule.event!r}")
+            context = dict(state_types)
+            if rule.event in event_map:
+                context.update({name: as_ktype(typ) for name, typ in event_map[rule.event].parameters})
+            if infer(rule.guard, context) != BOOL:
+                raise KpolError(f"guard of rule {rule.name!r} must have type Bool")
+            for action in rule.actions:
+                if action.name not in state_types:
+                    raise KpolError(f"rule {rule.name!r} writes undeclared state {action.name!r}")
+                actual = infer(action.expression, context)
+                expected = state_types[action.name]
+                if not _compatible_expression(expected, actual, action.expression):
+                    raise KpolError(
+                        f"assignment to {action.name!r} has type {actual}, expected {expected}"
+                    )
+            if rule.covers:
+                matches = [
+                    req for req in module.requirements
+                    if req.kind == "Hazard" and req.name == rule.covers
+                ]
+                if len(matches) != 1:
+                    raise KpolError(f"rule {rule.name!r} covers unknown hazard {rule.covers!r}")
+                hazard = matches[0]
+                if hazard.event != rule.event or hazard.expression != rule.guard:
+>                   raise KpolError(f"rule {rule.name!r} does not exactly implement hazard guard")
+E                   kpol_reference.KpolError: rule 'reject_write' does not exactly implement hazard guard
+
+sw/kpol-ref/kpol_reference.py:837: KpolError
+=========================== short test summary info ============================
+FAILED sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof
+1 failed, 1 passed in 0.14s

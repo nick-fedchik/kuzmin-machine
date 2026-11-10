@@ -1,0 +1,27 @@
+{
+  "commit": "74229ab13c30a9586ef62267606b4af97b96d570",
+  "host": "AORUS-5-SE",
+  "python": "3.14.4",
+  "started_at": "2026-11-10T17:44:47.419557+00:00",
+  "kind": "software-only, no hardware or RTL execution claimed",
+  "runs": [
+    {
+      "name": "focused",
+      "command": [
+        "/usr/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_alert_observation_and_fail_closed_hazard",
+        "sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof"
+      ],
+      "started_at": "2026-11-10T17:44:47.419575+00:00",
+      "completed_at": "2026-11-10T17:44:47.774433+00:00",
+      "exit_code": 1,
+      "expected_exit_code": 0,
+      "raw_file": "focused.txt",
+      "sha256": "45a037163361301972fd0d3a66f2aa1958a7c603c5c88281e41fcbbcbd65db87"
+    }
+  ],
+  "completed_at": "2026-11-10T17:44:47.774500+00:00"
+}

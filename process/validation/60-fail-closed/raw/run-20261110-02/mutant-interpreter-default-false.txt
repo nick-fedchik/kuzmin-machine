@@ -1,0 +1,217 @@
+F.                                                                  [100%]
+=================================== FAILURES ===================================
+_____ KpolReferenceTests.test_v02_alert_observation_and_fail_closed_hazard _____
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_alert_observation_and_fail_closed_hazard>
+
+    def test_v02_alert_observation_and_fail_closed_hazard(self):
+        """KPOL v0.2: Перевірка розділення Alert (спостереження) та Hazard Fail-Closed (замок)."""
+        source = """
+        Problem AlertAndHazard {
+            Alerts {
+                MildWarm on Sample: Temp > 50;
+            }
+            Hazards {
+                Overheat on Sample to Trip: Temp > 100;
+            }
+        }
+        Solution AlertAndHazard {
+            event Sample(Temp: Int32);
+            state CurrentVal: Int32 = 0;
+            state Trip: Bool = false;
+            rule trip_cov on Sample when Temp > 100 covers Overheat {
+                set Trip := true;
+            }
+            rule normal_sample on Sample when Temp <= 100 {
+                set CurrentVal := Temp;
+            }
+        }
+        """
+        module = parse_module(source)
+    
+        # 1. Alert спостереження: Temp = 60 (> 50, але <= 100) -> Alert активний, коміт проходить
+        interp = Interpreter(module)
+        res1 = interp.run([EventInput("Sample", {"Temp": 60})])
+        self.assertEqual(res1.alerts, ["MildWarm"])
+        self.assertEqual(res1.hazards, [])
+        self.assertEqual(res1.state["CurrentVal"], 60)
+        self.assertFalse(res1.state["Trip"])
+    
+        # 2. Hazard Fail-Closed блокування: Temp = 110 (> 100) -> транзакція відхиляється!
+        res2 = interp.run([EventInput("Sample", {"Temp": 110})])
+        self.assertIn("Overheat", res2.hazards)
+>       self.assertIn("RejectedHazard:Overheat", res2.rejected)
+E       AssertionError: 'RejectedHazard:Overheat' not found in []
+
+sw/kpol-ref/tests/test_kpol_reference.py:327: AssertionError
+_ KpolReferenceTests.test_default_hazard_policy_applies_to_run_and_proof (value=101) _
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_default_hazard_policy_applies_to_run_and_proof>
+
+    def test_default_hazard_policy_applies_to_run_and_proof(self):
+        source = """
+        Problem SafeDefaults {
+            Hazards {
+                Overheat on Sample to Trip: Temp > 100;
+            }
+        }
+        Solution SafeDefaults {
+            event Sample(Temp: Int32);
+            state Counter: Int32 = 0;
+            state Trip: Bool = false;
+            rule normal_write on Sample {
+                set Counter := Counter + 1;
+            }
+            rule hazard_coverage on Sample when Temp > 100 covers Overheat {
+                set Trip := true;
+            }
+            rule reject_write on reject Sample {
+                set Trip := true;
+            }
+        }
+        Proof SafeDefaults {
+            scenario HazardBlocksNormalWrite {
+                step Sample(Temp = 101);
+                expect Counter == 0;
+                expect Trip == true;
+            }
+        }
+        """
+        module = parse_module(source)
+        cases = [
+            (100, {"Counter": 1, "Trip": False}, [], [], []),
+            (101, {"Counter": 0, "Trip": True},
+             ["RejectedHazard:Overheat"], ["Overheat"], []),
+            (UNKNOWN, {"Counter": 0, "Trip": True},
+             ["RejectedHazardUnknown:Overheat"], [], ["UnknownHazard:Overheat"]),
+        ]
+        for value, state, rejected, hazards, diagnostics in cases:
+            with self.subTest(value=value):
+                result = Interpreter(module).run([EventInput("Sample", {"Temp": value})])
+>               self.assertEqual(result.state, state)
+E               AssertionError: {'Counter': 1, 'Trip': True} != {'Counter': 0, 'Trip': True}
+E               - {'Counter': 1, 'Trip': True}
+E               ?             ^
+E               
+E               + {'Counter': 0, 'Trip': True}
+E               ?             ^
+
+sw/kpol-ref/tests/test_kpol_reference.py:371: AssertionError
+_ KpolReferenceTests.test_default_hazard_policy_applies_to_run_and_proof (value=Unknown) _
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_default_hazard_policy_applies_to_run_and_proof>
+
+    def test_default_hazard_policy_applies_to_run_and_proof(self):
+        source = """
+        Problem SafeDefaults {
+            Hazards {
+                Overheat on Sample to Trip: Temp > 100;
+            }
+        }
+        Solution SafeDefaults {
+            event Sample(Temp: Int32);
+            state Counter: Int32 = 0;
+            state Trip: Bool = false;
+            rule normal_write on Sample {
+                set Counter := Counter + 1;
+            }
+            rule hazard_coverage on Sample when Temp > 100 covers Overheat {
+                set Trip := true;
+            }
+            rule reject_write on reject Sample {
+                set Trip := true;
+            }
+        }
+        Proof SafeDefaults {
+            scenario HazardBlocksNormalWrite {
+                step Sample(Temp = 101);
+                expect Counter == 0;
+                expect Trip == true;
+            }
+        }
+        """
+        module = parse_module(source)
+        cases = [
+            (100, {"Counter": 1, "Trip": False}, [], [], []),
+            (101, {"Counter": 0, "Trip": True},
+             ["RejectedHazard:Overheat"], ["Overheat"], []),
+            (UNKNOWN, {"Counter": 0, "Trip": True},
+             ["RejectedHazardUnknown:Overheat"], [], ["UnknownHazard:Overheat"]),
+        ]
+        for value, state, rejected, hazards, diagnostics in cases:
+            with self.subTest(value=value):
+                result = Interpreter(module).run([EventInput("Sample", {"Temp": value})])
+>               self.assertEqual(result.state, state)
+E               AssertionError: {'Counter': 0, 'Trip': False} != {'Counter': 0, 'Trip': True}
+E               - {'Counter': 0, 'Trip': False}
+E               ?                        ^^^^
+E               
+E               + {'Counter': 0, 'Trip': True}
+E               ?                        ^^^
+
+sw/kpol-ref/tests/test_kpol_reference.py:371: AssertionError
+_ KpolReferenceTests.test_default_hazard_policy_applies_to_run_and_proof (entrypoint='Interpreter.verify') _
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_default_hazard_policy_applies_to_run_and_proof>
+
+    def test_default_hazard_policy_applies_to_run_and_proof(self):
+        source = """
+        Problem SafeDefaults {
+            Hazards {
+                Overheat on Sample to Trip: Temp > 100;
+            }
+        }
+        Solution SafeDefaults {
+            event Sample(Temp: Int32);
+            state Counter: Int32 = 0;
+            state Trip: Bool = false;
+            rule normal_write on Sample {
+                set Counter := Counter + 1;
+            }
+            rule hazard_coverage on Sample when Temp > 100 covers Overheat {
+                set Trip := true;
+            }
+            rule reject_write on reject Sample {
+                set Trip := true;
+            }
+        }
+        Proof SafeDefaults {
+            scenario HazardBlocksNormalWrite {
+                step Sample(Temp = 101);
+                expect Counter == 0;
+                expect Trip == true;
+            }
+        }
+        """
+        module = parse_module(source)
+        cases = [
+            (100, {"Counter": 1, "Trip": False}, [], [], []),
+            (101, {"Counter": 0, "Trip": True},
+             ["RejectedHazard:Overheat"], ["Overheat"], []),
+            (UNKNOWN, {"Counter": 0, "Trip": True},
+             ["RejectedHazardUnknown:Overheat"], [], ["UnknownHazard:Overheat"]),
+        ]
+        for value, state, rejected, hazards, diagnostics in cases:
+            with self.subTest(value=value):
+                result = Interpreter(module).run([EventInput("Sample", {"Temp": value})])
+                self.assertEqual(result.state, state)
+                self.assertEqual(result.rejected, rejected)
+                self.assertEqual(result.hazards, hazards)
+                self.assertEqual(result.diagnostics, diagnostics)
+    
+        for name, verify in (
+            ("Interpreter.verify", Interpreter(module).verify),
+            ("verify_module", lambda: verify_module(module)),
+        ):
+            with self.subTest(entrypoint=name):
+                report = verify()
+>               self.assertTrue(report.passed, report.failures)
+E               AssertionError: False is not true : [VerificationFailure(scenario_or_assert='HazardBlocksNormalWrite', message="Expectation failed at step 2: state={'Counter': 1, 'Trip': True}")]
+
+sw/kpol-ref/tests/test_kpol_reference.py:382: AssertionError
+=========================== short test summary info ============================
+FAILED sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_alert_observation_and_fail_closed_hazard
+SUBFAILED(value=101) sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof
+SUBFAILED(value=Unknown) sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof
+SUBFAILED(entrypoint='Interpreter.verify') sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof
+4 failed, 1 passed, 2 subtests passed in 0.10s
