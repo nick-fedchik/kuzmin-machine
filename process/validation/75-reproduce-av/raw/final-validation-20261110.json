@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-11-10T10:59:50.588785+00:00",
+  "host": "AORUS-5-SE",
+  "driver_commit": "e8d5e050f772c2b9fafe17c43df172327ea520dd",
+  "working_tree_status": "?? process/validation/75-reproduce-av/raw/\n?? process/validation/75-reproduce-av/report.md\n",
+  "environment_overrides": {
+    "KM_DRAFTS_REPO": "/home/mfedchyk/GitHub/nick-fedchik/drafts"
+  },
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "returncode": 0,
+      "stdout": "........................................................................ [ 54%]\n............................................................             [100%]\n132 passed, 144 subtests passed in 2.00s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_links.py"
+      ],
+      "returncode": 0,
+      "stdout": "Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 32, пропущено 0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "2518fa3",
+        "--",
+        "experiments",
+        "hw",
+        "sw"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,1075 @@
+Info: Using uarch 'xilinx' for device 'xc7z020clg400-1'
+
+Info: Parsing XDC file...
+Info: Packing constants..
+Info: Inserting IO buffers..
+Info:     IO port 'dout' driven by OBUF '$iopadmap$av08_top.dout'
+Info:     IO port 'din' driven by IBUF '$iopadmap$av08_top.din'
+Info:     IO port 'clk' driven by IBUF '$iopadmap$av08_top.clk'
+Info:     IO port 'rst_btn' driven by IBUF '$iopadmap$av08_top.rst_btn'
+Info:     Constraining 'dout' to pad 'X186Y65/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'din' to pad 'X186Y9/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'clk' to pad 'X186Y28/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'rst_btn' to pad 'X186Y9/IOB_X0Y1.IOB33M.PAD'
+Info: Generating output buffer for '$iopadmap$av08_top.dout'
+Info: Generating input buffer for '$iopadmap$av08_top.din'
+Info: Generating input buffer for '$iopadmap$av08_top.clk'
+Info: Generating input buffer for '$iopadmap$av08_top.rst_btn'
+Info:     Created 4 PAD cells from:
+Info:              4x PAD
+Info: Preparing clocking...
+Info: Packing constants..
+Info: Packing IOLOGIC...
+Info: Packing cfg...
+Info: Packing PLLs...
+Info: Packing global buffers...
+Info: Packing Gigabit Transceivers..
+Info: Generating derived timing constraints...
+Info: Packing MUX[789]s..
+Info: Packing carries..
+Info:    Grouped 0 MUXCYs and 0 XORCYs into 0 chains.
+Info:    Blasted 0 non-chain MUXCYs and 0 non-chain XORCYs to soft logic
+Info: Packing LUTs..
+Info:     Created 172 SLICE_LUTX cells from:
+Info:            112x LUT2
+Info:              1x LUT3
+Info:              1x LUT4
+Info:             58x LUT6
+Info: Packing DRAM..
+Info:    Transformed 0 tied-low DRAM address inputs to be tied-high
+Info: Packing BRAM..
+Info: BRAM cascade scan: 0 BRAM(s), 0 tie(s) seen, 0 dropped
+Info: Packing DSPs..
+Info: Packing flipflops..
+Info:     Created 613 SLICE_FFX cells from:
+Info:            613x FDRE
+Info: Constrained 172 LUTFF pairs.
+Info: Checksum: 0x818eb97a
+
+Info: Device utilisation:
+Info: 	          SLICE_LUTX:     172/ 106400     0%
+Info: 	           SLICE_FFX:     613/ 106400     0%
+Info: 	              CARRY4:       0/  13300     0%
+Info: 	          PSEUDO_GND:       1/      1   100%
+Info: 	          PSEUDO_VCC:       1/      1   100%
+Info: 	               HARD0:       0/   1584     0%
+Info: 	             DSP48E1:       0/    220     0%
+Info: 	                 PAD:       4/    392     1%
+Info: 	       IOB33M_OUTBUF:       0/     96     0%
+Info: 	       IOB33S_OUTBUF:       0/     96     0%
+Info: 	        IOB33_OUTBUF:       1/    200     0%
+Info: 	     IOB33M_INBUF_EN:       0/     96     0%
+Info: 	     IOB33S_INBUF_EN:       0/     96     0%
+Info: 	      IOB33_INBUF_EN:       3/    200     1%
+Info: 	IOB33M_TERM_OVERRIDE:       0/     96     0%
+Info: 	IOB33S_TERM_OVERRIDE:       0/     96     0%
+Info: 	 IOB33_TERM_OVERRIDE:       0/    200     0%
+Info: 	       PULL_OR_KEEP1:       0/    392     0%
+Info: 	            IDELAYE2:       0/    200     0%
+Info: 	        OLOGICE3_TFF:       0/    200     0%
+Info: 	      OLOGICE3_OUTFF:       0/    200     0%
+Info: 	       OLOGICE3_MISR:       0/    200     0%
+Info: 	           OSERDESE2:       0/    200     0%
+Info: 	        ILOGICE3_IFF:       0/    200     0%
+Info: 	ILOGICE3_ZHOLD_DELAY:       0/    200     0%
+Info: 	           ISERDESE2:       0/    200     0%
+Info: 	               BUFIO:       0/     16     0%
+Info: 	            BUFGCTRL:       1/     32     3%
+Info: 	                 PS7:       0/      1     0%
+Info: 	               BSCAN:       0/      4     0%
+Info: 	            DCIRESET:       0/      1     0%
+Info: 	            DNA_PORT:       0/      1     0%
+Info: 	           EFUSE_USR:       0/      1     0%
+Info: 	                BUFG:       0/     32     0%
+Info: 	              BUFHCE:       0/     72     0%
+Info: 	            FIFO18E1:       0/    140     0%
+Info: 	          IDELAYCTRL:       0/      4     0%
+Info: 	            INVERTER:       0/     96     0%
+Info: 	          MMCME2_ADV:       0/      4     0%
+Info: 	        OLOGICE2_TFF:       0/    200     0%
+Info: 	      OLOGICE2_OUTFF:       0/    200     0%
+Info: 	           PLLE2_ADV:       0/      4     0%
+Info: 	            RAMB18E1:       0/    280     0%
+Info: 	            RAMB36E1:       0/    140     0%
+Info: 	           SELMUX2_1:       0/  40700     0%
+Info: 	        RAMBFIFO36E1:       0/    140     0%
+Info: 	           FRAME_ECC:       0/      1     0%
+Info: 	                ICAP:       0/      2     0%
+Info: 	             STARTUP:       0/      1     0%
+Info: 	          USR_ACCESS:       0/      1     0%
+Info: 	        ILOGICE2_IFF:       0/    200     0%
+Info: 	       OLOGICE2_MISR:       0/    200     0%
+
+Info:     source at X92Y77 reached 768 of 2401 offsets
+Info:     source at X81Y84 reached 752 of 2401 offsets
+Info:     source at X103Y68 reached 517 of 2401 offsets
+Info: Delay matrix: 1484 of 2401 offsets measured from 3 sources in 1.42s (window 24).
+Info: Delay matrix: interpolated 917 structural holes.
+Info: Delay matrix: out-of-window rates 16.1 ps/tile (x), 20.0 ps/tile (y).
+Info: Indexed 1 control sets.
+Info: Placed 4 cells based on constraints.
+Info: Creating initial analytic placement for 614 cells, random placement wirelen = 122829.
+Info:     at initial placer iter 0, wirelen = 246
+Info:     at initial placer iter 1, wirelen = 287
+Info:     at initial placer iter 2, wirelen = 182
+Info:     at initial placer iter 3, wirelen = 262
+Info: Running main analytical placer, max placement attempts per cell = 79202.
+Info:     at iteration #1, type ALL: wirelen solved = 262, spread = 11862, legal = 6827; time = 0.02s
+Info:     at iteration #2, type ALL: wirelen solved = 241, spread = 3010, legal = 5595; time = 0.03s
+Info:     at iteration #3, type ALL: wirelen solved = 175, spread = 2668, legal = 5712; time = 0.03s
+Info:     at iteration #4, type ALL: wirelen solved = 276, spread = 2516, legal = 5433; time = 0.04s
+Info:     at iteration #5, type ALL: wirelen solved = 312, spread = 2573, legal = 5211; time = 0.03s
+Info:     at iteration #6, type ALL: wirelen solved = 389, spread = 2521, legal = 4219; time = 0.02s
+Info:     at iteration #7, type ALL: wirelen solved = 539, spread = 2920, legal = 4386; time = 0.02s
+Info:     at iteration #8, type ALL: wirelen solved = 597, spread = 2449, legal = 4081; time = 0.03s
+Info:     at iteration #9, type ALL: wirelen solved = 720, spread = 2773, legal = 3840; time = 0.02s
+Info:     at iteration #10, type ALL: wirelen solved = 797, spread = 3088, legal = 4517; time = 0.02s
+Info:     at iteration #11, type ALL: wirelen solved = 791, spread = 3011, legal = 4412; time = 0.02s
+Info:     at iteration #12, type ALL: wirelen solved = 822, spread = 3230, legal = 4323; time = 0.02s
+Info:     at iteration #13, type ALL: wirelen solved = 861, spread = 3068, legal = 4414; time = 0.02s
+Info:     at iteration #14, type ALL: wirelen solved = 906, spread = 2903, legal = 4501; time = 0.03s
+Info: HeAP Placer Time: 0.60s
+Info:   of which solving equations: 0.07s
+Info:   of which spreading cells: 0.09s
+Info:   of which strict legalisation: 0.18s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 88, wirelen = 3840
+Info:   at iteration #5: temp = 0.000000, timing cost = 56, wirelen = 2129
+Info:   at iteration #10: temp = 0.000000, timing cost = 38, wirelen = 1988
+Info:   at iteration #15: temp = 0.000000, timing cost = 40, wirelen = 1927
+Info:   at iteration #20: temp = 0.000000, timing cost = 34, wirelen = 1733
+Info:   at iteration #25: temp = 0.000000, timing cost = 34, wirelen = 1634
+Info:   at iteration #27: temp = 0.000000, timing cost = 20, wirelen = 1648 
+Info: SA placement time 0.49s
+
+Info: Max frequency for clock '$abc$9465$aiger$o52': 781.25 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [  8720,   8762) |*****+
+Info: [  8762,   8804) |*+
+Info: [  8804,   8846) |+
+Info: [  8846,   8888) |************+
+Info: [  8888,   8930) |*+
+Info: [  8930,   8972) |*****+
+Info: [  8972,   9014) |****+
+Info: [  9014,   9056) |*******+
+Info: [  9056,   9098) |********************************+
+Info: [  9098,   9140) |**************+
+Info: [  9140,   9182) |***********************+
+Info: [  9182,   9224) |***************************************+
+Info: [  9224,   9266) |******************************************+
+Info: [  9266,   9308) |****************+
+Info: [  9308,   9350) | 
+Info: [  9350,   9392) | 
+Info: [  9392,   9434) |************************************************************ 
+Info: [  9434,   9476) | 
+Info: [  9476,   9518) | 
+Info: [  9518,   9560) |+
+Info: Checksum: 0x2d0635fb
+Info: Running post-placement legalisation...
+Info: Routing global clocks...
+Info:     routing clock '$abc$9465$aiger$o52'
+Info: Running router2...
+Info: Setting up routing resources...
+Info: Running main router loop...
+Info:     iter=1 wires=10512 overused=269 overuse=282 archfail=NA
+Info:     iter=2 wires=10628 overused=102 overuse=102 archfail=NA
+Info:     iter=3 wires=10658 overused=32 overuse=32 archfail=NA
+Info:     iter=4 wires=10678 overused=6 overuse=6 archfail=NA
+Info:     iter=5 wires=10682 overused=0 overuse=0 archfail=0
+Info: 1000 slowest nets by runtime:
+                                                                         $PACKER_GND_NET    613 32.7ms
+                                                     $auto$clkbufmap.cc:262:execute$9644      1 15.6ms
+                                                                         $PACKER_VCC_NET    652 6.1ms
+                                                                              dut_o[263]      1 2.2ms
+                                                                                 xp1[36]      1 2.1ms
+                                                                               dut_o[42]      2 1.8ms
+                                                                                   sr[0]      3 1.7ms
+                                                                                 xp1[37]      1 1.6ms
+                                                                               dut_o[90]      2 1.6ms
+                                                                                 w0[107]      1 1.6ms
+                                                                               dut_o[93]      2 1.4ms
+                                                                              dut_o[115]      2 1.3ms
+                                                                               dut_o[28]      2 1.3ms
+                                                                              dut_o[104]      2 1.3ms
+                                                                              dut_o[276]      1 1.3ms
+                                                                              dut_o[125]      2 1.2ms
+                                                                              dut_o[153]      2 1.2ms
+                                                                                  sr[87]      3 1.2ms
+                                                                                dut_o[6]      2 1.2ms
+                                                                              dut_o[168]      2 1.1ms
+                                                                                  sr[88]      3 1.1ms
+                                                                                  sr[29]      3 1.0ms
+                                                                                  sr[83]      3 1.0ms
+                                                                                  sr[82]      3 1.0ms
+                                                                                  w2[56]      1 1.0ms
+                                                                              dut_o[137]      2 1.0ms
+                                                                                 xp1[40]      1 1.0ms
+                                                                               dut_o[79]      2 1.0ms
+                                                                               dut_o[38]      2 1.0ms
+                                                                              dut_o[158]      2 1.0ms
+                                                                              dut_o[187]      2 0.9ms
+                                                                              dut_o[170]      2 0.9ms
+                                                                              dut_o[174]      2 0.9ms
+                                                                                 xp1[28]      1 0.9ms
+                                                                                 xp1[34]      1 0.9ms
+                                                                                  sr[17]      3 0.9ms
+                                                                              dut_o[162]      2 0.9ms
+                                                                                  sr[65]      3 0.8ms
+                                                                                   sr[7]      3 0.8ms
+                                                                     $abc$9465$aiger$o52    613 0.8ms
+                                                                                  sr[42]      3 0.8ms
+                                                                               dut_o[21]      2 0.8ms
+                                                                              dut_o[129]      2 0.8ms
+                                                                              dut_o[103]      2 0.8ms
+                                                                                   sr[5]      3 0.8ms
+                                                                              dut_o[185]      2 0.8ms
+                                                                                   sr[6]      3 0.8ms
+                                                                              dut_o[253]      1 0.8ms
+                                                                               dut_o[99]      2 0.8ms
+                                                                               dut_o[27]      2 0.7ms
+                                                                              dut_o[283]      1 0.7ms
+                                                                                  sr[40]      3 0.7ms
+                                                                              dut_o[141]      2 0.7ms
+                                                                               dut_o[75]      2 0.7ms
+                                                                              dut_o[135]      2 0.7ms
+                                                                                  w1[94]      1 0.7ms
+                                                                              dut_o[273]      1 0.7ms
+                                                                              dut_o[107]      2 0.7ms
+                                                                                dut_o[8]      2 0.7ms
+                                                                               dut_o[11]      2 0.7ms
+                                                                              dut_o[117]      2 0.7ms
+                                                                               dut_o[31]      2 0.7ms
+                                                                                  xp1[5]      1 0.7ms
+                                                                                  w2[66]      1 0.7ms
+                                                                              dut_o[247]      1 0.7ms
+                                                                              dut_o[116]      2 0.7ms
+                                                                               dut_o[68]      2 0.7ms
+                                                                              dut_o[128]      2 0.7ms
+                                                                                  w1[67]      1 0.6ms
+                                                                                 xp1[27]      1 0.6ms
+                                                                                  sr[19]      3 0.6ms
+                                                                              dut_o[138]      2 0.6ms
+                                                                              dut_o[248]      1 0.6ms
+                                                                                  w2[57]      1 0.6ms
+                                                                              dut_o[172]      2 0.6ms
+                                                                                  sr[92]      3 0.6ms
+                                                                              dut_o[108]      2 0.6ms
+                                                                              dut_o[154]      2 0.6ms
+                                                                              dut_o[150]      2 0.6ms
+                                                                               dut_o[47]      2 0.6ms
+                                                                                  sr[27]      3 0.6ms
+                                                                                  w1[97]      1 0.6ms
+                                                                               dut_o[91]      2 0.6ms
+                                                                                 w2[105]      1 0.6ms
+                                                                              dut_o[112]      2 0.6ms
+                                                                               dut_o[92]      2 0.6ms
+                                                                               dut_o[17]      2 0.6ms
+                                                                              dut_o[180]      2 0.6ms
+                                                                                  w1[51]      1 0.5ms
+                                                                                  sr[44]      3 0.5ms
+                                                                              dut_o[166]      2 0.5ms
+                                                                                  sr[63]      3 0.5ms
+                                                                              dut_o[182]      2 0.5ms
+                                                                               dut_o[49]      2 0.5ms
+                                                                              dut_o[140]      2 0.5ms
+                                                                              dut_o[105]      2 0.5ms
+                                                                              dut_o[118]      2 0.5ms
+                                                                                  sr[64]      3 0.5ms
+                                                                                  sr[57]      3 0.5ms
+                                                                                  w2[72]      1 0.5ms
+                                                                                  sr[28]      3 0.5ms
+                                                                                  sr[12]      3 0.5ms
+                                                                               dut_o[66]      2 0.5ms
+                                                                              dut_o[101]      2 0.5ms
+                                                                              dut_o[149]      2 0.5ms
+                                                                               dut_o[76]      2 0.5ms
+                                                                              dut_o[177]      2 0.5ms
+                                                                                dut_o[5]      2 0.5ms
+                                                                                  sr[85]      3 0.5ms
+                                                                                  sr[76]      3 0.5ms
+                                                                               dut_o[69]      2 0.5ms
+                                                                                dut_o[4]      2 0.5ms
+                                                                              dut_o[178]      2 0.5ms
+                                                                              dut_o[161]      2 0.5ms
+                                                                                   sr[4]      3 0.5ms
+                                                                              dut_o[167]      2 0.5ms
+                                                                              dut_o[179]      2 0.5ms
+                                                                                  sr[31]      3 0.5ms
+                                                                                  sr[45]      3 0.5ms
+                                                                              dut_o[144]      2 0.5ms
+                                                                               dut_o[26]      2 0.5ms
+                                                                               dut_o[82]      2 0.5ms
+                                                                                  sr[47]      3 0.5ms
+                                                                               dut_o[16]      2 0.4ms
+                                                                                  sr[37]      3 0.4ms
+                                                                                  w1[80]      1 0.4ms
+                                                                               dut_o[43]      2 0.4ms
+                                                                                   sr[1]      3 0.4ms
+                                                                               dut_o[55]      2 0.4ms
+                                                                              dut_o[143]      2 0.4ms
+                                                                                  sr[80]      3 0.4ms
+                                                                               dut_o[94]      2 0.4ms
+                                                                                  sr[84]      3 0.4ms
+                                                                                  xp2[4]      1 0.4ms
+                                                                                  w2[89]      1 0.4ms
+                                                                                 sr[102]      3 0.4ms
+                                                                                  sr[10]      3 0.4ms
+                                                                              dut_o[238]      1 0.4ms
+                                                                                  sr[69]      3 0.4ms
+                                                                     $abc$9465$aiger$o50      1 0.4ms
+                                                                              dut_o[142]      2 0.4ms
+                                                                               dut_o[58]      2 0.4ms
+                                                                                  xp1[2]      1 0.4ms
+                                                                                  sr[43]      3 0.4ms
+                                                                                  xp2[3]      1 0.4ms
+                                                                               dut_o[57]      2 0.4ms
+                                                                                  sr[94]      3 0.4ms
+                                                                                 xp1[47]      1 0.4ms
+                                                                                 sr[109]      2 0.4ms
+                                                                                  sr[74]      3 0.4ms
+                                                                                  sr[11]      3 0.4ms
+                                                                               dut_o[95]      2 0.4ms
+                                                                                  sr[71]      3 0.4ms
+                                                                               dut_o[52]      2 0.4ms
+                                                                                 sr[100]      3 0.4ms
+                                                                              dut_o[127]      2 0.4ms
+                                                                                     xr3      1 0.4ms
+                                                                              dut_o[284]      1 0.4ms
+                                                                              dut_o[286]      1 0.4ms
+                                                                                  w2[94]      1 0.4ms
+                                                                                 sr[105]      3 0.4ms
+                                                                                  sr[73]      3 0.4ms
+                                                                                  sr[48]      3 0.4ms
+                                                                                  w0[89]      1 0.4ms
+                                                                               dut_o[19]      2 0.4ms
+                                                                              dut_o[159]      2 0.4ms
+                                                                                  sr[21]      3 0.4ms
+                                                                                 xp1[30]      1 0.4ms
+                                                                                  sr[75]      3 0.4ms
+                                                                                  sr[35]      3 0.4ms
+                                                                               dut_o[98]      2 0.4ms
+                                                                                 xp1[14]      1 0.4ms
+                                                                              dut_o[102]      2 0.4ms
+                                                                              dut_o[123]      2 0.4ms
+                                                                              dut_o[280]      1 0.4ms
+                                                                              dut_o[133]      2 0.3ms
+                                                                               dut_o[88]      2 0.3ms
+                                                                                  w1[76]      1 0.3ms
+                                                                                  sr[24]      3 0.3ms
+                                                                                  w0[84]      1 0.3ms
+                                                                                  sr[67]      3 0.3ms
+                                                                                  sr[33]      3 0.3ms
+                                                                              dut_o[282]      1 0.3ms
+                                                                               dut_o[39]      2 0.3ms
+                                                                                  xp3[1]      1 0.3ms
+                                                                               dut_o[62]      2 0.3ms
+                                                                              dut_o[100]      2 0.3ms
+                                                                                  w2[96]      1 0.3ms
+                                                                               dut_o[61]      2 0.3ms
+                                                                                  w0[91]      1 0.3ms
+                                                                                  sr[97]      3 0.3ms
+                                                                                  sr[90]      3 0.3ms
+                                                                                   sr[3]      3 0.3ms
+                                                                              dut_o[136]      2 0.3ms
+                                                                              dut_o[169]      2 0.3ms
+                                                                              dut_o[176]      2 0.3ms
+                                                                               dut_o[51]      2 0.3ms
+                                                                              dut_o[164]      2 0.3ms
+                                                                              dut_o[160]      2 0.3ms
+                                                                                 sr[106]      3 0.3ms
+                                                                                  sr[34]      3 0.3ms
+                                                                                  w0[58]      1 0.3ms
+                                                                                  sr[23]      3 0.3ms
+                                                                                  sr[96]      3 0.3ms
+                                                                                  sr[58]      3 0.3ms
+                                                                                 xp1[20]      1 0.3ms
+                                                                                  sr[59]      3 0.3ms
+                                                                              dut_o[242]      1 0.3ms
+                                                                              dut_o[134]      2 0.3ms
+                                                                               dut_o[54]      2 0.3ms
+                                                                               dut_o[59]      2 0.3ms
+                                                                              dut_o[181]      2 0.3ms
+                                                                                  sr[32]      3 0.3ms
+                                                                              dut_o[119]      2 0.3ms
+                                                                               dut_o[30]      2 0.3ms
+                                                                              dut_o[156]      2 0.3ms
+                                                                                  xp1[8]      1 0.3ms
+                                                                                  sr[30]      3 0.3ms
+                                                                                  w2[68]      1 0.3ms
+                                                                                  w2[67]      1 0.3ms
+                                                                                  sr[13]      3 0.3ms
+                                                                              dut_o[139]      2 0.3ms
+                                                                                  sr[77]      3 0.3ms
+                                                                              dut_o[292]      1 0.3ms
+                                                                                  xp1[0]      1 0.3ms
+                                                                              dut_o[106]      2 0.3ms
+                                                                               dut_o[97]      2 0.3ms
+                                                                                  sr[15]      3 0.3ms
+                                                                                  sr[53]      3 0.3ms
+                                                                              dut_o[251]      1 0.3ms
+                                                                                  sr[16]      3 0.3ms
+                                                                                   sr[8]      3 0.3ms
+                                                                                  sr[78]      3 0.3ms
+                                                                                  w0[53]      1 0.3ms
+                                                                               dut_o[60]      2 0.3ms
+                                                                                  sr[36]      3 0.3ms
+                                                                                  w1[59]      1 0.3ms
+                                                                               dut_o[65]      2 0.3ms
+                                                                                   sr[2]      3 0.3ms
+                                                                               dut_o[41]      2 0.3ms
+                                                                               dut_o[56]      2 0.3ms
+                                                                                 xp1[45]      1 0.3ms
+                                                                                  w0[79]      1 0.3ms
+                                                                                 w1[104]      1 0.3ms
+                                                                                  sr[26]      3 0.3ms
+                                                                                  w1[90]      1 0.3ms
+                                                                                  sr[55]      3 0.3ms
+                                                                                  sr[25]      3 0.3ms
+                                                                              dut_o[184]      2 0.2ms
+                                                                              dut_o[290]      1 0.2ms
+                                                                               dut_o[23]      2 0.2ms
+                                                                                  w0[82]      1 0.2ms
+                                                                                  sr[61]      3 0.2ms
+                                                                                  w1[47]      1 0.2ms
+                                                                                dut_o[0]      2 0.2ms
+                                                                              dut_o[244]      1 0.2ms
+                                                                                  w2[51]      1 0.2ms
+                                                                               dut_o[85]      2 0.2ms
+                                                                               dut_o[80]      2 0.2ms
+                                                                                dut_o[3]      2 0.2ms
+                                                                                  w2[88]      1 0.2ms
+                                                                                 xp1[11]      1 0.2ms
+                                                                                  sr[79]      3 0.2ms
+                                                                               dut_o[48]      2 0.2ms
+                                                                                  w0[64]      1 0.2ms
+                                                                               dut_o[22]      2 0.2ms
+                                                                                   sr[9]      3 0.2ms
+                                                                                 w2[104]      1 0.2ms
+                                                                                  sr[18]      3 0.2ms
+                                                                               dut_o[20]      2 0.2ms
+                                                                               dut_o[35]      2 0.2ms
+                                                                                  sr[41]      3 0.2ms
+                                                                               dut_o[64]      2 0.2ms
+                                                                               dut_o[10]      2 0.2ms
+                                                                               dut_o[37]      2 0.2ms
+                                                                               dut_o[34]      2 0.2ms
+                                                                                  xp1[9]      1 0.2ms
+                                                                                  sr[38]      3 0.2ms
+                                                                              dut_o[145]      2 0.2ms
+                                                                               dut_o[89]      2 0.2ms
+                                                                                  xp2[6]      1 0.2ms
+                                                                                  w2[83]      1 0.2ms
+                                                                              dut_o[237]      1 0.2ms
+                                                                                  sr[62]      3 0.2ms
+                                                                                 w1[101]      1 0.2ms
+                                                                                 xp1[22]      1 0.2ms
+                                                                                  w0[69]      1 0.2ms
+                                                                              dut_o[131]      2 0.2ms
+                                                                              dut_o[132]      2 0.2ms
+                                                                               dut_o[44]      2 0.2ms
+                                                                                  sr[46]      3 0.2ms
+                                                                                  w0[48]      1 0.2ms
+                                                                                  xp1[1]      1 0.2ms
+                                                                                  sr[98]      3 0.2ms
+                                                                                 xp1[44]      1 0.2ms
+                                                                                  w1[53]      1 0.2ms
+                                                                                  w0[60]      1 0.2ms
+                                                                                  w1[73]      1 0.2ms
+                                                                                  sr[14]      3 0.2ms
+                                                                                  w0[96]      1 0.2ms
+                                                                                  w0[75]      1 0.2ms
+                                                                                  w2[52]      1 0.2ms
+                                                                              dut_o[267]      1 0.2ms
+                                                                               dut_o[33]      2 0.2ms
+                                                                              dut_o[171]      2 0.2ms
+                                                                               dut_o[18]      2 0.2ms
+                                                                                  sr[52]      3 0.2ms
+                                                                               dut_o[12]      2 0.2ms
+                                                                                dut_o[2]      2 0.2ms
+                                                                               dut_o[71]      2 0.2ms
+                                                                                  sr[50]      3 0.2ms
+                                                                                dut_o[9]      2 0.2ms
+                                                                              dut_o[175]      2 0.2ms
+                                                                               dut_o[70]      2 0.2ms
+                                                                              dut_o[111]      2 0.2ms
+                                                                                  w2[80]      1 0.2ms
+                                                                              dut_o[121]      2 0.2ms
+                                                                              dut_o[277]      1 0.2ms
+                                                                                 w0[103]      1 0.2ms
+                                                                                  w0[50]      1 0.2ms
+                                                                                 sr[108]      3 0.2ms
+                                                                                  sr[95]      3 0.2ms
+                                                                                 xp1[23]      1 0.2ms
+                                                                                  w1[50]      1 0.2ms
+                                                                               dut_o[81]      2 0.2ms
+                                                                                dut_o[1]      2 0.2ms
+                                                                                  sr[20]      3 0.2ms
+                                                                              dut_o[186]      2 0.2ms
+                                                                                 w0[104]      1 0.2ms
+                                                                                  w1[72]      1 0.2ms
+                                                                                  w0[81]      1 0.2ms
+                                                                                  w2[99]      1 0.2ms
+                                                                                 xp1[24]      1 0.2ms
+                                                                                  xp1[3]      1 0.2ms
+                                                                               dut_o[78]      2 0.2ms
+                                                                                  w2[53]      1 0.2ms
+                                                                                  sr[60]      3 0.2ms
+                                                                              dut_o[287]      1 0.2ms
+                                                                              dut_o[291]      1 0.2ms
+                                                                                  sr[39]      3 0.2ms
+                                                                                 w2[103]      1 0.2ms
+                                                                                 w2[100]      1 0.2ms
+                                                                                  w2[55]      1 0.2ms
+                                                                                  w2[70]      1 0.2ms
+                                                                                 sr[103]      3 0.2ms
+                                                                               dut_o[14]      2 0.2ms
+                                                                                  w0[72]      1 0.2ms
+                                                                               dut_o[45]      2 0.2ms
+                                                                                  sr[51]      3 0.2ms
+                                                                                 xp1[48]      1 0.2ms
+                                                                                  w1[88]      1 0.2ms
+                                                                               dut_o[74]      2 0.2ms
+                                                                                  w2[87]      1 0.2ms
+                                                                                 xp1[43]      1 0.2ms
+                                                                                  w0[54]      1 0.2ms
+                                                                                  sr[89]      3 0.2ms
+                                                                              dut_o[113]      2 0.2ms
+                                                                                 xp1[41]      1 0.2ms
+                                                                                  sr[93]      3 0.2ms
+                                                                                  sr[68]      3 0.2ms
+                                                                              dut_o[152]      2 0.2ms
+                                                                                  w1[74]      1 0.2ms
+                                                                                  w2[79]      1 0.2ms
+                                                                              dut_o[155]      2 0.2ms
+                                                                              dut_o[254]      1 0.2ms
+                                                                                  w0[52]      1 0.2ms
+                                                                              dut_o[165]      2 0.2ms
+                                                                              dut_o[264]      1 0.2ms
+                                                                              dut_o[260]      1 0.2ms
+                                                                                  sr[91]      3 0.2ms
+                                                                               dut_o[29]      2 0.2ms
+                                                                                  w0[99]      1 0.2ms
+                                                                               dut_o[50]      2 0.2ms
+                                                                              dut_o[146]      2 0.2ms
+                                                                                  w2[62]      1 0.2ms
+                                                                                  w2[48]      1 0.2ms
+                                                                                  w1[68]      1 0.2ms
+                                                                                dut_o[7]      2 0.2ms
+                                                                                  sr[70]      3 0.2ms
+                                                                                 xp1[13]      1 0.2ms
+                                                                                  w0[98]      1 0.2ms
+                                                                                  w1[96]      1 0.2ms
+                                                                                  w1[58]      1 0.2ms
+                                                                               dut_o[73]      2 0.2ms
+                                                                                  w2[71]      1 0.2ms
+                                                                                 sr[107]      3 0.2ms
+                                                                              dut_o[126]      2 0.2ms
+                                                                                 xp1[49]      1 0.2ms
+                                                                                  w0[65]      1 0.2ms
+                                                                                  w2[93]      1 0.2ms
+                                                                              dut_o[258]      1 0.1ms
+                                                                               dut_o[40]      2 0.1ms
+                                                                              dut_o[109]      2 0.1ms
+                                                                              dut_o[239]      1 0.1ms
+                                                                              dut_o[279]      1 0.1ms
+                                                                                  w1[93]      1 0.1ms
+                                                                                 w1[109]      1 0.1ms
+                                                                                 w2[106]      1 0.1ms
+                                                                               dut_o[63]      2 0.1ms
+                                                                                 sr[101]      3 0.1ms
+                                                                                  sr[86]      3 0.1ms
+                                                                               dut_o[24]      2 0.1ms
+                                                                                  w0[66]      1 0.1ms
+                                                                                  sr[56]      3 0.1ms
+                                                                                  w1[77]      1 0.1ms
+                                                                              dut_o[114]      2 0.1ms
+                                                                                 xp1[16]      1 0.1ms
+                                                                                  w1[48]      1 0.1ms
+                                                                                 w1[105]      1 0.1ms
+                                                                                  w2[49]      1 0.1ms
+                                                                                  sr[22]      3 0.1ms
+                                                                                  xp1[4]      1 0.1ms
+                                                                                  w0[83]      1 0.1ms
+                                                                               dut_o[83]      2 0.1ms
+                                                                               dut_o[13]      2 0.1ms
+                                                                               dut_o[32]      2 0.1ms
+                                                                               dut_o[87]      2 0.1ms
+                                                                              dut_o[110]      2 0.1ms
+                                                                              dut_o[183]      2 0.1ms
+                                                                                 w0[105]      1 0.1ms
+                                                                                  sr[99]      3 0.1ms
+                                                                              dut_o[268]      1 0.1ms
+                                                                                 xp1[39]      1 0.1ms
+                                                                                 xp1[42]      1 0.1ms
+                                                                                  w0[62]      1 0.1ms
+                                                                                 xp1[35]      1 0.1ms
+                                                                                  w0[97]      1 0.1ms
+                                                                              dut_o[295]      1 0.1ms
+                                                                                  sr[81]      3 0.1ms
+                                                                                  w0[90]      1 0.1ms
+                                                                               dut_o[67]      2 0.1ms
+                                                                                 w0[109]      1 0.1ms
+                                                                                  w0[61]      1 0.1ms
+                                                                              dut_o[157]      2 0.1ms
+                                                                                 w1[106]      1 0.1ms
+                                                                                  w1[82]      1 0.1ms
+                                                                                 w2[102]      1 0.1ms
+                                                                              dut_o[122]      2 0.1ms
+                                                                                 sr[104]      3 0.1ms
+                                                                                  w0[63]      1 0.1ms
+                                                                                  w2[85]      1 0.1ms
+                                                                                  w2[69]      1 0.1ms
+                                                                                 w0[108]      1 0.1ms
+                                                                                  w0[85]      1 0.1ms
+                                                                                  w1[66]      1 0.1ms
+                                                                                  w1[64]      1 0.1ms
+                                                                              dut_o[173]      2 0.1ms
+                                                                                  w1[75]      1 0.1ms
+                                                                                 w2[109]      1 0.1ms
+                                                                                  w2[91]      1 0.1ms
+                                                                                  w2[61]      1 0.1ms
+                                                                              dut_o[130]      2 0.1ms
+                                                                               dut_o[15]      2 0.1ms
+                                                                                  sr[49]      3 0.1ms
+                                                                                 w1[100]      1 0.1ms
+                                                                                  w2[84]      1 0.1ms
+                                                                                  sr[72]      3 0.1ms
+                                                                                  w0[88]      1 0.1ms
+                                                                                  w0[76]      1 0.1ms
+                                                                               dut_o[77]      2 0.1ms
+                                                                                  w1[78]      1 0.1ms
+                                                                                  w1[56]      1 0.1ms
+                                                                               dut_o[86]      2 0.1ms
+                                                                                  xp1[7]      1 0.1ms
+                                                                                  w2[86]      1 0.1ms
+                                                                              dut_o[120]      2 0.1ms
+                                                                                  w2[97]      1 0.1ms
+                                                                               dut_o[46]      2 0.1ms
+                                                                                 w2[101]      1 0.1ms
+                                                                              dut_o[294]      1 0.1ms
+                                                                                  sr[66]      3 0.1ms
+                                                                               dut_o[53]      2 0.1ms
+                                                                                  w0[95]      1 0.1ms
+                                                                                  w0[80]      1 0.1ms
+                                                                                  w0[77]      1 0.1ms
+                                                                              dut_o[269]      1 0.1ms
+                                                                                  w0[55]      1 0.1ms
+                                                                                  w0[70]      1 0.1ms
+                                                                                  w1[89]      1 0.1ms
+                                                                                  w1[69]      1 0.1ms
+                                                                                 w0[102]      1 0.1ms
+                                                                                  w2[90]      1 0.1ms
+                                                                              dut_o[261]      1 0.1ms
+                                                                                  w2[95]      1 0.1ms
+                                                                                  sr[54]      3 0.1ms
+                                                                                  w0[56]      1 0.1ms
+                                                                              dut_o[147]      2 0.1ms
+                                                                              dut_o[148]      2 0.1ms
+                                                                                  w0[47]      1 0.1ms
+                                                                                  w1[70]      1 0.1ms
+                                                                                 w1[102]      1 0.1ms
+                                                                                  w2[82]      1 0.1ms
+                                                                                  w0[74]      1 0.1ms
+                                                                              dut_o[124]      2 0.1ms
+                                                                              dut_o[289]      1 0.1ms
+                                                                                 w0[106]      1 0.1ms
+                                                                              dut_o[296]      1 0.1ms
+                                                                              dut_o[297]      1 0.1ms
+                                                                                  w0[92]      1 0.1ms
+                                                                                  w1[95]      1 0.1ms
+                                                                                  w1[65]      1 0.1ms
+                                                                                  w2[75]      1 0.1ms
+                                                                              dut_o[235]      1 0.1ms
+                                                                                  xp1[6]      1 0.1ms
+                                                                                  w1[49]      1 0.1ms
+                                                                                  xp2[0]      1 0.1ms
+                                                                                  w1[85]      1 0.1ms
+                                                                                 w1[108]      1 0.1ms
+                                                                     $abc$9465$aiger$o19      1 0.1ms
+                                                                                 w0[100]      1 0.1ms
+                                                                               dut_o[72]      2 0.1ms
+                                                                        $0\w0[109:0][56]      1 0.1ms
+                                                                                 w1[107]      1 0.1ms
+                                                                              dut_o[265]      1 0.1ms
+                                                                                  w0[93]      1 0.1ms
+                                                                                  w0[51]      1 0.1ms
+                                                                                  w1[99]      1 0.1ms
+                                                                                 w2[107]      1 0.1ms
+                                                                                  w2[65]      1 0.1ms
+                                                                                  xp2[8]      1 0.1ms
+                                                                                  w1[86]      1 0.1ms
+                                                                              dut_o[250]      1 0.1ms
+                                                                                 xp1[46]      1 0.1ms
+                                                                                  w1[79]      1 0.1ms
+                                                                                  xp3[0]      1 0.1ms
+                                                                              dut_o[275]      1 0.1ms
+                                                                                 xp1[21]      1 0.1ms
+                                                                                 xp1[38]      1 0.1ms
+                                                                              dut_o[262]      1 0.1ms
+                                                                                  w0[87]      1 0.1ms
+                                                                                  w1[84]      1 0.1ms
+                                                                                  w2[74]      1 0.1ms
+                                                                                  w0[59]      1 0.1ms
+                                                                                  w1[57]      1 0.1ms
+                                                                                 w2[108]      1 0.1ms
+                                                                                  w0[71]      1 0.1ms
+                                                                                  w2[92]      1 0.1ms
+                                                                              dut_o[288]      1 0.1ms
+                                                                                  w2[78]      1 0.1ms
+                                                                                  w2[73]      1 0.1ms
+                                                                                  w2[60]      1 0.1ms
+                                                                                  w0[94]      1 0.1ms
+                                                                              dut_o[151]      2 0.1ms
+                                                                                  w2[77]      1 0.1ms
+                                                                              dut_o[278]      1 0.1ms
+                                                                              dut_o[285]      1 0.1ms
+                                                                                 xp1[29]      1 0.1ms
+                                                                                  w1[81]      1 0.1ms
+                                                                                  w1[60]      1 0.1ms
+                                                                               dut_o[96]      2 0.1ms
+                                                                              dut_o[249]      1 0.1ms
+                                                                              dut_o[255]      1 0.1ms
+                                                                                  w1[92]      1 0.1ms
+                                                                                  w1[52]      1 0.1ms
+                                                                                  w2[59]      1 0.1ms
+                                                                               dut_o[36]      2 0.1ms
+                                                                                  w2[81]      1 0.1ms
+                                                                                  w1[54]      1 0.1ms
+                                                                                  w0[86]      1 0.1ms
+                                                                                  w1[63]      1 0.1ms
+                                                                               dut_o[84]      2 0.1ms
+                                                                              dut_o[281]      1 0.1ms
+                                                                              dut_o[163]      2 0.1ms
+                                                                              dut_o[236]      1 0.1ms
+                                                                                  xp2[2]      1 0.1ms
+                                                                                  w1[62]      1 0.1ms
+                                                                              dut_o[243]      1 0.1ms
+                                                                                 xp1[31]      1 0.1ms
+                                                                                  w1[55]      1 0.1ms
+                                                                                  w2[64]      1 0.1ms
+                                                                                  w0[73]      1 0.1ms
+                                                                                  w1[61]      1 0.1ms
+                                                                               dut_o[25]      2 0.1ms
+                                                                                 w0[101]      1 0.1ms
+                                                                                 w1[103]      1 0.1ms
+                                                                                  w1[71]      1 0.1ms
+                                                                              dut_o[271]      1 0.1ms
+                                                                                  xp2[1]      1 0.1ms
+                                                                                  w0[49]      1 0.1ms
+                                                                                 xp1[25]      1 0.1ms
+                                                                              dut_o[270]      1 0.0ms
+                                                                                 xp1[33]      1 0.0ms
+                                                                                  w0[68]      1 0.0ms
+                                                                                  w0[67]      1 0.0ms
+                                                                                  w2[98]      1 0.0ms
+                                                                                  w1[87]      1 0.0ms
+                                                                                  w1[83]      1 0.0ms
+                                                                                  w2[76]      1 0.0ms
+                                                                                  w2[58]      1 0.0ms
+                                                                                  w2[50]      1 0.0ms
+                                                                                  w2[47]      1 0.0ms
+                                                                              dut_o[293]      1 0.0ms
+                                                                                  w0[78]      1 0.0ms
+                                                                                 xp1[17]      1 0.0ms
+                                                                              dut_o[256]      1 0.0ms
+                                                                                  w1[98]      1 0.0ms
+                                                                                 xp1[10]      1 0.0ms
+                                                                                  w1[91]      1 0.0ms
+                                                                              dut_o[272]      1 0.0ms
+                                                                                 xp1[32]      1 0.0ms
+                                                                              dut_o[257]      1 0.0ms
+                                                                              dut_o[259]      1 0.0ms
+                                                                                  w2[54]      1 0.0ms
+                                                                                 xp1[19]      1 0.0ms
+                                                                              dut_o[241]      1 0.0ms
+                                                                                  xp2[5]      1 0.0ms
+                                                                              dut_o[274]      1 0.0ms
+                                                                              dut_o[266]      1 0.0ms
+                                                                                 xp1[26]      1 0.0ms
+                                                                                  w2[63]      1 0.0ms
+                                                                              dut_o[245]      1 0.0ms
+                                                                                  xp2[7]      1 0.0ms
+                                                                                 xp1[15]      1 0.0ms
+                                                                                 xp1[12]      1 0.0ms
+                                                                                 xp1[18]      1 0.0ms
+                                                                              dut_o[252]      1 0.0ms
+                                                                                  w0[57]      1 0.0ms
+                                                                                    dout      1 0.0ms
+                                                                              dut_o[240]      1 0.0ms
+                                                                              dut_o[246]      1 0.0ms
+                                                                         $0\w0[109:0][9]      1 0.0ms
+                                                                             $0\xr1[0:0]      1 0.0ms
+                                                                             $0\xr1[5:5]      1 0.0ms
+                                                                        $0\w0[109:0][15]      1 0.0ms
+                                                                         $0\w0[109:0][0]      1 0.0ms
+                                                                        $0\w0[109:0][74]      1 0.0ms
+                                                                        $0\w0[109:0][68]      1 0.0ms
+                                                                        $0\w0[109:0][63]      1 0.0ms
+                                                                        $0\w0[109:0][55]      1 0.0ms
+                                                                             $0\xr1[6:6]      1 0.0ms
+                                                                        $0\w0[109:0][26]      1 0.0ms
+                                                                           $0\xr0[37:37]      1 0.0ms
+                                                                       $0\w0[109:0][106]      1 0.0ms
+                                                                        $0\w0[109:0][76]      1 0.0ms
+                                                                        $0\w0[109:0][64]      1 0.0ms
+                                                                           $0\xr0[45:45]      1 0.0ms
+                                                                        $0\w0[109:0][45]      1 0.0ms
+                                                                        $0\w0[109:0][37]      1 0.0ms
+                                                                        $0\w0[109:0][35]      1 0.0ms
+                                                                        $0\w0[109:0][22]      1 0.0ms
+                                                                           $0\xr0[49:49]      1 0.0ms
+                                                                         $0\w0[109:0][6]      1 0.0ms
+                                                                         $0\w0[109:0][5]      1 0.0ms
+                                                                         $0\w0[109:0][4]      1 0.0ms
+                                                                         $0\w0[109:0][1]      1 0.0ms
+                                                                           $0\xr0[19:19]      1 0.0ms
+                                                                           $0\xr0[11:11]      1 0.0ms
+                                                                           $0\xr0[12:12]      1 0.0ms
+                                                                           $0\xr0[14:14]      1 0.0ms
+                                                                       $0\w0[109:0][109]      1 0.0ms
+                                                                       $0\w0[109:0][105]      1 0.0ms
+                                                                             $0\xr0[6:6]      1 0.0ms
+                                                                       $0\w0[109:0][103]      1 0.0ms
+                                                                        $0\w0[109:0][97]      1 0.0ms
+                                                                        $0\w0[109:0][94]      1 0.0ms
+                                                                        $0\w0[109:0][92]      1 0.0ms
+                                                                        $0\w0[109:0][91]      1 0.0ms
+                                                                        $0\w0[109:0][90]      1 0.0ms
+                                                                        $0\w0[109:0][89]      1 0.0ms
+                                                                             $0\xr2[1:1]      1 0.0ms
+                                                                        $0\w0[109:0][87]      1 0.0ms
+                                                                        $0\w0[109:0][86]      1 0.0ms
+                                                                        $0\w0[109:0][83]      1 0.0ms
+                                                                        $0\w0[109:0][82]      1 0.0ms
+                                                                        $0\w0[109:0][79]      1 0.0ms
+                                                                        $0\w0[109:0][78]      1 0.0ms
+                                                                             $0\xr3[0:0]      1 0.0ms
+                                                                        $0\w0[109:0][73]      1 0.0ms
+                                                                             $0\xr0[0:0]      1 0.0ms
+                                                                        $0\w0[109:0][72]      1 0.0ms
+                                                                        $0\w0[109:0][70]      1 0.0ms
+                                                                        $0\w0[109:0][67]      1 0.0ms
+                                                                           $0\xr0[39:39]      1 0.0ms
+                                                                        $0\w0[109:0][66]      1 0.0ms
+                                                                             $0\xr0[4:4]      1 0.0ms
+                                                                        $0\w0[109:0][62]      1 0.0ms
+                                                                        $0\w0[109:0][61]      1 0.0ms
+                                                                        $0\w0[109:0][59]      1 0.0ms
+                                                                        $0\w0[109:0][58]      1 0.0ms
+                                                                        $0\w0[109:0][57]      1 0.0ms
+                                                                             $0\xr1[3:3]      1 0.0ms
+                                                                           $0\xr0[46:46]      1 0.0ms
+                                                                        $0\w0[109:0][52]      1 0.0ms
+                                                                           $0\xr0[47:47]      1 0.0ms
+                                                                           $0\xr0[48:48]      1 0.0ms
+                                                                           $0\xr0[40:40]      1 0.0ms
+                                                                        $0\w0[109:0][44]      1 0.0ms
+                                                                             $0\xr1[1:1]      1 0.0ms
+                                                                        $0\w0[109:0][42]      1 0.0ms
+                                                                        $0\w0[109:0][41]      1 0.0ms
+                                                                           $0\xr0[44:44]      1 0.0ms
+                                                                        $0\w0[109:0][34]      1 0.0ms
+                                                                        $0\w0[109:0][32]      1 0.0ms
+                                                                        $0\w0[109:0][31]      1 0.0ms
+                                                                             $0\xr1[7:7]      1 0.0ms
+                                                                             $0\xr1[8:8]      1 0.0ms
+                                                                        $0\w0[109:0][27]      1 0.0ms
+                                                                             $0\xr2[0:0]      1 0.0ms
+                                                                           $0\xr0[41:41]      1 0.0ms
+                                                                        $0\w0[109:0][24]      1 0.0ms
+                                                                        $0\w0[109:0][23]      1 0.0ms
+                                                                        $0\w0[109:0][20]      1 0.0ms
+                                                                        $0\w0[109:0][19]      1 0.0ms
+                                                                           $0\xr0[26:26]      1 0.0ms
+                                                                        $0\w0[109:0][18]      1 0.0ms
+                                                                        $0\w0[109:0][17]      1 0.0ms
+                                                                        $0\w0[109:0][16]      1 0.0ms
+                                                                           $0\xr0[29:29]      1 0.0ms
+                                                                        $0\w0[109:0][14]      1 0.0ms
+                                                                        $0\w0[109:0][13]      1 0.0ms
+                                                                        $0\w0[109:0][11]      1 0.0ms
+                                                                           $0\xr0[31:31]      1 0.0ms
+                                                                           $0\xr0[32:32]      1 0.0ms
+                                                                         $0\w0[109:0][7]      1 0.0ms
+                                                                           $0\xr0[43:43]      1 0.0ms
+                                                                           $0\xr0[23:23]      1 0.0ms
+                                                                           $0\xr0[34:34]      1 0.0ms
+                                                                         $0\w0[109:0][3]      1 0.0ms
+                                                                           $0\xr0[25:25]      1 0.0ms
+                                                                         $0\w0[109:0][2]      1 0.0ms
+                                                                           $0\xr0[36:36]      1 0.0ms
+                                                                             $0\xr0[9:9]      1 0.0ms
+                                                                           $0\xr0[10:10]      1 0.0ms
+                                                                           $0\xr0[15:15]      1 0.0ms
+                                                                           $0\xr0[16:16]      1 0.0ms
+                                                                           $0\xr0[17:17]      1 0.0ms
+                                                                       $0\w0[109:0][108]      1 0.0ms
+                                                                       $0\w0[109:0][107]      1 0.0ms
+                                                                           $0\xr0[18:18]      1 0.0ms
+                                                                       $0\w0[109:0][104]      1 0.0ms
+                                                                           $0\xr0[20:20]      1 0.0ms
+                                                                       $0\w0[109:0][102]      1 0.0ms
+                                                                       $0\w0[109:0][101]      1 0.0ms
+                                                                       $0\w0[109:0][100]      1 0.0ms
+                                                                           $0\xr0[21:21]      1 0.0ms
+                                                                        $0\w0[109:0][98]      1 0.0ms
+                                                                           $0\xr0[22:22]      1 0.0ms
+                                                                        $0\w0[109:0][96]      1 0.0ms
+                                                                        $0\w0[109:0][95]      1 0.0ms
+                                                                           $0\xr0[24:24]      1 0.0ms
+                                                                        $0\w0[109:0][93]      1 0.0ms
+                                                                        $0\w0[109:0][88]      1 0.0ms
+                                                                           $0\xr0[38:38]      1 0.0ms
+                                                                        $0\w0[109:0][85]      1 0.0ms
+                                                                        $0\w0[109:0][84]      1 0.0ms
+                                                                        $0\w0[109:0][81]      1 0.0ms
+                                                                        $0\w0[109:0][80]      1 0.0ms
+                                                                        $0\w0[109:0][77]      1 0.0ms
+                                                                        $0\w0[109:0][75]      1 0.0ms
+                                                                             $0\xr0[8:8]      1 0.0ms
+                                                                        $0\w0[109:0][71]      1 0.0ms
+                                                                             $0\xr0[1:1]      1 0.0ms
+                                                                        $0\w0[109:0][69]      1 0.0ms
+                                                                             $0\xr0[2:2]      1 0.0ms
+                                                                             $0\xr0[3:3]      1 0.0ms
+                                                                        $0\w0[109:0][65]      1 0.0ms
+                                                                             $0\xr0[5:5]      1 0.0ms
+                                                                           $0\xr0[27:27]      1 0.0ms
+                                                                        $0\w0[109:0][60]      1 0.0ms
+                                                                             $0\xr0[7:7]      1 0.0ms
+                                                                        $0\w0[109:0][54]      1 0.0ms
+                                                                        $0\w0[109:0][53]      1 0.0ms
+                                                                        $0\w0[109:0][51]      1 0.0ms
+                                                                        $0\w0[109:0][50]      1 0.0ms
+                                                                        $0\w0[109:0][49]      1 0.0ms
+                                                                        $0\w0[109:0][48]      1 0.0ms
+                                                                        $0\w0[109:0][47]      1 0.0ms
+                                                                        $0\w0[109:0][46]      1 0.0ms
+                                                                        $0\w0[109:0][43]      1 0.0ms
+                                                                        $0\w0[109:0][40]      1 0.0ms
+                                                                             $0\xr1[2:2]      1 0.0ms
+                                                                        $0\w0[109:0][39]      1 0.0ms
+                                                                        $0\w0[109:0][38]      1 0.0ms
+                                                                             $0\xr1[4:4]      1 0.0ms
+                                                                        $0\w0[109:0][36]      1 0.0ms
+                                                                        $0\w0[109:0][33]      1 0.0ms
+                                                                        $0\w0[109:0][30]      1 0.0ms
+                                                                        $0\w0[109:0][29]      1 0.0ms
+                                                                        $0\w0[109:0][28]      1 0.0ms
+                                                                        $0\w0[109:0][25]      1 0.0ms
+                                                                        $0\w0[109:0][21]      1 0.0ms
+                                                                           $0\xr0[35:35]      1 0.0ms
+                                                                           $0\xr0[28:28]      1 0.0ms
+                                                                           $0\xr0[30:30]      1 0.0ms
+                                                                        $0\w0[109:0][12]      1 0.0ms
+                                                                        $0\w0[109:0][10]      1 0.0ms
+                                                                         $0\w0[109:0][8]      1 0.0ms
+                                                                           $0\xr0[33:33]      1 0.0ms
+                                                                           $0\xr0[42:42]      1 0.0ms
+                                                                           $0\xr0[13:13]      1 0.0ms
+                                                                        $0\w0[109:0][99]      1 0.0ms
+                                                                       $iopadmap$rst_btn      0 0.0ms
+                                                                                 rst_btn      2 0.0ms
+                                                                                     din      2 0.0ms
+                                                                                     clk      2 0.0ms
+Info: Router2 time 1.95s
+Info: Running router1 to check that route is legal...
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 0 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:          0 |        0          0 |    0     0 |         0|       0.02       0.02|
+Info: Routing complete.
+Info: Router1 time 0.02s
+Info: Checksum: 0x345596dd
+
+Info: Critical path report for clock '$abc$9465$aiger$o52' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$2953.Q
+Info:    routing  0.83  1.18 Net sr[87] (173,19) -> (169,22)
+Info:                          Sink $abc$9465$lut$aiger$o504.A3
+Info:                          Defined in:
+Info:                               av08_top.v:6.17-6.19
+Info:      logic  0.15  1.33 Source $abc$9465$lut$aiger$o504.O5
+Info:    routing  0.02  1.35 Net $0\w0[109:0][87] (169,22) -> (169,22)
+Info:                          Sink $auto$ff.cc:337:slice$2843.D
+Info:                          Defined in:
+Info:                               av08_top.v:10.5-10.57
+Info:      setup  0.10  1.45 Source $auto$ff.cc:337:slice$2843.D
+Info: 0.60 ns logic, 0.85 ns routing
+
+Info: Max frequency for clock '$abc$9465$aiger$o52': 690.13 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [  8551,   8590) |*+
+Info: [  8590,   8629) |+
+Info: [  8629,   8668) |+
+Info: [  8668,   8707) |**+
+Info: [  8707,   8746) |**+
+Info: [  8746,   8785) |****+
+Info: [  8785,   8824) |*****+
+Info: [  8824,   8863) |*******+
+Info: [  8863,   8902) |************+
+Info: [  8902,   8941) |**************+
+Info: [  8941,   8980) |********+
+Info: [  8980,   9019) |*******************************+
+Info: [  9019,   9058) |************************************************************ 
+Info: [  9058,   9097) |*******************+
+Info: [  9097,   9136) |**************+
+Info: [  9136,   9175) |******************************************+
+Info: [  9175,   9214) |**********************+
+Info: [  9214,   9253) |+
+Info: [  9253,   9292) | 
+Info: [  9292,   9331) |+
+
+Info: Critical path report for clock '$abc$9465$aiger$o52' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$2953.Q
+Info:    routing  0.83  1.18 Net sr[87] (173,19) -> (169,22)
+Info:                          Sink $abc$9465$lut$aiger$o504.A3
+Info:                          Defined in:
+Info:                               av08_top.v:6.17-6.19
+Info:      logic  0.15  1.33 Source $abc$9465$lut$aiger$o504.O5
+Info:    routing  0.02  1.35 Net $0\w0[109:0][87] (169,22) -> (169,22)
+Info:                          Sink $auto$ff.cc:337:slice$2843.D
+Info:                          Defined in:
+Info:                               av08_top.v:10.5-10.57
+Info:      setup  0.10  1.45 Source $auto$ff.cc:337:slice$2843.D
+Info: 0.60 ns logic, 0.85 ns routing
+
+Info: Max frequency for clock '$abc$9465$aiger$o52': 690.13 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [  8551,   8590) |*+
+Info: [  8590,   8629) |+
+Info: [  8629,   8668) |+
+Info: [  8668,   8707) |**+
+Info: [  8707,   8746) |**+
+Info: [  8746,   8785) |****+
+Info: [  8785,   8824) |*****+
+Info: [  8824,   8863) |*******+
+Info: [  8863,   8902) |************+
+Info: [  8902,   8941) |**************+
+Info: [  8941,   8980) |********+
+Info: [  8980,   9019) |*******************************+
+Info: [  9019,   9058) |************************************************************ 
+Info: [  9058,   9097) |*******************+
+Info: [  9097,   9136) |**************+
+Info: [  9136,   9175) |******************************************+
+Info: [  9175,   9214) |**********************+
+Info: [  9214,   9253) |+
+Info: [  9253,   9292) | 
+Info: [  9292,   9331) |+
+Info: Running post-routing legalisation...
+
+Info: Program finished normally.

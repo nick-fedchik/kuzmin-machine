@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-11-10T09:17:23.157862+00:00",
+  "results": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/mfedchyk/GitHub/nick-fedchik/drafts",
+        "show",
+        "20b63a9faaacbb371bad0d34c1f7519d1bcf63e7:KuzminMachine/02-engineering-hardware/rtl/kpol_txn_gate.sv"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "historical_sha256": "b77438e216c7a770b8c206b678d27523c52f8e1d1216d51a2bd38dbe7cb20943",
+      "migrated_path": "hw/rtl/core/kpol_txn_gate.sv",
+      "migrated_sha256": "b77438e216c7a770b8c206b678d27523c52f8e1d1216d51a2bd38dbe7cb20943",
+      "bytes_match": true
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/mfedchyk/GitHub/nick-fedchik/drafts",
+        "show",
+        "20b63a9faaacbb371bad0d34c1f7519d1bcf63e7:KuzminMachine/04-verification-and-qa/benchmarks/av04_formal/av04_gate_props.sv"
+      ],
+      "returncode": 128,
+      "stderr": "fatal: path 'KuzminMachine/04-verification-and-qa/benchmarks/av04_formal/av04_gate_props.sv' exists on disk, but not in '20b63a9faaacbb371bad0d34c1f7519d1bcf63e7'\n",
+      "historical_sha256": null,
+      "migrated_path": "experiments/AV-04/scripts/av04_gate_props.sv",
+      "migrated_sha256": "9d8988d4310e3060f4b347bf52b83f3ba0dfb81bbc0805f6c7ca559345c57f35",
+      "bytes_match": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/mfedchyk/GitHub/nick-fedchik/drafts",
+        "show",
+        "20b63a9faaacbb371bad0d34c1f7519d1bcf63e7:KuzminMachine/04-verification-and-qa/benchmarks/av04_formal/run_av04_formal.py"
+      ],
+      "returncode": 128,
+      "stderr": "fatal: path 'KuzminMachine/04-verification-and-qa/benchmarks/av04_formal/run_av04_formal.py' exists on disk, but not in '20b63a9faaacbb371bad0d34c1f7519d1bcf63e7'\n",
+      "historical_sha256": null,
+      "migrated_path": "experiments/AV-04/scripts/run_av04_formal.py",
+      "migrated_sha256": "c4ee194cfe3d8b37975ecaee54d99c908a90435c8b444c3202ece5fb517e45d9",
+      "bytes_match": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/mfedchyk/GitHub/nick-fedchik/drafts",
+        "show",
+        "62219ef0927bc0ca427deabc533833fa41960e43:KuzminMachine/04-verification-and-qa/benchmarks/av08_scaling/run_av08_scaling.py"
+      ],
+      "returncode": 128,
+      "stderr": "fatal: path 'KuzminMachine/04-verification-and-qa/benchmarks/av08_scaling/run_av08_scaling.py' exists on disk, but not in '62219ef0927bc0ca427deabc533833fa41960e43'\n",
+      "historical_sha256": null,
+      "migrated_path": "experiments/AV-08/scripts/run_av08_scaling.py",
+      "migrated_sha256": "f523fa19b36f17c9138ca8ab2dffd8a4ae496d0b41285c4e4d3d141f9608d57d",
+      "bytes_match": false
+    }
+  ]
+}
