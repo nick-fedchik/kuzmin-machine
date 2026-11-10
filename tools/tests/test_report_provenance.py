@@ -1,6 +1,7 @@
 """Synthetic provenance fixtures: not experimental or hardware evidence."""
 
 import copy
+from datetime import datetime, timedelta, timezone
 import importlib.util
 import json
 from pathlib import Path
@@ -37,7 +38,7 @@ def experiment(tmp_path):
         "runs": [{
             "command": "python3 synthetic_measurement.py",
             "git_commit": git("rev-parse", "HEAD"),
-            "timestamp": "2026-11-10T09:00:00+00:00",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "host": "synthetic-fixture",
             "raw": [{
                 "path": raw.relative_to(root).as_posix(),
@@ -58,7 +59,11 @@ def test_complete_fixture_and_cli_pass(experiment):
         capture_output=True, text=True,
     )
     assert result.returncode == 0
-    assert json.loads(result.stdout)["status"] == "PASS"
+    data = json.loads(result.stdout)
+    assert data["status"] == "STRUCTURAL_PASS"
+    assert data["s1_status"] == "NOT_ASSESSED"
+    assert data["result_values_verified"] is False
+    assert data["metadata_authenticated"] is False
 
 
 @pytest.mark.parametrize("field", ["command", "git_commit", "timestamp", "host", "raw", "lines"])
@@ -67,7 +72,7 @@ def test_missing_required_provenance_fails(experiment, field):
     del metadata["runs"][0][field]
     sidecar.write_text(json.dumps(metadata))
     result = tool.check(root)
-    assert result["status"] == "FAIL"
+    assert result["status"] == "STRUCTURAL_FAIL"
     assert result["reports"][0]["uncovered_lines"] == [2, 3]
 
 
@@ -86,7 +91,7 @@ def test_invalid_or_partial_provenance_fails(experiment, field, value):
     root, _, _, sidecar, metadata = experiment
     metadata["runs"][0][field] = value
     sidecar.write_text(json.dumps(metadata))
-    assert tool.check(root)["status"] == "FAIL"
+    assert tool.check(root)["status"] == "STRUCTURAL_FAIL"
 
 
 @pytest.mark.parametrize("mutation", ["report", "raw", "missing_raw", "missing_sidecar", "invalid_json"])
@@ -107,7 +112,7 @@ def test_changed_or_missing_evidence_fails(experiment, mutation):
         capture_output=True, text=True,
     )
     assert result.returncode == 1
-    assert json.loads(result.stdout)["status"] == "FAIL"
+    assert json.loads(result.stdout)["status"] == "STRUCTURAL_FAIL"
 
 
 def test_new_report_is_not_silently_skipped(experiment):
@@ -116,12 +121,12 @@ def test_new_report_is_not_silently_skipped(experiment):
     other.mkdir()
     (other / "report.md").write_text("Latency: 7 ns\n")
     result = tool.check(root)
-    assert result["status"] == "FAIL"
+    assert result["status"] == "STRUCTURAL_FAIL"
     assert len(result["reports"]) == 2
 
 
 def test_empty_scope_fails(tmp_path):
-    assert tool.check(tmp_path)["status"] == "FAIL"
+    assert tool.check(tmp_path)["status"] == "STRUCTURAL_FAIL"
 
 
 def test_multiple_runs_jointly_cover_report(experiment):
@@ -131,7 +136,7 @@ def test_multiple_runs_jointly_cover_report(experiment):
     second["lines"] = [3]
     metadata["runs"].append(second)
     sidecar.write_text(json.dumps(metadata))
-    assert tool.check(root)["status"] == "PASS"
+    assert tool.check(root)["status"] == "STRUCTURAL_PASS"
 
 
 def test_valid_run_cannot_hide_invalid_run(experiment):
@@ -141,7 +146,7 @@ def test_valid_run_cannot_hide_invalid_run(experiment):
     metadata["runs"].append(second)
     sidecar.write_text(json.dumps(metadata))
     result = tool.check(root)
-    assert result["status"] == "FAIL"
+    assert result["status"] == "STRUCTURAL_FAIL"
     assert result["reports"][0]["uncovered_lines"] == []
 
 
@@ -151,7 +156,7 @@ def test_foreign_or_traversing_raw_path_fails(experiment):
         metadata = copy.deepcopy(original)
         metadata["runs"][0]["raw"][0]["path"] = path
         sidecar.write_text(json.dumps(metadata))
-        assert tool.check(root)["status"] == "FAIL"
+        assert tool.check(root)["status"] == "STRUCTURAL_FAIL"
 
 
 def test_regenerated_report_hash_does_not_hide_uncovered_unicode_number(experiment):
@@ -160,5 +165,73 @@ def test_regenerated_report_hash_does_not_hide_uncovered_unicode_number(experime
     metadata["report_sha256"] = tool.digest(report)
     sidecar.write_text(json.dumps(metadata))
     result = tool.check(root)
-    assert result["status"] == "FAIL"
+    assert result["status"] == "STRUCTURAL_FAIL"
     assert result["reports"][0]["uncovered_lines"] == [4]
+
+
+@pytest.mark.parametrize("relative", [
+    "experiments/AV-01/Report.md",
+    "experiments/AV-01/report.txt",
+    "experiments/AV-01/notes/report.md",
+    "experiments/KPOL-FIX/report.md",
+    "experiments/AV-01/results.MD",
+])
+def test_renamed_nested_and_non_av_reports_cannot_escape(experiment, relative):
+    root, _, _, _, _ = experiment
+    other = root / relative
+    other.parent.mkdir(parents=True, exist_ok=True)
+    other.write_text("New measurement: 999 ns\n")
+    result = tool.check(root)
+    assert result["status"] == "STRUCTURAL_FAIL"
+    assert any(item["report"] == relative and item["uncovered_lines"] for item in result["reports"])
+
+
+@pytest.mark.parametrize("timestamp", [
+    "1990-01-01T00:00:00+00:00",
+    (datetime.now(timezone.utc) + timedelta(days=1)).isoformat(),
+])
+def test_impossible_chronology_fails(experiment, timestamp):
+    root, _, _, sidecar, metadata = experiment
+    metadata["runs"][0]["timestamp"] = timestamp
+    sidecar.write_text(json.dumps(metadata))
+    result = tool.check(root)
+    assert result["status"] == "STRUCTURAL_FAIL"
+    assert any("timestamp:" in error for error in result["reports"][0]["errors"])
+
+
+def test_rehashed_false_value_is_not_certified_as_s1(experiment):
+    root, report, _, sidecar, metadata = experiment
+    report.write_text(report.read_text().replace("10 ns", "999 ns"))
+    metadata["report_sha256"] = tool.digest(report)
+    sidecar.write_text(json.dumps(metadata))
+    result = tool.check(root)
+    assert result["status"] == "STRUCTURAL_PASS"
+    assert result["s1_status"] == "NOT_ASSESSED"
+    assert result["result_values_verified"] is False
+    assert result["metadata_authenticated"] is False
+
+
+def test_nested_report_uses_experiment_raw_directory(experiment):
+    root, report, _, sidecar, _ = experiment
+    nested = report.parent / "notes"
+    nested.mkdir()
+    report.rename(nested / report.name)
+    sidecar.rename(nested / sidecar.name)
+    assert tool.check(root)["status"] == "STRUCTURAL_PASS"
+
+
+@pytest.mark.parametrize("shape", [None, [], 42, "text"])
+def test_invalid_provenance_object_shapes_fail_closed(experiment, shape):
+    root, _, _, sidecar, _ = experiment
+    sidecar.write_text(json.dumps(shape))
+    assert tool.check(root)["status"] == "STRUCTURAL_FAIL"
+
+
+def test_command_and_host_strings_do_not_authenticate_execution(experiment):
+    root, _, _, sidecar, metadata = experiment
+    metadata["runs"][0].update(command="echo 999", host="x")
+    sidecar.write_text(json.dumps(metadata))
+    result = tool.check(root)
+    assert result["status"] == "STRUCTURAL_PASS"
+    assert result["metadata_authenticated"] is False
+    assert result["s1_status"] == "NOT_ASSESSED"

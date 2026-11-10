@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Fail-closed provenance lint for canonical AV reports; see report-provenance.md."""
+"""Structural evidence lint, not S1 acceptance; see report-provenance.md."""
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -41,6 +41,13 @@ def validate_run(root, report, run, numeric_lines):
     timestamp = datetime.fromisoformat(required_text(run, "timestamp"))
     if timestamp.tzinfo is None:
         raise ValueError("timestamp: timezone required")
+    committed = subprocess.check_output(
+        ["git", "-C", str(root), "show", "-s", "--format=%ct", commit], text=True,
+    )
+    if timestamp < datetime.fromtimestamp(int(committed), timezone.utc):
+        raise ValueError("timestamp: earlier than source commit")
+    if timestamp > datetime.now(timezone.utc):
+        raise ValueError("timestamp: later than audit time")
     raw = run.get("raw")
     if not isinstance(raw, list) or not raw:
         raise ValueError("raw: nonempty list required")
@@ -51,7 +58,11 @@ def validate_run(root, report, run, numeric_lines):
         if relative.is_absolute() or ".." in relative.parts:
             raise ValueError("raw path must be repository-relative without '..'")
         path = (root / relative).resolve()
-        if not path.is_relative_to(root) or not path.is_relative_to(report.parent / "raw"):
+        relative_report = report.relative_to(root / "experiments")
+        experiment = root / "experiments"
+        if len(relative_report.parts) > 1:
+            experiment /= relative_report.parts[0]
+        if not path.is_relative_to(root) or not path.is_relative_to(experiment / "raw"):
             raise ValueError("raw path must stay inside this experiment's raw directory")
         expected = required_text(evidence, "sha256")
         if not re.fullmatch(r"[0-9a-f]{64}", expected) or digest(path) != expected:
@@ -110,14 +121,21 @@ def check_report(root, report):
 
 def check(root):
     root = Path(root).resolve()
+    experiments = root / "experiments"
     reports = [
         check_report(root, path)
-        for path in sorted((root / "experiments").glob("AV-*/report*.md"))
-        if re.fullmatch(r"AV-\d+", path.parent.name)
+        for path in sorted(experiments.rglob("*"))
+        if path.is_file() and path.suffix.lower() in {".md", ".txt"}
+        and not {"raw", "scripts"}.intersection(path.relative_to(experiments).parts[:-1])
+        and path != experiments / "PLAN.md"
     ]
-    errors = [] if reports else ["no canonical AV reports found"]
+    errors = [] if reports else ["no experimental report documents found"]
     return {
-        "status": "FAIL" if errors or any(report["errors"] for report in reports) else "PASS",
+        "status": "STRUCTURAL_FAIL" if errors or any(report["errors"] for report in reports)
+        else "STRUCTURAL_PASS",
+        "s1_status": "NOT_ASSESSED",
+        "result_values_verified": False,
+        "metadata_authenticated": False,
         "reports": reports,
         "errors": errors,
     }
@@ -132,13 +150,13 @@ def main(argv=None):
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
-        print(f"Provenance: {result['status']}; AV reports: {len(result['reports'])}")
+        print(f"{result['status']}; documents: {len(result['reports'])}; S1: NOT_ASSESSED")
         for report in result["reports"]:
             for error in report["errors"]:
                 print(f"{report['report']}: {error}")
         for error in result["errors"]:
             print(error)
-    return int(result["status"] != "PASS")
+    return int(result["status"] != "STRUCTURAL_PASS")
 
 
 if __name__ == "__main__":
