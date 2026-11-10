@@ -342,7 +342,10 @@ class KpolReferenceTests(unittest.TestCase):
             rule normal_write on Sample {
                 set Counter := Counter + 1;
             }
-            rule reject_write on reject Sample covers Overheat {
+            rule hazard_coverage on Sample when Temp > 100 covers Overheat {
+                set Trip := true;
+            }
+            rule reject_write on reject Sample {
                 set Trip := true;
             }
         }
