@@ -1,0 +1,17 @@
+{
+  "calls": [
+    {
+      "command": [
+        "yosys",
+        "-p",
+        "read_verilog -sv /home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kuzmin-machine/rcfc-source-match-build-20261110-01/historical/rtl/km_rcfc_engine.sv av08_top.v; synth_xilinx -flatten -abc9 -nosrl -arch xc7 -top av08_top; tee -o stat.txt stat; tee -q -o stat.json stat -json; write_json synth.json"
+      ],
+      "cwd": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kuzmin-machine/rcfc-source-match-build-20261110-01/historical/build/S3_rcfc_N8",
+      "started": "2026-11-10T18:02:18.769439+00:00",
+      "finished": "2026-11-10T18:02:21.196755+00:00",
+      "returncode": 0
+    }
+  ],
+  "yosys_log_sha256": "f9885af39b41424c512215c6278e31f5bae33219b69ae8567c42910587a1944f",
+  "compressed_log_sha256": "66b3153ae71cfd6153dbe9b56d9dcae48dd5c2c4bb00423930d23d86f3195e06"
+}

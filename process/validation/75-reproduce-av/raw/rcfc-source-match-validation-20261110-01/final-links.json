@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T18:07:01.561319+00:00",
+  "argv": [
+    "python3",
+    "tools/check_links.py"
+  ],
+  "KM_DRAFTS_REPO": "/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-rfc",
+  "returncode": 0,
+  "files": {
+    "3-final-links-stdout.txt": "a395ce93ca2c1b8e925d66bdea2f3d65e3c0ca307c870de33ea359a3c3fcc58b",
+    "3-final-links-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
