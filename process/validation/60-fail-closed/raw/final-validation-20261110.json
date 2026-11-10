@@ -1,0 +1,52 @@
+{
+  "commit": "c44a970ac8c49ff9507a5dcee94c353b55ffaefa",
+  "host": "AORUS-5-SE",
+  "date": "2026-11-10T17:50:24.831871+00:00",
+  "environment": {
+    "KM_DRAFTS_REPO": "/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-rfc"
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "origin/main",
+        "--",
+        ".",
+        ":(exclude)process/validation/60-fail-closed/raw"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "tools/check_links.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 32, пропущено 0\n",
+      "stderr": ""
+    }
+  ],
+  "full_diff_check": {
+    "exit_code": 2,
+    "raw_only_whitespace_warnings": 14,
+    "stdout": "process/validation/60-fail-closed/raw/run-20261110-01/focused.txt:36: trailing whitespace.\n+sw/kpol-ref/tests/test_kpol_reference.py:357: \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:37: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:40: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:51: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:55: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:62: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:70: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-01/focused.txt:93: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt:31: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt:39: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt:95: trailing whitespace.\n+E               \nprocess/validation/60-fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt:148: trailing whitespace.\n+E               \nprocess/validation/60-fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt:201: trailing whitespace.\n+    \nprocess/validation/60-fail-closed/raw/run-20261110-02/mutant-verifier-default-false.txt:51: trailing whitespace.\n+    \n"
+  },
+  "files": {
+    "process/validation/60-fail-closed/protocol.md": "c8281f69877120a0510923f5c70a29cf57c518a973fbf437d572fa521be6a9f6",
+    "process/validation/60-fail-closed/raw/run-20261110-01/focused.txt": "45a037163361301972fd0d3a66f2aa1958a7c603c5c88281e41fcbbcbd65db87",
+    "process/validation/60-fail-closed/raw/run-20261110-01/receipt.json": "087b46bb971a43fe44bf431af26f727edbf1b0e38051bf1334282c3f773bfbb8",
+    "process/validation/60-fail-closed/raw/run-20261110-02/focused.txt": "965caafd93347c8395e9502019bd63523c6af22e75eea036b4fd9eb3d0f3b070",
+    "process/validation/60-fail-closed/raw/run-20261110-02/full-pytest.txt": "2665f2549fd5f2a4f885f57bec0f25b054e6463c708b68ae5ce88986c06729bd",
+    "process/validation/60-fail-closed/raw/run-20261110-02/links.txt": "e2214df4dc23851982ed345ec5e8dd6d912a5833ee111346666da4821f2dd330",
+    "process/validation/60-fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt": "9e784f71cb95d97bf844a598c7af837709ca25198968e40e013cf62134e451da",
+    "process/validation/60-fail-closed/raw/run-20261110-02/mutant-verifier-default-false.txt": "99de2b7cbdee9cc5bc99d952f8e6deb3f0e7c94f980ff10c3a0a1bd71dea1ef1",
+    "process/validation/60-fail-closed/raw/run-20261110-02/receipt.json": "48dadc9a2710f70672c805501329101d36fa243cbd0b70c40a0e13f9317777e2",
+    "process/validation/60-fail-closed/raw/strict-links-20261110-01/links.txt": "a395ce93ca2c1b8e925d66bdea2f3d65e3c0ca307c870de33ea359a3c3fcc58b",
+    "process/validation/60-fail-closed/raw/strict-links-20261110-01/receipt.json": "913f1239b9294b993d9489590f402d98913102b98938e0c5244d80879644f946",
+    "process/validation/60-fail-closed/report.md": "963a9c89b01946872c3b2f228489533a7b4b6ebb0e02e07aadf1377cd118d435"
+  }
+}

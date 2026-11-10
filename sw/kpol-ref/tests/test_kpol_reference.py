@@ -17,6 +17,7 @@ from kpol_reference import (
     KpolError,
     UNKNOWN,
     parse_module,
+    verify_module,
     tokenize,
     compile_bram_image,
     compile_c_header,
@@ -313,7 +314,7 @@ class KpolReferenceTests(unittest.TestCase):
         module = parse_module(source)
 
         # 1. Alert спостереження: Temp = 60 (> 50, але <= 100) -> Alert активний, коміт проходить
-        interp = Interpreter(module, fail_closed_hazards=True)
+        interp = Interpreter(module)
         res1 = interp.run([EventInput("Sample", {"Temp": 60})])
         self.assertEqual(res1.alerts, ["MildWarm"])
         self.assertEqual(res1.hazards, [])
@@ -326,6 +327,59 @@ class KpolReferenceTests(unittest.TestCase):
         self.assertIn("RejectedHazard:Overheat", res2.rejected)
         # CurrentVal не змінився з 60, коміт заблоковано!
         self.assertEqual(res2.state["CurrentVal"], 60)
+
+    def test_default_hazard_policy_applies_to_run_and_proof(self):
+        source = """
+        Problem SafeDefaults {
+            Hazards {
+                Overheat on Sample to Trip: Temp > 100;
+            }
+        }
+        Solution SafeDefaults {
+            event Sample(Temp: Int32);
+            state Counter: Int32 = 0;
+            state Trip: Bool = false;
+            rule normal_write on Sample {
+                set Counter := Counter + 1;
+            }
+            rule hazard_coverage on Sample when Temp > 100 covers Overheat {
+                set Trip := true;
+            }
+            rule reject_write on reject Sample {
+                set Trip := true;
+            }
+        }
+        Proof SafeDefaults {
+            scenario HazardBlocksNormalWrite {
+                step Sample(Temp = 101);
+                expect Counter == 0;
+                expect Trip == true;
+            }
+        }
+        """
+        module = parse_module(source)
+        cases = [
+            (100, {"Counter": 1, "Trip": False}, [], [], []),
+            (101, {"Counter": 0, "Trip": True},
+             ["RejectedHazard:Overheat"], ["Overheat"], []),
+            (UNKNOWN, {"Counter": 0, "Trip": True},
+             ["RejectedHazardUnknown:Overheat"], [], ["UnknownHazard:Overheat"]),
+        ]
+        for value, state, rejected, hazards, diagnostics in cases:
+            with self.subTest(value=value):
+                result = Interpreter(module).run([EventInput("Sample", {"Temp": value})])
+                self.assertEqual(result.state, state)
+                self.assertEqual(result.rejected, rejected)
+                self.assertEqual(result.hazards, hazards)
+                self.assertEqual(result.diagnostics, diagnostics)
+
+        for name, verify in (
+            ("Interpreter.verify", Interpreter(module).verify),
+            ("verify_module", lambda: verify_module(module)),
+        ):
+            with self.subTest(entrypoint=name):
+                report = verify()
+                self.assertTrue(report.passed, report.failures)
 
     def test_v02_triad_problem_solution_proof_syntax_and_verification(self):
         """KPOL v0.2: Тріада Проблема-Вирішення-Доказ (Problem-Solution-Proof Docs-as-Code)."""
