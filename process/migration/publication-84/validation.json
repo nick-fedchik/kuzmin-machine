@@ -1,0 +1,89 @@
+{
+  "date_utc": "2026-11-10T08:24:39.431487+00:00",
+  "host": "AORUS-5-SE",
+  "source_commit": "774d575c0fd6b3a08e29f2b34b047dc26d5bb830",
+  "private_base": "7dd215a5573f72476a61e8c9eb99a030e87a6ae9",
+  "archive_sha256": "23c9bdd0e4a64e78289d43609f94db7012011c47c7e08de5075299ffb9c44ee1",
+  "archived_originals": 517,
+  "unchanged_existing_canonicals": 383,
+  "editorial_files": [
+    "01-concepts-and-theory/Concepts_And_Concept-Oriented_Programming_UA.md",
+    "01-concepts-and-theory/README.md",
+    "02-engineering-hardware/README.md",
+    "03-engineering-software/README.md",
+    "04-verification-and-qa/README.md",
+    "05-applications-and-guides/README.md",
+    "06-economic-model/README.md",
+    "07-scientific-opposition/README.md",
+    "README.md"
+  ],
+  "translation_body_unchanged": true,
+  "public_links_valid": true,
+  "other_drafts_topics_changed": false,
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "hw/tests",
+        "sw",
+        "experiments/AV-03/scripts",
+        "tools/tests",
+        "docs/business/test_tco_calculator.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "........................................................................ [ 58%]\n...................................................                      [100%]\n123 passed, 144 subtests passed in 1.87s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_links.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 32, пропущено 0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "process/migration/separate_publications.py",
+        "../drafts-wt-copilot-84",
+        "774d575c0fd6b3a08e29f2b34b047dc26d5bb830",
+        "--verify"
+      ],
+      "exit_code": 0,
+      "stdout": "Verified 517 archived originals and all mapped destinations.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "editorial_commit": "8c31e052b9d89b15162176ce23dcc2ee6936f3e6",
+  "migration_script_sha256": "c0d5ede914a84ea1b3f26e94b293b7d37af21a17790953bb6ddbc414fa341730",
+  "previous_canonical_preserved": true,
+  "unresolved_external_system_paths": 2,
+  "reader_test": "Editorial boundary understood; not an independent Review Report"
+}
