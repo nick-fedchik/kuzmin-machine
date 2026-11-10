@@ -1,0 +1,55 @@
+===================================================================
+   AV-07: МУТАЦІЙНЕ ТЕСТУВАННЯ ТЕСТБЕНЧІВ ТА ПЕРЕВІРКА ЧУТЛИВОСТІ  
+===================================================================
+
+Модуль: kpol_txn_gate (kpol_txn_gate_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-GATE-01] Ігнорування перевірки assumption_known / assumptio -> KILLED (SIMULATION_ASSERTION)
+  [MUT-GATE-02] Ігнорування інваріанту (завжди істинний, invariant -> KILLED (SIMULATION_ASSERTION)
+  [MUT-GATE-03] Занулення сигналу committed_o при успішному перехо -> KILLED (SIMULATION_ASSERTION)
+  [MUT-GATE-04] Відсутність оновлення state_o при коміті           -> KILLED (SIMULATION_ASSERTION)
+
+Модуль: km_euclid_core (km_euclid_core_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-EUCLID-01] Інверсія умови порівняння (reg_a_q < reg_b_q заміс -> KILLED (TIMEOUT)
+  [MUT-EUCLID-02] Помилка операції (додавання замість віднімання: re -> KILLED (TIMEOUT)
+  [MUT-EUCLID-03] Занулення результату НСД (result_q <= 32'd0)       -> KILLED (SIMULATION_ASSERTION)
+
+Модуль: km_concept_bram (km_concept_bram_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-BRAM-01] Інверсія адреси читання порту A (~a_addr_i)        -> KILLED (SIMULATION_ASSERTION)
+  [MUT-BRAM-02] Залипання даних читання порту B у 0                -> KILLED (SIMULATION_ASSERTION)
+  [MUT-BRAM-03] Ігнорування запису порту A (вимкнення WE)          -> KILLED (SIMULATION_ASSERTION)
+
+Модуль: km_cascade_arbiter_engine (km_cascade_arbiter_engine_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-ARBITER-01] Блокування інкременту Int8 переповнення (int8_val_ -> KILLED (SIMULATION_ASSERTION)
+  [MUT-ARBITER-02] Помилка кроку U8 переповнення (+2 замість +1)      -> KILLED (SIMULATION_ASSERTION)
+  [MUT-ARBITER-03] Спотворення байтового запису (0xAA замість 0x55)   -> KILLED (SIMULATION_ASSERTION)
+
+Модуль: km_rcfc_engine (km_rcfc_engine_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-RCFC-01] Підміна стану слота Fallback на IDLE               -> KILLED (SIMULATION_ASSERTION)
+  [MUT-RCFC-02] Занулення лічильника черги avalanche_enqueued_q    -> KILLED (SIMULATION_ASSERTION)
+  [MUT-RCFC-03] Занулення результату обчислення TC-01              -> KILLED (SIMULATION_ASSERTION)
+
+Модуль: km_stream_pipeline_engine (km_stream_pipeline_engine_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-PIPE-01] Занулення обчислення EMA фільтра (ema_calc = 18'sd -> KILLED (SIMULATION_ASSERTION)
+  [MUT-PIPE-02] Занулення диференційного керування (u_raw = 18'sd0 -> KILLED (SIMULATION_ASSERTION)
+  [MUT-PIPE-03] Занулення контрольної суми (accum_sum_q <= 32'd0)  -> KILLED (SIMULATION_ASSERTION)
+
+Модуль: km_io_trigger_engine (km_io_trigger_engine_tb.sv)
+  [BASELINE] Чистий RTL успішно проходить тестбенч.
+  [MUT-TRIGGER-01] Занулення детекції вхідної події (evt_detected_q < -> KILLED (SIMULATION_ASSERTION)
+  [MUT-TRIGGER-02] Інверсія прапорця проходження тесту pass_o         -> KILLED (SIMULATION_ASSERTION)
+  [MUT-TRIGGER-03] Спотворення лічильника подій (trigger_count_o <= 3 -> KILLED (SIMULATION_ASSERTION)
+
+-------------------------------------------------------------------
+Загалом мутантів:  22
+Вбито (Killed):    22
+Вижило (Survived): 0
+Mutation Score:    100.0%
+-------------------------------------------------------------------
+
+[OK] Звіт мутаційного тестування оновлено: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75/process/validation/75-reproduce-av/raw/run-20261110-01/av07/report.md

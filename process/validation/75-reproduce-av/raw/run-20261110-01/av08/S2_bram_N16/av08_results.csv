@@ -1,0 +1,4 @@
+series,N,seed,status,lut,ff,srl,carry4,bram,lutram,dsp,fmax_mhz,placed_lutx,placed_ffx,placed_carry4,placed_ramb18
+S2_bram,16,1,OK,27,104,0,0,1,0,0,440.33,29,104,0,2
+S2_bram,16,2,OK,27,104,0,0,1,0,0,432.71,29,104,0,2
+S2_bram,16,3,OK,27,104,0,0,1,0,0,440.33,29,104,0,2

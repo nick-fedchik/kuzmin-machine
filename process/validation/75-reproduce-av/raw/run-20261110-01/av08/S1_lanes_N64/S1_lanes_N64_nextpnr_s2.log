@@ -1,0 +1,1433 @@
+Info: Using uarch 'xilinx' for device 'xc7z020clg400-1'
+
+Info: Parsing XDC file...
+Info: Packing constants..
+Info: Inserting IO buffers..
+Info:     IO port 'rst_btn' driven by IBUF '$iopadmap$av08_top.rst_btn'
+Info:     IO port 'dout' driven by OBUF '$iopadmap$av08_top.dout'
+Info:     IO port 'din' driven by IBUF '$iopadmap$av08_top.din'
+Info:     IO port 'clk' driven by IBUF '$iopadmap$av08_top.clk'
+Info:     Constraining 'rst_btn' to pad 'X186Y9/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'dout' to pad 'X186Y65/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'din' to pad 'X186Y9/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'clk' to pad 'X186Y28/IOB_X0Y1.IOB33M.PAD'
+Info: Generating input buffer for '$iopadmap$av08_top.rst_btn'
+Info: Generating output buffer for '$iopadmap$av08_top.dout'
+Info: Generating input buffer for '$iopadmap$av08_top.din'
+Info: Generating input buffer for '$iopadmap$av08_top.clk'
+Info:     Created 4 PAD cells from:
+Info:              4x PAD
+Info: Preparing clocking...
+Info: Packing constants..
+Info: Packing IOLOGIC...
+Info: Packing cfg...
+Info: Packing PLLs...
+Info: Packing global buffers...
+Info: Packing Gigabit Transceivers..
+Info: Generating derived timing constraints...
+Info: Packing MUX[789]s..
+Info: Packing carries..
+Info:    Grouped 2044 MUXCYs and 2044 XORCYs into 254 chains.
+Info:    Moved 27 shared LUTs driving carry S inputs into the carry site.
+Info:    Blasted 0 non-chain MUXCYs and 0 non-chain XORCYs to soft logic
+Info: Packing LUTs..
+Info:     Created 10763 SLICE_LUTX cells from:
+Info:           3741x LUT1
+Info:            546x LUT2
+Info:            365x LUT3
+Info:           1165x LUT4
+Info:           2230x LUT5
+Info:           2716x LUT6
+Info: Packing DRAM..
+Info:    Transformed 0 tied-low DRAM address inputs to be tied-high
+Info: Packing BRAM..
+Info: BRAM cascade scan: 0 BRAM(s), 0 tie(s) seen, 0 dropped
+Info: Packing DSPs..
+Info: Packing flipflops..
+Info:     Created 10275 SLICE_FFX cells from:
+Info:           2496x FDCE
+Info:           7779x FDRE
+Info: Constrained 1185 LUTFF pairs.
+Info: Checksum: 0xcc1678cf
+
+Info: Device utilisation:
+Info: 	          SLICE_LUTX:   10763/ 106400    10%
+Info: 	           SLICE_FFX:   10275/ 106400     9%
+Info: 	              CARRY4:     573/  13300     4%
+Info: 	          PSEUDO_GND:       1/      1   100%
+Info: 	          PSEUDO_VCC:       1/      1   100%
+Info: 	               HARD0:       0/   1584     0%
+Info: 	             DSP48E1:       0/    220     0%
+Info: 	                 PAD:       4/    392     1%
+Info: 	       IOB33M_OUTBUF:       0/     96     0%
+Info: 	       IOB33S_OUTBUF:       0/     96     0%
+Info: 	        IOB33_OUTBUF:       1/    200     0%
+Info: 	     IOB33M_INBUF_EN:       0/     96     0%
+Info: 	     IOB33S_INBUF_EN:       0/     96     0%
+Info: 	      IOB33_INBUF_EN:       3/    200     1%
+Info: 	IOB33M_TERM_OVERRIDE:       0/     96     0%
+Info: 	IOB33S_TERM_OVERRIDE:       0/     96     0%
+Info: 	 IOB33_TERM_OVERRIDE:       0/    200     0%
+Info: 	       PULL_OR_KEEP1:       0/    392     0%
+Info: 	            IDELAYE2:       0/    200     0%
+Info: 	        OLOGICE3_TFF:       0/    200     0%
+Info: 	      OLOGICE3_OUTFF:       0/    200     0%
+Info: 	       OLOGICE3_MISR:       0/    200     0%
+Info: 	           OSERDESE2:       0/    200     0%
+Info: 	        ILOGICE3_IFF:       0/    200     0%
+Info: 	ILOGICE3_ZHOLD_DELAY:       0/    200     0%
+Info: 	           ISERDESE2:       0/    200     0%
+Info: 	               BUFIO:       0/     16     0%
+Info: 	            BUFGCTRL:       1/     32     3%
+Info: 	                 PS7:       0/      1     0%
+Info: 	               BSCAN:       0/      4     0%
+Info: 	            DCIRESET:       0/      1     0%
+Info: 	            DNA_PORT:       0/      1     0%
+Info: 	           EFUSE_USR:       0/      1     0%
+Info: 	                BUFG:       0/     32     0%
+Info: 	              BUFHCE:       0/     72     0%
+Info: 	            FIFO18E1:       0/    140     0%
+Info: 	          IDELAYCTRL:       0/      4     0%
+Info: 	            INVERTER:       0/     96     0%
+Info: 	          MMCME2_ADV:       0/      4     0%
+Info: 	        OLOGICE2_TFF:       0/    200     0%
+Info: 	      OLOGICE2_OUTFF:       0/    200     0%
+Info: 	           PLLE2_ADV:       0/      4     0%
+Info: 	            RAMB18E1:       0/    280     0%
+Info: 	            RAMB36E1:       0/    140     0%
+Info: 	           SELMUX2_1:       0/  40700     0%
+Info: 	        RAMBFIFO36E1:       0/    140     0%
+Info: 	           FRAME_ECC:       0/      1     0%
+Info: 	                ICAP:       0/      2     0%
+Info: 	             STARTUP:       0/      1     0%
+Info: 	          USR_ACCESS:       0/      1     0%
+Info: 	        ILOGICE2_IFF:       0/    200     0%
+Info: 	       OLOGICE2_MISR:       0/    200     0%
+
+Info:     source at X92Y77 reached 768 of 2401 offsets
+Info:     source at X81Y84 reached 752 of 2401 offsets
+Info:     source at X103Y68 reached 517 of 2401 offsets
+Info: Delay matrix: 1484 of 2401 offsets measured from 3 sources in 1.47s (window 24).
+Info: Delay matrix: interpolated 917 structural holes.
+Info: Delay matrix: out-of-window rates 16.1 ps/tile (x), 20.0 ps/tile (y).
+Info: Indexed 66 control sets.
+Info: Placed 4 cells based on constraints.
+Info: Creating initial analytic placement for 15958 cells, random placement wirelen = 3760471.
+Info:     at initial placer iter 0, wirelen = 5505
+Info:     at initial placer iter 1, wirelen = 7708
+Info:     at initial placer iter 2, wirelen = 8076
+Info:     at initial placer iter 3, wirelen = 10701
+Info: Running main analytical placer, max placement attempts per cell = 58438860.
+Info:     at iteration #1, type ALL: wirelen solved = 9977, spread = 550609, legal = 839361; time = 8.30s
+Info:     at iteration #2, type ALL: wirelen solved = 9639, spread = 323466, legal = 616249; time = 18.63s
+Info:     at iteration #3, type ALL: wirelen solved = 29531, spread = 265806, legal = 505050; time = 4.94s
+Info:     at iteration #4, type ALL: wirelen solved = 40727, spread = 250317, legal = 432815; time = 4.07s
+Info:     at iteration #5, type ALL: wirelen solved = 47872, spread = 249077, legal = 471330; time = 4.82s
+Info:     at iteration #6, type ALL: wirelen solved = 53844, spread = 233140, legal = 505834; time = 4.99s
+Info:     at iteration #7, type ALL: wirelen solved = 59516, spread = 209477, legal = 480557; time = 4.57s
+Info:     at iteration #8, type ALL: wirelen solved = 62826, spread = 207189, legal = 501409; time = 5.24s
+Info:     at iteration #9, type ALL: wirelen solved = 67481, spread = 202551, legal = 477217; time = 5.52s
+Info: HeAP Placer Time: 63.41s
+Info:   of which solving equations: 3.19s
+Info:   of which spreading cells: 0.54s
+Info:   of which strict legalisation: 58.52s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 487, wirelen = 432815
+Info:   at iteration #5: temp = 0.000000, timing cost = 511, wirelen = 337014
+Info:   at iteration #10: temp = 0.000000, timing cost = 462, wirelen = 322502
+Info:   at iteration #15: temp = 0.000000, timing cost = 447, wirelen = 317865
+Info:   at iteration #20: temp = 0.000000, timing cost = 437, wirelen = 316449
+Info:   at iteration #25: temp = 0.000000, timing cost = 436, wirelen = 316015
+Info:   at iteration #30: temp = 0.000000, timing cost = 436, wirelen = 315853
+Info:   at iteration #35: temp = 0.000000, timing cost = 436, wirelen = 315739
+Info:   at iteration #38: temp = 0.000000, timing cost = 435, wirelen = 315708 
+Info: SA placement time 44.02s
+
+Info: Max frequency for clock 'g0.clk_i': 133.23 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 88 endpoint(s)
+Info:          + represents [1,88) endpoint(s)
+Info: [  2494,   2847) |+
+Info: [  2847,   3200) |*+
+Info: [  3200,   3553) |**+
+Info: [  3553,   3906) |***+
+Info: [  3906,   4259) |*****+
+Info: [  4259,   4612) |*****+
+Info: [  4612,   4965) |**+
+Info: [  4965,   5318) |***+
+Info: [  5318,   5671) |**+
+Info: [  5671,   6024) |***+
+Info: [  6024,   6377) |**+
+Info: [  6377,   6730) |****+
+Info: [  6730,   7083) |****+
+Info: [  7083,   7436) |****+
+Info: [  7436,   7789) |*****+
+Info: [  7789,   8142) |***+
+Info: [  8142,   8495) |******+
+Info: [  8495,   8848) |*******************+
+Info: [  8848,   9201) |************************************************************ 
+Info: [  9201,   9554) |**********************+
+Info: Checksum: 0x7bdab3f7
+Info: Running post-placement legalisation...
+Info: Routing global clocks...
+Info:     routing clock 'g0.clk_i'
+Info: Running router2...
+Info: Setting up routing resources...
+Info: Running main router loop...
+Info:     iter=1 wires=361040 overused=25199 overuse=27492 archfail=NA
+Info:     iter=2 wires=378876 overused=10604 overuse=10762 archfail=NA
+Info:     iter=3 wires=384570 overused=5551 overuse=5578 archfail=NA
+Info:     iter=4 wires=387693 overused=3153 overuse=3155 archfail=NA
+Info:     iter=5 wires=389667 overused=2070 overuse=2073 archfail=NA
+Info:     iter=6 wires=391409 overused=1296 overuse=1296 archfail=NA
+Info:     iter=7 wires=392175 overused=963 overuse=963 archfail=NA
+Info:     iter=8 wires=392997 overused=714 overuse=714 archfail=NA
+Info:     iter=9 wires=393285 overused=579 overuse=579 archfail=NA
+Info:     iter=10 wires=393714 overused=455 overuse=455 archfail=NA
+Info:     iter=11 wires=394024 overused=369 overuse=369 archfail=NA
+Info:     iter=12 wires=394311 overused=316 overuse=316 archfail=NA
+Info:     iter=13 wires=394530 overused=280 overuse=280 archfail=NA
+Info:     iter=14 wires=394673 overused=237 overuse=237 archfail=NA
+Info:     iter=15 wires=394804 overused=215 overuse=215 archfail=NA
+Info:     iter=16 wires=394972 overused=186 overuse=186 archfail=NA
+Info:     iter=17 wires=395079 overused=176 overuse=176 archfail=NA
+Info:     iter=18 wires=395200 overused=162 overuse=162 archfail=NA
+Info:     iter=19 wires=395261 overused=159 overuse=159 archfail=NA
+Info:     iter=20 wires=395334 overused=137 overuse=137 archfail=NA
+Info:     iter=21 wires=395416 overused=133 overuse=133 archfail=NA
+Info:     iter=22 wires=395460 overused=129 overuse=129 archfail=NA
+Info:     iter=23 wires=395510 overused=123 overuse=123 archfail=NA
+Info:     iter=24 wires=395498 overused=111 overuse=111 archfail=NA
+Info:     iter=25 wires=395572 overused=105 overuse=105 archfail=NA
+Info:     iter=26 wires=395590 overused=94 overuse=94 archfail=NA
+Info:     iter=27 wires=395635 overused=82 overuse=82 archfail=NA
+Info:     iter=28 wires=395635 overused=81 overuse=81 archfail=NA
+Info:     iter=29 wires=395639 overused=72 overuse=72 archfail=NA
+Info:     iter=30 wires=395669 overused=70 overuse=70 archfail=NA
+Info:     iter=31 wires=395679 overused=60 overuse=60 archfail=NA
+Info:     iter=32 wires=395716 overused=58 overuse=58 archfail=NA
+Info:     iter=33 wires=395720 overused=61 overuse=61 archfail=NA
+Info:     iter=34 wires=395737 overused=63 overuse=63 archfail=NA
+Info:     iter=35 wires=395771 overused=58 overuse=58 archfail=NA
+Info:     iter=36 wires=395781 overused=54 overuse=54 archfail=NA
+Info:     iter=37 wires=395780 overused=52 overuse=52 archfail=NA
+Info:     iter=38 wires=395777 overused=55 overuse=55 archfail=NA
+Info:     iter=39 wires=395835 overused=40 overuse=40 archfail=NA
+Info:     iter=40 wires=395815 overused=46 overuse=46 archfail=NA
+Info:     iter=41 wires=395834 overused=39 overuse=39 archfail=NA
+Info:     iter=42 wires=395836 overused=36 overuse=36 archfail=NA
+Info:     iter=43 wires=395842 overused=42 overuse=42 archfail=NA
+Info:     iter=44 wires=395865 overused=40 overuse=40 archfail=NA
+Info:     iter=45 wires=395846 overused=47 overuse=47 archfail=NA
+Info:     iter=46 wires=395912 overused=38 overuse=38 archfail=NA
+Info:     iter=47 wires=395900 overused=33 overuse=33 archfail=NA
+Info:     iter=48 wires=395893 overused=35 overuse=35 archfail=NA
+Info:     iter=49 wires=395913 overused=31 overuse=31 archfail=NA
+Info:     iter=50 wires=395934 overused=32 overuse=32 archfail=NA
+Info:     iter=51 wires=395947 overused=31 overuse=31 archfail=NA
+Info:     iter=52 wires=395920 overused=29 overuse=29 archfail=NA
+Info:     iter=53 wires=395927 overused=26 overuse=26 archfail=NA
+Info:     iter=54 wires=395931 overused=25 overuse=25 archfail=NA
+Info:     iter=55 wires=395944 overused=22 overuse=22 archfail=NA
+Info:     iter=56 wires=395940 overused=18 overuse=18 archfail=NA
+Info:     iter=57 wires=395959 overused=22 overuse=22 archfail=NA
+Info:     iter=58 wires=395946 overused=23 overuse=23 archfail=NA
+Info:     iter=59 wires=395968 overused=20 overuse=20 archfail=NA
+Info:     iter=60 wires=395956 overused=24 overuse=24 archfail=NA
+Info:     iter=61 wires=395941 overused=21 overuse=21 archfail=NA
+Info:     iter=62 wires=395957 overused=24 overuse=24 archfail=NA
+Info:     iter=63 wires=395959 overused=20 overuse=20 archfail=NA
+Info:     iter=64 wires=395965 overused=24 overuse=24 archfail=NA
+Info:     iter=65 wires=395990 overused=26 overuse=26 archfail=NA
+Info:     iter=66 wires=395981 overused=29 overuse=29 archfail=NA
+Info:     iter=67 wires=395989 overused=24 overuse=24 archfail=NA
+Info:     iter=68 wires=395967 overused=28 overuse=28 archfail=NA
+Info:     iter=69 wires=395986 overused=24 overuse=24 archfail=NA
+Info:     iter=70 wires=396014 overused=25 overuse=25 archfail=NA
+Info:     iter=71 wires=396006 overused=24 overuse=24 archfail=NA
+Info:     iter=72 wires=396002 overused=26 overuse=26 archfail=NA
+Info:     iter=73 wires=396000 overused=30 overuse=30 archfail=NA
+Info:     iter=74 wires=396003 overused=29 overuse=29 archfail=NA
+Info:     iter=75 wires=396014 overused=27 overuse=27 archfail=NA
+Info:     iter=76 wires=396003 overused=22 overuse=22 archfail=NA
+Info:     iter=77 wires=395999 overused=24 overuse=24 archfail=NA
+Info:     iter=78 wires=396026 overused=18 overuse=18 archfail=NA
+Info:     iter=79 wires=396018 overused=18 overuse=18 archfail=NA
+Info:     iter=80 wires=396039 overused=15 overuse=15 archfail=NA
+Info:     iter=81 wires=396055 overused=11 overuse=11 archfail=NA
+Info:     iter=82 wires=396066 overused=10 overuse=10 archfail=NA
+Info:     iter=83 wires=396061 overused=8 overuse=8 archfail=NA
+Info:     iter=84 wires=396067 overused=8 overuse=8 archfail=NA
+Info:     iter=85 wires=396070 overused=8 overuse=8 archfail=NA
+Info:     iter=86 wires=396073 overused=8 overuse=8 archfail=NA
+Info:     iter=87 wires=396087 overused=8 overuse=8 archfail=NA
+Info:     iter=88 wires=396079 overused=8 overuse=8 archfail=NA
+Info:     iter=89 wires=396087 overused=6 overuse=6 archfail=NA
+Info:     iter=90 wires=396087 overused=6 overuse=6 archfail=NA
+Info:     iter=91 wires=396088 overused=5 overuse=5 archfail=NA
+Info:     iter=92 wires=396090 overused=3 overuse=3 archfail=NA
+Info:     iter=93 wires=396093 overused=3 overuse=3 archfail=NA
+Info:     iter=94 wires=396094 overused=3 overuse=3 archfail=NA
+Info:     iter=95 wires=396098 overused=3 overuse=3 archfail=NA
+Info:     iter=96 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=97 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=98 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=99 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=100 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=101 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=102 wires=396100 overused=2 overuse=2 archfail=NA
+Info:     iter=103 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=104 wires=396101 overused=2 overuse=2 archfail=NA
+Info:     iter=105 wires=396108 overused=1 overuse=1 archfail=NA
+Info:     iter=106 wires=396110 overused=1 overuse=1 archfail=NA
+Info:     iter=107 wires=396113 overused=1 overuse=1 archfail=NA
+Info:     iter=108 wires=396112 overused=0 overuse=0 archfail=0
+Info: 1000 slowest nets by runtime:
+                                                                         $PACKER_GND_NET   8351 1257.2ms
+                                                                                 w15[19]     10 335.7ms
+        $techmap$techmap105671$auto$ff.cc:337:slice$57052.$auto$abc9_ops.cc:411:prep_bypass$105599.CLR   2496 317.6ms
+                                                                                 w24[22]     10 235.0ms
+                                    $techmap347905$abc$337745$lut$aiger337744$25657.A[3]      2 226.5ms
+                                                                                  w27[3]     11 188.2ms
+                                                                                  w52[3]     10 175.3ms
+                                                                                 w53[55]      3 173.0ms
+                                                                                  w38[7]     11 167.5ms
+                                                                                 w29[10]     10 138.1ms
+                                                                                  w56[4]     10 136.3ms
+                                                                                  w46[2]      9 133.1ms
+                                                                                  w43[9]     10 129.2ms
+                                                                                 w14[18]     10 127.2ms
+                                                                                 w60[30]      9 124.5ms
+                                                                                  w48[4]     10 123.2ms
+                                    $techmap346418$abc$337745$lut$aiger337744$18608.A[4]      1 116.4ms
+                                                                                  w59[5]      8 114.1ms
+                                    $techmap347466$abc$337745$lut$aiger337744$27212.A[4]      1 103.7ms
+                                                                         $PACKER_VCC_NET  10755 100.5ms
+                                                                                  w60[4]     10 97.9ms
+                                                                                   w3[7]     11 95.9ms
+                                                                                  w9[56]      3 84.3ms
+                                                                                 w49[25]     11 84.2ms
+                                                                                 w49[24]     10 82.7ms
+                                    $techmap345927$abc$337745$lut$aiger337744$34598.A[4]      1 81.6ms
+                                                                                 w38[15]     11 75.6ms
+                                                                                  w25[3]     11 75.3ms
+                                                                                  w17[6]     10 75.0ms
+                                                                                 w26[18]     10 74.5ms
+                                                                                 w55[30]      9 73.8ms
+                                                                                  w37[7]     11 73.7ms
+                                                                                  w56[2]      8 71.8ms
+                                                                                  w12[7]     11 71.5ms
+                                                                                  w43[7]     11 70.0ms
+                                    $techmap345305$abc$337745$lut$aiger337744$44363.A[2]      2 68.4ms
+                                                                                 w29[12]     10 66.4ms
+                                                                                  w8[17]      9 66.4ms
+                                         $techmap345861$abc$337745$lut$aiger$o10744.A[1]      4 66.0ms
+                                                                                  w48[6]     10 63.4ms
+                                                                                  w15[1]     10 62.0ms
+                                                                                 w14[10]     10 61.3ms
+                                                                                  w12[4]     11 61.1ms
+                                                                                 w30[93]      3 58.9ms
+                                                                                 w16[25]     10 57.7ms
+                                                                                  w14[7]     10 57.0ms
+                                                                                  w27[6]     11 54.8ms
+                                                                                 w59[27]      9 54.1ms
+                                                                                 w29[21]     10 52.6ms
+                                                                                  w32[9]     10 51.0ms
+                                                                                 w15[21]     10 50.9ms
+                                                                                 w38[16]     10 50.1ms
+                                         $techmap348430$abc$337745$lut$aiger$o10620.A[4]      3 47.8ms
+                                                                                 w29[71]      3 47.1ms
+                                                                                  w28[4]     10 46.6ms
+                                                                                  w55[1]     11 46.2ms
+                                                                                 w48[12]     10 45.5ms
+                  $techmap343592$auto$abc_ops_reintegrate.cc:611:reintegrate$338194.A[3]      3 45.4ms
+                                         $techmap347183$abc$337745$lut$aiger$o10574.A[3]      4 45.0ms
+                                                                                   w9[3]     11 43.8ms
+                                         $techmap346815$abc$337745$lut$aiger$o11990.A[1]      4 43.8ms
+                  $techmap344120$auto$abc_ops_reintegrate.cc:611:reintegrate$337975.A[4]      2 43.1ms
+                                                                                 w28[12]     10 43.0ms
+                                                                                  w42[7]     11 42.6ms
+                                                                                 w45[13]     10 42.2ms
+                                                                                 w48[13]     11 41.4ms
+                                                                                  w31[8]      8 40.7ms
+                  $techmap343931$auto$abc_ops_reintegrate.cc:611:reintegrate$338059.A[4]      2 39.6ms
+                                                                                 w48[22]     11 39.4ms
+                                    $techmap343655$abc$337745$lut$aiger337744$63737.A[0]      2 39.3ms
+                                                                                 w49[27]     10 39.1ms
+                                                                                 w14[23]      8 39.1ms
+                                                                                 w14[27]      9 38.7ms
+                  $techmap343842$auto$abc_ops_reintegrate.cc:611:reintegrate$338083.A[3]      2 37.5ms
+                                                                                  w27[4]     10 37.1ms
+                                                                                 w31[10]     10 36.7ms
+                                                                                  w14[4]     10 36.2ms
+                                                                                 w33[10]     10 36.1ms
+                                                                                 w57[25]     10 35.9ms
+                                                                                  w57[3]     11 35.7ms
+                                                                                  w16[6]     10 35.7ms
+                                                                                 w11[18]     10 35.3ms
+                  $techmap343894$auto$abc_ops_reintegrate.cc:611:reintegrate$338061.A[1]      1 34.7ms
+                                                                                  w36[7]     11 34.6ms
+                                                                                 w48[91]      3 34.0ms
+                                                                                  w52[6]     10 33.8ms
+                                                                                 w11[21]     10 33.8ms
+                                                                                 w30[13]     10 33.5ms
+                                                                                  w37[8]      8 33.3ms
+                                                                                 w62[30]      9 33.3ms
+                                                                                  w6[14]      8 32.6ms
+                                                                                 w48[17]      8 32.5ms
+                                                                                 w59[17]      9 32.3ms
+                                                                                  w23[5]      9 32.1ms
+                                                                                  w31[6]     10 32.1ms
+                                                                                 w43[72]      3 32.0ms
+                                    $techmap346427$abc$337745$lut$aiger337744$65983.A[1]      2 31.8ms
+                                                                                  w8[25]     10 31.5ms
+                                                                                 w30[30]      9 31.2ms
+                                                                                  w29[4]     11 31.1ms
+                                                                                 w52[15]     10 31.0ms
+                                                                                 w13[13]     11 30.9ms
+                                                                                  w15[5]      9 30.9ms
+                                                                                  w57[4]     10 30.7ms
+                                                                                  w12[3]     10 30.2ms
+                                    $techmap345013$abc$337745$lut$aiger337744$42638.A[3]      2 30.2ms
+                                                                                  w32[4]     10 29.6ms
+                                                                                  w14[3]     10 29.5ms
+                                                                                  w9[18]     10 29.4ms
+                                                                                 w40[21]     10 29.4ms
+                                                                                  w53[6]     10 29.3ms
+                                                                                  w30[9]     10 29.2ms
+                                                                                 w13[10]     10 29.1ms
+                                                                                 w52[30]      9 28.9ms
+                                                                                  w26[3]     11 28.3ms
+                                                                                  w6[11]      8 28.0ms
+                                                                                 w57[23]      8 27.8ms
+                                                                                 w28[17]      8 27.6ms
+                  $techmap343575$auto$abc_ops_reintegrate.cc:611:reintegrate$338202.A[3]      1 27.6ms
+                                                                                 w48[31]     12 27.6ms
+                                                                                 w48[24]     10 27.3ms
+                                                                                 w33[31]     10 26.8ms
+                                                                                  w8[15]     10 26.6ms
+                                                                                  w30[4]     10 26.5ms
+                                                                                  w8[21]     10 26.1ms
+                                                                                 w26[22]     10 25.8ms
+                                             $techmap105889$auto$ff.cc:337:slice$48885.D     33 25.7ms
+                                                                                 w30[14]      8 25.6ms
+                                                                                  w4[16]     10 25.6ms
+                                         $techmap345125$abc$337745$lut$aiger$o12783.A[4]      2 25.4ms
+                                    $techmap346378$abc$337745$lut$aiger337744$43212.A[2]      1 25.4ms
+                                                                                 w12[12]     10 25.3ms
+                                                                                 xp2[59]      1 25.3ms
+                                                                                  w5[30]      9 25.0ms
+                                                                                  w18[5]      9 25.0ms
+                                                                                 w56[34]      3 25.0ms
+                                                                                  w8[30]      9 24.9ms
+                                                                                 w15[15]     11 24.9ms
+                                                                                 w53[10]     10 24.9ms
+                                                                                 w29[22]     11 24.8ms
+                                                                                  w33[3]     10 24.7ms
+                                                                                  w14[2]      8 24.7ms
+                                                                                 w12[26]      7 24.7ms
+                                                                                  w14[6]     10 24.5ms
+                                                                                 w14[11]      9 24.5ms
+                                                                                  w43[4]     10 24.5ms
+                  $techmap343442$auto$abc_ops_reintegrate.cc:611:reintegrate$338237.A[1]      2 24.2ms
+                                                                                  w43[6]     10 24.2ms
+                                                                                 w28[19]     10 24.0ms
+                  $techmap343844$auto$abc_ops_reintegrate.cc:611:reintegrate$338081.A[0]      1 23.9ms
+                                                                                 w31[12]     10 23.9ms
+                                                                                  w10[6]     10 23.8ms
+                                                                                 w49[29]      7 23.7ms
+                                                                                 w30[15]     10 23.7ms
+                                                                                 w55[16]     10 23.6ms
+                                                                                  w12[6]     10 23.5ms
+                                                                                 w27[31]     10 23.4ms
+                                                                                 w49[28]      9 23.3ms
+                                                                                 w52[19]     10 23.3ms
+                                                                                   w5[8]      8 23.3ms
+                                                                                 w58[31]     11 23.2ms
+                                                                                 w11[15]     10 23.0ms
+                                                                                  w31[4]     10 22.9ms
+                                                                                   w9[5]      9 22.9ms
+                                                                                 w45[31]     10 22.7ms
+                                                                                  w24[6]     10 22.7ms
+                                                                                 w30[10]     10 22.7ms
+                                    $techmap347504$abc$337745$lut$aiger337744$53725.A[1]      3 22.7ms
+                                                                                   w8[4]     10 22.6ms
+                                                                                 w14[24]     11 22.5ms
+                                                                                 w29[27]      9 22.5ms
+                                                                                 w30[21]     10 22.5ms
+                                                                                  w53[4]     10 22.4ms
+                                                                                  w29[6]     10 22.4ms
+                                                                                 w29[13]     10 22.2ms
+                                                                                 w52[10]     10 22.2ms
+                                                                                 w11[25]     10 22.1ms
+                                                                                 w46[13]     10 22.0ms
+                                                                                 w11[16]     10 21.9ms
+                                                                                 w52[11]      9 21.8ms
+                                                                                 w14[16]     11 21.8ms
+                                         $techmap345659$abc$337745$lut$aiger$o12527.A[3]      5 21.5ms
+                                                                                 w43[88]      3 21.4ms
+                                                                                 w56[25]     10 21.3ms
+                                                                                 w56[10]     10 21.2ms
+                                                                                 w31[21]     10 21.2ms
+                                                                                  w32[5]      9 21.2ms
+                                                                                  w11[4]     10 21.2ms
+                                                                                  w17[7]     10 21.0ms
+                                                                                 w29[18]     11 20.8ms
+                                                                                  w8[18]     10 20.8ms
+                                                                                 w31[94]      3 20.8ms
+                                                                                 w36[77]      3 20.7ms
+                                                                                  w30[6]     10 20.5ms
+                                                                                  w52[1]     10 20.5ms
+                                                                                  w25[6]     10 20.5ms
+                                                                                 w24[10]     10 20.3ms
+                                                                                 w36[22]     10 20.3ms
+                                                                                  w27[1]     10 20.3ms
+                                                                                 w14[25]     10 20.2ms
+                                                                                  w48[9]     10 20.1ms
+                  $techmap343809$auto$abc_ops_reintegrate.cc:611:reintegrate$338098.A[2]      3 20.0ms
+                                                                                  w8[22]     10 19.9ms
+                                                                                 w25[87]      3 19.9ms
+                                                                 $abc$337745$aiger$o4673      1 19.9ms
+                  $techmap343592$auto$abc_ops_reintegrate.cc:611:reintegrate$338194.A[2]      2 19.9ms
+                                    $techmap343099$abc$337745$lut$aiger337744$37067.A[2]      2 19.9ms
+                                                                                 w16[18]     10 19.8ms
+                                                                                  w28[3]     10 19.8ms
+                                                                                  w59[3]     10 19.8ms
+                                                                                 w32[13]     11 19.8ms
+                                                                                  w32[6]     10 19.7ms
+                  $techmap343492$auto$abc_ops_reintegrate.cc:611:reintegrate$338218.A[4]      3 19.7ms
+                                                                                 w32[90]      3 19.5ms
+                                                                                 w35[10]     10 19.4ms
+                                                                                  w31[3]     11 19.4ms
+                                                                                   w6[7]     10 19.3ms
+                                                                                 w41[17]      9 19.3ms
+                                                                                 w47[34]      3 19.3ms
+                                                                                 w26[13]     11 19.2ms
+                                                                                  w43[5]      8 19.2ms
+                                                                             dut_o[2394]     12 19.1ms
+                                                                                  w47[6]     10 19.1ms
+                                                                                 w29[55]      3 19.1ms
+                                                                                 w57[85]      3 19.1ms
+                                                                                 w28[28]     10 19.0ms
+                                                                                 w27[16]     11 19.0ms
+                                                                                 w18[28]      9 19.0ms
+                                                                                w42[106]      2 19.0ms
+                                                                                  w48[7]     10 19.0ms
+                                                                                 w53[24]     10 18.9ms
+                                                                                 w48[26]      7 18.9ms
+                                             $techmap105945$auto$ff.cc:337:slice$46789.D     33 18.9ms
+                  $techmap343494$auto$abc_ops_reintegrate.cc:611:reintegrate$338216.A[2]      1 18.9ms
+                                                                                 w53[26]      7 18.8ms
+                                                                             dut_o[2206]     11 18.7ms
+                                                                                   w9[4]     11 18.7ms
+                                                                                 w29[42]      3 18.7ms
+                                                                                  w49[5]      8 18.7ms
+                                                                                 w31[29]      7 18.7ms
+                                                                                  w25[4]     10 18.6ms
+                                                                                 w29[25]     11 18.6ms
+                                                                                  w10[9]     11 18.6ms
+                                                                                  w13[3]     10 18.5ms
+                                                                                 w47[46]      3 18.5ms
+                                                                                 w42[38]      3 18.5ms
+                                                                                 w28[15]     11 18.4ms
+                                                                                 w28[25]     11 18.4ms
+                  $techmap343936$auto$abc_ops_reintegrate.cc:611:reintegrate$338054.A[2]      3 18.3ms
+                                             $techmap105805$auto$ff.cc:337:slice$52029.D     33 18.2ms
+                                                                                 w27[30]      9 18.1ms
+                                                                                 w15[16]     10 18.1ms
+                                                                                 w26[12]     10 18.1ms
+                                                                                 w32[15]     10 18.0ms
+                                                                                 w60[31]     13 18.0ms
+                                                                                  w26[5]      8 18.0ms
+                                                                                w52[105]      6 18.0ms
+                                                                                 w36[15]     10 17.9ms
+                                                                                 w29[19]     10 17.9ms
+                                                                                 w37[10]     10 17.9ms
+                                                                                 w48[30]      9 17.9ms
+                                                                                 w15[24]     11 17.9ms
+                                                                                 w50[64]      2 17.8ms
+                                                                                 w25[13]     10 17.7ms
+                                                                                 w46[12]     10 17.7ms
+                                                                                  w4[11]      8 17.7ms
+                                                                                  w45[2]      8 17.6ms
+                                                                                  w52[9]     11 17.6ms
+                                                                                 w56[18]     10 17.6ms
+                                                                                  w28[5]      8 17.6ms
+                                                                                  w52[7]     10 17.6ms
+                                             $techmap105910$auto$ff.cc:337:slice$48098.D     33 17.6ms
+                                                                                 w56[15]     10 17.4ms
+                                                                                 w45[15]     10 17.4ms
+                                                                                  w54[7]     10 17.3ms
+                  $techmap343950$auto$abc_ops_reintegrate.cc:611:reintegrate$338049.A[5]      3 17.2ms
+                                                                                 w14[72]      3 17.2ms
+                                                                                 w18[17]      8 17.2ms
+                  $techmap344221$auto$abc_ops_reintegrate.cc:611:reintegrate$337935.A[5]      3 17.2ms
+                                                                                 w52[31]     10 17.1ms
+                                                                                 w37[21]     10 17.1ms
+                                                                                g0.clk_i  10275 17.0ms
+                                                                                 w52[14]      8 17.0ms
+                                                                                 w56[98]      2 16.9ms
+                                                                                 w16[27]     10 16.9ms
+                                                                                 w59[19]     11 16.8ms
+                                                                                 w53[28]      9 16.8ms
+                                                                                   w3[6]     10 16.8ms
+                                                                                 w52[12]     10 16.8ms
+                                                                                  w31[7]     11 16.8ms
+                                                                                 w18[29]      7 16.7ms
+                                                                                  w12[2]      8 16.7ms
+                                             $techmap106015$auto$ff.cc:337:slice$44169.D     33 16.7ms
+                                                                                  w38[2]      9 16.6ms
+                                                                                  w57[2]      8 16.6ms
+                                                                                 w15[14]      8 16.6ms
+                                                                             dut_o[3032]     10 16.6ms
+                                                                                 w30[46]      3 16.6ms
+                                                                                 w48[19]     10 16.5ms
+                                                                                 w15[78]      3 16.5ms
+                                                                                  w11[5]      8 16.5ms
+                                                                                  w49[4]     11 16.5ms
+                  $techmap343931$auto$abc_ops_reintegrate.cc:611:reintegrate$338059.A[2]      2 16.5ms
+                                                                                 w27[19]     10 16.4ms
+                                                                                 w33[16]     10 16.4ms
+                                                                                   w9[2]      8 16.4ms
+                                                                                 w32[28]      9 16.4ms
+                  $techmap343561$auto$abc_ops_reintegrate.cc:611:reintegrate$338206.A[3]      2 16.4ms
+                                                                                 w62[28]      9 16.3ms
+                                             $techmap105742$auto$ff.cc:337:slice$54386.D     33 16.3ms
+                                                                                  w13[2]      8 16.3ms
+                                    $techmap345926$abc$337745$lut$aiger337744$34580.A[4]      1 16.3ms
+                                                                                 w28[16]     10 16.3ms
+                                                                                 w38[37]      3 16.2ms
+                                                                                 w10[12]     10 16.2ms
+                                                                                 w11[20]      8 16.2ms
+                                                                                 w44[13]     10 16.2ms
+                                                                             dut_o[2676]     12 16.2ms
+                                                                                  w32[7]     11 16.1ms
+                                                                                 w56[80]      3 16.1ms
+                                                                                 w59[21]     10 16.1ms
+                                                                                 w33[38]      3 16.1ms
+                                                                                 w53[56]      3 16.0ms
+                                                                                  w34[6]     10 16.0ms
+                                                                                  w23[4]     10 16.0ms
+                                                                                 w38[27]      9 15.9ms
+                                                                                  w4[28]      9 15.9ms
+                                    $techmap343538$abc$337745$lut$aiger337744$46259.A[5]      1 15.9ms
+                                                                                 w46[97]      2 15.9ms
+                                                                                 w31[18]     10 15.9ms
+                                                                                 w11[22]     10 15.9ms
+                                                                                  w29[3]     10 15.9ms
+                                                                                 w18[15]     10 15.8ms
+                                             $techmap105917$auto$ff.cc:337:slice$47837.D     33 15.8ms
+                                                                             dut_o[2770]     12 15.8ms
+                                                                                 w55[25]     10 15.8ms
+                                                                                 w13[17]      8 15.8ms
+                                                                                  w42[6]     10 15.7ms
+                                                                                 w38[19]     10 15.7ms
+                                                                                  w27[8]      8 15.7ms
+                                                                                 w25[23]      8 15.7ms
+                                                                                   w9[7]     10 15.6ms
+                                                                                 w17[30]      9 15.6ms
+                                                                                 w56[19]     10 15.6ms
+                                                                                 w11[13]     10 15.6ms
+                                                                                 w12[15]     11 15.5ms
+                                                                                 w24[78]      3 15.5ms
+                                                                                 w24[76]      3 15.5ms
+                                                                                 w18[21]     10 15.5ms
+                                                                                 w44[22]     10 15.5ms
+                                                                                 w32[24]     10 15.5ms
+                                                                                 w18[25]     10 15.4ms
+                                                                                 w35[19]     10 15.4ms
+                                                                                   w8[3]     10 15.4ms
+                                                                                  w29[2]      8 15.4ms
+                                                                                 w25[15]     10 15.4ms
+                                                                                 w13[27]      9 15.4ms
+                                                                                 w44[54]      3 15.4ms
+                                                                                  w30[5]      8 15.3ms
+                                                                                  w37[3]     11 15.3ms
+                                                                                 w32[47]      3 15.3ms
+                                                                                 w53[25]     10 15.2ms
+                                                                                 w32[30]      9 15.2ms
+                                                                                 w48[15]     11 15.2ms
+                                                                                 w32[18]     10 15.2ms
+                                                                                  w36[9]     10 15.2ms
+                                                                                 w15[18]     10 15.2ms
+                                                                                 w13[11]      8 15.2ms
+                                                                                w46[106]      2 15.2ms
+                                                                                 w57[29]      7 15.2ms
+                                    $techmap346655$abc$337745$lut$aiger337744$18176.A[4]      1 15.1ms
+                                                                                  w25[9]     10 15.1ms
+                  $techmap343811$auto$abc_ops_reintegrate.cc:611:reintegrate$338096.A[4]      1 15.1ms
+                                                                                 w15[27]      9 15.1ms
+                                                                                 w15[12]     11 15.1ms
+                                                                                 w52[85]      3 15.1ms
+                                                                                  w51[4]     10 15.1ms
+                                                                                 w17[29]      7 15.0ms
+                                                                                 w42[12]     10 15.0ms
+                                                                                  w26[9]     10 15.0ms
+                                                                                  w51[1]     10 14.9ms
+                                                                                 w31[30]      9 14.9ms
+                                                                                 w44[12]     10 14.9ms
+                                                                                 w62[24]     10 14.9ms
+                                                                                 w26[15]     10 14.9ms
+                                                                                 w23[15]     10 14.9ms
+                                    $techmap345505$abc$337745$lut$aiger337744$49798.A[0]      1 14.8ms
+                                                                                  w18[2]      8 14.8ms
+                                                                                 w29[15]     11 14.8ms
+                                                                                 w43[29]      7 14.8ms
+                                                                                 w45[12]     10 14.8ms
+                                                                                w32[106]      2 14.8ms
+                                                                                 w33[29]      8 14.8ms
+                                                                                  w13[6]     10 14.8ms
+                                         $techmap345485$abc$337745$lut$aiger$o12557.A[4]      6 14.8ms
+                                                                                 w39[16]     10 14.7ms
+                                                                                  w8[16]     10 14.7ms
+                                                                                  w14[5]      9 14.7ms
+                                                                                 w30[62]      3 14.6ms
+                  $techmap344221$auto$abc_ops_reintegrate.cc:611:reintegrate$337935.A[3]      2 14.6ms
+                                                                                  w24[3]     11 14.6ms
+                                                                                 w11[11]      9 14.6ms
+                                                                                 w55[12]     10 14.6ms
+                                                                                   w4[6]     10 14.6ms
+                                                                                 w55[31]     10 14.6ms
+                                                                                  w15[7]     11 14.5ms
+                                                                                 w28[21]     11 14.5ms
+                                                                                  w18[3]     10 14.5ms
+                                                                                  w33[4]     10 14.5ms
+                                                                                  w32[3]     11 14.5ms
+                                         $techmap345745$abc$337745$lut$aiger$o12736.A[3]      3 14.5ms
+                                                                                 w48[28]      9 14.5ms
+                                                                                 w27[17]      8 14.5ms
+                                                                                  w46[9]     10 14.4ms
+                                                                                 w13[28]      9 14.4ms
+                                                                                  w5[15]     10 14.4ms
+                                                                                  w57[7]     11 14.4ms
+                                                                                 w27[18]     10 14.4ms
+                                                                                  w28[9]     10 14.4ms
+                                    $techmap344350$abc$337745$lut$aiger337744$31843.A[1]      1 14.4ms
+                                                                                  w60[6]     10 14.3ms
+                                                                                 w28[31]     10 14.3ms
+                                                                                  w55[7]     10 14.3ms
+                                                                                  w4[10]     10 14.3ms
+                                                                                  w12[1]     10 14.3ms
+                                                                                 w23[26]      8 14.3ms
+                                                                                   w6[6]     10 14.3ms
+                                                                                 w16[83]      3 14.2ms
+                                                                                 w26[73]      3 14.2ms
+                                                                                 w31[15]     10 14.2ms
+                                                                                  w36[3]     10 14.2ms
+                                                                                  w9[15]     10 14.2ms
+                                                                                 w45[22]     10 14.1ms
+                                             $techmap105903$auto$ff.cc:337:slice$48361.D     33 14.1ms
+                                                                                 w46[31]     10 14.1ms
+                                                                                  w56[9]     10 14.1ms
+                                                                                 w12[18]     10 14.1ms
+                                                                                 w30[37]      3 14.1ms
+                                                                                  w46[3]     11 14.1ms
+                                                                                 w18[24]     10 14.1ms
+                                                                                  w52[8]      8 14.0ms
+                  $techmap344061$auto$abc_ops_reintegrate.cc:611:reintegrate$338000.A[2]      2 14.0ms
+                                                                                 w30[74]      3 14.0ms
+                                                                                 w28[94]      3 14.0ms
+                                                                                   w8[6]     10 14.0ms
+                                                                                 w52[25]     10 14.0ms
+                                                                                 w44[16]     11 14.0ms
+                                                                                 w14[47]      3 14.0ms
+                                                                                 w42[15]     11 14.0ms
+                                                                                  w6[15]     11 14.0ms
+                                                                                 w9[105]      6 13.9ms
+                                    $techmap345016$abc$337745$lut$aiger337744$45770.A[4]      1 13.9ms
+                                                                             dut_o[2441]     11 13.9ms
+                                                                             dut_o[2347]     11 13.9ms
+                                                                                 w35[22]     10 13.9ms
+                                                                                  w59[4]     10 13.8ms
+                                                                                 w31[50]      3 13.8ms
+                                                                                 w32[26]      7 13.8ms
+                                                                                 w11[29]      7 13.8ms
+                                                                                  w12[5]      8 13.8ms
+                                                                                  w44[6]     10 13.8ms
+                                                                                 w53[12]     10 13.7ms
+                                                                                 w42[30]      9 13.7ms
+                                    $techmap344924$abc$337745$lut$aiger337744$52033.A[2]      1 13.7ms
+                                                                                  w32[8]      8 13.7ms
+                                                                                  w44[9]     11 13.7ms
+                                                                                 w16[23]      8 13.7ms
+                                                                                 w49[12]     10 13.7ms
+                                         $techmap345508$abc$337745$lut$aiger$o10794.A[2]      4 13.7ms
+                                                                                  w24[1]     11 13.6ms
+                                                                                 w48[16]     10 13.6ms
+                                                                  $abc$337745$aiger$o787      1 13.6ms
+                                                                                 w52[77]      3 13.6ms
+                                                                                  w5[18]     10 13.6ms
+                                                                                  w12[9]     10 13.6ms
+                                                                                  w43[3]     10 13.6ms
+                                                                                  w27[5]      9 13.6ms
+                                                                                 w59[30]     10 13.6ms
+                                                                                 w46[26]      7 13.5ms
+                                                                                 w44[25]     10 13.5ms
+                                                                                   w3[3]     11 13.5ms
+                                                                                 w40[22]     10 13.5ms
+                                                                                 w25[70]      3 13.5ms
+                                                                                w28[102]      2 13.5ms
+                                                                                  w11[2]      8 13.5ms
+                                                                                 w50[30]      9 13.5ms
+                                                                                 w56[30]      9 13.5ms
+                                                                                 w58[15]     10 13.5ms
+                                             $techmap105791$auto$ff.cc:337:slice$52553.D     33 13.5ms
+                                    $techmap344616$abc$337745$lut$aiger337744$35901.A[3]      2 13.5ms
+                                                                                 w43[56]      3 13.5ms
+                                                                                 w12[25]     10 13.5ms
+                                                                                  w28[1]     10 13.4ms
+                                                                                w49[106]      2 13.4ms
+                                                                                  w29[7]     11 13.4ms
+                                         $techmap348430$abc$337745$lut$aiger$o10620.A[1]      3 13.4ms
+                                                                                 w57[21]     10 13.4ms
+                                                                                 w15[10]     10 13.4ms
+                                                                                  w3[69]      3 13.4ms
+                                                                                 w54[13]     10 13.4ms
+                                         $techmap346125$abc$337745$lut$aiger$o10740.A[3]      4 13.3ms
+                                    $techmap347277$abc$337745$lut$aiger337744$25045.A[2]      1 13.3ms
+                                                                                 w46[19]     10 13.3ms
+                                                                                  w59[9]     11 13.3ms
+                                             $techmap106036$auto$ff.cc:337:slice$43384.D     33 13.3ms
+                                             $techmap106050$auto$ff.cc:337:slice$42847.D     33 13.3ms
+                                                                                  w48[1]     10 13.3ms
+                                                                                  w26[7]     10 13.3ms
+                                                                                  w60[3]     10 13.2ms
+                                                                                 w12[31]     12 13.2ms
+                                                                                 w28[30]      9 13.2ms
+                                                                                 w57[30]      9 13.2ms
+                                                                                 w43[19]     10 13.2ms
+                                                                                 w61[16]     10 13.2ms
+                                                                                 w56[13]     10 13.1ms
+                                                                                  w37[9]     11 13.1ms
+                                                                                 w21[12]     10 13.1ms
+                                                                                 w15[31]     10 13.1ms
+                                                                                  w48[8]      8 13.1ms
+                                                                                 w17[15]     10 13.1ms
+                                                                                 w48[79]      3 13.1ms
+                                                                                 w43[10]     10 13.1ms
+                                                                                 w44[23]      8 13.0ms
+                                                                                 w54[24]     11 13.0ms
+                                                                                 w49[30]      9 13.0ms
+                                                                                 w15[69]      3 13.0ms
+                                                                                 w36[71]      3 13.0ms
+                                                                                  w40[7]     11 13.0ms
+                                                                                  w59[7]     10 13.0ms
+                                                                                 w28[22]     10 13.0ms
+                                                                             dut_o[2300]     12 13.0ms
+                                                                                   w5[9]     10 13.0ms
+                                                                                 w52[17]      8 13.0ms
+                                                                                 w30[56]      3 13.0ms
+                                                                                 w29[81]      3 13.0ms
+                                                                                 w11[76]      3 12.9ms
+                                                                                 w46[22]     10 12.9ms
+                                                                                 w14[43]      3 12.9ms
+                                                                                 w30[18]     10 12.9ms
+                                                                                  w17[3]     11 12.9ms
+                                                                                 w52[20]      8 12.8ms
+                                                                                 w15[25]     11 12.8ms
+                                                                                 w57[22]     10 12.8ms
+                                                                                  w36[6]     10 12.8ms
+                                                                                 w25[10]     10 12.7ms
+                                                                                 w37[11]      8 12.7ms
+                                                                                 w17[13]     11 12.7ms
+                                                                                  w55[5]      8 12.7ms
+                                                                                 w58[30]      9 12.7ms
+                                                                                 w56[11]      8 12.7ms
+                                                                                  w3[15]     11 12.7ms
+                                             $techmap105861$auto$ff.cc:337:slice$49933.D     33 12.7ms
+                                                                                 w33[19]     10 12.7ms
+                                                                                 w36[25]     10 12.6ms
+                                                                                  w18[4]     10 12.6ms
+                                                                                 w32[16]     10 12.6ms
+                                                                                 w31[19]     10 12.6ms
+                                    $techmap344924$abc$337745$lut$aiger337744$52033.A[4]      1 12.6ms
+                                                                                 w33[30]      9 12.5ms
+                                                                                 w27[24]     10 12.5ms
+                                                                                  w61[7]     11 12.5ms
+                                                                                   w8[7]     11 12.5ms
+                                                                                 w50[19]     10 12.5ms
+                                    $techmap345459$abc$337745$lut$aiger337744$44623.A[1]      1 12.5ms
+                                                                                  w5[78]      3 12.5ms
+                                                                                  w42[3]     11 12.5ms
+                                                                                 w11[12]     10 12.5ms
+                                                                                 w13[19]     10 12.5ms
+                                                                                 w32[25]     10 12.5ms
+                                                                                 w6[100]      4 12.5ms
+                                                                                 w10[77]      3 12.5ms
+                                                                                 w53[38]      3 12.4ms
+                                                                                 w29[24]     10 12.4ms
+                                                                             dut_o[2911]     11 12.4ms
+                                                                                   w9[6]     10 12.4ms
+                                                                                 w43[17]      8 12.4ms
+                                                                                 w48[10]     10 12.4ms
+                                                                                 w24[31]     12 12.4ms
+                                                                                  w9[76]      3 12.4ms
+                                                                                 w33[86]      3 12.4ms
+                                                                                  w23[9]     10 12.4ms
+                                                                                 w38[48]      3 12.3ms
+                                                                                 w58[27]     10 12.3ms
+                                                                                 w6[105]      6 12.3ms
+                                             $techmap105812$auto$ff.cc:337:slice$51766.D     33 12.3ms
+                                                                                  w57[9]     10 12.3ms
+                                                                                 w15[22]     10 12.3ms
+                                                                                  w16[3]     10 12.3ms
+                                                                                 w59[18]     10 12.3ms
+                                                                                  w55[6]     10 12.3ms
+                                                                                 w10[17]      9 12.3ms
+                                                                                w29[102]      2 12.3ms
+                  $techmap343563$auto$abc_ops_reintegrate.cc:611:reintegrate$338204.A[4]      2 12.3ms
+                                    $techmap344864$abc$337745$lut$aiger337744$44394.A[3]      2 12.3ms
+                                    $techmap343354$abc$337745$lut$aiger337744$59394.A[1]      2 12.3ms
+                                                                                 w53[31]     10 12.3ms
+                                                                                  w28[6]     10 12.2ms
+                                                                                  w8[35]      3 12.2ms
+                                                                                 w51[30]      9 12.2ms
+                                                                                  w10[5]      8 12.2ms
+                                                                                 w49[13]     10 12.2ms
+                                                                                 w51[11]      9 12.2ms
+                  $techmap343808$auto$abc_ops_reintegrate.cc:611:reintegrate$338099.A[1]      2 12.2ms
+                                                                                 w61[29]      7 12.2ms
+                                    $techmap344130$abc$337745$lut$aiger337744$52653.A[3]      1 12.2ms
+                                                                                  w32[2]      8 12.2ms
+                                                                                 w25[18]     10 12.2ms
+                                                                                 w25[31]     11 12.1ms
+                                                                             dut_o[2535]     11 12.1ms
+                                                                                 w12[20]      8 12.1ms
+                                                                                 w16[15]     11 12.1ms
+                                                                 $abc$337745$aiger$o1352      1 12.1ms
+                                                                                 w24[71]      3 12.1ms
+                                                                                  w13[5]      8 12.1ms
+                                    $techmap348910$abc$337745$lut$aiger337744$76036.A[2]      1 12.1ms
+                                                                                  w6[10]     10 12.1ms
+                                                                                 w30[16]     10 12.1ms
+                                                                                  w8[31]     10 12.1ms
+                                                                                 w13[97]      2 12.0ms
+                                                                                 w41[26]      7 12.0ms
+                                    $techmap348136$abc$337745$lut$aiger337744$26634.A[5]      2 12.0ms
+                                                                                  w25[5]      9 12.0ms
+                                                                                  w11[3]     11 12.0ms
+                                                                                  w6[12]     10 12.0ms
+                                                                                 w35[68]      3 12.0ms
+                                                                                 w57[31]     10 12.0ms
+                                                                                 w33[18]     10 12.0ms
+                                                                                 w17[18]     10 12.0ms
+                                                                                 w32[21]     10 12.0ms
+                                                                                 w12[13]     10 12.0ms
+                                                                                 w43[22]     10 12.0ms
+                                                                                 w24[30]      9 12.0ms
+                                                                                 w53[18]     10 11.9ms
+                                                                                  w54[4]     10 11.9ms
+                                                                                 w21[19]     10 11.9ms
+                                                                                 w61[31]     11 11.9ms
+                                                                             dut_o[2112]     12 11.9ms
+                                                                                 w44[10]     10 11.9ms
+                                                                                 w40[23]      9 11.9ms
+                                                                                  w61[6]     10 11.9ms
+                                                                                  w47[5]      8 11.9ms
+                                                                                  w26[6]     11 11.9ms
+                                                                                   w7[7]     11 11.9ms
+                                                                                 w14[14]      8 11.9ms
+                                                                                  w7[21]     10 11.9ms
+                                                                                 w30[31]     12 11.9ms
+                                                                                 w52[23]      8 11.9ms
+                                                                                 w17[28]      9 11.9ms
+                                                                                 w48[20]      8 11.9ms
+                                                                                 w17[22]     10 11.8ms
+                                                                                  w28[7]     11 11.8ms
+                                                                                  w47[8]      9 11.8ms
+                                                                                 w18[22]     10 11.8ms
+                                                                                 w17[14]      8 11.8ms
+                                                   $auto$clkbufmap.cc:262:execute$349076      1 11.8ms
+                                                                                 w45[16]     10 11.8ms
+                                                                  $abc$337745$aiger$o788      1 11.8ms
+                                                                                 w52[97]      2 11.8ms
+                                                                                  w8[49]      3 11.8ms
+                                                                                 w10[76]      3 11.8ms
+                                                                                 w30[24]     10 11.8ms
+                                                                                 w30[27]      9 11.8ms
+                                                                                 w28[24]     11 11.8ms
+                                                                                 w32[11]      8 11.7ms
+                                                                                 w40[12]     10 11.7ms
+                                                                                  w7[35]      3 11.7ms
+                                                                                 w16[80]      3 11.7ms
+                                                                                 w54[31]     12 11.7ms
+                                                                                  w5[19]     10 11.7ms
+                  $techmap343562$auto$abc_ops_reintegrate.cc:611:reintegrate$338205.A[0]      2 11.7ms
+                                                                                 w13[24]     10 11.7ms
+                                                                                 w28[23]      9 11.7ms
+                                                                                 w42[26]      7 11.7ms
+                                                                                 w51[10]     10 11.7ms
+                                                                                xp1[358]      1 11.7ms
+                                                                                  w27[9]     10 11.7ms
+                                                                             dut_o[3033]     10 11.7ms
+                                                                                 w14[15]     10 11.7ms
+                                                                                  w49[6]     10 11.7ms
+                                                                                 w46[23]      8 11.7ms
+                                         $techmap346725$abc$337745$lut$aiger$o10628.A[3]      5 11.7ms
+                                                                                 w11[17]      8 11.6ms
+                                    $techmap345187$abc$337745$lut$aiger337744$60870.A[4]      1 11.6ms
+                                                                                  w9[25]     10 11.6ms
+                                                                                   w5[4]     10 11.6ms
+                                                                                  w9[14]      8 11.6ms
+                                                                                 w13[25]     10 11.6ms
+                                                                                 w48[25]     10 11.6ms
+                                                                                 w54[30]      9 11.6ms
+                                                                                 w10[28]      9 11.6ms
+                                                                                 w24[18]     10 11.6ms
+                                                                                 w42[27]     10 11.6ms
+                                                                                  w48[2]      8 11.6ms
+                                                                                 w29[67]      3 11.6ms
+                                                                                 w35[16]     10 11.6ms
+                  $techmap343493$auto$abc_ops_reintegrate.cc:611:reintegrate$338217.A[3]      3 11.6ms
+                  $techmap343523$auto$abc_ops_reintegrate.cc:611:reintegrate$338215.A[1]      2 11.6ms
+                                    $techmap344823$abc$337745$lut$aiger337744$46950.A[1]      1 11.6ms
+                                                                                 w50[12]     10 11.6ms
+                                                                                 w53[23]      8 11.5ms
+                                                                                 w53[30]      9 11.5ms
+                                                                                 w37[18]     10 11.5ms
+                                         $techmap347322$abc$337745$lut$aiger$o10792.A[3]      5 11.5ms
+                                                                                  w14[8]      8 11.5ms
+                                                                                 w52[28]      9 11.5ms
+                                                                                xp1[463]      1 11.5ms
+                                                                                 w54[35]      3 11.5ms
+                                    $techmap345792$abc$337745$lut$aiger337744$39313.A[3]      2 11.5ms
+                                                                                  w26[4]     10 11.5ms
+                                                                                  w9[65]      3 11.5ms
+                                                                                  w22[3]     10 11.5ms
+                                                                                  w10[2]      8 11.4ms
+                                                                                  w3[30]      9 11.4ms
+                                                                                 w25[28]      9 11.4ms
+                                                                                 w36[16]     10 11.4ms
+                                                                                 w3[105]      8 11.4ms
+                                                                                 w44[24]     10 11.4ms
+                                                                                  w29[5]      8 11.4ms
+                                                                                  w36[5]      8 11.4ms
+                                                                                 w32[79]      3 11.4ms
+                                                                                 w25[30]      9 11.4ms
+                                                                                 w18[11]      9 11.3ms
+                                                                             dut_o[1266]     12 11.3ms
+                                                                                 w47[10]     10 11.3ms
+                                    $techmap343522$abc$337745$lut$aiger337744$61469.A[3]      2 11.3ms
+                                                                                  w47[4]     10 11.3ms
+                                                                                 w55[11]      8 11.3ms
+                                                                                 w24[55]      3 11.3ms
+                                                                                 w43[18]     10 11.3ms
+                                                                                 w14[21]     10 11.3ms
+                                                                                 w36[31]     12 11.3ms
+                                                                                  w53[7]     10 11.3ms
+                                                                                 w18[30]      9 11.3ms
+                                                                                 w46[21]     10 11.2ms
+                                                                                 w27[25]     10 11.2ms
+                  $techmap343594$auto$abc_ops_reintegrate.cc:611:reintegrate$338192.A[5]      2 11.2ms
+                                                                                  w8[46]      3 11.2ms
+                                                                                 w56[12]     10 11.2ms
+                                                                                 w57[51]      3 11.2ms
+                                                                                 w15[51]      3 11.2ms
+                                                                                  w44[5]      9 11.2ms
+                                                                                 w33[12]     10 11.2ms
+                                                                                   w6[3]     11 11.2ms
+                                                                                 w10[19]     11 11.1ms
+                                                                                 w39[14]      9 11.1ms
+                                                                                 w41[18]     10 11.1ms
+                  $techmap344221$auto$abc_ops_reintegrate.cc:611:reintegrate$337935.A[1]      2 11.1ms
+                                                                                 xp2[73]      1 11.1ms
+                                                                                 w24[42]      3 11.1ms
+                                                                                  w17[4]     10 11.1ms
+                                                                                 w26[31]     10 11.1ms
+                                                                                 w33[11]      9 11.0ms
+                                                                                  w30[8]      9 11.0ms
+                  $techmap344222$auto$abc_ops_reintegrate.cc:611:reintegrate$337934.A[5]      2 11.0ms
+                                                                                 w43[15]     11 11.0ms
+                                                                                  w24[4]     10 11.0ms
+                                                                                 w57[15]     10 11.0ms
+                                                                                 w60[24]     10 11.0ms
+                                                                                 w16[69]      3 11.0ms
+                                                                                 w17[26]      7 11.0ms
+                                                                              dut_o[890]     11 10.9ms
+                                                                                 w59[16]     10 10.9ms
+                                                                                 w18[31]     12 10.9ms
+                  $techmap343966$auto$abc_ops_reintegrate.cc:611:reintegrate$338043.A[2]      2 10.9ms
+                                                                                xp1[429]      1 10.9ms
+                                                                                 w28[18]     10 10.9ms
+                                                                                 w30[20]      8 10.9ms
+                                                                                  w49[7]     11 10.9ms
+                                                                                  w4[13]     10 10.8ms
+                                    $techmap344717$abc$337745$lut$aiger337744$62056.A[4]      2 10.8ms
+                                                                                  w14[9]     10 10.8ms
+                                                                                 w23[25]     10 10.8ms
+                                                                                 w18[23]      9 10.8ms
+                                                                                 w59[81]      3 10.8ms
+                                                                                  w18[7]     10 10.8ms
+                                                                                 w25[79]      3 10.8ms
+                                                                                  w39[2]      8 10.8ms
+                                                                                  w58[4]     10 10.8ms
+                                                                                 w60[21]     10 10.8ms
+                                                                                 w51[13]     11 10.8ms
+                                                                                  w43[1]     11 10.8ms
+                                                                                 w12[27]      9 10.8ms
+                                                                                  w46[1]     10 10.8ms
+                                                                                 w29[39]      3 10.8ms
+                                                                                 w30[29]      7 10.8ms
+                                                                                 w15[85]      3 10.7ms
+                                                                                 w17[10]     10 10.7ms
+                                                                                  w8[83]      3 10.7ms
+                                                                                 w35[12]     10 10.7ms
+                                                                                  w3[16]     10 10.7ms
+                                                                                 w11[14]      8 10.7ms
+                                                                                  w15[4]     10 10.7ms
+                                                                                 w27[22]     10 10.7ms
+                                                                                 w49[10]     10 10.7ms
+                                                                                  w24[7]     11 10.7ms
+                                                                                 w25[25]     10 10.7ms
+                                                                                 w38[59]      3 10.7ms
+                  $techmap343948$auto$abc_ops_reintegrate.cc:611:reintegrate$338051.A[4]      2 10.7ms
+                                                                                 w12[16]     10 10.7ms
+                                                                                 w25[69]      3 10.6ms
+                                                                                   w0[6]     10 10.6ms
+                                                                                  w60[1]     10 10.6ms
+                                                                                 w11[28]      9 10.6ms
+                                                                                 w28[87]      3 10.6ms
+                                                                                 w27[39]      3 10.6ms
+                                                                                 w32[27]      9 10.6ms
+                                                                                  w25[2]      9 10.6ms
+                                                                                  w7[37]      3 10.6ms
+                                                                             dut_o[2488]     12 10.6ms
+                                    $techmap345492$abc$337745$lut$aiger337744$50236.A[5]      2 10.6ms
+                                                                                 w10[59]      3 10.6ms
+                                                                                 w59[23]      8 10.6ms
+                                                                                   w6[9]     10 10.6ms
+                                                                                 w29[23]      9 10.6ms
+                                                                                 w55[67]      3 10.6ms
+                                                                                 w28[26]      8 10.5ms
+                                                                                 w46[28]      9 10.5ms
+                                                                                 w45[28]      9 10.5ms
+                                                                                 w41[31]     11 10.5ms
+                                                                                  w51[3]     10 10.5ms
+                                                                                 w54[19]     10 10.5ms
+                                                                                 w61[28]      9 10.5ms
+                                                                                   w2[5]      9 10.5ms
+                                                                                 w46[11]      8 10.4ms
+                                                                                 w50[84]      3 10.4ms
+                                                                                 w58[17]      8 10.4ms
+                                                                                 w33[46]      3 10.4ms
+                                                                                 w24[25]     10 10.4ms
+                                                                                 w14[52]      3 10.4ms
+                                                                                  w14[1]     10 10.4ms
+                                                                                 w35[18]     10 10.4ms
+                                                                                  w7[31]     11 10.4ms
+                  $techmap343441$auto$abc_ops_reintegrate.cc:611:reintegrate$338238.A[0]      3 10.4ms
+                                                                                w23[105]      6 10.4ms
+                                                                                 w45[25]     10 10.4ms
+                                                                                 w26[19]     11 10.4ms
+                                                                                 w54[15]     10 10.4ms
+                                                                                 w47[24]      9 10.4ms
+                                                                                 w24[28]      9 10.4ms
+                                             $techmap105728$auto$ff.cc:337:slice$54908.D     33 10.4ms
+                                                                              dut_o[514]     12 10.4ms
+                                                                                  w53[5]      9 10.4ms
+                                                                                 w13[23]      8 10.3ms
+                                                                                   w3[4]     10 10.3ms
+                                                                                 w52[22]     10 10.3ms
+                                                                                 w30[95]      3 10.3ms
+                                                                                 w55[20]      8 10.3ms
+                                                                                 w25[24]     10 10.3ms
+                                                                                 w29[28]      9 10.3ms
+                                                                                 w33[27]      9 10.3ms
+                  $techmap344372$auto$abc_ops_reintegrate.cc:611:reintegrate$337879.A[2]      2 10.3ms
+                                                                                 w52[94]      3 10.3ms
+                                                                                  w54[3]     11 10.3ms
+                                                                                 w35[25]     10 10.3ms
+                                    $techmap345701$abc$337745$lut$aiger337744$17474.A[2]      1 10.3ms
+                                                                                 w56[16]     10 10.3ms
+                                                                                 w11[30]      9 10.3ms
+                                                                                 w55[10]     10 10.2ms
+                                                                                 w59[12]     10 10.2ms
+                                                                                 w31[49]      3 10.2ms
+                                                                                  w1[12]     10 10.2ms
+                                                                                 w44[28]      9 10.2ms
+                                                                                 w32[12]     10 10.2ms
+                                                                                 w52[13]     10 10.2ms
+                                                                                 w59[24]     11 10.2ms
+                                                                                 w24[14]      8 10.2ms
+                                                                                 w26[11]      9 10.2ms
+                  $techmap344234$auto$abc_ops_reintegrate.cc:611:reintegrate$337930.A[0]      2 10.2ms
+                                                                                 w36[48]      3 10.2ms
+                                                                                 w17[31]     10 10.2ms
+                                                                                 w58[24]     10 10.2ms
+                                                                                  w5[31]     10 10.2ms
+                                                                                 w25[21]     10 10.2ms
+                                                                                 w46[74]      3 10.2ms
+                                                                                xp1[421]      1 10.2ms
+                                                                                 w18[16]     10 10.2ms
+                                                                                 w24[19]     10 10.2ms
+                                                                                  w49[9]     10 10.2ms
+                                                                                 w46[15]     11 10.2ms
+                                                                                 w44[31]     10 10.2ms
+                                                                                 w26[27]      9 10.1ms
+                                                                                  w6[25]     10 10.1ms
+                                                                                 w57[20]      8 10.1ms
+                                                                                  w1[14]      8 10.1ms
+                                                                                 w41[19]     10 10.1ms
+                                         $techmap346771$abc$337745$lut$aiger$o11984.A[1]      3 10.1ms
+                                                                                  w8[61]      3 10.1ms
+                                                                                 w14[36]      3 10.1ms
+                                                                                 w47[31]     10 10.1ms
+                                                                                 xp2[77]      1 10.1ms
+                                                                                  w4[31]     10 10.1ms
+                                                                                  w2[27]      9 10.1ms
+                                                                                  w51[6]     10 10.1ms
+                                                                              dut_o[185]     11 10.1ms
+                                             $techmap106078$auto$ff.cc:337:slice$41780.D     33 10.1ms
+                                                                                 w14[13]     10 10.1ms
+                                                                                  w23[2]      8 10.1ms
+                                                                                 w61[18]     10 10.1ms
+                                                                                  w54[2]      8 10.1ms
+                                                                                 w32[85]      3 10.1ms
+                                                                                 w11[57]      3 10.1ms
+                                                                                 w28[14]      9 10.0ms
+                                                                                 w10[10]     10 10.0ms
+                                                                                 w27[10]     10 10.0ms
+                  $techmap343795$auto$abc_ops_reintegrate.cc:611:reintegrate$338104.A[4]      2 10.0ms
+                                                                                 w47[27]      9 10.0ms
+                                             $techmap105679$auto$ff.cc:337:slice$56792.D     33 10.0ms
+                                                                                 w46[30]      9 10.0ms
+                                                                                 w42[20]      8 10.0ms
+                                                                                 w35[21]     10 10.0ms
+                                                                                 w30[28]      9 10.0ms
+                                                                                  w34[7]     10 10.0ms
+                                                                                  w26[1]     11 10.0ms
+                                                                                 w38[24]     11 10.0ms
+                                                                                 w55[22]     10 10.0ms
+                                                                                 w31[24]     10 10.0ms
+                                                                                 w32[17]      8 10.0ms
+                                                                                 w28[10]     10 10.0ms
+                                                                                 w52[18]     10 9.9ms
+                                                                                  w39[3]     11 9.9ms
+                                                                                  w15[6]     10 9.9ms
+                                                                                 w36[24]     10 9.9ms
+                                                                                  w33[9]     10 9.9ms
+                                                                                  w36[2]      9 9.9ms
+                                    $techmap347301$abc$337745$lut$aiger337744$47498.A[3]      1 9.9ms
+                                                                                 w57[91]      3 9.9ms
+                                                                                 w12[24]     10 9.9ms
+                                                                                 w49[18]     11 9.9ms
+                                                                                 w33[15]     11 9.9ms
+                                         $techmap346449$abc$337745$lut$aiger$o10572.A[1]      3 9.9ms
+                                                                                  w57[5]      9 9.9ms
+                                    $techmap348910$abc$337745$lut$aiger337744$76036.A[4]      1 9.8ms
+                                                                                  w46[6]     10 9.8ms
+                                                                                 w43[27]      9 9.8ms
+                                                                                 w30[12]     10 9.8ms
+                                                                                 w40[31]     10 9.8ms
+                                                                                 w29[20]      9 9.8ms
+                                                                                 w15[20]      8 9.8ms
+                  $techmap343577$auto$abc_ops_reintegrate.cc:611:reintegrate$338200.A[2]      3 9.8ms
+                                                                                 w23[18]     10 9.8ms
+                                                                                  w9[12]     10 9.8ms
+                                                                                  w60[2]      8 9.8ms
+                                                                                  w60[5]      8 9.8ms
+                                                                                  w6[75]      3 9.8ms
+                                         $techmap346256$abc$337745$lut$aiger$o10763.A[2]      5 9.8ms
+                                                                                  w6[19]     10 9.8ms
+                                                                                 w46[18]     10 9.8ms
+                                                                                 w13[18]     10 9.8ms
+                                         $techmap345827$abc$337745$lut$aiger$o12597.A[4]      5 9.8ms
+                                                                                 w40[13]     11 9.8ms
+                                                                                 w45[39]      3 9.8ms
+                                                                                 w28[13]     10 9.7ms
+                                                                                  w56[6]     10 9.7ms
+                                                                                 w51[21]     10 9.7ms
+                                                                                  w3[31]     10 9.7ms
+                                                                 $abc$337745$aiger$o4631      1 9.7ms
+                  $techmap343464$auto$abc_ops_reintegrate.cc:611:reintegrate$338224.A[4]      3 9.7ms
+                                                                                 w31[22]     10 9.7ms
+                                                                                   w6[1]     10 9.7ms
+                                                                                  w62[1]     10 9.7ms
+                                                                                 w40[26]      8 9.6ms
+                                                                                  w10[3]     10 9.6ms
+                                                                                 w46[10]     10 9.6ms
+                                                                                 w20[16]     10 9.6ms
+                                                                                  w25[7]     10 9.6ms
+                                                                                 w53[11]      9 9.6ms
+                                                                                 w11[10]     10 9.6ms
+                                                                                  w3[24]     10 9.6ms
+                                                                                  w5[29]      7 9.6ms
+                                                                                 w18[20]      8 9.6ms
+                                                                                  w4[30]      9 9.6ms
+                                                                                 w24[27]      9 9.5ms
+                                                                                 w42[24]     10 9.5ms
+                                                                                 w55[68]      3 9.5ms
+                                                                                 w51[14]      8 9.5ms
+                                                                                 w21[31]     10 9.5ms
+                                                                                 w60[27]     10 9.5ms
+                                                                                   w6[4]     10 9.5ms
+                                                                                  w3[25]     10 9.5ms
+                                                                                   w4[7]     10 9.5ms
+                                                                                 w52[63]      3 9.5ms
+                                                                                 w45[26]      7 9.5ms
+                                                                                  w0[25]     10 9.5ms
+                                                                                 w15[23]      8 9.5ms
+                                                                                  w5[22]     10 9.5ms
+                                                                                 w49[45]      3 9.5ms
+                                                                                  w59[6]     10 9.4ms
+                  $techmap344221$auto$abc_ops_reintegrate.cc:611:reintegrate$337935.A[2]      2 9.4ms
+                                                                                  w1[71]      3 9.4ms
+                                                                                 w59[22]     10 9.4ms
+                                                                                  w8[60]      3 9.4ms
+                                                                                   w7[2]      8 9.4ms
+                                         $techmap346449$abc$337745$lut$aiger$o10572.A[3]      5 9.4ms
+                                                                             dut_o[2958]     12 9.4ms
+                                                                                  w33[7]     11 9.4ms
+                                                                                 w32[31]     10 9.4ms
+                                                                                 w26[29]      7 9.4ms
+                                                                                 w31[55]      3 9.4ms
+                                                                                 w40[48]      3 9.4ms
+                                                                                 w51[18]     10 9.4ms
+Info: Router2 time 44.55s
+Info: Running router1 to check that route is legal...
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 0 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:          0 |        0          0 |    0     0 |         0|       0.93       0.93|
+Info: Routing complete.
+Info: Router1 time 0.93s
+Info: Checksum: 0xc571acf8
+
+Info: Critical path report for clock 'g0.clk_i' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$34270.Q
+Info:    routing  1.55  1.90 Net w53[35] (136,55) -> (136,53)
+Info:                          Sink $abc$337745$lut$aiger$o7648.A2
+Info:                          Defined in:
+Info:                               av08_top.v:1069.17-1069.20
+Info:      logic  0.12  2.02 Source $abc$337745$lut$aiger$o7648.O6
+Info:    routing  1.96  3.98 Net $abc$337745$aiger$o7648 (136,53) -> (133,56)
+Info:                          Sink $abc$337745$aiger$o7648$LUT$$flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].A1
+Info:      logic  0.12  4.10 Source $abc$337745$aiger$o7648$LUT$$flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].O6
+Info:    routing  0.00  4.10 Net $abc$337745$aiger$o7648$legal$$flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1] (133,56) -> (133,56)
+Info:                          Sink $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.S1
+Info:      logic  0.51  4.62 Source $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CO3
+Info:    routing  0.06  4.68 Net $abc$337745$aiger$i15386 (133,56) -> (133,55)
+Info:                          Sink $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[1].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CIN
+Info:      logic  0.12  4.79 Source $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[1].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CO3
+Info:    routing  0.06  4.85 Net $abc$337745$aiger$i15394 (133,55) -> (133,54)
+Info:                          Sink $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[2].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CIN
+Info:      logic  0.31  5.17 Source $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[2].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.O3
+Info:    routing  4.58  9.75 Net $techmap343931$auto$abc_ops_reintegrate.cc:611:reintegrate$338059.A[2] (133,54) -> (136,48)
+Info:                          Sink $abc$337745$lut$aiger337744$53722.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  9.87 Source $abc$337745$lut$aiger337744$53722.O6
+Info:    routing  0.51  10.39 Net $techmap347509$abc$337745$lut$aiger$o12025.A[1] (136,48) -> (142,42)
+Info:                          Sink $abc$337745$lut$aiger$o12025.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  10.51 Source $abc$337745$lut$aiger$o12025.O6
+Info:    routing  2.42  12.93 Net $techmap105742$auto$ff.cc:337:slice$54386.D (142,42) -> (169,73)
+Info:                          Sink $auto$ff.cc:337:slice$24790.CE
+Info:                          Defined in:
+Info:                               /home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/kpol_txn_gate.sv:33.5-72.8
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/ff_map.v:31.41-31.97
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/cells_sim.v:686.9-686.10
+Info:      setup  0.10  13.03 Source $auto$ff.cc:337:slice$24790.CE
+Info: 1.89 ns logic, 11.14 ns routing
+
+ERROR: Max frequency for clock 'g0.clk_i': 76.74 MHz (FAIL at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 85 endpoint(s)
+Info:          + represents [1,85) endpoint(s)
+Info: [ -3031,  -2413) |+
+Info: [ -2413,  -1795) |+
+Info: [ -1795,  -1177) |+
+Info: [ -1177,   -559) |+
+Info: [  -559,     59) |+
+Info: [    59,    677) |*+
+Info: [   677,   1295) |***+
+Info: [  1295,   1913) |*****+
+Info: [  1913,   2531) |******+
+Info: [  2531,   3149) |*****+
+Info: [  3149,   3767) |***+
+Info: [  3767,   4385) |+
+Info: [  4385,   5003) |+
+Info: [  5003,   5621) |*+
+Info: [  5621,   6239) |*********+
+Info: [  6239,   6857) |*****************+
+Info: [  6857,   7475) |**+
+Info: [  7475,   8093) |*******+
+Info: [  8093,   8711) |**********************************************+
+Info: [  8711,   9329) |************************************************************ 
+
+Info: Critical path report for clock 'g0.clk_i' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$34270.Q
+Info:    routing  1.55  1.90 Net w53[35] (136,55) -> (136,53)
+Info:                          Sink $abc$337745$lut$aiger$o7648.A2
+Info:                          Defined in:
+Info:                               av08_top.v:1069.17-1069.20
+Info:      logic  0.12  2.02 Source $abc$337745$lut$aiger$o7648.O6
+Info:    routing  1.96  3.98 Net $abc$337745$aiger$o7648 (136,53) -> (133,56)
+Info:                          Sink $abc$337745$aiger$o7648$LUT$$flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].A1
+Info:      logic  0.12  4.10 Source $abc$337745$aiger$o7648$LUT$$flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].O6
+Info:    routing  0.00  4.10 Net $abc$337745$aiger$o7648$legal$$flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1] (133,56) -> (133,56)
+Info:                          Sink $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.S1
+Info:      logic  0.51  4.62 Source $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CO3
+Info:    routing  0.06  4.68 Net $abc$337745$aiger$i15386 (133,56) -> (133,55)
+Info:                          Sink $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[1].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CIN
+Info:      logic  0.12  4.79 Source $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[1].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CO3
+Info:    routing  0.06  4.85 Net $abc$337745$aiger$i15394 (133,55) -> (133,54)
+Info:                          Sink $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[2].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.CIN
+Info:      logic  0.31  5.17 Source $flatten\pe53.$ge$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_predicate_evaluator.sv:53$2487.genblk1.slice[2].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.O3
+Info:    routing  4.58  9.75 Net $techmap343931$auto$abc_ops_reintegrate.cc:611:reintegrate$338059.A[2] (133,54) -> (136,48)
+Info:                          Sink $abc$337745$lut$aiger337744$53722.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  9.87 Source $abc$337745$lut$aiger337744$53722.O6
+Info:    routing  0.51  10.39 Net $techmap347509$abc$337745$lut$aiger$o12025.A[1] (136,48) -> (142,42)
+Info:                          Sink $abc$337745$lut$aiger$o12025.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  10.51 Source $abc$337745$lut$aiger$o12025.O6
+Info:    routing  2.42  12.93 Net $techmap105742$auto$ff.cc:337:slice$54386.D (142,42) -> (169,73)
+Info:                          Sink $auto$ff.cc:337:slice$24790.CE
+Info:                          Defined in:
+Info:                               /home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/kpol_txn_gate.sv:33.5-72.8
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/ff_map.v:31.41-31.97
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/cells_sim.v:686.9-686.10
+Info:      setup  0.10  13.03 Source $auto$ff.cc:337:slice$24790.CE
+Info: 1.89 ns logic, 11.14 ns routing
+
+ERROR: Max frequency for clock 'g0.clk_i': 76.74 MHz (FAIL at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 85 endpoint(s)
+Info:          + represents [1,85) endpoint(s)
+Info: [ -3031,  -2413) |+
+Info: [ -2413,  -1795) |+
+Info: [ -1795,  -1177) |+
+Info: [ -1177,   -559) |+
+Info: [  -559,     59) |+
+Info: [    59,    677) |*+
+Info: [   677,   1295) |***+
+Info: [  1295,   1913) |*****+
+Info: [  1913,   2531) |******+
+Info: [  2531,   3149) |*****+
+Info: [  3149,   3767) |***+
+Info: [  3767,   4385) |+
+Info: [  4385,   5003) |+
+Info: [  5003,   5621) |*+
+Info: [  5621,   6239) |*********+
+Info: [  6239,   6857) |*****************+
+Info: [  6857,   7475) |**+
+Info: [  7475,   8093) |*******+
+Info: [  8093,   8711) |**********************************************+
+Info: [  8711,   9329) |************************************************************ 
+Info: Running post-routing legalisation...
+0 warnings, 2 errors
+
+Info: Program finished normally.

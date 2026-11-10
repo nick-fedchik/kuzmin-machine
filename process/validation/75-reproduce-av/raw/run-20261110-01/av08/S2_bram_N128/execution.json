@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python3",
+    "experiments/AV-08/scripts/run_av08_scaling.py",
+    "--series",
+    "S2_bram",
+    "--ns",
+    "128",
+    "--seeds",
+    "1",
+    "2",
+    "3",
+    "--jobs",
+    "1",
+    "--pnr-timeout",
+    "3600"
+  ],
+  "cwd": "/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean",
+  "environment_overrides": {
+    "AV08_OUT_DIR": "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75/process/validation/75-reproduce-av/raw/run-20261110-01/av08/S2_bram_N128",
+    "AV08_BUILD_DIR": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kuzmin-machine/reproduce75-build-20261110-01/S2_bram_N128",
+    "OPENXC7_DIR": "/home/mfedchyk/opt/openxc7"
+  },
+  "started": "2026-11-10T10:55:28.736249+00:00",
+  "finished": "2026-11-10T10:55:43.432040+00:00",
+  "returncode": 0,
+  "console_sha256": "ef14257331f4906ae0d1152f6a0098e7204d8ad619cd6989f17224c0644467c0"
+}

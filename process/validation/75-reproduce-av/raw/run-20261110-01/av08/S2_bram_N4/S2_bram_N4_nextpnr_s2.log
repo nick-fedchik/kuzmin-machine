@@ -1,0 +1,484 @@
+Info: Using uarch 'xilinx' for device 'xc7z020clg400-1'
+
+Info: Parsing XDC file...
+Info: Packing constants..
+Info: Inserting IO buffers..
+Info:     IO port 'rst_btn' driven by IBUF '$iopadmap$av08_top.rst_btn'
+Info:     IO port 'dout' driven by OBUF '$iopadmap$av08_top.dout'
+Info:     IO port 'din' driven by IBUF '$iopadmap$av08_top.din'
+Info:     IO port 'clk' driven by IBUF '$iopadmap$av08_top.clk'
+Info:     Constraining 'rst_btn' to pad 'X186Y9/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'dout' to pad 'X186Y65/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'din' to pad 'X186Y9/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'clk' to pad 'X186Y28/IOB_X0Y1.IOB33M.PAD'
+Info: Generating input buffer for '$iopadmap$av08_top.rst_btn'
+Info: Generating output buffer for '$iopadmap$av08_top.dout'
+Info: Generating input buffer for '$iopadmap$av08_top.din'
+Info: Generating input buffer for '$iopadmap$av08_top.clk'
+Info:     Created 4 PAD cells from:
+Info:              4x PAD
+Info: Preparing clocking...
+Info: Packing constants..
+Info: Packing IOLOGIC...
+Info: Packing cfg...
+Info: Packing PLLs...
+Info: Packing global buffers...
+Info: Packing Gigabit Transceivers..
+Info: Generating derived timing constraints...
+Info: Packing MUX[789]s..
+Info: Packing carries..
+Info:    Grouped 0 MUXCYs and 0 XORCYs into 0 chains.
+Info:    Blasted 0 non-chain MUXCYs and 0 non-chain XORCYs to soft logic
+Info: Packing LUTs..
+Info:     Created 29 SLICE_LUTX cells from:
+Info:              2x LUT1
+Info:             11x LUT2
+Info:              2x LUT4
+Info:              2x LUT5
+Info:             12x LUT6
+Info: Packing DRAM..
+Info:    Transformed 0 tied-low DRAM address inputs to be tied-high
+Info: Packing BRAM..
+Info: BRAM cascade scan: 1 BRAM(s), 0 tie(s) seen, 0 dropped
+Info: Packing DSPs..
+Info: Packing flipflops..
+Info:     Created 100 SLICE_FFX cells from:
+Info:              1x FDCE
+Info:             99x FDRE
+Info: Constrained 15 LUTFF pairs.
+Info: Checksum: 0x58456335
+
+Info: Device utilisation:
+Info: 	          SLICE_LUTX:      29/ 106400     0%
+Info: 	           SLICE_FFX:     100/ 106400     0%
+Info: 	              CARRY4:       0/  13300     0%
+Info: 	          PSEUDO_GND:       1/      1   100%
+Info: 	          PSEUDO_VCC:       1/      1   100%
+Info: 	               HARD0:       0/   1584     0%
+Info: 	             DSP48E1:       0/    220     0%
+Info: 	                 PAD:       4/    392     1%
+Info: 	       IOB33M_OUTBUF:       0/     96     0%
+Info: 	       IOB33S_OUTBUF:       0/     96     0%
+Info: 	        IOB33_OUTBUF:       1/    200     0%
+Info: 	     IOB33M_INBUF_EN:       0/     96     0%
+Info: 	     IOB33S_INBUF_EN:       0/     96     0%
+Info: 	      IOB33_INBUF_EN:       3/    200     1%
+Info: 	IOB33M_TERM_OVERRIDE:       0/     96     0%
+Info: 	IOB33S_TERM_OVERRIDE:       0/     96     0%
+Info: 	 IOB33_TERM_OVERRIDE:       0/    200     0%
+Info: 	       PULL_OR_KEEP1:       0/    392     0%
+Info: 	            IDELAYE2:       0/    200     0%
+Info: 	        OLOGICE3_TFF:       0/    200     0%
+Info: 	      OLOGICE3_OUTFF:       0/    200     0%
+Info: 	       OLOGICE3_MISR:       0/    200     0%
+Info: 	           OSERDESE2:       0/    200     0%
+Info: 	        ILOGICE3_IFF:       0/    200     0%
+Info: 	ILOGICE3_ZHOLD_DELAY:       0/    200     0%
+Info: 	           ISERDESE2:       0/    200     0%
+Info: 	               BUFIO:       0/     16     0%
+Info: 	            BUFGCTRL:       1/     32     3%
+Info: 	                 PS7:       0/      1     0%
+Info: 	               BSCAN:       0/      4     0%
+Info: 	            DCIRESET:       0/      1     0%
+Info: 	            DNA_PORT:       0/      1     0%
+Info: 	           EFUSE_USR:       0/      1     0%
+Info: 	                BUFG:       0/     32     0%
+Info: 	              BUFHCE:       0/     72     0%
+Info: 	            FIFO18E1:       0/    140     0%
+Info: 	          IDELAYCTRL:       0/      4     0%
+Info: 	            INVERTER:       0/     96     0%
+Info: 	          MMCME2_ADV:       0/      4     0%
+Info: 	        OLOGICE2_TFF:       0/    200     0%
+Info: 	      OLOGICE2_OUTFF:       0/    200     0%
+Info: 	           PLLE2_ADV:       0/      4     0%
+Info: 	            RAMB18E1:       0/    280     0%
+Info: 	            RAMB36E1:       1/    140     0%
+Info: 	           SELMUX2_1:       0/  40700     0%
+Info: 	        RAMBFIFO36E1:       0/    140     0%
+Info: 	           FRAME_ECC:       0/      1     0%
+Info: 	                ICAP:       0/      2     0%
+Info: 	             STARTUP:       0/      1     0%
+Info: 	          USR_ACCESS:       0/      1     0%
+Info: 	        ILOGICE2_IFF:       0/    200     0%
+Info: 	       OLOGICE2_MISR:       0/    200     0%
+
+Info:     source at X92Y77 reached 768 of 2401 offsets
+Info:     source at X81Y84 reached 752 of 2401 offsets
+Info:     source at X103Y68 reached 517 of 2401 offsets
+Info: Delay matrix: 1484 of 2401 offsets measured from 3 sources in 1.31s (window 24).
+Info: Delay matrix: interpolated 917 structural holes.
+Info: Delay matrix: out-of-window rates 16.1 ps/tile (x), 20.0 ps/tile (y).
+Info: Indexed 2 control sets.
+Info: Placed 4 cells based on constraints.
+Info: Creating initial analytic placement for 116 cells, random placement wirelen = 32334.
+Info:     at initial placer iter 0, wirelen = 216
+Info:     at initial placer iter 1, wirelen = 187
+Info:     at initial placer iter 2, wirelen = 173
+Info:     at initial placer iter 3, wirelen = 251
+Info: Running main analytical placer, max placement attempts per cell = 10000.
+Info:     at iteration #1, type ALL: wirelen solved = 165, spread = 802, legal = 5049; time = 0.01s
+Info:     at iteration #2, type ALL: wirelen solved = 123, spread = 715, legal = 3064; time = 0.01s
+Info:     at iteration #3, type ALL: wirelen solved = 139, spread = 901, legal = 2556; time = 0.01s
+Info:     at iteration #4, type ALL: wirelen solved = 155, spread = 666, legal = 2676; time = 0.01s
+Info:     at iteration #5, type ALL: wirelen solved = 229, spread = 652, legal = 2663; time = 0.01s
+Info:     at iteration #6, type ALL: wirelen solved = 291, spread = 1058, legal = 1773; time = 0.01s
+Info:     at iteration #7, type ALL: wirelen solved = 295, spread = 1027, legal = 1928; time = 0.01s
+Info:     at iteration #8, type ALL: wirelen solved = 340, spread = 1059, legal = 1921; time = 0.01s
+Info:     at iteration #9, type ALL: wirelen solved = 429, spread = 1076, legal = 1898; time = 0.01s
+Info:     at iteration #10, type ALL: wirelen solved = 449, spread = 1104, legal = 1911; time = 0.01s
+Info:     at iteration #11, type ALL: wirelen solved = 505, spread = 1137, legal = 1913; time = 0.01s
+Info: HeAP Placer Time: 0.35s
+Info:   of which solving equations: 0.01s
+Info:   of which spreading cells: 0.07s
+Info:   of which strict legalisation: 0.01s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 12, wirelen = 1773
+Info:   at iteration #5: temp = 0.000000, timing cost = 6, wirelen = 1478
+Info:   at iteration #10: temp = 0.000000, timing cost = 9, wirelen = 1419
+Info:   at iteration #15: temp = 0.000000, timing cost = 6, wirelen = 1401
+Info:   at iteration #15: temp = 0.000000, timing cost = 5, wirelen = 1401 
+Info: SA placement time 0.04s
+
+Info: Max frequency for clock 'dut.clk': 557.41 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [  8206,   8266) |****** 
+Info: [  8266,   8326) |** 
+Info: [  8326,   8386) | 
+Info: [  8386,   8446) |** 
+Info: [  8446,   8506) |****** 
+Info: [  8506,   8566) | 
+Info: [  8566,   8626) | 
+Info: [  8626,   8686) | 
+Info: [  8686,   8746) | 
+Info: [  8746,   8806) |* 
+Info: [  8806,   8866) |**** 
+Info: [  8866,   8926) | 
+Info: [  8926,   8986) |* 
+Info: [  8986,   9046) |* 
+Info: [  9046,   9106) |***** 
+Info: [  9106,   9166) | 
+Info: [  9166,   9226) |*********************** 
+Info: [  9226,   9286) |******************** 
+Info: [  9286,   9346) |** 
+Info: [  9346,   9406) |******************************** 
+Info: Checksum: 0x07d4d0be
+Info: Running post-placement legalisation...
+Info: Routing global clocks...
+Info:     routing clock 'dut.clk'
+Info: Running router2...
+Info: Setting up routing resources...
+Info: Running main router loop...
+Info:     iter=1 wires=3306 overused=78 overuse=82 archfail=NA
+Info:     iter=2 wires=3353 overused=27 overuse=27 archfail=NA
+Info:     iter=3 wires=3353 overused=9 overuse=9 archfail=NA
+Info:     iter=4 wires=3357 overused=2 overuse=2 archfail=NA
+Info:     iter=5 wires=3359 overused=0 overuse=0 archfail=0
+Info: 1000 slowest nets by runtime:
+                                                     $auto$clkbufmap.cc:262:execute$4901      1 24.2ms
+                                                                         $PACKER_VCC_NET    121 13.0ms
+                                                                         $PACKER_GND_NET    163 8.6ms
+                                                                               dut_o[55]      1 1.6ms
+                                                                                   sr[1]      4 1.1ms
+                                                                                  sr[41]      4 1.1ms
+                                                                                  sr[42]      4 1.1ms
+                                                                                  sr[43]      5 1.0ms
+                                                                                  sr[48]      2 1.0ms
+                                                                               dut_o[13]      1 1.0ms
+                                                                                   sr[0]      4 1.0ms
+                                                                               dut_o[47]      1 0.9ms
+                                                                                   sr[3]      5 0.9ms
+                                                                                  sr[39]      2 0.9ms
+                                                                                  sr[40]      6 0.9ms
+                                                                                dut_o[2]      1 0.8ms
+                                                                                  sr[20]      2 0.8ms
+                                                                                  sr[34]      2 0.8ms
+                                                                                  sr[81]      5 0.8ms
+                                                                                  sr[71]      2 0.8ms
+                                                                                  sr[17]      2 0.7ms
+                                                                               dut_o[33]      1 0.7ms
+                                                                               dut_o[59]      1 0.7ms
+                                                                               dut_o[34]      1 0.7ms
+                                                                                  sr[29]      2 0.7ms
+                                                                                   sr[7]      2 0.6ms
+                                                                                  sr[32]      2 0.6ms
+                                                                                  sr[23]      2 0.6ms
+                                                                                   sr[6]      2 0.6ms
+                                                                               dut_o[21]      1 0.6ms
+                                                                                  sr[21]      2 0.6ms
+                                                                                  sr[74]      2 0.5ms
+                                                                                  sr[14]      2 0.5ms
+                                                                                dut_o[0]      1 0.5ms
+                                                                                  sr[79]      2 0.5ms
+                                                                               dut_o[26]      1 0.5ms
+                                                                                  sr[44]      5 0.5ms
+                                                                               dut_o[58]      1 0.5ms
+                                                                               dut_o[36]      1 0.5ms
+                                               $techmap4885$abc$4864$lut$aiger$o167.A[5]      1 0.5ms
+                                                                                dut_o[5]      1 0.5ms
+                                                                               dut_o[30]      1 0.5ms
+                                                                                  sr[12]      2 0.5ms
+                                                                                  sr[72]      2 0.4ms
+                                                                               dut_o[15]      1 0.4ms
+                                                                                  sr[16]      2 0.4ms
+                                                                               dut_o[57]      1 0.4ms
+                                                                    $abc$4864$aiger$o164      1 0.4ms
+                                                                                  sr[54]      2 0.4ms
+                                                                                  sr[70]      2 0.4ms
+                                                                                  sr[66]      2 0.4ms
+                                                                               dut_o[60]      1 0.4ms
+                                                                                  sr[53]      2 0.4ms
+                                                                                  sr[76]      2 0.4ms
+                                                                                   sr[5]      2 0.4ms
+                                                                                  sr[52]      2 0.4ms
+                                                                               dut_o[54]      1 0.4ms
+                                                                                  xp2[0]      1 0.4ms
+                                                                                  sr[75]      2 0.4ms
+                                                                                  sr[33]      2 0.3ms
+                                                                                  sr[38]      2 0.3ms
+                                                                     $abc$4864$aiger$o32      2 0.3ms
+                                               $techmap4885$abc$4864$lut$aiger$o167.A[3]      1 0.3ms
+                                               $techmap4885$abc$4864$lut$aiger$o167.A[4]      1 0.3ms
+                                                                               dut_o[37]      1 0.3ms
+                                                                                  sr[61]      2 0.3ms
+                                                                                  sr[31]      2 0.3ms
+                                                                                   sr[2]      5 0.3ms
+                                                                                dut_o[1]      1 0.3ms
+                                                                               dut_o[45]      1 0.3ms
+                                                                                  sr[62]      2 0.3ms
+                                                                                  sr[69]      2 0.3ms
+                                                                                  sr[58]      2 0.3ms
+                                                                               dut_o[14]      1 0.3ms
+                                                                                  sr[57]      2 0.3ms
+                                                                                  sr[28]      2 0.3ms
+                                                                               dut_o[50]      1 0.3ms
+                                                                                  sr[27]      2 0.3ms
+                                                                                  sr[18]      2 0.3ms
+                                                                                   sr[9]      2 0.3ms
+                                                                                  sr[64]      2 0.3ms
+                                                                     $abc$4864$aiger$o33      2 0.3ms
+                                                                               dut_o[27]      1 0.3ms
+                                            $techmap4872$abc$4864$lut$not$aiger4863$10.A      1 0.3ms
+                                                                                  sr[73]      2 0.3ms
+                                                                                  sr[55]      2 0.3ms
+                                                                                  xp1[0]      1 0.3ms
+                                                                                dut_o[3]      1 0.3ms
+                                                                                  xp1[5]      1 0.3ms
+                                                                                dut_o[7]      1 0.2ms
+                                                                                  xp1[4]      1 0.2ms
+                                                                               dut_o[53]      1 0.2ms
+                                                                                  sr[67]      2 0.2ms
+                                                                                  sr[24]      2 0.2ms
+                                                                               dut_o[25]      1 0.2ms
+                                                                                  sr[35]      2 0.2ms
+                                                                                  sr[68]      2 0.2ms
+                                                                                dut_o[9]      1 0.2ms
+                                                                               dut_o[29]      1 0.2ms
+                                                                                  sr[19]      2 0.2ms
+                                                                     $abc$4864$aiger$o39      2 0.2ms
+                                                                                  sr[45]      2 0.2ms
+                                                                               dut_o[23]      1 0.2ms
+                                                                                  sr[22]      2 0.2ms
+                                                                               dut_o[20]      1 0.2ms
+                                                                               dut_o[24]      1 0.2ms
+                                                                               dut_o[39]      1 0.2ms
+                                                                                  xp1[3]      1 0.2ms
+                                                                                  sr[50]      2 0.2ms
+                                                                               dut_o[49]      1 0.2ms
+                                                                               dut_o[19]      1 0.2ms
+                                                                                 dut.clk    104 0.2ms
+                                                                     $abc$4864$aiger$o37      2 0.2ms
+                                                                                  sr[49]      2 0.2ms
+                                               $techmap4893$abc$4864$lut$aiger$o215.A[4]      1 0.2ms
+                                                                               dut_o[41]      1 0.2ms
+                                                                                   sr[4]      2 0.2ms
+                                                                                  sr[56]      2 0.2ms
+                                                                                  sr[13]      2 0.2ms
+                                                                               dut_o[61]      1 0.2ms
+                                                                                  sr[30]      2 0.2ms
+                                                                                  sr[15]      2 0.2ms
+                                                                               dut_o[63]      1 0.2ms
+                                                                               dut_o[40]      1 0.2ms
+                                                                                  sr[59]      2 0.2ms
+                                                                                  sr[77]      2 0.2ms
+                                                                               dut_o[51]      1 0.2ms
+                                                                                   sr[8]      2 0.2ms
+                                                                                dut_o[6]      1 0.2ms
+                                                                               dut_o[11]      1 0.2ms
+        $abc$4864$flatten\dut.$logic_and$/home/mfedchyk/GitHub/nick-fedchik/km-repro-75-clean/hw/rtl/core/km_concept_bram.sv:96$2092_Y      1 0.1ms
+                                                                               dut_o[43]      1 0.1ms
+                                                                               dut_o[31]      1 0.1ms
+                                                                               dut_o[10]      1 0.1ms
+                                                                                  sr[26]      2 0.1ms
+                                                                                  sr[78]      2 0.1ms
+        $techmap$techmap3578$auto$ff.cc:337:slice$3044.$auto$abc9_ops.cc:411:prep_bypass$3506.CLR      1 0.1ms
+                                                                               dut_o[35]      1 0.1ms
+                                                                               dut_o[42]      1 0.1ms
+                                                                    $abc$4864$aiger$o161      1 0.1ms
+                                                                                  sr[11]      2 0.1ms
+                                                                                  sr[63]      2 0.1ms
+                                                                               dut_o[18]      1 0.1ms
+                                                                               dut_o[52]      1 0.1ms
+                                                                               dut_o[38]      1 0.1ms
+                                                                               dut_o[32]      1 0.1ms
+                                                                                  sr[25]      2 0.1ms
+                                                                     $abc$4864$aiger$o38      2 0.1ms
+                                                                                dut_o[8]      1 0.1ms
+                                                                     $abc$4864$aiger$o34      2 0.1ms
+                                                                                  sr[46]      2 0.1ms
+                                                                                  sr[51]      2 0.1ms
+                                                                                  sr[60]      2 0.1ms
+                                                                                  sr[80]      2 0.1ms
+                                                                               dut_o[17]      1 0.1ms
+                                                                                  xp1[1]      1 0.1ms
+                                                                                   rst_n      1 0.1ms
+                                                                                  sr[37]      2 0.1ms
+                                                                               dut_o[46]      1 0.1ms
+                                                                               dut_o[56]      1 0.1ms
+                                                                               dut_o[44]      1 0.1ms
+                                                                                  xp1[8]      1 0.1ms
+                                                                     $abc$4864$aiger$o36      2 0.1ms
+                                                                                  sr[10]      2 0.1ms
+                                                                                  sr[47]      2 0.1ms
+                                                                                  sr[65]      2 0.1ms
+                                                                                  sr[36]      2 0.1ms
+                                                                               dut_o[48]      1 0.1ms
+                                                                               dut_o[12]      1 0.1ms
+                                                                                  xp1[6]      1 0.1ms
+                                                                               dut_o[22]      1 0.1ms
+                                                                               dut_o[62]      1 0.1ms
+                                                                                  xp1[2]      1 0.1ms
+                                                                                  xp2[1]      1 0.1ms
+                                                                     $abc$4864$aiger$o35      2 0.1ms
+                                               $techmap4885$abc$4864$lut$aiger$o167.A[2]      1 0.1ms
+                                                                                rsync[0]      1 0.1ms
+                                                                                 xp1[10]      1 0.0ms
+                                                                                  xp1[9]      1 0.0ms
+                                                                               dut_o[28]      1 0.0ms
+                                                                                  xp1[7]      1 0.0ms
+                                                                                dut_o[4]      1 0.0ms
+                                                                                     xr2      1 0.0ms
+                                                                                    dout      1 0.0ms
+                                                                               dut_o[16]      1 0.0ms
+                                                                             $0\xr0[2:2]      1 0.0ms
+                                                                        $0\rsync[1:0][0]      1 0.0ms
+                                                                           $0\xr0[10:10]      1 0.0ms
+                                                                             $0\xr0[3:3]      1 0.0ms
+                                                                             $0\xr0[0:0]      1 0.0ms
+                                                                             $0\xr0[7:7]      1 0.0ms
+                                                                             $0\xr1[1:1]      1 0.0ms
+                                                                             $0\xr1[0:0]      1 0.0ms
+                                                                             $0\xr0[9:9]      1 0.0ms
+                                                                             $0\xr0[8:8]      1 0.0ms
+                                                                             $0\xr0[6:6]      1 0.0ms
+                                                                             $0\xr0[5:5]      1 0.0ms
+                                                                             $0\xr0[4:4]      1 0.0ms
+                                                                             $0\xr0[1:1]      1 0.0ms
+                                                                             $0\xr2[0:0]      1 0.0ms
+                                          $auto$memory_libmap.cc:1951:emit_port$2483[35]      0 0.0ms
+                                          $auto$memory_libmap.cc:1951:emit_port$2483[26]      0 0.0ms
+                                          $auto$memory_libmap.cc:1951:emit_port$2483[17]      0 0.0ms
+                                           $auto$memory_libmap.cc:1951:emit_port$2483[8]      0 0.0ms
+                                          $auto$memory_libmap.cc:1951:emit_port$2482[35]      0 0.0ms
+                                          $auto$memory_libmap.cc:1951:emit_port$2482[26]      0 0.0ms
+                                          $auto$memory_libmap.cc:1951:emit_port$2482[17]      0 0.0ms
+                                           $auto$memory_libmap.cc:1951:emit_port$2482[8]      0 0.0ms
+                                                                                 rst_btn      2 0.0ms
+                                                                                     din      2 0.0ms
+                                                                                     clk      2 0.0ms
+Info: Router2 time 1.77s
+Info: Running router1 to check that route is legal...
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 0 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:          0 |        0          0 |    0     0 |         0|       0.00       0.00|
+Info: Routing complete.
+Info: Router1 time 0.00s
+Info: Checksum: 0xbe94bf6d
+
+Info: Critical path report for clock 'dut.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$3254.Q
+Info:    routing  0.36  0.71 Net sr[81] (169,6) -> (169,6)
+Info:                          Sink $abc$4864$lut$aiger$o32.A1
+Info:                          Defined in:
+Info:                               av08_top.v:6.16-6.18
+Info:      logic  0.12  0.83 Source $abc$4864$lut$aiger$o32.O6
+Info:    routing  0.64  1.48 Net $abc$4864$aiger$o32 (169,6) -> (167,5)
+Info:                          Sink dut.ram.0.0.WEAU3
+Info:      setup  0.53  2.01 Source dut.ram.0.0.WEAU3
+Info: 1.01 ns logic, 1.00 ns routing
+
+Info: Max frequency for clock 'dut.clk': 498.01 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [  7992,   8052) |** 
+Info: [  8052,   8112) |* 
+Info: [  8112,   8172) |*** 
+Info: [  8172,   8232) |*** 
+Info: [  8232,   8292) |* 
+Info: [  8292,   8352) |******* 
+Info: [  8352,   8412) | 
+Info: [  8412,   8472) | 
+Info: [  8472,   8532) | 
+Info: [  8532,   8592) | 
+Info: [  8592,   8652) | 
+Info: [  8652,   8712) |* 
+Info: [  8712,   8772) |* 
+Info: [  8772,   8832) |* 
+Info: [  8832,   8892) |*** 
+Info: [  8892,   8952) |******* 
+Info: [  8952,   9012) |**************** 
+Info: [  9012,   9072) |******************** 
+Info: [  9072,   9132) | 
+Info: [  9132,   9192) |*************************************** 
+
+Info: Critical path report for clock 'dut.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$3254.Q
+Info:    routing  0.36  0.71 Net sr[81] (169,6) -> (169,6)
+Info:                          Sink $abc$4864$lut$aiger$o32.A1
+Info:                          Defined in:
+Info:                               av08_top.v:6.16-6.18
+Info:      logic  0.12  0.83 Source $abc$4864$lut$aiger$o32.O6
+Info:    routing  0.64  1.48 Net $abc$4864$aiger$o32 (169,6) -> (167,5)
+Info:                          Sink dut.ram.0.0.WEAU3
+Info:      setup  0.53  2.01 Source dut.ram.0.0.WEAU3
+Info: 1.01 ns logic, 1.00 ns routing
+
+Info: Max frequency for clock 'dut.clk': 498.01 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [  7992,   8052) |** 
+Info: [  8052,   8112) |* 
+Info: [  8112,   8172) |*** 
+Info: [  8172,   8232) |*** 
+Info: [  8232,   8292) |* 
+Info: [  8292,   8352) |******* 
+Info: [  8352,   8412) | 
+Info: [  8412,   8472) | 
+Info: [  8472,   8532) | 
+Info: [  8532,   8592) | 
+Info: [  8592,   8652) | 
+Info: [  8652,   8712) |* 
+Info: [  8712,   8772) |* 
+Info: [  8772,   8832) |* 
+Info: [  8832,   8892) |*** 
+Info: [  8892,   8952) |******* 
+Info: [  8952,   9012) |**************** 
+Info: [  9012,   9072) |******************** 
+Info: [  9072,   9132) | 
+Info: [  9132,   9192) |*************************************** 
+Info: Running post-routing legalisation...
+
+Info: Program finished normally.

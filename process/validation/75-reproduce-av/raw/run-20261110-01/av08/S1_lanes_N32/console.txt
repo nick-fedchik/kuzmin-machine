@@ -1,0 +1,3 @@
+S1_lanes  N=32   seed=1  OK         LUT=3547   FF=5206   SRL=0    CARRY4=256   BRAM=0 LUTRAM=0 fmax=114.12
+S1_lanes  N=32   seed=2  OK         LUT=3547   FF=5206   SRL=0    CARRY4=256   BRAM=0 LUTRAM=0 fmax=121.85
+S1_lanes  N=32   seed=3  OK         LUT=3547   FF=5206   SRL=0    CARRY4=256   BRAM=0 LUTRAM=0 fmax=118.53

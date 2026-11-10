@@ -1,0 +1,319 @@
+Info: Using uarch 'xilinx' for device 'xc7z020clg400-1'
+
+Info: Parsing XDC file...
+Info: Packing constants..
+Info: Inserting IO buffers..
+Info:     IO port 'rst_btn' driven by IBUF '$iopadmap$av08_top.rst_btn'
+Info:     IO port 'dout' driven by OBUF '$iopadmap$av08_top.dout'
+Info:     IO port 'din' driven by IBUF '$iopadmap$av08_top.din'
+Info:     IO port 'clk' driven by IBUF '$iopadmap$av08_top.clk'
+Info:     Constraining 'rst_btn' to pad 'X186Y9/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'dout' to pad 'X186Y65/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'din' to pad 'X186Y9/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'clk' to pad 'X186Y28/IOB_X0Y1.IOB33M.PAD'
+Info: Generating input buffer for '$iopadmap$av08_top.rst_btn'
+Info: Generating output buffer for '$iopadmap$av08_top.dout'
+Info: Generating input buffer for '$iopadmap$av08_top.din'
+Info: Generating input buffer for '$iopadmap$av08_top.clk'
+Info:     Created 4 PAD cells from:
+Info:              4x PAD
+Info: Preparing clocking...
+Info: Packing constants..
+Info: Packing IOLOGIC...
+Info: Packing cfg...
+Info: Packing PLLs...
+Info: Packing global buffers...
+Info: Packing Gigabit Transceivers..
+Info: Generating derived timing constraints...
+Info: Packing MUX[789]s..
+Info: Packing carries..
+Info:    Grouped 4092 MUXCYs and 4092 XORCYs into 510 chains.
+Info:    Moved 85 shared LUTs driving carry S inputs into the carry site.
+Info:    Blasted 0 non-chain MUXCYs and 0 non-chain XORCYs to soft logic
+Info: Packing LUTs..
+Info:     Created 21290 SLICE_LUTX cells from:
+Info:           7459x LUT1
+Info:            921x LUT2
+Info:            686x LUT3
+Info:           2267x LUT4
+Info:           4591x LUT5
+Info:           5366x LUT6
+Info: Packing DRAM..
+Info:    Transformed 0 tied-low DRAM address inputs to be tied-high
+Info: Packing BRAM..
+Info: BRAM cascade scan: 0 BRAM(s), 0 tie(s) seen, 0 dropped
+Info: Packing DSPs..
+Info: Packing flipflops..
+Info:     Created 20412 SLICE_FFX cells from:
+Info:           4992x FDCE
+Info:          15420x FDRE
+Info: Constrained 2233 LUTFF pairs.
+Info: Checksum: 0x32c36103
+
+Info: Device utilisation:
+Info: 	          SLICE_LUTX:   21290/ 106400    20%
+Info: 	           SLICE_FFX:   20412/ 106400    19%
+Info: 	              CARRY4:    1149/  13300     8%
+Info: 	          PSEUDO_GND:       1/      1   100%
+Info: 	          PSEUDO_VCC:       1/      1   100%
+Info: 	               HARD0:       0/   1584     0%
+Info: 	             DSP48E1:       0/    220     0%
+Info: 	                 PAD:       4/    392     1%
+Info: 	       IOB33M_OUTBUF:       0/     96     0%
+Info: 	       IOB33S_OUTBUF:       0/     96     0%
+Info: 	        IOB33_OUTBUF:       1/    200     0%
+Info: 	     IOB33M_INBUF_EN:       0/     96     0%
+Info: 	     IOB33S_INBUF_EN:       0/     96     0%
+Info: 	      IOB33_INBUF_EN:       3/    200     1%
+Info: 	IOB33M_TERM_OVERRIDE:       0/     96     0%
+Info: 	IOB33S_TERM_OVERRIDE:       0/     96     0%
+Info: 	 IOB33_TERM_OVERRIDE:       0/    200     0%
+Info: 	       PULL_OR_KEEP1:       0/    392     0%
+Info: 	            IDELAYE2:       0/    200     0%
+Info: 	        OLOGICE3_TFF:       0/    200     0%
+Info: 	      OLOGICE3_OUTFF:       0/    200     0%
+Info: 	       OLOGICE3_MISR:       0/    200     0%
+Info: 	           OSERDESE2:       0/    200     0%
+Info: 	        ILOGICE3_IFF:       0/    200     0%
+Info: 	ILOGICE3_ZHOLD_DELAY:       0/    200     0%
+Info: 	           ISERDESE2:       0/    200     0%
+Info: 	               BUFIO:       0/     16     0%
+Info: 	            BUFGCTRL:       1/     32     3%
+Info: 	                 PS7:       0/      1     0%
+Info: 	               BSCAN:       0/      4     0%
+Info: 	            DCIRESET:       0/      1     0%
+Info: 	            DNA_PORT:       0/      1     0%
+Info: 	           EFUSE_USR:       0/      1     0%
+Info: 	                BUFG:       0/     32     0%
+Info: 	              BUFHCE:       0/     72     0%
+Info: 	            FIFO18E1:       0/    140     0%
+Info: 	          IDELAYCTRL:       0/      4     0%
+Info: 	            INVERTER:       0/     96     0%
+Info: 	          MMCME2_ADV:       0/      4     0%
+Info: 	        OLOGICE2_TFF:       0/    200     0%
+Info: 	      OLOGICE2_OUTFF:       0/    200     0%
+Info: 	           PLLE2_ADV:       0/      4     0%
+Info: 	            RAMB18E1:       0/    280     0%
+Info: 	            RAMB36E1:       0/    140     0%
+Info: 	           SELMUX2_1:       0/  40700     0%
+Info: 	        RAMBFIFO36E1:       0/    140     0%
+Info: 	           FRAME_ECC:       0/      1     0%
+Info: 	                ICAP:       0/      2     0%
+Info: 	             STARTUP:       0/      1     0%
+Info: 	          USR_ACCESS:       0/      1     0%
+Info: 	        ILOGICE2_IFF:       0/    200     0%
+Info: 	       OLOGICE2_MISR:       0/    200     0%
+
+Info:     source at X92Y77 reached 768 of 2401 offsets
+Info:     source at X81Y84 reached 752 of 2401 offsets
+Info:     source at X103Y68 reached 517 of 2401 offsets
+Info: Delay matrix: 1484 of 2401 offsets measured from 3 sources in 1.41s (window 24).
+Info: Delay matrix: interpolated 917 structural holes.
+Info: Delay matrix: out-of-window rates 16.1 ps/tile (x), 20.0 ps/tile (y).
+Info: Indexed 130 control sets.
+Info: Placed 4 cells based on constraints.
+Info: Creating initial analytic placement for 31670 cells, random placement wirelen = 7485031.
+Info:     at initial placer iter 0, wirelen = 7993
+Info:     at initial placer iter 1, wirelen = 16394
+Info:     at initial placer iter 2, wirelen = 19880
+Info:     at initial placer iter 3, wirelen = 18086
+Info: Running main analytical placer, max placement attempts per cell = 229643880.
+Info:     at iteration #1, type ALL: wirelen solved = 21389, spread = 1651332, legal = 2739324; time = 46.58s
+Info:     at iteration #2, type ALL: wirelen solved = 31531, spread = 614651, legal = 1257612; time = 24.66s
+Info:     at iteration #3, type ALL: wirelen solved = 81971, spread = 596852, legal = 908826; time = 9.25s
+Info:     at iteration #4, type ALL: wirelen solved = 99065, spread = 610300, legal = 954739; time = 8.52s
+Info:     at iteration #5, type ALL: wirelen solved = 113131, spread = 532689, legal = 949134; time = 8.69s
+Info:     at iteration #6, type ALL: wirelen solved = 124400, spread = 582515, legal = 939265; time = 8.27s
+Info:     at iteration #7, type ALL: wirelen solved = 136628, spread = 521661, legal = 952524; time = 16.74s
+Info:     at iteration #8, type ALL: wirelen solved = 141305, spread = 472251, legal = 937032; time = 10.27s
+Info: HeAP Placer Time: 138.21s
+Info:   of which solving equations: 7.39s
+Info:   of which spreading cells: 1.05s
+Info:   of which strict legalisation: 127.63s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 1040, wirelen = 908826
+Info:   at iteration #5: temp = 0.000000, timing cost = 837, wirelen = 686120
+Info:   at iteration #10: temp = 0.000000, timing cost = 971, wirelen = 654890
+Info:   at iteration #15: temp = 0.000000, timing cost = 947, wirelen = 644813
+Info:   at iteration #20: temp = 0.000000, timing cost = 927, wirelen = 641528
+Info:   at iteration #25: temp = 0.000000, timing cost = 921, wirelen = 640648
+Info:   at iteration #30: temp = 0.000000, timing cost = 919, wirelen = 640364
+Info:   at iteration #35: temp = 0.000000, timing cost = 920, wirelen = 640182
+Info:   at iteration #38: temp = 0.000000, timing cost = 916, wirelen = 640110 
+Info: SA placement time 87.35s
+
+Info: Max frequency for clock 'g0.clk_i': 116.09 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 182 endpoint(s)
+Info:          + represents [1,182) endpoint(s)
+Info: [  1386,   1787) |+
+Info: [  1787,   2188) |+
+Info: [  2188,   2589) |+
+Info: [  2589,   2990) |*+
+Info: [  2990,   3391) |**+
+Info: [  3391,   3792) |****+
+Info: [  3792,   4193) |*******+
+Info: [  4193,   4594) |*******+
+Info: [  4594,   4995) |********+
+Info: [  4995,   5396) |*****+
+Info: [  5396,   5797) |*+
+Info: [  5797,   6198) |****+
+Info: [  6198,   6599) |***+
+Info: [  6599,   7000) |***+
+Info: [  7000,   7401) |**+
+Info: [  7401,   7802) |+
+Info: [  7802,   8203) |**+
+Info: [  8203,   8604) |********+
+Info: [  8604,   9005) |***********************************+
+Info: [  9005,   9406) |************************************************************ 
+Info: Checksum: 0x28e2b2d6
+Info: Running post-placement legalisation...
+Info: Routing global clocks...
+Info:     routing clock 'g0.clk_i'
+Info: Running router2...
+Info: Setting up routing resources...
+Info: Running main router loop...
+Info:     iter=1 wires=713926 overused=49771 overuse=54520 archfail=NA
+Info:     iter=2 wires=747244 overused=22351 overuse=22737 archfail=NA
+Info:     iter=3 wires=758708 overused=12502 overuse=12563 archfail=NA
+Info:     iter=4 wires=766129 overused=7840 overuse=7863 archfail=NA
+Info:     iter=5 wires=770906 overused=5306 overuse=5310 archfail=NA
+Info:     iter=6 wires=774402 overused=3821 overuse=3826 archfail=NA
+Info:     iter=7 wires=777129 overused=2948 overuse=2952 archfail=NA
+Info:     iter=8 wires=778794 overused=2499 overuse=2501 archfail=NA
+Info:     iter=9 wires=780784 overused=2126 overuse=2128 archfail=NA
+Info:     iter=10 wires=781978 overused=1827 overuse=1829 archfail=NA
+Info:     iter=11 wires=782863 overused=1658 overuse=1662 archfail=NA
+Info:     iter=12 wires=783832 overused=1412 overuse=1412 archfail=NA
+Info:     iter=13 wires=784695 overused=1325 overuse=1325 archfail=NA
+Info:     iter=14 wires=785129 overused=1300 overuse=1300 archfail=NA
+Info:     iter=15 wires=785702 overused=1263 overuse=1263 archfail=NA
+Info:     iter=16 wires=786350 overused=1221 overuse=1221 archfail=NA
+Info:     iter=17 wires=786900 overused=1136 overuse=1137 archfail=NA
+Info:     iter=18 wires=787496 overused=1122 overuse=1122 archfail=NA
+Info:     iter=19 wires=788059 overused=1126 overuse=1130 archfail=NA
+Info:     iter=20 wires=788595 overused=1103 overuse=1103 archfail=NA
+Info:     iter=21 wires=789080 overused=1117 overuse=1117 archfail=NA
+Info:     iter=22 wires=789468 overused=1143 overuse=1143 archfail=NA
+Info:     iter=23 wires=789936 overused=1110 overuse=1112 archfail=NA
+Info:     iter=24 wires=790286 overused=1111 overuse=1112 archfail=NA
+Info:     iter=25 wires=790822 overused=1079 overuse=1080 archfail=NA
+Info:     iter=26 wires=791313 overused=1079 overuse=1079 archfail=NA
+Info:     iter=27 wires=791873 overused=1067 overuse=1067 archfail=NA
+Info:     iter=28 wires=792109 overused=1089 overuse=1090 archfail=NA
+Info:     iter=29 wires=792613 overused=1069 overuse=1071 archfail=NA
+Info:     iter=30 wires=792994 overused=1121 overuse=1123 archfail=NA
+Info:     iter=31 wires=793485 overused=1132 overuse=1132 archfail=NA
+Info:     iter=32 wires=793949 overused=1167 overuse=1167 archfail=NA
+Info:     iter=33 wires=794147 overused=1104 overuse=1104 archfail=NA
+Info:     iter=34 wires=794655 overused=1104 overuse=1105 archfail=NA
+Info:     iter=35 wires=795163 overused=1111 overuse=1111 archfail=NA
+Info:     iter=36 wires=795640 overused=1121 overuse=1123 archfail=NA
+Info:     iter=37 wires=796190 overused=1114 overuse=1114 archfail=NA
+Info:     iter=38 wires=796617 overused=1124 overuse=1125 archfail=NA
+Info:     iter=39 wires=797130 overused=1118 overuse=1118 archfail=NA
+Info:     iter=40 wires=797629 overused=1155 overuse=1156 archfail=NA
+Info:     iter=41 wires=798050 overused=1158 overuse=1160 archfail=NA
+Info:     iter=42 wires=798293 overused=1136 overuse=1137 archfail=NA
+Info:     iter=43 wires=798919 overused=1205 overuse=1205 archfail=NA
+Info:     iter=44 wires=799680 overused=1244 overuse=1245 archfail=NA
+Info:     iter=45 wires=799869 overused=1181 overuse=1181 archfail=NA
+Info:     iter=46 wires=800547 overused=1185 overuse=1185 archfail=NA
+Info:     iter=47 wires=800808 overused=1275 overuse=1275 archfail=NA
+Info:     iter=48 wires=801137 overused=1264 overuse=1265 archfail=NA
+Info:     iter=49 wires=801695 overused=1283 overuse=1283 archfail=NA
+Info:     iter=50 wires=802092 overused=1292 overuse=1292 archfail=NA
+Info:     iter=51 wires=802897 overused=1332 overuse=1332 archfail=NA
+Info:     iter=52 wires=803329 overused=1340 overuse=1341 archfail=NA
+Info:     iter=53 wires=803771 overused=1388 overuse=1390 archfail=NA
+Info:     iter=54 wires=804126 overused=1384 overuse=1385 archfail=NA
+Info:     iter=55 wires=804745 overused=1399 overuse=1400 archfail=NA
+Info:     iter=56 wires=805315 overused=1407 overuse=1407 archfail=NA
+Info:     iter=57 wires=805958 overused=1416 overuse=1416 archfail=NA
+Info:     iter=58 wires=806407 overused=1453 overuse=1453 archfail=NA
+Info:     iter=59 wires=806873 overused=1466 overuse=1467 archfail=NA
+Info:     iter=60 wires=807410 overused=1574 overuse=1574 archfail=NA
+Info:     iter=61 wires=808249 overused=1553 overuse=1558 archfail=NA
+Info:     iter=62 wires=808673 overused=1622 overuse=1625 archfail=NA
+Info:     iter=63 wires=809122 overused=1656 overuse=1656 archfail=NA
+Info:     iter=64 wires=809918 overused=1713 overuse=1713 archfail=NA
+Info:     iter=65 wires=810176 overused=1678 overuse=1679 archfail=NA
+Info:     iter=66 wires=810760 overused=1771 overuse=1772 archfail=NA
+Info:     iter=67 wires=811568 overused=1868 overuse=1874 archfail=NA
+Info:     iter=68 wires=812051 overused=1829 overuse=1830 archfail=NA
+Info:     iter=69 wires=812767 overused=1857 overuse=1860 archfail=NA
+Info:     iter=70 wires=813490 overused=1981 overuse=1984 archfail=NA
+Info:     iter=71 wires=814183 overused=2096 overuse=2096 archfail=NA
+Info:     iter=72 wires=814860 overused=2129 overuse=2131 archfail=NA
+Info:     iter=73 wires=815384 overused=2212 overuse=2212 archfail=NA
+Info:     iter=74 wires=816403 overused=2274 overuse=2279 archfail=NA
+Info:     iter=75 wires=817288 overused=2460 overuse=2462 archfail=NA
+Info:     iter=76 wires=817909 overused=2579 overuse=2582 archfail=NA
+Info:     iter=77 wires=818924 overused=2738 overuse=2743 archfail=NA
+Info:     iter=78 wires=819930 overused=2867 overuse=2873 archfail=NA
+Info:     iter=79 wires=820921 overused=2963 overuse=2971 archfail=NA
+Info:     iter=80 wires=821716 overused=3207 overuse=3211 archfail=NA
+Info:     iter=81 wires=822900 overused=3255 overuse=3261 archfail=NA
+Info:     iter=82 wires=823816 overused=3398 overuse=3407 archfail=NA
+Info:     iter=83 wires=824970 overused=3472 overuse=3476 archfail=NA
+Info:     iter=84 wires=825709 overused=3615 overuse=3620 archfail=NA
+Info:     iter=85 wires=826793 overused=3642 overuse=3654 archfail=NA
+Info:     iter=86 wires=827955 overused=3937 overuse=3948 archfail=NA
+Info:     iter=87 wires=828794 overused=3987 overuse=3994 archfail=NA
+Info:     iter=88 wires=829919 overused=4211 overuse=4221 archfail=NA
+Info:     iter=89 wires=831314 overused=4360 overuse=4368 archfail=NA
+Info:     iter=90 wires=832929 overused=4676 overuse=4685 archfail=NA
+Info:     iter=91 wires=834347 overused=4772 overuse=4778 archfail=NA
+Info:     iter=92 wires=836003 overused=5093 overuse=5098 archfail=NA
+Info:     iter=93 wires=837219 overused=5421 overuse=5431 archfail=NA
+Info:     iter=94 wires=838937 overused=5662 overuse=5671 archfail=NA
+Info:     iter=95 wires=840715 overused=5804 overuse=5814 archfail=NA
+Info:     iter=96 wires=842258 overused=6013 overuse=6021 archfail=NA
+Info:     iter=97 wires=843980 overused=6252 overuse=6265 archfail=NA
+Info:     iter=98 wires=845664 overused=6599 overuse=6609 archfail=NA
+Info:     iter=99 wires=847275 overused=6786 overuse=6805 archfail=NA
+Info:     iter=100 wires=848886 overused=6945 overuse=6966 archfail=NA
+Info:     iter=101 wires=850798 overused=7164 overuse=7182 archfail=NA
+Info:     iter=102 wires=852674 overused=7564 overuse=7589 archfail=NA
+Info:     iter=103 wires=854564 overused=7987 overuse=8011 archfail=NA
+Info:     iter=104 wires=856239 overused=8136 overuse=8157 archfail=NA
+Info:     iter=105 wires=858203 overused=8544 overuse=8572 archfail=NA
+Info:     iter=106 wires=859974 overused=8743 overuse=8775 archfail=NA
+Info:     iter=107 wires=862426 overused=9043 overuse=9067 archfail=NA
+Info:     iter=108 wires=864622 overused=9497 overuse=9515 archfail=NA
+Info:     iter=109 wires=866053 overused=9859 overuse=9891 archfail=NA
+Info:     iter=110 wires=867781 overused=10035 overuse=10066 archfail=NA
+Info:     iter=111 wires=870157 overused=10449 overuse=10477 archfail=NA
+Info:     iter=112 wires=871732 overused=10572 overuse=10608 archfail=NA
+Info:     iter=113 wires=874351 overused=10947 overuse=10975 archfail=NA
+Info:     iter=114 wires=876404 overused=11240 overuse=11277 archfail=NA
+Info:     iter=115 wires=878103 overused=11181 overuse=11208 archfail=NA
+Info:     iter=116 wires=880115 overused=11264 overuse=11295 archfail=NA
+Info:     iter=117 wires=883030 overused=11895 overuse=11928 archfail=NA
+Info:     iter=118 wires=885369 overused=12167 overuse=12208 archfail=NA
+Info:     iter=119 wires=887785 overused=12458 overuse=12493 archfail=NA
+Info:     iter=120 wires=889998 overused=12652 overuse=12687 archfail=NA
+Info:     iter=121 wires=892447 overused=13212 overuse=13260 archfail=NA
+Info:     iter=122 wires=894450 overused=13386 overuse=13429 archfail=NA
+Info:     iter=123 wires=896472 overused=13352 overuse=13403 archfail=NA
+Info:     iter=124 wires=898300 overused=13497 overuse=13539 archfail=NA
+Info:     iter=125 wires=900849 overused=13691 overuse=13738 archfail=NA
+Info:     iter=126 wires=902308 overused=13647 overuse=13698 archfail=NA
+Info:     iter=127 wires=905221 overused=13828 overuse=13878 archfail=NA
+Info:     iter=128 wires=907015 overused=14073 overuse=14108 archfail=NA
+Info:     iter=129 wires=909669 overused=13895 overuse=13937 archfail=NA
+Info:     iter=130 wires=910310 overused=13993 overuse=14028 archfail=NA
+Info:     iter=131 wires=912461 overused=14057 overuse=14102 archfail=NA
+Info:     iter=132 wires=914633 overused=14211 overuse=14252 archfail=NA
+Info:     iter=133 wires=916565 overused=14562 overuse=14600 archfail=NA
+Info:     iter=134 wires=918516 overused=14809 overuse=14838 archfail=NA
+Info:     iter=135 wires=920849 overused=14873 overuse=14920 archfail=NA
+Info:     iter=136 wires=922697 overused=15402 overuse=15441 archfail=NA
+Info:     iter=137 wires=923882 overused=15311 overuse=15353 archfail=NA
+Info:     iter=138 wires=925711 overused=15439 overuse=15472 archfail=NA
+Info:     iter=139 wires=927786 overused=15374 overuse=15424 archfail=NA
+Info:     iter=140 wires=929306 overused=15684 overuse=15715 archfail=NA
+
+AV08: killed after timeout 3600 s

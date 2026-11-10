@@ -1,0 +1,4 @@
+series,N,seed,status,lut,ff,srl,carry4,bram,lutram,dsp,fmax_mhz,placed_lutx,placed_ffx,placed_carry4,placed_ramb18
+S1_lanes,8,1,OK,1028,1404,0,64,0,0,0,147.93,1495,1404,70,0
+S1_lanes,8,2,OK,1028,1404,0,64,0,0,0,153.92,1495,1404,70,0
+S1_lanes,8,3,OK,1028,1404,0,64,0,0,0,142.8,1495,1404,70,0

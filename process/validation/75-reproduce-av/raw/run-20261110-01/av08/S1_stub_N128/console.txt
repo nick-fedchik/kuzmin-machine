@@ -1,0 +1,3 @@
+S1_stub   N=128  seed=1  OK         LUT=1336   FF=15418  SRL=0    CARRY4=0     BRAM=0 LUTRAM=0 fmax=443.85
+S1_stub   N=128  seed=2  OK         LUT=1336   FF=15418  SRL=0    CARRY4=0     BRAM=0 LUTRAM=0 fmax=418.06
+S1_stub   N=128  seed=3  OK         LUT=1336   FF=15418  SRL=0    CARRY4=0     BRAM=0 LUTRAM=0 fmax=445.24
