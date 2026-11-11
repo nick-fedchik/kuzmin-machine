@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-11-11T08:29:38.800565+00:00",
+  "host": "AORUS-5-SE",
+  "preregistered_commit": "fb32fdcd5da33919249f61c87e6202b9fcb9c1b0",
+  "implementation_sha256": "4c76a4914125a70e02812c3a690c7c6dfbe690ba00fac6d105f6a5ac5650f6bf",
+  "tests_sha256": "a7dfa2f7ebb28e7b298380358f24d7704d01eead23cf4fdcdd6451597eae96d6",
+  "full_pytest": {
+    "argv": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "--color=no"
+    ],
+    "returncode": 0,
+    "completed_at_from_log_mtime": "2026-11-11T08:28:06.104501+00:00"
+  },
+  "raw_sha256": {
+    "after.json": "5d2686527d0d5432ea3c7f37f667cfde52869989ec004fbf6dcbe95e7e3ad073",
+    "after.txt": "7294cfd0dca989ecd2dda4ba4b8c7d7a844bdddb148b53a1e5a9e39f699142f4",
+    "before.json": "f3a4410d430f9eb484a5a497a2e510633b5c8915710a4ad30f08871bc4ecf1f7",
+    "before.txt": "f032a454c492d3da74bc8d41b0549aa0ae393ebe61e5399ce7438b2490354175",
+    "full-pytest.txt": "d868f08e5b329eb1f780db22753d7c2d20a5c6f71b1ce3dea4893fdda7325eaa"
+  }
+}

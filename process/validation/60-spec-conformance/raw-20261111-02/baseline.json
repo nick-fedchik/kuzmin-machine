@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "process/validation/60-spec-conformance/namespace-import-probe.py"
+  ],
+  "expected_exit_code": 0,
+  "actual_exit_code": 1,
+  "started_at": "2026-11-11T12:44:04.372162+00:00",
+  "completed_at": "2026-11-11T12:44:04.463666+00:00",
+  "commit": "03f47c039c684e7f421e0cc9985ff2ffd7561551",
+  "host": "AORUS-5-SE",
+  "python": "3.14.4",
+  "implementation_sha256": "4c76a4914125a70e02812c3a690c7c6dfbe690ba00fac6d105f6a5ac5650f6bf",
+  "probe_sha256": "85bca14e7445b742376c8b2a4fcd0c8153fe189ffc1920f3094db991ccf8e4f2",
+  "protocol_sha256": "4514c7f1404f0f7dff4471f448e9937d705fd9ecf65d1c8f68a56633c2bbb11c",
+  "output_sha256": "9c4ed846b8d829b4be26a92d85c74316bda5dcd1132df85e630579cc0c39672e"
+}

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "sw/kpol-ref/tests/test_kpol_reference.py",
+    "--color=no"
+  ],
+  "returncode": 0,
+  "started_at": "2026-11-11T08:27:15.871024+00:00",
+  "completed_at": "2026-11-11T08:27:16.385619+00:00",
+  "base_commit": "fb32fdcd5da33919249f61c87e6202b9fcb9c1b0",
+  "host": "AORUS-5-SE",
+  "python": "3.14.4",
+  "implementation_sha256": "4c76a4914125a70e02812c3a690c7c6dfbe690ba00fac6d105f6a5ac5650f6bf",
+  "stdout_sha256": "7294cfd0dca989ecd2dda4ba4b8c7d7a844bdddb148b53a1e5a9e39f699142f4"
+}

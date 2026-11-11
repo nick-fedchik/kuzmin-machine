@@ -262,7 +262,7 @@ class Parser:
     _reserved = {
         "Problem", "Solution", "Proof", "Assumptions", "Invariants", "Hazards", "Alerts", "Goals",
         "event", "state", "rule", "on", "reject", "change", "when", "covers",
-        "set", "to", "Bool", "Int32", "U64", "Float", "Pin", "Void",
+        "set", "to", "Bool", "Int32", "U32", "U64", "Float", "Pin", "Void",
         "true", "false", "Unknown", "gcd", "and", "or", "not",
         "assert", "scenario", "step", "expect",
         "every", "within", "timeout", "supervise",
@@ -461,7 +461,7 @@ class Parser:
                 self.expect(">")
                 return TypeRef(name, ",".join(parts))
             return TypeRef(name)
-        if name not in {"Bool", "Int32", "U64"}:
+        if name not in {"Bool", "Int32", "U32", "U64"}:
             self.fail(f"unknown type {name!r}")
         return TypeRef(name)
 
@@ -581,7 +581,7 @@ def as_ktype(type_ref: TypeRef) -> KType:
 
 
 def _is_numeric(value: KType) -> bool:
-    return value.name in {"Number", "Int32", "U64", "Float"}
+    return value.name in {"Number", "Int32", "U32", "U64", "Float"}
 
 
 def _compatible(expected: KType, actual: KType) -> bool:
@@ -618,12 +618,16 @@ def _constant_number(expression: Expr) -> int | Decimal | None:
 
 
 def _compatible_expression(expected: KType, actual: KType, expression: Expr) -> bool:
-    if actual.name == "Number" and expected.name in {"U64", "Int32"}:
+    if actual.name == "Number" and expected.name in {"U64", "U32", "Int32"}:
         value = _constant_number(expression)
         if value is not None:
             if value != int(value):
                 return False
-            lower, upper = (0, 2**64 - 1) if expected.name == "U64" else (-(2**31), 2**31 - 1)
+            if expected.name in {"U32", "U64"}:
+                bits = 32 if expected.name == "U32" else 64
+                lower, upper = 0, 2**bits - 1
+            else:
+                lower, upper = -(2**31), 2**31 - 1
             return lower <= int(value) <= upper
     if expected.name == "Pin" and actual.name == "Number":
         value = _constant_number(expression)
@@ -701,11 +705,11 @@ def infer(expression: Expr, environment: dict[str, KType]) -> KType:
     if op in {"+", "-"}:
         if not (_is_numeric(left) and _is_numeric(right)):
             raise KpolError(f"{op} requires numeric operands")
-        if left.name in {"U64", "Int32"} and not _compatible_expression(
+        if left.name in {"U64", "U32", "Int32"} and not _compatible_expression(
             left, right, expression.right
         ):
             raise KpolError(f"{op} has an invalid integer literal")
-        if right.name in {"U64", "Int32"} and not _compatible_expression(
+        if right.name in {"U64", "U32", "Int32"} and not _compatible_expression(
             right, left, expression.left
         ):
             raise KpolError(f"{op} has an invalid integer literal")
@@ -717,11 +721,11 @@ def infer(expression: Expr, environment: dict[str, KType]) -> KType:
     if op == "*":
         if not (_is_numeric(left) and _is_numeric(right)):
             raise KpolError("* requires numeric operands")
-        if left.name in {"U64", "Int32"} and not _compatible_expression(
+        if left.name in {"U64", "U32", "Int32"} and not _compatible_expression(
             left, right, expression.right
         ):
             raise KpolError("* has an invalid integer literal")
-        if right.name in {"U64", "Int32"} and not _compatible_expression(
+        if right.name in {"U64", "U32", "Int32"} and not _compatible_expression(
             right, left, expression.left
         ):
             raise KpolError("* has an invalid integer literal")
@@ -906,9 +910,10 @@ def _normalize(value: Any, type_ref: TypeRef, allow_unknown: bool = False) -> An
         if isinstance(value, bool):
             return value
         raise KpolError("expected Bool value")
-    if type_ref.name == "U64":
-        if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value < 2**64:
-            raise KpolError("expected U64 value")
+    if type_ref.name in {"U32", "U64"}:
+        bits = 32 if type_ref.name == "U32" else 64
+        if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value < 2**bits:
+            raise KpolError(f"expected {type_ref.name} value")
         return value
     if type_ref.name == "Int32":
         if isinstance(value, bool) or not isinstance(value, int) or not -(2**31) <= value < 2**31:
@@ -1273,8 +1278,16 @@ def parse_module(source: str) -> Module:
     return module
 
 
+def _reject_unsupported_u32_codegen(module: Module) -> None:
+    if any(state.type_ref.name == "U32" for state in module.states) or any(
+        typ.name == "U32" for event in module.events for _, typ in event.parameters
+    ):
+        raise KpolError("U32 code generation is not supported; use the reference interpreter")
+
+
 def compile_bram_image(module: Module, acl_table: dict[str, int] | None = None) -> bytes:
     """Compiles a KPOL module into a 1024-byte BRAM descriptor binary image (64 concepts x 16 bytes)."""
+    _reject_unsupported_u32_codegen(module)
     violations = check_module_security_acl(module, acl_table)
     if violations:
         raise KpolError(f"Security ACL violation: {'; '.join(violations)}")
@@ -1421,6 +1434,7 @@ def compile_concept_microcode_bram_image(
     acl_table: dict[str, int] | None = None,
 ) -> bytes:
     """Compiles high-level KPOL AST into an executable 1024-byte BRAM image for km_concept_micro_engine."""
+    _reject_unsupported_u32_codegen(module)
     violations = check_module_security_acl(module, acl_table)
     if violations:
         raise KpolError(f"Security ACL violation: {'; '.join(violations)}")
@@ -1623,6 +1637,7 @@ def compile_c_header(module: Module) -> str:
 
 def compile_verilog_interconnect(module: Module) -> str:
     """Synthesizes an interconnect Verilog module wiring kpol_txn_gate_v2 instances."""
+    _reject_unsupported_u32_codegen(module)
     mod_lower = module.name.lower()
     state_regs = "\n".join(f"    logic [31:0] state_{state.name}_q;" for state in module.states)
 
@@ -2095,6 +2110,7 @@ def _ast_expr_to_c(
 
 def compile_baremetal_runtime(module: Module) -> tuple[str, str]:
     """Generates MISRA-C:2012 compliant bare-metal C99 header and source from AST (no malloc, real code gen)."""
+    _reject_unsupported_u32_codegen(module)
     violations = check_module_security_acl(module)
     if violations:
         raise KpolError(f"Hardware ACL violation: {'; '.join(violations)}")
@@ -2307,6 +2323,7 @@ def compile_baremetal_runtime(module: Module) -> tuple[str, str]:
 
 def compile_axi_lite_wrapper(module: Module) -> str:
     """Generates an AMBA AXI4-Lite compliant slave peripheral FSM (real handshaking & WSTRB)."""
+    _reject_unsupported_u32_codegen(module)
     mod_name = module.name.lower()
     return f"""// Generated by KPOL Compiler v0.8 for module: {module.name}
 // AMBA AXI4-Lite Compliant Slave Peripheral
