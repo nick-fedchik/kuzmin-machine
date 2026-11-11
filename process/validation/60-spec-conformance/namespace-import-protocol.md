@@ -44,6 +44,14 @@ Proof PitchController {
 
 Reject the unresolved `MissingController` import with an explicit `KpolError` (or a more specific documented linker error). Accepting the input is a failure. No implementation change is part of this protocol.
 
+## Reproduction command
+
+```sh
+python3 process/validation/60-spec-conformance/namespace-import-probe.py
+```
+
+Exit status 0 means the unresolved import was rejected; nonzero means it was accepted or another unexpected error occurred.
+
 ## Version history
 
 | Version | Date | Change |
