@@ -1,0 +1,63 @@
+{
+   "creator": "Yosys 0.69 (git sha1 9f75ca1f9, Release, GNU /usr/bin/c++ 15.2.0)",
+   "invocation": "stat -json ",
+   "modules": {
+      "\\av08_top": {
+         "num_wires":         644,
+         "num_wire_bits":     2007,
+         "num_pub_wires":     48,
+         "num_pub_wire_bits": 839,
+         "num_ports":         4,
+         "num_port_bits":     4,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         594,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 1,
+            "BUFG": 1,
+            "CARRY4": 31,
+            "FDCE": 171,
+            "FDRE": 47,
+            "IBUF": 3,
+            "INV": 11,
+            "LUT2": 77,
+            "LUT3": 22,
+            "LUT4": 46,
+            "LUT5": 124,
+            "LUT6": 59,
+            "OBUF": 1
+         }
+      }
+   },
+      "design": {
+         "num_wires":         644,
+         "num_wire_bits":     2007,
+         "num_pub_wires":     48,
+         "num_pub_wire_bits": 839,
+         "num_ports":         4,
+         "num_port_bits":     4,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         594,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 1,
+            "BUFG": 1,
+            "CARRY4": 31,
+            "FDCE": 171,
+            "FDRE": 47,
+            "IBUF": 3,
+            "INV": 11,
+            "LUT2": 77,
+            "LUT3": 22,
+            "LUT4": 46,
+            "LUT5": 124,
+            "LUT6": 59,
+            "OBUF": 1
+         }
+      }
+}
+

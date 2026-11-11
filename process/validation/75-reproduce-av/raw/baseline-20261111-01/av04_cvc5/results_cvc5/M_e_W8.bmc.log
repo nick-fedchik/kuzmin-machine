@@ -1,0 +1,10 @@
+$ yosys-smtbmc -s cvc5 -t 25 --presat --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75-followup/process/validation/75-reproduce-av/raw/baseline-20261111-01/av04_cvc5/results_cvc5/M_e_W8.bmc.vcd M_e_W8.smt2
+##   0:00:00  Solver: cvc5
+##   0:00:00  Checking assumptions in step 0..
+##   0:00:00  Checking assertions in step 0..
+##   0:00:00  Checking assumptions in step 1..
+##   0:00:00  Checking assertions in step 1..
+##   0:00:00  BMC failed!
+##   0:00:00  Assert failed in av04_gate_formal: P3_changed
+##   0:00:00  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75-followup/process/validation/75-reproduce-av/raw/baseline-20261111-01/av04_cvc5/results_cvc5/M_e_W8.bmc.vcd
+##   0:00:00  Status: FAILED

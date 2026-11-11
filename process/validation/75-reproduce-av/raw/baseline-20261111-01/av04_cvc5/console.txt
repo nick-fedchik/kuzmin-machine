@@ -1,0 +1,25 @@
+original                                         W=8   bmc   PASSED    8.923s  ok
+original                                         W=8   ind   PASSED    0.080s  ok
+original                                         W=8   cover PASSED    0.097s  ok
+original+POL_hazard_blocks                       W=8   bmc   FAILED    0.075s PX_hazard_blocks 
+original                                         W=32  bmc   PASSED    9.528s  ok
+original                                         W=32  ind   PASSED    0.084s  ok
+original                                         W=32  cover PASSED    0.088s  ok
+original+POL_hazard_blocks                       W=32  bmc   FAILED    0.081s PX_hazard_blocks 
+M_a: ignore invariant_known                      W=8   bmc   FAILED    0.084s P1_commit_iff,P2_reason_inv ok
+M_a: ignore invariant_known                      W=32  bmc   FAILED    0.081s P1_commit_iff,P2_reason_inv ok
+M_b: decide without event_valid                  W=8   bmc   FAILED    0.084s P1_commit_iff,P2_exactly_one,P5_observed ok
+M_b: decide without event_valid                  W=32  bmc   FAILED    0.084s P1_commit_iff,P2_exactly_one,P5_observed ok
+M_c: ignore assumption_true                      W=8   bmc   FAILED    0.077s P1_commit_iff,P2_reason_input ok
+M_c: ignore assumption_true                      W=32  bmc   FAILED    0.088s P1_commit_iff,P2_reason_input ok
+M_d: never raise unknown_hazard                  W=8   bmc   FAILED    0.123s P5_unknown ok
+M_d: never raise unknown_hazard                  W=32  bmc   FAILED    0.119s P5_unknown ok
+M_e: changed always 1 on commit                  W=8   bmc   FAILED    0.071s P3_changed ok
+M_e: changed always 1 on commit                  W=32  bmc   FAILED    0.100s P3_changed ok
+M_f: reset state to 0 instead of RESET_VALUE     W=8   bmc   FAILED    0.059s P4_reset_state ok
+M_f: reset state to 0 instead of RESET_VALUE     W=32  bmc   FAILED    0.062s P4_reset_state ok
+M_g: ignore hazard_known in unknown-hazard check W=8   bmc   FAILED    0.085s P5_observed,P5_unknown ok
+M_g: ignore hazard_known in unknown-hazard check W=32  bmc   FAILED    0.090s P5_observed,P5_unknown ok
+M_h: report invariant reason for input rejection W=8   bmc   FAILED    0.080s P2_reason_input,P2_reason_inv ok
+M_h: report invariant reason for input rejection W=32  bmc   FAILED    0.079s P2_reason_input,P2_reason_inv ok
+AV-04 OVERALL: PASS
