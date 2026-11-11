@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-11T06:11:12.188852+00:00",
+  "cwd": "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75-baseline",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "pytest"
+      ],
+      "returncode": 0,
+      "files": {
+        "1-stdout.txt": "0f7cff782f42541b641645fcfad4782c5b990cc7488d81aa97926c5c7c18d6a2",
+        "1-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/check_links.py"
+      ],
+      "returncode": 0,
+      "files": {
+        "2-stdout.txt": "ec242a97be5e7340683805035708fa0e653487a7ff1c748dd004c69e77428dc1",
+        "2-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "KM_DRAFTS_REPO": "/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-rfc"
+}

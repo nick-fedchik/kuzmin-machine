@@ -1,0 +1,5 @@
+S3_rcfc   N=4    seed=   SYNTH_ONLY LUT=328    FF=217    SRL=0    CARRY4=31    BRAM=0 LUTRAM=0 fmax=
+S3_rcfc   N=8    seed=   SYNTH_ONLY LUT=328    FF=218    SRL=0    CARRY4=31    BRAM=0 LUTRAM=0 fmax=
+S3_rcfc   N=16   seed=   SYNTH_ONLY LUT=324    FF=219    SRL=0    CARRY4=31    BRAM=0 LUTRAM=0 fmax=
+S3_rcfc   N=32   seed=   SYNTH_ONLY LUT=321    FF=220    SRL=0    CARRY4=31    BRAM=0 LUTRAM=0 fmax=
+S3_rcfc   N=64   seed=   SYNTH_ONLY LUT=321    FF=221    SRL=0    CARRY4=31    BRAM=0 LUTRAM=0 fmax=
