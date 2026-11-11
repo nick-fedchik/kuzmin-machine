@@ -1,0 +1,169 @@
+FF.F                                                                  [100%]
+=================================== FAILURES ===================================
+________ KpolReferenceTests.test_v02_u32_codegen_rejects_undefined_abi _________
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_u32_codegen_rejects_undefined_abi>
+
+    def test_v02_u32_codegen_rejects_undefined_abi(self):
+        for declaration in ("state Value: U32 = 0;", "event Sample(Input: U32);"):
+>           module = parse_module(
+                f"Problem Unsigned {{}} Solution Unsigned {{ {declaration} }}"
+            )
+
+sw/kpol-ref/tests/test_kpol_reference.py:313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sw/kpol-ref/kpol_reference.py:1271: in parse_module
+    module = Parser(source).parse()
+             ^^^^^^^^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:350: in parse
+    states.append(self.state_decl())
+                  ^^^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:471: in state_decl
+    type_ref = self.type_ref()
+               ^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:465: in type_ref
+    self.fail(f"unknown type {name!r}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kpol_reference.Parser object at 0x755eed856780>
+message = "unknown type 'U32'"
+
+    def fail(self, message: str) -> None:
+        token = self.token
+>       raise KpolError(f"{token.line}:{token.column}: {message}")
+E       kpol_reference.KpolError: 1:58: unknown type 'U32'
+
+sw/kpol-ref/kpol_reference.py:282: KpolError
+_ KpolReferenceTests.test_v02_u32_rejects_invalid_input_and_overflow_without_commit _
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_u32_rejects_invalid_input_and_overflow_without_commit>
+
+    def test_v02_u32_rejects_invalid_input_and_overflow_without_commit(self):
+>       module = parse_module("""
+        Problem Unsigned {}
+        Solution Unsigned {
+            state Value: U32 = 4294967295;
+            event Sample(Input: U32);
+            event Increment();
+            rule copy on Sample { set Value := Input; }
+            rule increment on Increment { set Value := Value + 1; }
+        }
+        """)
+
+sw/kpol-ref/tests/test_kpol_reference.py:290: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sw/kpol-ref/kpol_reference.py:1271: in parse_module
+    module = Parser(source).parse()
+             ^^^^^^^^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:350: in parse
+    states.append(self.state_decl())
+                  ^^^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:471: in state_decl
+    type_ref = self.type_ref()
+               ^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:465: in type_ref
+    self.fail(f"unknown type {name!r}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kpol_reference.Parser object at 0x755eed810050>
+message = "unknown type 'U32'"
+
+    def fail(self, message: str) -> None:
+        token = self.token
+>       raise KpolError(f"{token.line}:{token.column}: {message}")
+E       kpol_reference.KpolError: 4:30: unknown type 'U32'
+
+sw/kpol-ref/kpol_reference.py:282: KpolError
+__ KpolReferenceTests.test_v02_u32_rejects_out_of_range_literals (value='-1') __
+kpol_reference.KpolError: 1:58: unknown type 'U32'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_u32_rejects_out_of_range_literals>
+
+    def test_v02_u32_rejects_out_of_range_literals(self):
+        for value in ("-1", "4294967296", "1.5"):
+            with self.subTest(value=value):
+>               with self.assertRaisesRegex(KpolError, "initial value"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "initial value" does not match "1:58: unknown type 'U32'"
+
+sw/kpol-ref/tests/test_kpol_reference.py:283: AssertionError
+_ KpolReferenceTests.test_v02_u32_rejects_out_of_range_literals (value='4294967296') _
+kpol_reference.KpolError: 1:58: unknown type 'U32'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_u32_rejects_out_of_range_literals>
+
+    def test_v02_u32_rejects_out_of_range_literals(self):
+        for value in ("-1", "4294967296", "1.5"):
+            with self.subTest(value=value):
+>               with self.assertRaisesRegex(KpolError, "initial value"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "initial value" does not match "1:58: unknown type 'U32'"
+
+sw/kpol-ref/tests/test_kpol_reference.py:283: AssertionError
+_ KpolReferenceTests.test_v02_u32_rejects_out_of_range_literals (value='1.5') __
+kpol_reference.KpolError: 1:58: unknown type 'U32'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_u32_rejects_out_of_range_literals>
+
+    def test_v02_u32_rejects_out_of_range_literals(self):
+        for value in ("-1", "4294967296", "1.5"):
+            with self.subTest(value=value):
+>               with self.assertRaisesRegex(KpolError, "initial value"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "initial value" does not match "1:58: unknown type 'U32'"
+
+sw/kpol-ref/tests/test_kpol_reference.py:283: AssertionError
+____________ KpolReferenceTests.test_v02_u32_values_and_arithmetic _____________
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v02_u32_values_and_arithmetic>
+
+    def test_v02_u32_values_and_arithmetic(self):
+>       module = parse_module("""
+        Problem Unsigned {}
+        Solution Unsigned {
+            state Value: U32 = 0;
+            event Sample(Input: U32);
+            event Increment();
+            rule copy on Sample { set Value := Input; }
+            rule increment on Increment { set Value := Value + 1; }
+        }
+        """)
+
+sw/kpol-ref/tests/test_kpol_reference.py:260: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sw/kpol-ref/kpol_reference.py:1271: in parse_module
+    module = Parser(source).parse()
+             ^^^^^^^^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:350: in parse
+    states.append(self.state_decl())
+                  ^^^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:471: in state_decl
+    type_ref = self.type_ref()
+               ^^^^^^^^^^^^^^^
+sw/kpol-ref/kpol_reference.py:465: in type_ref
+    self.fail(f"unknown type {name!r}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kpol_reference.Parser object at 0x755eed891a50>
+message = "unknown type 'U32'"
+
+    def fail(self, message: str) -> None:
+        token = self.token
+>       raise KpolError(f"{token.line}:{token.column}: {message}")
+E       kpol_reference.KpolError: 4:30: unknown type 'U32'
+
+sw/kpol-ref/kpol_reference.py:282: KpolError
+=========================== short test summary info ============================
+FAILED sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_codegen_rejects_undefined_abi
+FAILED sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_invalid_input_and_overflow_without_commit
+SUBFAILED(value='-1') sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_out_of_range_literals
+SUBFAILED(value='4294967296') sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_out_of_range_literals
+SUBFAILED(value='1.5') sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_out_of_range_literals
+FAILED sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_values_and_arithmetic
+6 failed, 1 passed, 46 deselected in 0.35s
