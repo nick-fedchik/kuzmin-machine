@@ -256,6 +256,72 @@ class KpolReferenceTests(unittest.TestCase):
         self.assertEqual(result.state["Counter"], 0)
         self.assertEqual(result.diagnostics, ["InvariantViolation:Bounded"])
 
+    def test_v02_u32_values_and_arithmetic(self):
+        module = parse_module("""
+        Problem Unsigned {}
+        Solution Unsigned {
+            state Value: U32 = 0;
+            event Sample(Input: U32);
+            event Increment();
+            rule copy on Sample { set Value := Input; }
+            rule increment on Increment { set Value := Value + 1; }
+        }
+        """)
+        for value in (0, 2**31, 2**32 - 1):
+            with self.subTest(value=value):
+                result = Interpreter(module).run([EventInput("Sample", {"Input": value})])
+                self.assertEqual(result.state["Value"], value)
+        result = Interpreter(module).run([
+            EventInput("Sample", {"Input": 2**31}),
+            EventInput("Increment"),
+        ])
+        self.assertEqual(result.state["Value"], 2147483649)
+
+    def test_v02_u32_rejects_out_of_range_literals(self):
+        for value in ("-1", "4294967296", "1.5"):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(KpolError, "initial value"):
+                    parse_module(
+                        "Problem Unsigned {} "
+                        f"Solution Unsigned {{ state Value: U32 = {value}; }}"
+                    )
+
+    def test_v02_u32_rejects_invalid_input_and_overflow_without_commit(self):
+        module = parse_module("""
+        Problem Unsigned {}
+        Solution Unsigned {
+            state Value: U32 = 4294967295;
+            event Sample(Input: U32);
+            event Increment();
+            rule copy on Sample { set Value := Input; }
+            rule increment on Increment { set Value := Value + 1; }
+        }
+        """)
+        for event in [
+            *(EventInput("Sample", {"Input": value})
+              for value in (-1, 2**32, True, 1.5)),
+            EventInput("Increment"),
+        ]:
+            with self.subTest(event=event):
+                interpreter = Interpreter(module)
+                with self.assertRaisesRegex(KpolError, "expected U32 value"):
+                    interpreter.run([event])
+                self.assertEqual(interpreter.state["Value"], 4294967295)
+
+    def test_v02_u32_codegen_rejects_undefined_abi(self):
+        for declaration in ("state Value: U32 = 0;", "event Sample(Input: U32);"):
+            module = parse_module(
+                f"Problem Unsigned {{}} Solution Unsigned {{ {declaration} }}"
+            )
+            for compile_module in (
+                compile_bram_image, compile_concept_microcode_bram_image,
+                compile_c_header, compile_verilog_interconnect,
+                compile_baremetal_runtime, compile_axi_lite_wrapper,
+            ):
+                with self.subTest(declaration=declaration, backend=compile_module.__name__):
+                    with self.assertRaisesRegex(KpolError, "U32 code generation is not supported"):
+                        compile_module(module)
+
     def test_change_rule_runs_only_for_its_watched_state(self):
         source = """
         Problem Watchers {}
