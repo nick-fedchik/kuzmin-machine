@@ -1,0 +1,10 @@
+Problem Decrease {
+    Invariants { NonNeg: Counter >= 0; }
+}
+Solution Decrease {
+    state Counter: Int32 = 10;
+    event Pulse(param: Int32);
+    rule Step on Pulse when param < 20 {
+        set Counter := Counter - 1;
+    }
+}
