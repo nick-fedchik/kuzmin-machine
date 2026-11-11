@@ -13,7 +13,6 @@ sys.path.insert(0, str(ROOT / "sw" / "kpol-ref"))
 from kpol_reference import (  # noqa: E402
     EventInput,
     Interpreter,
-    compile_concept_microcode_bram_image,
     parse_module,
 )
 
@@ -22,21 +21,12 @@ from kpol_reference import (  # noqa: E402
     shutil.which("iverilog") is None or shutil.which("vvp") is None,
     reason="Потрібні iverilog і vvp",
 )
-def test_kpol_images_change_behavior_in_same_simulated_hardware(tmp_path):
+@pytest.mark.parametrize("interface", ["direct", "axi"])
+def test_kpol_images_change_behavior_in_same_simulated_hardware(tmp_path, interface):
     images = []
-    for name, operator, expected in (("Increase", "+", 11), ("Decrease", "-", 9)):
-        source = f"""
-        Problem {name} {{
-            Invariants {{ NonNeg: Counter >= 0; }}
-        }}
-        Solution {name} {{
-            state Counter: Int32 = 10;
-            event Pulse(param: Int32);
-            rule Step on Pulse when param < 20 {{
-                set Counter := Counter {operator} 1;
-            }}
-        }}
-        """
+    for name, expected in (("increase", 11), ("decrease", 9)):
+        source_path = HW / "tests" / f"kpol_bram_pipeline_{name}.kpol"
+        source = source_path.read_text(encoding="utf-8")
         module = parse_module(source)
         reference = Interpreter(module).run([
             EventInput("Pulse", {"param": 5}),
@@ -44,7 +34,20 @@ def test_kpol_images_change_behavior_in_same_simulated_hardware(tmp_path):
         ])
         assert reference.state["Counter"] == expected
         assert not reference.diagnostics
-        image = compile_concept_microcode_bram_image(module)
+        image_path = tmp_path / f"{name}.bin"
+        subprocess.run(
+            [sys.executable, str(HW / "scripts/compile_kpol_bram_image.py"),
+             str(source_path), str(image_path)],
+            check=True, capture_output=True, text=True,
+        )
+        image = image_path.read_bytes()
+        duplicate = subprocess.run(
+            [sys.executable, str(HW / "scripts/compile_kpol_bram_image.py"),
+             str(source_path), str(image_path)],
+            capture_output=True, text=True,
+        )
+        assert duplicate.returncode != 0
+        assert image_path.read_bytes() == image
         assert len(image) == 1024
         words = struct.unpack("<256I", image)
         path = tmp_path / f"{name}.hex"
@@ -53,14 +56,16 @@ def test_kpol_images_change_behavior_in_same_simulated_hardware(tmp_path):
 
     assert images[0].read_bytes() != images[1].read_bytes()
     simulation = tmp_path / "pipeline.vvp"
+    top = f"kpol_bram_pipeline_{interface}_tb" if interface == "axi" else "kpol_bram_pipeline_tb"
+    bus = [str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv")] if interface == "axi" else []
     subprocess.run(
         [
-            "iverilog", "-g2012", "-s", "kpol_bram_pipeline_tb", "-o", str(simulation),
+            "iverilog", "-g2012", "-s", top, "-o", str(simulation),
             str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
             str(HW / "rtl/core/km_concept_micro_engine.sv"),
             str(HW / "rtl/core/km_concept_bram.sv"),
             str(HW / "rtl/core/km_autonomous_sequencer.sv"),
-            str(HW / "tests/kpol_bram_pipeline_tb.sv"),
+            *bus, str(HW / "tests" / f"{top}.sv"),
         ],
         check=True, capture_output=True, text=True,
     )
