@@ -1,0 +1,31 @@
+{
+  "started": "2026-11-10T18:02:16.264037+00:00",
+  "host": "AORUS-5-SE",
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "driver_commit": "bf45b1bb4166d39667b1c123b33f0c4d3259b040",
+  "driver_sha256": "851e815c36236c4c0ec5cd23b0f5e7f25282b6a1409b0744a737678314182652",
+  "protocol_sha256": "4546106d69be31945d21a58d5a04094117ee7e5568251134b417c6a4f01802a5",
+  "runner_commit": "2518fa3d856e6ebbe9d894171018d19310de809b",
+  "runner_sha256": "f523fa19b36f17c9138ca8ab2dffd8a4ae496d0b41285c4e4d3d141f9608d57d",
+  "historical_rtl_commit": "62219ef0927bc0ca427deabc533833fa41960e43",
+  "historical_rtl_sha256": "65a118e411087695aab34c620918e0b92dc0ec5356351f60a80398c4011f482b",
+  "control_rtl_commit": "2518fa3d856e6ebbe9d894171018d19310de809b",
+  "control_rtl_sha256": "0d29d13f2de7368aa13bb80f083cdf8835fb93762011bd4839c270c3216f83f1",
+  "change_commit": "ecdc04902a47f9f037b95aab5dc196e980b6faaf",
+  "yosys": "Yosys 0.69 (git sha1 9f75ca1f9, Release, GNU /usr/bin/c++ 15.2.0)",
+  "yosys_path": "/home/mfedchyk/opt/openxc7/bin/yosys",
+  "yosys_sha256": "513cb5392ad8d9cee7717c9feed005f855ea3ef5795a0cdba93808e633965058",
+  "reference_sha256": "9372d5c80de777d87f88d70b612cdf48ec22e5555eaa2e6f63c0247e901a7241",
+  "previous_n4_sha256": "c477971c178cb428549d484517b1ded350225de619dbe7ae05581efb1077293f",
+  "historical_runner_sha256_claim": "9210e233e06c5f333eda3463a0554de0aca03cc68a8cab047b72afa872ffe3c8",
+  "historical_full_revision_identity": "NOT_ESTABLISHED",
+  "N": [
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "mode": "SYNTH_ONLY",
+  "build": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kuzmin-machine/rcfc-source-match-build-20261110-01"
+}
