@@ -1,0 +1,49 @@
+{
+  "utc": "2026-11-11T06:11:12.406148+00:00",
+  "preregistration_commit": "74d748e",
+  "preregistration_retained_in_history": true,
+  "primary_raw_files_verified": 161,
+  "all_59_rows_recomputed": true,
+  "hash_guard_controls": [
+    {
+      "control": "MOCK source checksum mismatch",
+      "outcome": "REJECTED",
+      "error": "source mismatch: experiments/AV-04/scripts/av04_gate_props.sv"
+    },
+    {
+      "control": "MOCK reference checksum mismatch",
+      "outcome": "REJECTED",
+      "error": "reference mismatch: av08.csv"
+    },
+    {
+      "control": "MOCK recorded raw checksum mismatch",
+      "outcome": "REJECTED",
+      "error": "recorded raw mismatch: av08/S1_lanes_N4/av08_results.csv"
+    }
+  ],
+  "missing_row_negative_control": [
+    {
+      "key": [
+        "S3_rcfc",
+        "64",
+        ""
+      ],
+      "error": "missing or extra result"
+    }
+  ],
+  "old_RTL_negative_control": [
+    {
+      "key": [
+        "S3_rcfc",
+        "4",
+        ""
+      ],
+      "field": "lut",
+      "expected": "328",
+      "actual": "321"
+    }
+  ],
+  "five_primary_synthesis_logs_verified_lossless": true,
+  "reused_PNR_rows": 54,
+  "fresh_S3_rows": 5
+}

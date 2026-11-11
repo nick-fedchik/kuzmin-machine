@@ -1,0 +1,10 @@
+$ yosys-smtbmc -s z3 -t 25 --presat --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75-followup/process/validation/75-reproduce-av/raw/baseline-20261111-01/av04_z3/results/origPOL_W32.bmc.vcd origPOL_W32.smt2
+##   0:00:00  Solver: z3
+##   0:00:00  Checking assumptions in step 0..
+##   0:00:00  Checking assertions in step 0..
+##   0:00:00  Checking assumptions in step 1..
+##   0:00:00  Checking assertions in step 1..
+##   0:00:00  BMC failed!
+##   0:00:00  Assert failed in av04_gate_formal: PX_hazard_blocks
+##   0:00:00  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-75-followup/process/validation/75-reproduce-av/raw/baseline-20261111-01/av04_z3/results/origPOL_W32.bmc.vcd
+##   0:00:00  Status: FAILED
