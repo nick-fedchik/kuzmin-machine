@@ -65,29 +65,114 @@ module kpol_txn_gate_pynq_z1_top (
     end
     wire hb_pulse = hb_counter[25];
 
-    // BTN0 debounce filter (~10.4 ms @ 100 MHz)
-    reg [19:0] btn0_cnt;
-    reg btn0_debounced;
-    reg btn0_q;
+    // Fast 2-stage synchronizer for BTN0 (no 10 ms debounce delay, 20 ns anti-metastability)
+    reg btn0_sync_0, btn0_sync_1, btn0_sync_prev;
     always @(posedge fclk0 or negedge gp0_aresetn) begin
         if (!gp0_aresetn) begin
-            btn0_cnt <= 20'd0;
-            btn0_debounced <= 1'b0;
-            btn0_q <= 1'b0;
+            btn0_sync_0    <= 1'b0;
+            btn0_sync_1    <= 1'b0;
+            btn0_sync_prev <= 1'b0;
         end else begin
-            if (btn[0] != btn0_debounced) begin
-                btn0_cnt <= btn0_cnt + 20'd1;
-                if (btn0_cnt == 20'hFFFFF) begin
-                    btn0_debounced <= btn[0];
-                    btn0_cnt <= 20'd0;
-                end
-            end else begin
-                btn0_cnt <= 20'd0;
-            end
-            btn0_q <= btn0_debounced;
+            btn0_sync_0    <= btn[0];
+            btn0_sync_1    <= btn0_sync_0;
+            btn0_sync_prev <= btn0_sync_1;
         end
     end
-    wire btn0_rise = btn0_debounced && !btn0_q;
+    wire btn0_fast_rise = btn0_sync_1 && !btn0_sync_prev;
+
+    // Fast 2-stage synchronizer for BTN1 (Burst Start Trigger)
+    reg btn1_sync_0, btn1_sync_1, btn1_sync_prev;
+    always @(posedge fclk0 or negedge gp0_aresetn) begin
+        if (!gp0_aresetn) begin
+            btn1_sync_0    <= 1'b0;
+            btn1_sync_1    <= 1'b0;
+            btn1_sync_prev <= 1'b0;
+        end else begin
+            btn1_sync_0    <= btn[1];
+            btn1_sync_1    <= btn1_sync_0;
+            btn1_sync_prev <= btn1_sync_1;
+        end
+    end
+    wire btn1_fast_rise = btn1_sync_1 && !btn1_sync_prev;
+
+    // Pulse parameters: 2.0 us pulse width (200 cycles @ 100 MHz)
+    // Period: 5.0 us interval between pulses (500 cycles @ 100 MHz)
+    localparam [15:0] PULSE_WIDTH  = 16'd200;
+    localparam [15:0] PULSE_PERIOD = 16'd500;
+    localparam [7:0]  BURST_TOTAL  = 8'd100;
+
+    // Single pulse generator (BTN0 manual)
+    reg [15:0] single_pulse_cnt;
+    reg        single_stim_out;
+    reg        single_txn_trig;
+    always @(posedge fclk0 or negedge gp0_aresetn) begin
+        if (!gp0_aresetn) begin
+            single_pulse_cnt <= 16'd0;
+            single_stim_out  <= 1'b0;
+            single_txn_trig  <= 1'b0;
+        end else begin
+            single_txn_trig <= 1'b0;
+            if (btn0_fast_rise) begin
+                single_pulse_cnt <= PULSE_WIDTH;
+                single_stim_out  <= 1'b1;
+                single_txn_trig  <= 1'b1;
+            end else if (single_pulse_cnt > 16'd0) begin
+                single_pulse_cnt <= single_pulse_cnt - 16'd1;
+                if (single_pulse_cnt == 16'd1)
+                    single_stim_out <= 1'b0;
+            end
+        end
+    end
+
+    // Automated 100-burst generator (BTN1 trigger or AXI start)
+    reg [7:0]  burst_cnt;
+    reg [15:0] burst_period_cnt;
+    reg        burst_running;
+    reg        burst_stim_out;
+    reg        burst_txn_trig;
+
+    always @(posedge fclk0 or negedge gp0_aresetn) begin
+        if (!gp0_aresetn) begin
+            burst_cnt        <= 8'd0;
+            burst_period_cnt <= 16'd0;
+            burst_running    <= 1'b0;
+            burst_stim_out   <= 1'b0;
+            burst_txn_trig   <= 1'b0;
+        end else begin
+            burst_txn_trig <= 1'b0;
+            if (!burst_running) begin
+                if (btn1_fast_rise) begin
+                    burst_running    <= 1'b1;
+                    burst_cnt        <= 8'd0;
+                    burst_period_cnt <= 16'd0;
+                    burst_stim_out   <= 1'b1;
+                    burst_txn_trig   <= 1'b1;
+                end
+            end else begin
+                burst_period_cnt <= burst_period_cnt + 16'd1;
+                if (burst_period_cnt < PULSE_WIDTH) begin
+                    burst_stim_out <= 1'b1;
+                end else begin
+                    burst_stim_out <= 1'b0;
+                end
+
+                if (burst_period_cnt >= PULSE_PERIOD - 1) begin
+                    burst_period_cnt <= 16'd0;
+                    if (burst_cnt + 8'd1 >= BURST_TOTAL) begin
+                        burst_running  <= 1'b0;
+                        burst_stim_out <= 1'b0;
+                    end else begin
+                        burst_cnt      <= burst_cnt + 8'd1;
+                        burst_stim_out <= 1'b1;
+                        burst_txn_trig <= 1'b1;
+                    end
+                end
+            end
+        end
+    end
+
+    wire stim_active_out = single_stim_out | burst_stim_out;
+    wire txn_event_pulse = single_txn_trig | burst_txn_trig;
 
     // Conditions from physical switches:
     // sw[0]: 1 = Invariant true, 0 = Invariant violation (Fail-closed!)
@@ -102,6 +187,10 @@ module kpol_txn_gate_pynq_z1_top (
         1'b1          // candidate_known
     };
     wire [31:0] btn_candidate = state_mon + 32'd1;
+
+    wire txn_committed;
+    wire txn_rejected;
+    wire txn_rejected_inv;
 
     kpol_txn_gate_axi_lite gate (
         .s_axi_aclk(fclk0),
@@ -125,20 +214,56 @@ module kpol_txn_gate_pynq_z1_top (
         .s_axi_rready(gp0_rready),
         .status_monitor_o(status_mon),
         .state_monitor_o(state_mon),
-        .ext_event_valid_i(btn0_rise),
+        .ext_event_valid_i(txn_event_pulse),
         .ext_candidate_value_i(btn_candidate),
         .ext_conditions_i(btn_conditions),
         .ext_pin_0p0_i(btn[0]),
-        .reactive_out_0p0_o(reactive_out_0p0)
+        .reactive_out_0p0_o(reactive_out_0p0),
+        .txn_committed_o(txn_committed),
+        .txn_rejected_o(txn_rejected),
+        .txn_rejected_inv_o(txn_rejected_inv)
     );
 
+    // Pulse stretchers for transaction outputs for clean logic analyzer captures
+    reg [15:0] commit_pulse_cnt;
+    reg        commit_out_q;
+    reg [15:0] reject_pulse_cnt;
+    reg        reject_out_q;
+
+    always @(posedge fclk0 or negedge gp0_aresetn) begin
+        if (!gp0_aresetn) begin
+            commit_pulse_cnt <= 16'd0;
+            commit_out_q     <= 1'b0;
+            reject_pulse_cnt <= 16'd0;
+            reject_out_q     <= 1'b0;
+        end else begin
+            if (txn_committed) begin
+                commit_pulse_cnt <= PULSE_WIDTH;
+                commit_out_q     <= 1'b1;
+            end else if (commit_pulse_cnt > 16'd0) begin
+                commit_pulse_cnt <= commit_pulse_cnt - 16'd1;
+                if (commit_pulse_cnt == 16'd1)
+                    commit_out_q <= 1'b0;
+            end
+
+            if (txn_rejected) begin
+                reject_pulse_cnt <= PULSE_WIDTH;
+                reject_out_q     <= 1'b1;
+            end else if (reject_pulse_cnt > 16'd0) begin
+                reject_pulse_cnt <= reject_pulse_cnt - 16'd1;
+                if (reject_pulse_cnt == 16'd1)
+                    reject_out_q <= 1'b0;
+            end
+        end
+    end
+
     // PMODA Signals:
-    // JA1 (Pin 1): Stimulus Monitor (driven by BTN0 directly to Pico Channel 1)
-    // JA2 (Pin 2): Reactive Output from RTL Transaction Gate (to Pico Channel 2)
-    // JA3 (Pin 3): Mirror of Reactive Output
-    assign ja1 = btn[0];
-    assign ja2 = reactive_out_0p0;
-    assign ja3 = reactive_out_0p0;
+    // JA1 (Pin 1): Stimulus Monitor (driven by stimulus generator or BTN0)
+    // JA2 (Pin 2): kpol_txn_gate COMMITTED output
+    // JA3 (Pin 3): kpol_txn_gate REJECTED output (Fail-closed verification)
+    assign ja1 = stim_active_out;
+    assign ja2 = commit_out_q;
+    assign ja3 = reject_out_q;
 
     // Green LEDs LD0..LD3:
     // LD0 = Committed OR Reactive Pin "0p0" Active
