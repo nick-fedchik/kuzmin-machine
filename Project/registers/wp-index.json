@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "date": "2026-11-12",
   "entries": [
     {
@@ -78,6 +78,12 @@
       "path": "Engineering/decisions/README.md",
       "direction": "Engineering",
       "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md",
+      "direction": "Engineering",
+      "wp_type": "Decision",
       "immutable_input": false
     },
     {
@@ -846,6 +852,24 @@
       "path": "Engineering/validation/experiments/AXI-64/scripts/test_axi64_formal.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/EXP-GPU-01/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/EXP-GPU-01/plan.md",
+      "direction": "Engineering",
+      "wp_type": "Plan",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/EXP-GPU-01/protocol.md",
+      "direction": "Engineering",
+      "wp_type": "Protocol",
       "immutable_input": false
     },
     {
