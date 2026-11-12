@@ -1,6 +1,6 @@
 # Дослідження
 
-* **Версія:** 0.1.0
+* **Версія:** 0.2.0
 * **Дата:** 2026-11-12
 * **Тип WP:** Guide
 * **Супровід:** власник проєкту; оновлення за результатом дослідження.
@@ -20,6 +20,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 | [Обґрунтованість концепції](studies/concept-assessment/README.md) | [Зведення](studies/concept-assessment/report.md) | Обмежений корпус; питання авторові не прирівняні до відповідей. | Джерельна опозиція |
 | [Попередній рівень техніки](studies/prior-art/README.md) | [Аналіз](studies/prior-art/report.md) | Представницькі аналоги; новизну не встановлено. | #82 |
 | [Гіпотези застосувань](studies/application-hypotheses/README.md) | [Мемо](studies/application-hypotheses/report.md) | Передумови й спростовні тести; користь на замовнику не перевірено. | Дослідницькі пропозиції |
+| [Симбіоз ПЛІС і GPU](studies/fpga-gpu-symbiosis/README.md) | [Звіт](studies/fpga-gpu-symbiosis/report.md) | Persistent Mega-Kernel для підписників; стендова підготовка HIL-експерименту [EXP-GPU-01](studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/README.md). | Авторська пропозиція М. Федчика |
 
 Спільні [джерела](sources/README.md) не дублюються в пакетах.
 [Цілі та зв'язки](../Project/registers/goals-needs-work-items.md)
@@ -36,6 +37,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.2.0 | 2026-11-12 | Додано дослідницький пакет fpga-gpu-symbiosis (симбіоз ПЛІС і GPU, EXP-GPU-01). |
 | 0.1.0 | 2026-11-12 | Єдина актуальна карта п'яти наявних дослідницьких пакетів. |
 
 ## Абревіатури та глосарій

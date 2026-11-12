@@ -1,6 +1,6 @@
 # Інженерні перевірки
 
-* **Версія:** 0.3.0
+* **Версія:** 0.3.1
 * **Дата:** 2026-11-12
 * **Тип WP:** Guide
 
@@ -16,7 +16,6 @@
 | [U32](spec-conformance/u32-report.md), [namespace/import](spec-conformance/namespace-import-report.md) | Контрприклади окремих контрактів; не повна перевірка мови. |
 | [B3 raw](kpol-cme/raw/) | Первинні записи продовження KPOL-CME; походження в маніфесті. |
 | [KPOL-CME-1 / #150](kpol-cme/profile-150/report.md) | Явний профільний compiler, негативний контроль і CLI/RTL-симуляційні регресії; не HIL. |
-| [EXP-GPU-01](experiments/EXP-GPU-01/README.md) | ПЛІС PYNQ-Z1 + Jetson Orin J501 + Pico/PicoScope, зведений реєстр підписників у GPU. |
 
 ## Використання
 
@@ -58,7 +57,7 @@ python3 Engineering/validation/experiments/AV-11/scripts/analyze_av11.py --outpu
 
 | Версія | Дата | Зміни |
 |---|---|---|
-| 0.3.0 | 2026-11-12 | Додано пакет запланованого HIL-експерименту EXP-GPU-01 (FPGA-GPU симбіоз). |
+| 0.3.1 | 2026-11-12 | Дослідницький HIL-пакет EXP-GPU-01 винесено до Research/studies/fpga-gpu-symbiosis/. |
 | 0.2.0 | 2026-11-12 | Додано пакет перевірки профільного компілятора #150. |
 | 0.1.0 | 2026-11-12 | Поточні перевірки замість застарілого журналу PLAN. |
 
