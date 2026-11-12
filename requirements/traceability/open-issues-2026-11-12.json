@@ -1,0 +1,756 @@
+[
+    {
+        "body": "## Мета\n\nПочати комплексне трасування #5 із цілей власника, потреб і перевірюваного зрізу відкритих WI. Це перший результат, а не повна ревізія всіх історичних задач, нова базова лінія вимог чи завершення S2.\n\n## Межі\n\n- Створити версіонований WP з цілями, зацікавленими сторонами, межами, кандидатними потребами та джерелами; обґрунтувати зв’язки, не видавати гіпотези за факти чи неузгоджені потреби за затверджені вимоги.\n- Побудувати карту кандидатних ланцюгів ціль → потреба → вимога / питання → архітектурне рішення → WI → перевірка → результат. Позначати непридатні та відсутні ланки, наявні, заплановані та перевірені результати, стан і межі доказів. Посилатися на конкретні WP й Issues; для досліджень — питання або гіпотеза та критерій висновку.\n- Зафіксувати відтворюваний знімок відкритих Issues проєкту, оцінити кожну за змістом, обґрунтуванням і результатом, зберегти її ID та запропонувати наступну дію без автоматичного переписування задач. Для вже закритих WI навести вибрані важливі ланцюги й явно відмітити, що повна ретроспективна ревізія ще попереду.\n- Врахувати TRL як самооцінку та ціль з відокремленням доказів, S2 і MVP не оголошувати завершеними. ASPICE — орієнтир, не вимога сертифікації. Врахувати #114, #19, #60, #61, #115; бізнес-сценарії залишити в архіві.\n- Не затверджувати нові вимоги, критерії виходу чи базу MVP; не змінювати історичні результати та статуси інших Issues. За потреби оновити навігацію на WP.\n\n## Критерії\n\n- [ ] WP із версією SemVer 2.0.0, датою, походженням, посиланнями і межами підготовлено для рецензії.\n- [ ] Кандидатні ланцюги покривають працездатність, новизну та зручність KPOL; вимоги, дослідницькі питання та відсутні докази чітко розрізнено.\n- [ ] Кожна відкрита Issue зі знімка має обґрунтування, відповідні WP / WI або явну прогалину, а також конкретну рекомендацію; знімок і метод відтворювані.\n- [ ] TRL і типи доказів не перебільшено; посилання працюють; історичний реєстр не переписано без рішення.\n- [ ] PR з Report і `Closes` цієї Issue, без закриття #5; повна ревізія закритих WI залишається в #5.\n\nБатьківська Issue: #5.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58MHg",
+                "name": "area:sys",
+                "description": "Вимоги, архітектура системи",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58N3A",
+                "name": "ready",
+                "description": "Definition of Ready виконано (ставить власник)",
+                "color": "2ea44f"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Qcg",
+                "name": "aspice:SYS.2",
+                "description": "ASPICE 4.0 SYS.2",
+                "color": "c5def5"
+            }
+        ],
+        "number": 118,
+        "state": "OPEN",
+        "title": "S2: цілі, потреби та перший зріз трасування відкритих WI",
+        "updatedAt": "2026-11-12T08:27:40Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/118"
+    },
+    {
+        "body": "## Знахідка\n\nПід час #114 виявлено, що `test_v10_concept_microcode_bram_generation` використовує `assertTrue(verify_bram_signature(...))`, а функція повертає кортеж `(bool, str)`. Непорожній кортеж є істинним навіть за `False`, тому цей assert не виявить невдалої перевірки підпису.\n\nДжерела на базовому коміті `f2579d3ce7e0ebd04992297a941dd000ac06eb95`: [тест](https://github.com/nick-fedchik/kuzmin-machine/blob/f2579d3ce7e0ebd04992297a941dd000ac06eb95/sw/kpol-ref/tests/test_kpol_reference.py#L1811), [реалізація](https://github.com/nick-fedchik/kuzmin-machine/blob/f2579d3ce7e0ebd04992297a941dd000ac06eb95/sw/kpol-ref/kpol_reference.py#L1792). Інші тести v0.6 окремо розпаковують результат; ця знахідка не стверджує, що вони мають ту саму помилку.\n\n## Межі та критерії\n\nВиправити саме перевірку результату в тесті v1.0; продемонструвати негативний випадок, у якому хибний булевий результат призводить до провалу тесту, і перевірити релевантний набір тестів. Не змінювати API чи семантику підпису без окремої підстави. Пов’язано з #5 та #114; ця знахідка не є підтвердженням завершення S2.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58J_Q",
+                "name": "type:finding",
+                "description": "Знахідка / дефект (SUP.9)",
+                "color": "d93f0b"
+            }
+        ],
+        "number": 115,
+        "state": "OPEN",
+        "title": "Тест підпису образу v1.0 не перевіряє булевий результат",
+        "updatedAt": "2026-11-12T07:59:13Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/115"
+    },
+    {
+        "body": "## Objective\n\nValidate whether the Kuzmin Machine solves a real engineering problem better than conventional solutions.\n\n## Required evidence\n\nProvide one complete use case with:\n\n- requirements and acceptance criteria;\n- system boundary and hardware assumptions;\n- input sensors/events and output actuators;\n- timing, safety, reliability, and fault-handling requirements;\n- implementation;\n- test data and measured results;\n- comparison with a conventional implementation;\n- known limitations and failure modes.\n\n## Acceptance criteria\n\nThe result must be reproducible by an independent engineer and must report negative results or unmet requirements. Claims about replacing PLCs, Arduino-based systems, or industrial automation platforms require quantitative evidence, not assertions.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58MHg",
+                "name": "area:sys",
+                "description": "Вимоги, архітектура системи",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCAHMDA",
+                "name": "priority:P2",
+                "description": "Наступний етап; виконання за залежностями після базових перевірок",
+                "color": "FBCA04"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 80,
+        "state": "OPEN",
+        "title": "[Engineering Validation] Demonstrate a reproducible industrial use case",
+        "updatedAt": "2026-11-10T07:10:48Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/80"
+    },
+    {
+        "body": "**Гіпотеза.** Латентність пін→пін не перевищує заявлену межу.\n\n**Критерій спростування.** p99 за ≥ 1000 подій перевищує поріг → спростування. Поріг: **власник задає до запуску** (зараз жоден документ не має числа для пін→пін; заявлено лише 1 такт логіки ядра, 10 нс).\n\n**Метрика і метод.** Вимір логічним аналізатором, сирі дані в `raw/`.\n\n**Поточний стан.** Не визначено: поріг потрібно встановити до першого вимірювання.\n\n**Гейт.** S6. Батько: #9 (S6).\n\nДжерело заяви: документи проєкту. Поточний стан — за аудитом KPOL v0.2–v0.9 (гілка `audit/kpol-v0.2-v0.9-report` у `nick-fedchik/drafts`, ідентифікатори F-xx).\n\n**Правило.** Критерій зафіксовано до запуску (PLAN §2). Після отримання даних не змінюється; зміна — окремим записом з причиною.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58OLw",
+                "name": "blocked",
+                "description": "Заблоковано / вето власника",
+                "color": "000000"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58TEw",
+                "name": "aspice:HWE.4",
+                "description": "ASPICE 4.0 HWE.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCAHMDA",
+                "name": "priority:P2",
+                "description": "Наступний етап; виконання за залежностями після базових перевірок",
+                "color": "FBCA04"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 73,
+        "state": "OPEN",
+        "title": "Фальсифікація S6: латентність пін→пін ≤ поріг",
+        "updatedAt": "2026-11-10T07:10:39Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/73"
+    },
+    {
+        "body": "**Гіпотеза.** Подія пін→пін проходить без участі PS.\n\n**Критерій спростування.** Під час події видно звернення до PS (логічний аналізатор або ILA на шині) → спростування.\n\n**Метрика і метод.** Поріг не потрібен; будь-яка активність PS у шляху події є спростуванням.\n\n**Поточний стан.** Не перевірено: апаратного вимірювання немає.\n\n**Гейт.** S6. Батько: #9 (S6).\n\nДжерело заяви: документи проєкту. Поточний стан — за аудитом KPOL v0.2–v0.9 (гілка `audit/kpol-v0.2-v0.9-report` у `nick-fedchik/drafts`, ідентифікатори F-xx).\n\n**Правило.** Критерій зафіксовано до запуску (PLAN §2). Після отримання даних не змінюється; зміна — окремим записом з причиною.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58REw",
+                "name": "aspice:SYS.4",
+                "description": "ASPICE 4.0 SYS.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCAHMDA",
+                "name": "priority:P2",
+                "description": "Наступний етап; виконання за залежностями після базових перевірок",
+                "color": "FBCA04"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 72,
+        "state": "OPEN",
+        "title": "Фальсифікація S6: подія пін→пін без участі PS",
+        "updatedAt": "2026-11-10T07:10:38Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/72"
+    },
+    {
+        "body": "**Гіпотеза.** Будь-яка однобітова зміна образу виявляється.\n\n**Критерій спростування.** Хоча б одна непомічена інверсія з 8704 бітів (1088 байт) → спростування.\n\n**Метрика і метод.** Повний перебір, не вибірка.\n\n**Поточний стан.** Не проводився повний перебір. Окремі тести є, повного покриття немає.\n\n**Гейт.** S4. Батько: #7 (S4).\n\nДжерело заяви: документи проєкту. Поточний стан — за аудитом KPOL v0.2–v0.9 (гілка `audit/kpol-v0.2-v0.9-report` у `nick-fedchik/drafts`, ідентифікатори F-xx).\n\n**Правило.** Критерій зафіксовано до запуску (PLAN §2). Після отримання даних не змінюється; зміна — окремим записом з причиною.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LjQ",
+                "name": "area:sw",
+                "description": "KPOL, рантайми, інструменти",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58OLw",
+                "name": "blocked",
+                "description": "Заблоковано / вето власника",
+                "color": "000000"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58UqA",
+                "name": "aspice:SWE.4",
+                "description": "ASPICE 4.0 SWE.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 68,
+        "state": "OPEN",
+        "title": "Фальсифікація S4: однобітові інверсії в підписаному образі",
+        "updatedAt": "2026-11-11T18:52:25Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/68"
+    },
+    {
+        "body": "**Гіпотеза.** Образ зі старим лічильником версії не приймається після оновлення.\n\n**Критерій спростування.** Прийняття старого валідного образу після публікації нового → спростування.\n\n**Метрика і метод.** Образ v1 (лічильник N), потім v2 (N+1); відкат до v1 має бути відхилено.\n\n**Поточний стан.** НЕ ПРОЙДЕНО: верифікація безстанова, старий образ приймається (F-06).\n\n**Гейт.** S4. Батько: #7 (S4).\n\nДжерело заяви: документи проєкту. Поточний стан — за аудитом KPOL v0.2–v0.9 (гілка `audit/kpol-v0.2-v0.9-report` у `nick-fedchik/drafts`, ідентифікатори F-xx).\n\n**Правило.** Критерій зафіксовано до запуску (PLAN §2). Після отримання даних не змінюється; зміна — окремим записом з причиною.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LjQ",
+                "name": "area:sw",
+                "description": "KPOL, рантайми, інструменти",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58OLw",
+                "name": "blocked",
+                "description": "Заблоковано / вето власника",
+                "color": "000000"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58UqA",
+                "name": "aspice:SWE.4",
+                "description": "ASPICE 4.0 SWE.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 67,
+        "state": "OPEN",
+        "title": "Фальсифікація S4: відкат Secure Boot (anti-rollback)",
+        "updatedAt": "2026-11-12T05:18:12Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/67"
+    },
+    {
+        "body": "**Гіпотеза.** Обгортка відповідає AMBA AXI4-Lite Slave.\n\n**Критерій спростування.** Будь-яке порушення в assertion-based перевірці (запис без AW, адреса з W, ігнорування WSTRB, відповідь без bready) → спростування.\n\n**Метрика і метод.** Протокольні асерції або сертифікований VIP, не лише симуляція з одним сценарієм.\n\n**Поточний стан.** НЕ ПРОЙДЕНО: симуляція показала запис без AW, адресу з W, ігнорування WSTRB (F-04).\n\n**Гейт.** S3. Батько: #6 (S3).\n\nДжерело заяви: документи проєкту. Поточний стан — за аудитом KPOL v0.2–v0.9 (гілка `audit/kpol-v0.2-v0.9-report` у `nick-fedchik/drafts`, ідентифікатори F-xx).\n\n**Правило.** Критерій зафіксовано до запуску (PLAN §2). Після отримання даних не змінюється; зміна — окремим записом з причиною.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58OLw",
+                "name": "blocked",
+                "description": "Заблоковано / вето власника",
+                "color": "000000"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Spg",
+                "name": "aspice:HWE.3",
+                "description": "ASPICE 4.0 HWE.3",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCAHMDA",
+                "name": "priority:P2",
+                "description": "Наступний етап; виконання за залежностями після базових перевірок",
+                "color": "FBCA04"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 64,
+        "state": "OPEN",
+        "title": "Фальсифікація S3: протокол AXI4-Lite",
+        "updatedAt": "2026-11-10T07:10:28Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/64"
+    },
+    {
+        "body": "**Гіпотеза.** Транзакція не комітиться, якщо є Hazard, Unknown, порушено Assumption або Invariant.\n\n**Критерій спростування.** Контрприклад BMC (SymbiYosys), де `committed=1` за однієї з цих умов → спростування.\n\n**Метрика і метод.** Застосовується до `kpol_txn_gate_v2`, до згенерованого інтерконекту і до C-рантайму (через еквівалентність або окремий монітор).\n\n**Поточний стан.** НЕ ПРОЙДЕНО для інтерконекту: `committed_o = event_strobe_i` (F-03); C-рантайм — F-01. Гейт v2 формально не перевірено (#18).\n\n**Гейт.** S3. Батько: #6 (S3); пов'язано з #18.\n\nДжерело заяви: документи проєкту. Поточний стан — за аудитом KPOL v0.2–v0.9 (гілка `audit/kpol-v0.2-v0.9-report` у `nick-fedchik/drafts`, ідентифікатори F-xx).\n\n**Правило.** Критерій зафіксовано до запуску (PLAN §2). Після отримання даних не змінюється; зміна — окремим записом з причиною.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JkQ",
+                "name": "type:experiment",
+                "description": "Експеримент AV-xx",
+                "color": "5319e7"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Spg",
+                "name": "aspice:HWE.3",
+                "description": "ASPICE 4.0 HWE.3",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCAHMDA",
+                "name": "priority:P2",
+                "description": "Наступний етап; виконання за залежностями після базових перевірок",
+                "color": "FBCA04"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYJg",
+                "name": "accepted",
+                "description": "Прийнято власником до програми робіт; не означає Ready, виконання або прийняття результату",
+                "color": "0E8A16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADCEgYMA",
+                "name": "topic:demarcation",
+                "description": "Доказові відповіді на §9 і реєстр наукового та інженерного захисту §10",
+                "color": "1D76DB"
+            }
+        ],
+        "number": 62,
+        "state": "OPEN",
+        "title": "Фальсифікація S3: fail-closed формально (BMC)",
+        "updatedAt": "2026-11-10T07:10:25Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/62"
+    },
+    {
+        "body": "**Походження:** рецензія agy (Gemini) на PR #44, знахідка З1.\n\n**Факт.** Карта регістрів `kpol_txn_gate_axi_lite` (0x00–0xC0, BRAM 0x1000–0x13FF) і значення після скидання (зокрема `upper_bound_q = 0x7FFFFFFF`) є лише в коментарях RTL. У `specs/` і `architecture/` їх немає: `grep -rn upper_bound specs/ architecture/` нічого не знаходить. Саме через відсутність нормативного джерела регресію `drafts@f5c65fc` (#38) не помітили, а значення довелося відновлювати за історією й кодом споживачів (TB, HIL-скрипт, C-міст MCU).\n\n**Закриття.** Описати карту регістрів і значення після скидання в документі інтерфейсу апаратури (S2: HWE.1, SYS.3) з трасуванням на TB і драйвери.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58J_Q",
+                "name": "type:finding",
+                "description": "Знахідка / дефект (SUP.9)",
+                "color": "d93f0b"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58NnQ",
+                "name": "sev:minor",
+                "description": "Незначна",
+                "color": "fef2c0"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58QyA",
+                "name": "aspice:SYS.3",
+                "description": "ASPICE 4.0 SYS.3",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58SAg",
+                "name": "aspice:HWE.1",
+                "description": "ASPICE 4.0 HWE.1",
+                "color": "c5def5"
+            }
+        ],
+        "number": 48,
+        "state": "OPEN",
+        "title": "Карта регістрів AXI-обгортки і значення після скидання не зафіксовані в специфікаціях",
+        "updatedAt": "2026-11-09T14:37:12Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/48"
+    },
+    {
+        "body": "**Факт.** `Dossier` (рядок 1356) і `High-Level-Language-Specification` (рядки 243, 899) у `drafts` посилаються на неіснуючу «Авторську технічну специфікацію М. Ю. Кузьміна (2026)». Це реконструкція М. Федчика. У новому репо виправлено (`docs/theory/formal-analysis.md` 0.1.1).\n\n**Закриття.** Окремий коміт у `drafts` — лише за командою власника.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58J_Q",
+                "name": "type:finding",
+                "description": "Знахідка / дефект (SUP.9)",
+                "color": "d93f0b"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Mkw",
+                "name": "area:process",
+                "description": "Процес, документи",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Nag",
+                "name": "sev:major",
+                "description": "Значна",
+                "color": "d93f0b"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58P-w",
+                "name": "aspice:SUP.9",
+                "description": "ASPICE 4.0 SUP.9",
+                "color": "c5def5"
+            }
+        ],
+        "number": 21,
+        "state": "OPEN",
+        "title": "F11 у drafts: виправити хибну атрибуцію (Р8)",
+        "updatedAt": "2026-11-09T10:49:22Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/21"
+    },
+    {
+        "body": "Рішення власника: ліцензія, `AUTHORS`/`NOTICE`, атрибуція М. Ю. Кузьміна й агентів. Вхід — `MEMO_CONTRIBUTIONS` у `drafts`.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Mkw",
+                "name": "area:process",
+                "description": "Процес, документи",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58OmQ",
+                "name": "aspice:MAN.3",
+                "description": "ASPICE 4.0 MAN.3",
+                "color": "c5def5"
+            }
+        ],
+        "number": 20,
+        "state": "OPEN",
+        "title": "Ліцензія та авторство репо (Р5)",
+        "updatedAt": "2026-11-09T10:49:19Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/20"
+    },
+    {
+        "body": "Зараз `specs/kpol/kpol-0.1.0 … 0.9.0` — дельти. Аудит: No-Go для v1.0.\n\n- [ ] одна консолідована специфікація;\n- [ ] кожна конструкція позначена «реалізовано / не реалізовано» за аудитом і тестами;\n- [ ] дельти — в історію (git), індекс оновлено;\n- [ ] Review Report.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LjQ",
+                "name": "area:sw",
+                "description": "KPOL, рантайми, інструменти",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Tfw",
+                "name": "aspice:SWE.1",
+                "description": "ASPICE 4.0 SWE.1",
+                "color": "c5def5"
+            }
+        ],
+        "number": 19,
+        "state": "OPEN",
+        "title": "Консолідація специфікації KPOL (Р6)",
+        "updatedAt": "2026-11-09T10:49:16Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/19"
+    },
+    {
+        "body": "**Факт.** `hw/rtl/core/kpol_txn_gate_v2.sv` використовують `km_concept_micro_engine` і `kpol_reference.compile_verilog_interconnect`, але AV-04 доводить лише v1.\n\n**Закриття.** Або формальна верифікація v2 рівня AV-04, або відмова від v2 у ядрі MVP (Р3).",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58J_Q",
+                "name": "type:finding",
+                "description": "Знахідка / дефект (SUP.9)",
+                "color": "d93f0b"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Nag",
+                "name": "sev:major",
+                "description": "Значна",
+                "color": "d93f0b"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Spg",
+                "name": "aspice:HWE.3",
+                "description": "ASPICE 4.0 HWE.3",
+                "color": "c5def5"
+            }
+        ],
+        "number": 18,
+        "state": "OPEN",
+        "title": "kpol_txn_gate_v2 без формальної верифікації (F2′)",
+        "updatedAt": "2026-11-09T10:49:13Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/18"
+    },
+    {
+        "body": "Батьківська Issue кроку S6. Прогалина 3: ядро зараз керується з Linux через AXI4-Lite (H4 = 84 мкс, F10).\n\n- [ ] подія пін → пін без участі PS;\n- [ ] вимір логічним аналізатором (не з Python);\n- [ ] кандидат-основа: `hw/rtl/io/km_io_trigger_engine.sv` (Р2);\n- [ ] Report + Review Report.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58REw",
+                "name": "aspice:SYS.4",
+                "description": "ASPICE 4.0 SYS.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58TEw",
+                "name": "aspice:HWE.4",
+                "description": "ASPICE 4.0 HWE.4",
+                "color": "c5def5"
+            }
+        ],
+        "number": 9,
+        "state": "OPEN",
+        "title": "S6: Автономність від PS (прогалина 3)",
+        "updatedAt": "2026-11-09T10:48:46Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/9"
+    },
+    {
+        "body": "Батьківська Issue кроку S5. Прогалина 4.\n\n- [ ] консолідована специфікація KPOL (окрема Issue, Р6);\n- [ ] текст KPOL → образ BRAM / параметризований нетлист без ручного RTL;\n- [ ] тести компілятора, що можуть впасти (без бутафорії);\n- [ ] Report + Review Report.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LjQ",
+                "name": "area:sw",
+                "description": "KPOL, рантайми, інструменти",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Tfw",
+                "name": "aspice:SWE.1",
+                "description": "ASPICE 4.0 SWE.1",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58T4Q",
+                "name": "aspice:SWE.2",
+                "description": "ASPICE 4.0 SWE.2",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58UOw",
+                "name": "aspice:SWE.3",
+                "description": "ASPICE 4.0 SWE.3",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58UqA",
+                "name": "aspice:SWE.4",
+                "description": "ASPICE 4.0 SWE.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58VIw",
+                "name": "aspice:SWE.5",
+                "description": "ASPICE 4.0 SWE.5",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58VcA",
+                "name": "aspice:SWE.6",
+                "description": "ASPICE 4.0 SWE.6",
+                "color": "c5def5"
+            }
+        ],
+        "number": 8,
+        "state": "OPEN",
+        "title": "S5: Компілятор KPOL → образ BRAM (прогалина 4)",
+        "updatedAt": "2026-11-09T10:48:43Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/8"
+    },
+    {
+        "body": "Батьківська Issue кроку S4. Прогалина 2: зараз BRAM містить лише дані, предикати зашиті в RTL.\n\n- [ ] дві різні програми виконано на **одному** бітстрімі;\n- [ ] SHA-256 бітстріму однаковий для обох прогонів;\n- [ ] Report + Review Report.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58SWg",
+                "name": "aspice:HWE.2",
+                "description": "ASPICE 4.0 HWE.2",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58TEw",
+                "name": "aspice:HWE.4",
+                "description": "ASPICE 4.0 HWE.4",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58UOw",
+                "name": "aspice:SWE.3",
+                "description": "ASPICE 4.0 SWE.3",
+                "color": "c5def5"
+            }
+        ],
+        "number": 7,
+        "state": "OPEN",
+        "title": "S4: Логіка через BRAM без пересинтезу (прогалина 2)",
+        "updatedAt": "2026-11-09T10:48:40Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/7"
+    },
+    {
+        "body": "Батьківська Issue кроку S3. Прогалина 1: зараз є лише задачні FSM (`hw/rtl/poc-demo/`).\n\n- [ ] ядро (шлюз, пам'ять концептів, інтерконект) без задачних FSM;\n- [ ] вибір основи: `kpol_txn_gate` (AV-04) чи `v2` (Р3, рішення власника);\n- [ ] формальна верифікація рівня AV-04;\n- [ ] тести виявляють конкретні дефекти обраного ядра (#14); поріг мутаційного бала ≥ 95% скасовано за рішенням власника;\n- [ ] вилучити `hw/rtl/poc-demo/` з бітстріму й репо (реєстр §0.1).\n\nЧисловий поріг у `process/PROJECT-MANUAL.md` §4 застарів і за цим рішенням не застосовується; сам документ не змінено.\n",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58LDA",
+                "name": "area:hw",
+                "description": "RTL, плати, синтез",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58SWg",
+                "name": "aspice:HWE.2",
+                "description": "ASPICE 4.0 HWE.2",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Spg",
+                "name": "aspice:HWE.3",
+                "description": "ASPICE 4.0 HWE.3",
+                "color": "c5def5"
+            }
+        ],
+        "number": 6,
+        "state": "OPEN",
+        "title": "S3: Незмінне ядро без задачних FSM (прогалина 1)",
+        "updatedAt": "2026-11-11T18:52:39Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/6"
+    },
+    {
+        "body": "## Мета\n\nПобудувати й підтримувати перевірюване двоспрямоване трасування: **ціль → потреба → вимога → архітектурне рішення → робота (WI) → перевірка → результат / доказ (WP)**. Для досліджень замість штучної вимоги використовувати питання або гіпотезу, передумови та критерій висновку.\n\nЦілі, визначені власником: перевірити працездатність і новизну Машини Кузьміна, мови KPOL та зручності програмування. Не вважати новизну, переваги чи придатність до застосування доведеними наперед.\n\n## Межі\n\n- Ревізувати як відкриті, так і закриті задачі проєкту, їхню мету, зміст, залежності та результати; зберігати історію й негативні висновки. Для кожної визначити обґрунтування або явну прогалину та запропонувати залишити, уточнити, об’єднати, відкласти чи закрити — без масових змін статусів і без видалення доказів.\n- Від потреб зацікавлених сторін і меж системи перейти до перевірних системних, апаратних і програмних вимог у дусі Вігерса: походження, обґрунтування, пріоритет, критерій і метод перевірки, залежності та стан. Відокремити вимоги від дизайну, припущень і питань. Успадковані ID зберегти з відображенням на рішення про їхню долю.\n- Описати системну, HW та SW архітектуру MVP як робочі пропозиції з відповідальністю компонентів, інтерфейсами й обґрунтуванням; PoC і попередній план — входи, а не автоматичний доказ реалізації. Для досліджень архітектура або продуктова вимога можуть бути непридатні: позначити це, не вигадувати зв’язок.\n- Створювати чи оновлювати потрібні WP за наявною конфігурацією: цілі й потреби, реєстр / специфікація вимог, Design / Decision, проблеми й гіпотези, протоколи, звіти, докази і карту трасування. Один WP може охоплювати кілька записів.\n- Врахувати TRL та етапи S1–S6: об’єкт, середовище, відповідний критерій, тип і межі доказів, стан самооцінки / рецензії. Закриття задач не означає виконання гейту; симуляція й mock не є HIL. ASPICE 4.1 — орієнтир, не заявлена відповідність.\n- Версіонувати змінювані WP за Semantic Versioning 2.0.0, зазначати історію та походження; не переписувати історичні звіти як актуальні докази. Не оголошувати базу MVP або нові критерії виходу без рішення власника.\n- Архівовані галузеві бізнес-сценарії не повертати в активну програму; розглядати як історичні входи лише за потреби. Узгоджувати з консолідацією KPOL #19 і зберігати межі #60 та #61.\n\n## Критерії результату\n\n- [ ] Зафіксовано межу системи, стейкхолдерів, цілі й потреби з джерелами та невизначеностями.\n- [ ] Для кожної актуальної вимоги є ідентифікатор, походження, обґрунтування, статус, спостережуваний критерій і метод перевірки; кожен успадкований REQ має рішення або явно позначену прогалину.\n- [ ] Є системна, HW та SW архітектура й обґрунтовані зв’язки вимог із компонентами, інтерфейсами і перевірками; неповні зв’язки не приховані.\n- [ ] Для досліджень указані питання / гіпотеза, передумови, критерій висновку, метод і WP результату; негативний чи невизначений результат допустимий.\n- [ ] Усі Issues у визначеному знімку, відкриті й закриті, класифіковано за зв’язком із цілями, вимогами / питаннями, WP, перевіркою й результатом або з явним обґрунтуванням відсутності зв’язку; наведено рекомендації без автоматичного переписування історії.\n- [ ] Карта дозволяє пройти ланцюг в обидва боки, виявляє сироти і розрізняє запланований результат, наявний матеріал та перевірений доказ. Вказано версії / коміти чи інші стабільні локатори.\n- [ ] Для TRL наведено відповідні об’єкт, критерій, докази та обмеження; TRL за самооцінкою відокремлено від незалежного аудиту.\n- [ ] Матеріали мають версії SemVer 2.0.0, історію та посилання на WP; проведено Review Report і власник прийняв результат. Діючі критерії S2 з настанови не змінено без рішення власника.\n\n## Вихідні матеріали\n\n- [Огляд історичних вимог #114](https://github.com/nick-fedchik/kuzmin-machine/blob/main/docs/research/verification/requirements-trace-assessment-114.md), [історичний реєстр](https://github.com/nick-fedchik/kuzmin-machine/blob/main/requirements/requirements.md).\n- [План рефакторингу](https://github.com/nick-fedchik/kuzmin-machine/blob/main/architecture/refactoring-plan.md), [паспорт TRL](https://github.com/nick-fedchik/kuzmin-machine/blob/main/process/trl/TRL-passport.md), [конфігурація WP](https://github.com/nick-fedchik/kuzmin-machine/blob/main/docs/governance/work-products.md), [каталог WI](https://github.com/nick-fedchik/kuzmin-machine/blob/main/process/work-items.md).\n- Перші результати #114 — вхід до цієї роботи, не завершення S2. Розбіжність FIFO 16/64, знахідку #115 і окремі обмеження доказів врахувати при наступному розборі.\n\n## Спадкоємність первинної постановки\n\nЗберігаються початкові завдання S2: перевірити й переписати реєстр вимог із критеріями перевірки; переглянути `architecture/refactoring-plan.md`; підготувати системну, HW і SW архітектуру MVP; забезпечити REQ ↔ архітектура ↔ перевірка без прихованих сиріт; отримати Review Report. Попередні коментарі та рішення Issue залишаються чинним історичним контекстом.",
+        "labels": [
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58JIA",
+                "name": "type:task",
+                "description": "Робота за планом",
+                "color": "1d76db"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58MHg",
+                "name": "area:sys",
+                "description": "Вимоги, архітектура системи",
+                "color": "0e8a16"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Qcg",
+                "name": "aspice:SYS.2",
+                "description": "ASPICE 4.0 SYS.2",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58QyA",
+                "name": "aspice:SYS.3",
+                "description": "ASPICE 4.0 SYS.3",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58SAg",
+                "name": "aspice:HWE.1",
+                "description": "ASPICE 4.0 HWE.1",
+                "color": "c5def5"
+            },
+            {
+                "id": "LA_kwDOVn-t5M8AAAADB58Tfw",
+                "name": "aspice:SWE.1",
+                "description": "ASPICE 4.0 SWE.1",
+                "color": "c5def5"
+            }
+        ],
+        "number": 5,
+        "state": "OPEN",
+        "title": "S2: комплексне трасування цілей, вимог, архітектури й робіт",
+        "updatedAt": "2026-11-12T08:27:21Z",
+        "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/5"
+    }
+]
