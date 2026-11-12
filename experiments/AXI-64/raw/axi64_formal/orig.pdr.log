@@ -1,0 +1,7 @@
+$ yosys-abc -c read_aiger orig.aig; fold; strash; pdr
+ABC command line: "read_aiger orig.aig; fold; strash; pdr".
+
+Warning: The last 5 outputs are interpreted as constraints.
+Invariant F[3] : 631 clauses with 0 flops (out of 478) (cex = 0, ave = 10.10)
+Verification of invariant with 631 clauses was successful.  Time =     0.01 sec
+Property proved.  Time =     0.37 sec

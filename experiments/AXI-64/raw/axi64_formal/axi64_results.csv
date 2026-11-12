@@ -1,0 +1,12 @@
+design,engine,status,cex_frame,seconds,failed_asserts,reached_covers,unreached_covers
+original,abc pdr,PASSED,,0.393,,,
+original,smtbmc z3 bmc t=8,PASSED,,31.346,,,
+original,smtbmc z3 cover t=10,PASSED,,0.092,,C1_aw_before_w;C2_w_before_aw;C3_simultaneous;C4_b_backpressure;C5_r_backpressure;C6_partial_strobe;C7_read_written,
+M_noaw: write without AW handshake,abc pdr,FAILED,2,0.057,,,
+M_noaw: write without AW handshake,smtbmc z3 bmc t=3,FAILED,,0.073,P3_b_count,,
+M_araddr: write address taken from AR instead of AW,abc pdr,FAILED,3,0.153,,,
+M_araddr: write address taken from AR instead of AW,smtbmc z3 bmc t=4,FAILED,,0.104,P5_data,,
+M_nostrb: WSTRB ignored,abc pdr,FAILED,4,0.148,,,
+M_nostrb: WSTRB ignored,smtbmc z3 bmc t=5,FAILED,,0.085,P5_data,,
+M_bdrop: BVALID dropped without BREADY,abc pdr,FAILED,3,0.139,,,
+M_bdrop: BVALID dropped without BREADY,smtbmc z3 bmc t=4,FAILED,,0.084,P1_b_stable;P3_b_count,,

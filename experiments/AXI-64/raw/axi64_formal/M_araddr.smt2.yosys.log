@@ -1,0 +1,1 @@
+$ yosys -q M_araddr.smt2.ys

@@ -1,0 +1,5 @@
+$ yosys-abc -c read_aiger M_nostrb.aig; fold; strash; pdr
+ABC command line: "read_aiger M_nostrb.aig; fold; strash; pdr".
+
+Warning: The last 5 outputs are interpreted as constraints.
+Output 4 of miter "M_nostrb" was asserted in frame 4.  Time =     0.13 sec
