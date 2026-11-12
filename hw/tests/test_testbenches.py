@@ -25,6 +25,7 @@ AXI_DEPS = [
 
 # тестбенч -> (RTL-залежності, обов'язковий рядок успіху або None)
 TESTBENCHES = {
+    "s6_no_ps_dependency_tb.sv": (AXI_DEPS, "All S6 / Issue #72 No-PS-Dependency tests succeeded!"),
     "kpol_txn_gate_tb.sv": ([f"{CORE}/kpol_txn_gate.sv"], None),
     "kpol_txn_gate_v2_tb.sv": ([f"{CORE}/kpol_txn_gate_v2.sv"], None),
     "kpol_txn_gate_axi_lite_tb.sv": (AXI_DEPS, None),

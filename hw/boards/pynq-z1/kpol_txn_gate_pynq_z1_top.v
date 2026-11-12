@@ -10,7 +10,8 @@ module kpol_txn_gate_pynq_z1_top (
     input  wire [1:0] sw,
     output wire       ja1,
     output wire       ja2,
-    output wire       ja3
+    output wire       ja3,
+    output wire       ja4
 );
     wire [3:0] fclk_unbuffered;
     wire fclk0;
@@ -124,6 +125,16 @@ module kpol_txn_gate_pynq_z1_top (
         end
     end
 
+    // Software trigger for burst from PS AXI (write bit 1 to REG_CONTROL at 0x08)
+    reg sw_burst_pulse;
+    always @(posedge fclk0 or negedge gp0_aresetn) begin
+        if (!gp0_aresetn) begin
+            sw_burst_pulse <= 1'b0;
+        end else begin
+            sw_burst_pulse <= (gp0_awvalid && gp0_wvalid && (gate_awaddr[7:0] == 8'h08) && gp0_wdata[1]);
+        end
+    end
+
     // Automated 100-burst generator (BTN1 trigger or AXI start)
     reg [7:0]  burst_cnt;
     reg [15:0] burst_period_cnt;
@@ -141,7 +152,7 @@ module kpol_txn_gate_pynq_z1_top (
         end else begin
             burst_txn_trig <= 1'b0;
             if (!burst_running) begin
-                if (btn1_fast_rise) begin
+                if (btn1_fast_rise || sw_burst_pulse) begin
                     burst_running    <= 1'b1;
                     burst_cnt        <= 8'd0;
                     burst_period_cnt <= 16'd0;
@@ -261,9 +272,30 @@ module kpol_txn_gate_pynq_z1_top (
     // JA1 (Pin 1): Stimulus Monitor (driven by stimulus generator or BTN0)
     // JA2 (Pin 2): kpol_txn_gate COMMITTED output
     // JA3 (Pin 3): kpol_txn_gate REJECTED output (Fail-closed verification)
+    // JA4 (Pin 4): PS AXI Bus Activity Monitor (Issue #72 / S6)
+    wire axi_bus_active_raw = gp0_awvalid | gp0_arvalid | gp0_wvalid | gp0_rvalid | gp0_bvalid;
+    reg [15:0] axi_pulse_cnt;
+    reg        axi_mon_q;
+    always @(posedge fclk0 or negedge gp0_aresetn) begin
+        if (!gp0_aresetn) begin
+            axi_pulse_cnt <= 16'd0;
+            axi_mon_q     <= 1'b0;
+        end else begin
+            if (axi_bus_active_raw) begin
+                axi_pulse_cnt <= PULSE_WIDTH;
+                axi_mon_q     <= 1'b1;
+            end else if (axi_pulse_cnt > 16'd0) begin
+                axi_pulse_cnt <= axi_pulse_cnt - 16'd1;
+                if (axi_pulse_cnt == 16'd1)
+                    axi_mon_q <= 1'b0;
+            end
+        end
+    end
+
     assign ja1 = stim_active_out;
     assign ja2 = commit_out_q;
     assign ja3 = reject_out_q;
+    assign ja4 = axi_mon_q;
 
     // Green LEDs LD0..LD3:
     // LD0 = Committed OR Reactive Pin "0p0" Active
