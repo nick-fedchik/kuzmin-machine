@@ -1,0 +1,5 @@
+$ yosys-abc -c read_aiger M_bdrop.aig; fold; strash; pdr
+ABC command line: "read_aiger M_bdrop.aig; fold; strash; pdr".
+
+Warning: The last 5 outputs are interpreted as constraints.
+Output 0 of miter "M_bdrop" was asserted in frame 3.  Time =     0.11 sec

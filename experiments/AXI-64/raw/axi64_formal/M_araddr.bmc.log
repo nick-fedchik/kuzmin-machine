@@ -1,0 +1,10 @@
+$ yosys-smtbmc -s z3 -t 4 --dump-vcd experiments/AXI-64/scripts/../raw/axi64_formal/M_araddr.bmc.vcd M_araddr.smt2
+##   0:00:00  Solver: z3
+##   0:00:00  Checking assertions in step 0..
+##   0:00:00  Checking assertions in step 1..
+##   0:00:00  Checking assertions in step 2..
+##   0:00:00  Checking assertions in step 3..
+##   0:00:00  BMC failed!
+##   0:00:00  Assert failed in axi64_formal: P5_data
+##   0:00:00  Writing trace to VCD file: experiments/AXI-64/scripts/../raw/axi64_formal/M_araddr.bmc.vcd
+##   0:00:00  Status: FAILED

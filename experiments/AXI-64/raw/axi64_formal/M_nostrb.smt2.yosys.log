@@ -1,0 +1,1 @@
+$ yosys -q M_nostrb.smt2.ys

@@ -1,0 +1,19 @@
+$ yosys-smtbmc -s z3 -t 10 -c orig.smt2
+##   0:00:00  Solver: z3
+##   0:00:00  Checking cover reachability in step 0..
+##   0:00:00  Checking cover reachability in step 1..
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at axi64_formal: C6_partial_strobe
+##   0:00:00  Reached cover statement in step 2 at axi64_formal: C3_simultaneous
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at axi64_formal: C2_w_before_aw
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at axi64_formal: C1_aw_before_w
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Checking cover reachability in step 3..
+##   0:00:00  Reached cover statement in step 3 at axi64_formal: C4_b_backpressure
+##   0:00:00  Checking cover reachability in step 3..
+##   0:00:00  Reached cover statement in step 3 at axi64_formal: C7_read_written
+##   0:00:00  Checking cover reachability in step 3..
+##   0:00:00  Reached cover statement in step 3 at axi64_formal: C5_r_backpressure
+##   0:00:00  Status: PASSED

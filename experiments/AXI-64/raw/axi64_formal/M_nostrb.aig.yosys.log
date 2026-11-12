@@ -1,0 +1,1 @@
+$ yosys -q M_nostrb.aig.ys
