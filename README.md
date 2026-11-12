@@ -30,6 +30,7 @@
 | [`docs/`](docs/) | Джерела, теорія, дослідження, стратегія, бізнес/прогнози, докази TRL та незмінні архівні оригінали; [навігація](docs/PUBLICATION-BOUNDARY.md) |
 | [Work Items](process/work-items.md) | Види робіт і питань, зв'язки Issue та правила розрізнення |
 | [Work Products](docs/governance/work-products.md) | Типи робочих продуктів, призначення каталогів і [шаблони](process/templates/work-products/README.md) |
+| [Інвентар Work Products](docs/governance/work-product-inventory.md) | Робоча класифікація документів, пакетів і пов'язаних Issue |
 | [Configuration Items](process/configuration-items.md) | Кандидати з результатів і критичних документів для керування конфігурацією |
 | [`hw/`](hw/) | RTL (`core`, `bus`, `io`, `poc-demo`), тестбенчі, плата PYNQ-Z1, скрипти |
 | [`sw/`](sw/) | Еталонна реалізація KPOL, рантайми PYNQ / MCU, статичний аналізатор |
