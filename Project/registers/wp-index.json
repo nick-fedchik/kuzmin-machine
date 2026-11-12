@@ -1377,6 +1377,18 @@
       "immutable_input": false
     },
     {
+      "path": "Project/assessments/structure-migration/raw/ci-initial-failure.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/ci-toolset-decision.json",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Project/assessments/structure-migration/raw/configurations.log",
       "direction": "Project",
       "wp_type": "Data",

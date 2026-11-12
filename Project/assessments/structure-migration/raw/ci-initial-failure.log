@@ -1,0 +1,7 @@
+check	Tests (current software, RTL and recorded evidence)	﻿2026-11-12T17:08:04.5357880Z ##[group]Run python3 -m pytest -q
+check	Tests (current software, RTL and recorded evidence)	2026-11-12T17:08:04.5358191Z [36;1mpython3 -m pytest -q[0m
+check	Tests (current software, RTL and recorded evidence)	2026-11-12T17:08:04.5378943Z shell: /usr/bin/bash -e {0}
+check	Tests (current software, RTL and recorded evidence)	2026-11-12T17:08:04.5379213Z ##[endgroup]
+check	Tests (current software, RTL and recorded evidence)	2026-11-12T17:08:10.0485427Z ........................................................................ [ 42%]
+check	Tests (current software, RTL and recorded evidence)	2026-11-12T17:16:05.4062677Z ...............
+check	Tests (current software, RTL and recorded evidence)	2026-11-12T17:16:05.8078383Z ##[error]Process completed with exit code 143.

@@ -57,7 +57,7 @@
       "source_sha256": "cc657efa3d4cd46ca88001f22ad571215fcbb3daba5cf2c7759f5be876a1c380",
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",
-      "destination_sha256": "43815b175ace59d36dc39d02dac632fdac7bd1751f234b4ecf07a23f0e52ba83",
+      "destination_sha256": "aa266578a5825e74c638771d39a4b0d6cdd67dc102bfa0284d271545bf887c28",
       "operation": "adapted"
     },
     {
@@ -6612,6 +6612,14 @@
       "sha256": "5b77b0afebeeb1f901b0f4b571ae7cabc74dfe65f57877129405bfa886e876a6"
     },
     {
+      "destination": "Project/assessments/structure-migration/raw/ci-initial-failure.log",
+      "sha256": "2ed861886f8517ccadecdfc47a7e7230f91aaca3a7ec74a049f2c3f3a42cc58c"
+    },
+    {
+      "destination": "Project/assessments/structure-migration/raw/ci-toolset-decision.json",
+      "sha256": "936c252233dec55efd25089bc3a6593d7d2c55bb97bc7690c0ca8a4b2c6933b9"
+    },
+    {
       "destination": "Project/assessments/structure-migration/raw/configurations.log",
       "sha256": "e02d9a1940aab0f2fa466e06259ff2b03d5cff432946f431496ed14108041ad7"
     },
@@ -6645,7 +6653,7 @@
     },
     {
       "destination": "Project/assessments/structure-migration/report.md",
-      "sha256": "3046b9b188a3d16056cf485b19da8bfe4577c4f3dbc4306abf97dc6bf0cd5205"
+      "sha256": "e2b998128ab920d5a7e286e095e9471d1abada6ba3fa278564d789c1ca4c3c15"
     },
     {
       "destination": "Project/plans/ng-transition.md",
@@ -6685,7 +6693,7 @@
     },
     {
       "destination": "Project/registers/wp-index.json",
-      "sha256": "ae05c568458e437b3c9c902a816d72419c483654ec7f2c6086683d3add7a930e"
+      "sha256": "56662e1c1c6c6f115c8a907dbb4eab2fc52bd81f56645ba5ac397e16c6986929"
     },
     {
       "destination": "Project/tools/check_wp_documents.py",
@@ -6738,7 +6746,7 @@
     "source_tracked": 1299,
     "selected_inputs": 259,
     "excluded_inputs": 1040,
-    "created_files": 56,
+    "created_files": 58,
     "immutable_inputs": 108
   },
   "prepared_input": {
