@@ -1,7 +1,7 @@
 # Реєстр міграції PoC → MVP (`drafts/KuzminMachine` → `kuzmin-machine`)
 
-* **Версія:** 0.4.0 (чернетка; потребує затвердження власником)
-* **Дата:** 2026-11-10
+* **Версія:** 0.4.1 (чернетка; потребує затвердження власником)
+* **Дата:** 2026-11-12
 * **Укладач:** Copilot (роль: Виконавець). Затверджує: Власник.
 * **База:** план v0.2 укладено на `drafts@ecdc049`. **Фактичне перенесення — з `drafts@a4738bc`** (після завершення робіт Gemini). Тег `poc-final` у `drafts` не створено (зовнішня дія, рішення власника); посилання на неперенесене ведуть на `drafts@a4738bc`.
 * **Обсяг:** 211 файлів без `raw/` і 298 файлів `raw/`.
@@ -207,7 +207,7 @@
 | `test_km_{bram_concepts,cascade_arbiter,euclid_hw,io_trigger,rcfc_stress,stream_pipeline}.py` (6) | **А, не переносити як тести** | — | Бутафорія (F5) |
 | `test_km_domain_efficacy.py` | Д | — | Тестує `06/tco_calculator.py` |
 | `km_static_analyzer.py` + `test_km_static_analyzer.py` | П\* | `sw/tools/static-analyzer/` | Справжні юніт-тести. Зв'язок з KPOL уточнити на кроці 3 |
-| `Kuzmin-Machine-Static-Analysis-and-Termination-Checker-UA.md` | П\* | `sw/tools/static-analyzer/README.md` | Звірити з кодом |
+| `Kuzmin-Machine-Static-Analysis-and-Termination-Checker-UA.md` | П\* | `sw/tools/static-analyzer/design-analysis.md` | Звірити з кодом |
 | `kuzmin_sva_checker.sv` | А | — | Фіктивні порти (F9) |
 | `Kuzmin-Machine-Experiment-Plan-Available-Hardware-UA.md` | П\* | `experiments/PLAN.md` | Чинний план AV. Виправити два розділи «6.1» |
 | `Kuzmin-Machine-TRL-Assessment-Matrix-UA.md` | П | `process/trl/matrix.md` | Шкала TRL (ISO 16290, Brave1, NASA) |
@@ -302,3 +302,4 @@
 | 0.3.2 | 2026-11-09 | §0.4 F12: замінено спростовану гіпотезу про адреси на три встановлені причини; статус виправлено в PR #44 (#38, #42, #11); §0.3 і §6 п. 4 позначено (#38) |
 | 0.3.3 | 2026-11-09 | §0.4 F14: звіт перенесено в `docs/trl-evidence/event-languages-prior-art.md`; §6 п. 4 позначено (#13); виправлення за рецензією — PR #50 (#13) |
 | 0.4.0 | 2026-11-10 | #84: нова межа репозиторіїв; усі 517 початкових файлів збережено в закритому проєкті, нові читабельні документи й маніфест. Старі статуси «лишити в drafts» позначено історичними |
+| 0.4.1 | 2026-11-12 | #106: уточнено шлях до опису статичного аналізатора після відокремлення README. |
