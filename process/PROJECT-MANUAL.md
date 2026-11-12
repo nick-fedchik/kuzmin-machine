@@ -1,7 +1,7 @@
 # Машина Кузьміна — Настанова проєкту (Project Manual / Project Plan)
 
-* **Версія:** 0.7.1 (чернетка; затверджує власник)
-* **Дата:** 2026-11-11
+* **Версія:** 0.7.2 (чернетка; затверджує власник)
+* **Дата:** 2026-11-12
 * **Власник проєкту:** Микола Мартинович Федчик
 * **Репозиторій:** `nick-fedchik/kuzmin-machine` (приватний)
 * **Пов'язані документи:** [AGENTS.md](../AGENTS.md) — правила для агентів; [audit/ASPICE-Audit-Method.md](audit/ASPICE-Audit-Method.md) — методика незалежного аудиту; [MIGRATION-REGISTER.md](MIGRATION-REGISTER.md) — що й чому перенесено з PoC; [trl/TRL-passport.md](trl/TRL-passport.md) — докази рівнів TRL.
@@ -193,11 +193,14 @@ ASPICE використовується як перелік добрих пра�
 
 ## 6. GitHub: Issues і Project
 
+Види роботи та їхні зв'язки описано в [каталозі Work Items](work-items.md).
+
 **Мітки:**
-- `type:task`, `type:experiment`, `type:finding`, `type:change-request`, `type:risk`;
-- `area:hw`, `area:sw`, `area:sys`, `area:process`;
+- `type:research`, `type:task`, `type:experiment`, `type:finding`, `type:change-request`, `type:risk`;
+- `area:theory`, `area:hw`, `area:sw`, `area:sys`, `area:process`;
 - `sev:critical`, `sev:major`, `sev:minor`;
-- `ready`, `blocked`;
+- `priority:P1`, `priority:P2`;
+- `ready`, `blocked`, `accepted`;
 - `aspice:SUP.8`, `aspice:HWE.2` тощо — процеси ASPICE, яких стосується Issue (кілька міток можна).
 
 **Поля Project:**
@@ -269,6 +272,7 @@ ASPICE використовується як перелік добрих пра�
 | 0.6.0 | 2026-11-09 | §7: одне підвищення версії на незлитий PR; за повторною рецензією PR #37 і PR #54 (#53): §3 — вердикт «Прийнято із зауваженнями» дає підставу для злиття, якщо зауваження оформлено Issues; Definition of Done, умови злиття й схема узгоджені; додано переходи «Не перевірено» |
 | 0.7.0 | 2026-11-10 | За прямим дорученням власника (#84) усі дослідження, аналітика й комерційні матеріали належать закритому проєкту; drafts — редакційний майданчик. Уточнено ролі Миколи Мартиновича Федчика |
 | 0.7.1 | 2026-11-11 | Актуалізовано статус закритих задач TRL 1–3 без зміни самооцінки |
+| 0.7.2 | 2026-11-12 | Додано посилання на каталог Work Items та актуалізовано перелік міток (#103). |
 
 ## Абревіатури та глосарій
 
