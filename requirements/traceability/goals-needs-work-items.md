@@ -204,7 +204,7 @@ TRL 1–3; для TRL 3 він обмежує підтвердження кон�
 | [`AV-07`](../../experiments/AV-07/report.md) | Чутливість тестбенчів | G1/N1 | — | Закритий; більшість мутантів у демо-FSM, які планується вилучити. |
 | [`AV-08`](../../experiments/AV-08/report.md) | `REQ-HW-009` | G1/N1 | — | Закритий; масштабування демо, не ядра S3. |
 | [`KPOL-FIX`](../../experiments/KPOL-FIX/report.md) | `REQ-SW-001…006` | G1/N2 | [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64) | Історична заява про виправлення F-04 спиралася на 4 направлені кейси; поточний генератор окремо перевірено у [AXI-64](../../experiments/AXI-64/report.md). Перевірка не охоплює функціональний запуск `dispatch`, PROT чи всі параметри. |
-| [`AXI-64`](../../experiments/AXI-64/report.md), [властивості](../../experiments/AXI-64/scripts/axi64_props.sv), [сирі дані](../../experiments/AXI-64/raw/axi64_formal/axi64_results.csv) | Гіпотеза #64, кандидат `REQ-HW-008` | G1/N1 | [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64), [PR #121](https://github.com/nick-fedchik/kuzmin-machine/pull/121) | P1–P6 доведено ABC PDR для одного згенерованого модуля; 7/7 cover досягнуто; 4 F-04-мутанти виявлено. Не спростовано в межах методу; незалежної рецензії немає. |
+| [`AXI-64`](../../experiments/AXI-64/report.md), [властивості](../../experiments/AXI-64/scripts/axi64_props.sv), [сирі дані](../../experiments/AXI-64/raw/axi64_formal/axi64_results.csv) | Гіпотеза #64, кандидат `REQ-HW-008` | G1/N1 | [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64), [PR #121](https://github.com/nick-fedchik/kuzmin-machine/pull/121) | P1–P6 доведено ABC PDR для одного згенерованого модуля за припущень master і скидання (звіт, §2); 7/7 cover досягнуто; 4 F-04-мутанти виявлено контрприкладами. Не спростовано в межах методу; незалежної рецензії немає. |
 
 Підсумок: без обґрунтування — демо-FSM `poc-demo`, `km_predicate_evaluator`,
 `km_concept_bram_core`, MCU-runtime і статичний аналізатор. Рішення про них
@@ -222,6 +222,9 @@ Issues, видимих команді `gh issue list --state all --limit 250` н
 `e717fa72468520fb0faab148305c0e4edb7da9374e9e534ca88831db915d6c43`.
 Знімок містить номер, назву, тіло, мітки, стани й часові мітки; коментарі
 перевірялися окремо. Він є незмінним історичним зрізом, не поточним беклогом.
+Рішення власника, що спираються на коментарі закриття (зокрема #64, #65, #122),
+наведено за текстом коментарів Issue; знімок їх не містить і в цьому документі
+їх не перевірено повторно.
 
 Відтворення:
 
@@ -357,7 +360,7 @@ KPOL subset (#19), карта регістрів (#48), формальний gat
 | `REQ-SYS-007` | G1/N1; Q4, #67/#68 | Програмні ACL тести; апаратний access control не доведений | Власник відклав security scope; поточна потреба невстановлена. |
 | `REQ-SYS-008` | G1/N1; Q4, #67/#68/#115 | Програмний підпис/verify; Secure Boot не підтверджено; #115 defect | Відкладена; виправлення #115 не означає підтвердження boot security. |
 | `REQ-SYS-009` | G1/N2; #19/#70/#76 | Хешування не доводить повноти/правильності proof | Семантика proof та незалежність не узгоджені. |
-| `REQ-SYS-010` | G4/N5; #65/#71 | Mutation tests для вибраних наборів | Вимогу 100% відхилено; це не прийнятий gate. |
+| `REQ-SYS-010` | G4/N5; #65/#71 | Mutation tests для вибраних наборів | У #71 гейт M < 1.0 не прийнято як релізний; саму вимогу 100 % лишено для рішення у #5 ([#114](../../docs/research/verification/requirements-trace-assessment-114.md)). Mutation testing — засіб, не acceptance gate. |
 | `REQ-HW-001` | G1/N1; #6 | Окремі CME дії; універсальність довільних задач не доведена | Визначити immutable core у S3. |
 | `REQ-HW-002` | G1/N1; #6/#19 | Opcode гілки є; всі опкоди й межі не тестовано | Вивести з погодженої KPOL підмножини. |
 | `REQ-HW-003` | G1/N1; #6/#19 | Окремі арифметичні операції; не всі випадки | Уточнити overflow, ширину й supported subset. |
