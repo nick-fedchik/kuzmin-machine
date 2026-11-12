@@ -1,8 +1,8 @@
 // ============================================================================
 // Тестбенч: km_autonomous_sequencer_tb.sv
-// Призначення: Верифікація автономного виконання МК у залізі (Крок 2).
-// Доводить, що ядро обробляє транзакції та каскади за наносекунди
-// без участі процесора та операційної системи Linux.
+// Призначення: Верифікація автономного виконання МК у залізі (Крок 2),
+// черги подій, зворотного тиску, немовчазного переповнення (B5, REQ-SYS-013..014,
+// REQ-HW-014..016) та інтеграції зовнішнього тригера (B2, REQ-SYS-011..012).
 // ============================================================================
 `timescale 1ns / 1ps
 
@@ -10,6 +10,7 @@ module km_autonomous_sequencer_tb;
 
     localparam int DATA_WIDTH = 32;
     localparam int ADDR_WIDTH = 8;
+    localparam int QUEUE_DEPTH = 16;
 
     logic                   clk;
     logic                   rst_n;
@@ -18,6 +19,7 @@ module km_autonomous_sequencer_tb;
     logic                   hw_trigger_valid;
     logic [5:0]             hw_trigger_cid;
     logic [DATA_WIDTH-1:0]  hw_trigger_param;
+    wire                    hw_trigger_ready;
 
     // Зв'язок між Sequencer та BRAM (Порт B)
     wire [ADDR_WIDTH-1:0]   bram_b_addr;
@@ -33,12 +35,17 @@ module km_autonomous_sequencer_tb;
     logic                   bram_a_we;
     wire [DATA_WIDTH-1:0]   bram_a_rdata;
 
-    // Статус секвенсера
+    // Статус та телеметрія секвенсера
     wire                    busy;
+    wire                    fifo_full;
+    wire                    fifo_overflow;
+    wire [31:0]             events_dropped_count;
     wire [31:0]             events_count;
     wire [31:0]             comm_count;
     wire [31:0]             rej_count;
     wire [31:0]             last_comm_state;
+    wire                    commit_pulse;
+    wire                    reject_pulse;
 
     // Інстанціювання пам'яті концептів BRAM
     km_concept_bram #(
@@ -63,6 +70,7 @@ module km_autonomous_sequencer_tb;
 
     // Інстанціювання автономного секвенсера
     km_autonomous_sequencer #(
+        .QUEUE_DEPTH(QUEUE_DEPTH),
         .NUM_CONCEPTS(64),
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH)
@@ -72,16 +80,22 @@ module km_autonomous_sequencer_tb;
         .hw_trigger_valid_i(hw_trigger_valid),
         .hw_trigger_cid_i(hw_trigger_cid),
         .hw_trigger_param_i(hw_trigger_param),
+        .hw_trigger_ready_o(hw_trigger_ready),
         .bram_b_addr_o(bram_b_addr),
         .bram_b_wdata_o(bram_b_wdata),
         .bram_b_wstrb_o(bram_b_wstrb),
         .bram_b_we_o(bram_b_we),
         .bram_b_rdata_i(bram_b_rdata),
         .busy_o(busy),
+        .fifo_full_o(fifo_full),
+        .fifo_overflow_o(fifo_overflow),
+        .events_dropped_count_o(events_dropped_count),
         .events_processed_count_o(events_count),
         .committed_count_o(comm_count),
         .rejected_count_o(rej_count),
-        .last_committed_state_o(last_comm_state)
+        .last_committed_state_o(last_comm_state),
+        .commit_pulse_o(commit_pulse),
+        .reject_pulse_o(reject_pulse)
     );
 
     always #5 clk = ~clk; // 100 МГц (10 нс)
@@ -148,6 +162,9 @@ module km_autonomous_sequencer_tb;
         // Концепт 1: Початковий стан = 50, pred = NOP(0x00), action = ADD(0x03), operand = 5, sub_cid = 0 (кінець ланцюга)
         write_concept_desc(6'd1, 32'd50, 32'd5, 8'h00, 8'h03, 8'h00, 8'h03, 32'd0);
 
+        // Концепт 2: Початковий стан = 20, pred = GT(50) (порушення), action = INC(0x01), sub_cid = 0
+        write_concept_desc(6'd2, 32'd20, 32'd50, 8'h03, 8'h03, 8'h00, 8'h01, 32'd0);
+
         #30;
         $display("=== 2. ПОДАЧА ФІЗИЧНОГО АПАРАТНОГО ТРИГЕРА НА КОНЦЕПТ 0 ===");
         @(posedge clk);
@@ -193,8 +210,63 @@ module km_autonomous_sequencer_tb;
             $fatal(1, "[FAIL] BRAM Концепту 1 не оновлено: отримано %0d", bram_a_rdata);
         end
 
+        $display("=== 4. ТЕСТ ВІДХИЛЕННЯ ТРАНЗАКЦІЇ (Fail-Closed Reject) ===");
+        @(posedge clk);
+        #1;
+        hw_trigger_valid = 1'b1;
+        hw_trigger_cid   = 6'd2;   // Концепт 2 вимагає param > 50
+        hw_trigger_param = 32'd10; // 10 < 50 -> Порушення, Reject
+        @(posedge clk);
+        #1;
+        hw_trigger_valid = 1'b0;
+
+        wait(busy == 1'b1);
+        wait(busy == 1'b0);
+        #10;
+        $display("Відхилень після Reject: %0d (очікується 1)", rej_count);
+        if (rej_count != 32'd1) begin
+            $fatal(1, "[FAIL] Транзакція не була відхилена!");
+        end
+
+        // Перевірка незмінності стану Концепту 2 у BRAM
+        @(posedge clk);
+        #1;
+        bram_a_addr = {6'd2, 2'b00};
+        @(posedge clk);
+        #2;
+        if (bram_a_rdata !== 32'd20) begin
+            $fatal(1, "[FAIL] Стан Концепту 2 змінився при відхиленні: %0d", bram_a_rdata);
+        end
+
+        $display("=== 5. СТРЕС-ТЕСТ ПЕРЕПОВНЕННЯ ТА ЗВОРОТНОГО ТИСКУ (REQ-SYS-013, REQ-HW-014, REQ-HW-015) ===");
+        // Швидка пачка з 25 подій підряд (темп подачі 1 такт, темп обробки 8 тактів)
+        // Після 18 тактів черга повністю заповнюється і наступні події відкидаються
+        for (int i = 0; i < 25; i++) begin
+            @(posedge clk);
+            #1;
+            hw_trigger_valid = 1'b1;
+            hw_trigger_cid   = 6'd1;
+            hw_trigger_param = 32'd1;
+        end
+        @(posedge clk);
+        #1;
+        hw_trigger_valid = 1'b0;
+
+        // Чекаємо завершення обробки всіх подій у черзі
+        wait(busy == 1'b1);
+        wait(busy == 1'b0);
+        #20;
+
+        $display("Відкинутих подій (dropped): %0d (очікується > 0)", events_dropped_count);
+        $display("Прапорець переповнення (overflow): %0d (очікується 1)", fifo_overflow);
+        $display("Сигнал готовності після вичитки (ready): %0d (очікується 1)", hw_trigger_ready);
+
+        if (events_dropped_count == 0 || fifo_overflow != 1'b1 || hw_trigger_ready != 1'b1) begin
+            $fatal(1, "[FAIL] Політика немовчазного відкидання не спрацювала!");
+        end
+
         $display("====================================================================");
-        $display("   АВТОНОМНЕ ВИКОНАННЯ ТА КАСКАДНЕ РАНДЕВУ УСПІШНО ДОВЕДЕНО (TRL 4)   ");
+        $display("   АВТОНОМНЕ ВИКОНАННЯ, ЧЕРГА ТА НЕЗМІННЕ ЯДРО УСПІШНО ДОВЕДЕНО      ");
         $display("====================================================================");
         $finish;
     end
