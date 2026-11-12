@@ -1,6 +1,6 @@
 # Інвентар Work Products
 
-* **Версія:** 0.5.1 (робоча класифікація)
+* **Версія:** 0.5.2 (робоча класифікація)
 * **Дата:** 2026-11-12
 * **Issue:** [#108](https://github.com/nick-fedchik/kuzmin-machine/issues/108)
 * **База:** `5ab7a6b297cb0762f402265f6a9e4a89231cee94`, гілка #108; вихідний `main` після PR #107 — `898552ebb7b01e7836e8e1a657fb267b72604bfb`.
@@ -21,6 +21,10 @@
 відображає джерело та наявні застереження, а не незалежну атестацію.
 Доповнення 0.5.0 розглядає вибрані нові WP на базі `000aa1ca5896620d03d8bab9e5a5d508aa0cc38b`;
 воно не повторює повний інвентар на цій базі.
+
+Редакція 0.5.2 оновлює лише навігацію до перенесених шаблонів.
+Перелік, кількості й оцінки попередніх зрізів не перераховано;
+поточне покриття типів див. у [каталозі шаблонів](../templates/work-products/README.md).
 
 ## 1. Вибрані результати
 
@@ -63,13 +67,13 @@
 
 | Документи | Основний тип | Стан і пропозиція |
 |---|---|---|
-| [Кореневий README](../../README.md), [джерела](../sources/README.md), [дослідження](../research/README.md), [бізнес](../business/README.md), [KPOL](../../specs/kpol/README.md), [PoC RTL](../../hw/rtl/poc-demo/README.md), [аналізатор](../../sw/tools/static-analyzer/README.md), [шаблони WP](../../process/templates/work-products/README.md) | Guide | Навігаційні входи; зберегти біля відповідних матеріалів і підтримувати посилання |
+| [Кореневий README](../../README.md), [джерела](../sources/README.md), [дослідження](../research/README.md), [бізнес](../business/README.md), [KPOL](../../specs/kpol/README.md), [PoC RTL](../../hw/rtl/poc-demo/README.md), [аналізатор](../../sw/tools/static-analyzer/README.md), [шаблони WP](../../docs/templates/work-products/README.md) | Guide | Навігаційні входи; зберегти біля відповідних матеріалів і підтримувати посилання |
 | [CLAUDE.md](../../CLAUDE.md), [GEMINI.md](../../GEMINI.md) | Guide | Перенаправляють до спільних правил агентів; залишити без дублювання правил |
 | [AGENTS.md](../../AGENTS.md), [настанова](../../process/PROJECT-MANUAL.md), [правила рецензування](../../process/review-rules.md), [позиція щодо стандартів](../../process/standards-position.md), [межа репозиторіїв](../PUBLICATION-BOUNDARY.md) | Policy | Правила й межі проєкту; застосовувати з урахуванням власника та зазначеної версії; розбіжність S3 — §5 |
 | [Конфігурація WP](work-products.md), [каталог WI](../../process/work-items.md) | Policy | Проєктні угоди про види й розміщення; не вважати самі угоди доказом виконання |
 | [Реєстр CI](../../process/configuration-items.md), [реєстр міграції](../../process/MIGRATION-REGISTER.md), [цей інвентар](work-product-inventory.md) | Register | Реєстри різних сутностей: запропоновані CI, походження міграції та класифікація WP; не зливати в один |
-| [Шаблон PR](../../.github/pull_request_template.md), [шаблон звіту](../../process/templates/report.md), [шаблон рецензії](../../process/templates/review.md) | Template | Форми робочого процесу; зберегти як шаблони, а не приклади виконаної роботи |
-| Шаблони WP: [аналіз](../../process/templates/work-products/analysis-report.md), [рішення](../../process/templates/work-products/decision.md), [дизайн](../../process/templates/work-products/design.md), [посібник](../../process/templates/work-products/guide.md), [модель](../../process/templates/work-products/model.md), [план](../../process/templates/work-products/plan.md), [питання](../../process/templates/work-products/problem.md), [протокол](../../process/templates/work-products/protocol.md), [вимога](../../process/templates/work-products/requirement.md), [специфікація](../../process/templates/work-products/specification.md) | Template | Допоміжні форми; не створювати продукти лише для заповнення форми |
+| [Шаблон PR](../../.github/pull_request_template.md), [шаблон звіту](../../docs/templates/report.md), [шаблон рецензії](../../docs/templates/review.md) | Template | Форми робочого процесу; зберегти як шаблони, а не приклади виконаної роботи |
+| Шаблони WP: [аналіз](../../docs/templates/work-products/analysis-report.md), [рішення](../../docs/templates/work-products/decision.md), [дизайн](../../docs/templates/work-products/design.md), [посібник](../../docs/templates/work-products/guide.md), [модель](../../docs/templates/work-products/model.md), [план](../../docs/templates/work-products/plan.md), [питання](../../docs/templates/work-products/problem.md), [протокол](../../docs/templates/work-products/protocol.md), [вимога](../../docs/templates/work-products/requirement.md), [специфікація](../../docs/templates/work-products/specification.md) | Template | Допоміжні форми; не створювати продукти лише для заповнення форми |
 | [Кроки ASPICE](../../process/aspice-steps.md) | Plan | Історичний план за PAM 4.0; не переписувати як оцінку 4.1 без окремої перевірки |
 | [Метод аудиту](../../process/audit/ASPICE-Audit-Method.md) | Protocol | Методика для PAM 4.0 та TRL; зберегти з версією моделі |
 | [Аудит v0.5.1](../../process/audit/reports/Audit-2026-11-11-v0.5.1.md), [рецензія TRL](../../process/trl/reviews/review-trl-passport-s1-s2.md), [рецензія міграції](../../process/migration/review.md) | Report / Review | Результати для конкретних зрізів; зберегти об'єкт, дату й обмеження рецензії |
@@ -247,6 +251,7 @@
 | 0.4.1 | 2026-11-12 | Додано пакет формальної перевірки AXI-64 (#64). |
 | 0.5.0 | 2026-11-12 | Додано вибрані нові WP S2 та AV-10, їхні типи, межі й розбіжність критеріїв. |
 | 0.5.1 | 2026-11-12 | Враховано рішення власника про прийняття AV-10 за 100 подіями; попереднє зауваження знято. |
+| 0.5.2 | 2026-11-12 | Оновлено навігацію після перенесення шаблонів у docs/templates; попередні інвентарні зрізи не переглянуто (#5). |
 
 ## Абревіатури та глосарій
 

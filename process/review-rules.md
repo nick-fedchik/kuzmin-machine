@@ -1,7 +1,7 @@
 # Правила документів, рецензування й аудиту Машини Кузьміна
 
-* **Версія:** 1.1.2
-* **Дата:** 2026-11-09
+* **Версія:** 1.1.3
+* **Дата:** 2026-11-12
 * **Сфера:** уся документація репозиторію `kuzmin-machine` згідно з [PROJECT-MANUAL §5.1](PROJECT-MANUAL.md#51-структура-репозиторію): вимоги ([requirements/](../requirements/requirements.md)), архітектура ([architecture/](../architecture/refactoring-plan.md)), специфікації ([specs/](../specs/kpol/README.md)), експерименти ([experiments/](../experiments/PLAN.md)), апаратні та програмні модулі ([hw/](../hw/RUNBOOK.md), [sw/](../sw/tools/static-analyzer/README.md)), процес ([process/](PROJECT-MANUAL.md)), докази й джерела ([docs/](../docs/sources/README.md)).
 * **Мета:** щоб завжди було однозначно, хто що виконав, хто це перевірив, яку саме версію перевірено і з яким висновком.
 * **Перенесено з:** `drafts/KuzminMachine/Kuzmin-Machine-Document-Review-and-Audit-Rules-UA.md` @ `a4738bc` (2026-11-09)
@@ -12,8 +12,8 @@
 
 | Роль | Хто це | Що створює | Чого не робить |
 | :--- | :--- | :--- | :--- |
-| **Виконавець** (автор) | Людина або агент, що виконав роботу | **Report** (звіт) за [шаблоном](templates/report.md) або **Specification** (специфікацію) | Не рецензує власний документ |
-| **Рецензент** | Перевіряє один документ: чи випливають висновки з даних, чи дотримано плану | **Review Report** за [шаблоном](templates/review.md) | Не редагує чужий документ; знахідки лише записує у Review Report |
+| **Виконавець** (автор) | Людина або агент, що виконав роботу | **Report** (звіт) за [шаблоном](../docs/templates/report.md) або **Specification** (специфікацію) | Не рецензує власний документ |
+| **Рецензент** | Перевіряє один документ: чи випливають висновки з даних, чи дотримано плану | **Review Report** за [шаблоном](../docs/templates/review.md) | Не редагує чужий документ; знахідки лише записує у Review Report |
 | **Аудитор** | Перевіряє кілька документів або відповідність процесу цим правилам і плану | **Review Report** (зведений аудит за [методикою](audit/ASPICE-Audit-Method.md)) | Те саме |
 | **Перевіряльник** | Незалежно відтворює вимірювання чи прогін і порівнює результат | **Review Report** з власними сирими даними | Те саме |
 
@@ -47,6 +47,8 @@
 
 ```text
 kuzmin-machine/
+├── docs/
+│   └── templates/         # шаблони Report, Review Report та інших WP
 ├── requirements/
 │   └── requirements.md    # вимоги та матриця трасування
 ├── architecture/
@@ -60,14 +62,13 @@ kuzmin-machine/
 ├── experiments/
 │   ├── PLAN.md            # чинний план експериментів
 │   └── AV-xx/
-│       ├── report.md      # звіт за шаблоном process/templates/report.md
-│       ├── review.md      # рецензія за шаблоном process/templates/review.md
+│       ├── report.md      # звіт за шаблоном docs/templates/report.md
+│       ├── review.md      # рецензія за шаблоном docs/templates/review.md
 │       ├── scripts/       # скрипти відтворення експерименту
 │       └── raw/           # незмінні сирі дані експерименту
 └── process/
     ├── PROJECT-MANUAL.md  # настанова проєкту
     ├── review-rules.md    # ці правила
-    ├── templates/         # шаблони report.md, review.md
     └── audit/
         ├── ASPICE-Audit-Method.md
         └── reports/       # звіти зведеного аудиту
@@ -95,7 +96,7 @@ kuzmin-machine/
 ## 5. Версіонування
 
 1. **Версія — всередині документа за SemVer 2 (MAJOR.MINOR.PATCH).** Шапка містить поле `* **Версія:** X.Y.Z`, а наприкінці (перед розділом «Абревіатури та глосарій») є таблиця «Історія версій». Попередні редакції доступні в історії git.
-2. **Версія Review Report вказує об'єкт перевірки.** Шапка рецензії чітко фіксує версію та commit SHA рецензованого документа за [шаблоном](templates/review.md): `* **Версія:** 0.1.0 (рецензує версію <X.Y.Z> звіту, коміт <SHA>)`.
+2. **Версія Review Report вказує об'єкт перевірки.** Шапка рецензії чітко фіксує версію та commit SHA рецензованого документа за [шаблоном](../docs/templates/review.md): `* **Версія:** 0.1.0 (рецензує версію <X.Y.Z> звіту, коміт <SHA>)`.
 3. **Правила зміни версії ([PROJECT-MANUAL §7](PROJECT-MANUAL.md#7-керування-конфігурацією)):**
    - **MAJOR:** зміна прийнятих тверджень, вимог, методу або висновків;
    - **MINOR:** нові розділи, звіти або твердження без зміни раніше прийнятих;
@@ -104,7 +105,7 @@ kuzmin-machine/
 
 ### 5.1. Обов'язкові поля шапки (за шаблонами)
 
-| Report ([templates/report.md](templates/report.md)) | Review Report ([templates/review.md](templates/review.md)) |
+| Report ([docs/templates/report.md](../docs/templates/report.md)) | Review Report ([docs/templates/review.md](../docs/templates/review.md)) |
 | :--- | :--- |
 | Версія (`X.Y.Z`) | Версія (рецензує версію `<X.Y.Z>` або PR, коміт `<SHA>`) |
 | Дата (`YYYY-MM-DD`) | Дата (`YYYY-MM-DD`) |
@@ -183,6 +184,7 @@ kuzmin-machine/
 | 1.1.0 | 2026-11-09 | Адаптація сфери та нормативних правил під структуру MVP ([PROJECT-MANUAL §5.1](PROJECT-MANUAL.md#51-структура-репозиторію), `experiments/AV-xx/`, `process/templates/`); правило вибору рецензента за родинами моделей ([PROJECT-MANUAL §2.1](PROJECT-MANUAL.md#21-агенти-проєкту)); вирівнювання з чинними PROJECT-MANUAL та шаблонами: перейменування вердиктів (§6), власна версія Review Report 0.1.0 (рецензує версію X.Y.Z, коміт SHA) замість «= версії документа», схема комітів Conventional Commits замість префіксів `AV-NN:`, рівні серйозності `sev:*` за Issue Tracker; примітка щодо історичних шляхів drafts (#24). |
 | 1.1.1 | 2026-11-09 | Шаблон Review Report: вердикт «Не перевірено» (#47) |
 | 1.1.2 | 2026-11-09 | §5.1 і шаблон Review Report узгоджено з чинною вимогою PROJECT-MANUAL §3 п. 4: у шапці вказують ідентифікатор сесії агента або шлях до логу; для людини — «—» (#53) |
+| 1.1.3 | 2026-11-12 | Шляхи шаблонів і дерево каталогів узгоджено з docs/templates без зміни правил рецензування (#5). |
 
 ---
 
@@ -223,5 +225,5 @@ kuzmin-machine/
 | Робочий продукт (work product) | Термін ASPICE для будь-якого результату роботи: документа, коду, даних. У 4.0 — «інформаційний елемент» (information item) |
 | Сирі дані | Дані вимірювань до обробки, з яких можна заново отримати всі числа звіту |
 | Специфікація (Specification) | Документ виконавця з вимогами, архітектурою, описом мови чи методикою |
-| Report (звіт) | Документ виконавця із записом виконаної роботи та її результатів ([templates/report.md](templates/report.md)) |
-| Review Report (звіт рецензії) | Документ рецензента, аудитора чи перевіряльника з результатом перевірки одного Report або Specification ([templates/review.md](templates/review.md)) |
+| Report (звіт) | Документ виконавця із записом виконаної роботи та її результатів ([docs/templates/report.md](../docs/templates/report.md)) |
+| Review Report (звіт рецензії) | Документ рецензента, аудитора чи перевіряльника з результатом перевірки одного Report або Specification ([docs/templates/review.md](../docs/templates/review.md)) |
