@@ -1,0 +1,2210 @@
+{"started_at": "2026-11-13T00:10:14.403008+02:00", "host": "AORUS-5-SE", "commit": "08a58d5eaf3ea0fca16c7fa4ed96105c21d74e0c", "worktree_status": [], "command": ["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider", "Engineering/hw/tests/test_kpol_bram_pipeline.py", "--tb=short", "-rP"], "source_sha256": {"Engineering/hw/tests/test_kpol_bram_pipeline.py": "f5117917280e9fe866900d0dd93f78ccd75bbd1a57b91066985a3ddd78532850", "Engineering/hw/tests/kpol_bram_pipeline_tb.sv": "44d98e6c43f45e42ff8f490e5dada0b5e82aeff25848fb09d4293c36bb1166c5", "Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv": "fe1d5b88909715d525ce7089ea38b642dc14aa162c45a29f2662cd554407cb08", "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv": "204d80fc71c17176338812b8877e04d80e08b1ef468e84f91e3fec094e294f17", "Engineering/hw/rtl/core/km_autonomous_sequencer.sv": "f61dd56b4308c7df4b84a4c1166bb65f127a752071cd3520340c3308eaf1dc82", "Engineering/hw/rtl/core/km_concept_micro_engine.sv": "5db242da39af98e0e73b998a7d65b7d97ac4b8626ed03b356b58b6f0927228e4", "Engineering/hw/rtl/core/km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297", "Engineering/hw/rtl/core/kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6", "Engineering/hw/scripts/compile_kpol_bram_image.py": "af59218bfcf23871b0ae29734129b02785dc88e0720d231e033235172fe2f28f", "Engineering/sw/kpol-ref/kpol_reference.py": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e"}}
+........................................................................ [ 52%]
+..........................FF......FFFF......FF........FF.........        [100%]
+=================================== FAILURES ===================================
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw-<-1-inc] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=0000000c got=0000000b
+E            Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000c got=0000000b\n       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=0000000c got=0000000b
+       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw-<-1-dec] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=00000008 got=00000009
+E            Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=00000008 got=00000009\n       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=00000008 got=00000009
+       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw->-0-inc] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+E     TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000a got=0000000b
+E            Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000a got=0000000b\n       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000a got=0000000b
+       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw->-0-dec] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+E     TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000a got=00000009
+E            Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000a got=00000009\n       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000a got=00000009
+       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw->-1-inc] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=0000000a got=0000000b
+E            Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000a got=0000000b\n       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=0000000a got=0000000b
+       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw->-1-dec] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=0000000a got=00000009
+E            Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000a got=00000009\n       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=1 word=0 expected=0000000a got=00000009
+       Time: 16520000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-==-0-inc] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+E     TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000b got=0000000a
+E            Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000b got=0000000a\n       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000b got=0000000a
+       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-==-0-dec] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+E     TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=00000009 got=0000000a
+E            Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=00000009 got=0000000a\n       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=00000009 got=0000000a
+       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-!=-0-inc] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+E     TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000c got=0000000d
+E            Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=0000000c got=0000000d\n       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=0000000c got=0000000d
+       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-!=-0-dec] _________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:201: in test_profile_per_event_in_simulated_pipeline
+    assert result.returncode == 0, result.stdout + result.stderr
+E   AssertionError: TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+E     TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+E     TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=00000008 got=00000007
+E            Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-237/profile-axi-hw0/pipeline.vvp', '+image_a=/tmp/...expected=00000008 got=00000007\n       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor\n', stderr='').returncode
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=2 word=0 expected=00000008 got=00000007
+       Time: 17130000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+==================================== PASSES ====================================
+____ test_profile_per_event_in_simulated_pipeline[direct-<--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-<--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-<--1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-<--1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct-<-0-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct-<-0-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct-<-1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct-<-1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-<-2147483647-inc] _____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-<-2147483647-dec] _____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct->--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct->--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct->--1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct->--1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct->-0-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct->-0-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct->-1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct->-1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct->-2147483647-inc] _____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct->-2147483647-dec] _____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[direct-==--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[direct-==--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-==--1-inc] ________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-==--1-dec] ________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-==-0-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-==-0-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-==-1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-==-1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-==-2147483647-inc] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-==-2147483647-dec] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[direct-!=--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[direct-!=--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-!=--1-inc] ________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-!=--1-dec] ________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-!=-0-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-!=-0-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-!=-1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-!=-1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3920000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-!=-2147483647-inc] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[direct-!=-2147483647-dec] ____
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct-true-1] __________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000d commits=3 rejects=0 writes=3
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[direct-true--1] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000007 commits=3 rejects=0 writes=3
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-overflow] _________
+----------------------------- Captured stdout call -----------------------------
+REFERENCE: Int32 overflow at payload=0, retained=2147483647
+direct original:
+TRACE event=-1 state=7ffffffe commits=0 rejects=0 writes=0
+TRACE event=0 state=7fffffff commits=1 rejects=0 writes=1
+TRACE event=1 state=7fffffff commits=1 rejects=1 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3200000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=7ffffffe commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=7fffffff got=7ffffffe
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-underflow] ________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=00000001 commits=0 rejects=0 writes=0
+TRACE event=0 state=00000000 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000000 commits=1 rejects=1 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3200000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=00000001 commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=00000000 got=00000001
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[direct-renaming] _________
+----------------------------- Captured stdout call -----------------------------
+direct original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct renamed:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:127: $finish called at 3440000 (1ps)
+
+direct inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_tb.sv:95: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 2870000  Scope: kpol_bram_pipeline_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-<--2147483648-inc] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-<--2147483648-dec] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-<--1-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-<--1-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-<-0-inc] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-<-0-dec] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-<-1-inc] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-<-1-dec] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+______ test_profile_per_event_in_simulated_pipeline[axi-<-2147483647-inc] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+______ test_profile_per_event_in_simulated_pipeline[axi-<-2147483647-dec] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi->--2147483648-inc] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi->--2147483648-dec] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi->--1-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi->--1-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi->-0-inc] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi->-0-dec] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi->-1-inc] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi->-1-dec] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+______ test_profile_per_event_in_simulated_pipeline[axi->-2147483647-inc] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+______ test_profile_per_event_in_simulated_pipeline[axi->-2147483647-dec] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-==--2147483648-inc] _____
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-==--2147483648-dec] _____
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-==--1-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-==--1-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-==-0-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-==-0-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-==-1-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-==-1-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-==-2147483647-inc] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-==-2147483647-dec] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-!=--2147483648-inc] _____
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-!=--2147483648-dec] _____
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-!=--1-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-!=--1-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-!=-0-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-!=-0-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-!=-1-inc] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-!=-1-dec] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18770000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-!=-2147483647-inc] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_____ test_profile_per_event_in_simulated_pipeline[axi-!=-2147483647-dec] ______
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+___________ test_profile_per_event_in_simulated_pipeline[axi-true-1] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000d commits=3 rejects=0 writes=3
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-true--1] ___________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000007 commits=3 rejects=0 writes=3
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-overflow] __________
+----------------------------- Captured stdout call -----------------------------
+REFERENCE: Int32 overflow at payload=0, retained=2147483647
+axi original:
+TRACE event=-1 state=7ffffffe commits=0 rejects=0 writes=0
+TRACE event=0 state=7fffffff commits=1 rejects=0 writes=1
+TRACE event=1 state=7fffffff commits=1 rejects=1 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 16910000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=7ffffffe commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=7fffffff got=7ffffffe
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-underflow] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=00000001 commits=0 rejects=0 writes=0
+TRACE event=0 state=00000000 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000000 commits=1 rejects=1 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 16910000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=00000001 commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000000 got=00000001
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+__________ test_profile_per_event_in_simulated_pipeline[axi-renaming] __________
+----------------------------- Captured stdout call -----------------------------
+axi original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi renamed:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17530000 (1ps)
+
+axi inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15920000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-<--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-<--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-<--1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-<--1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw-<-0-inc] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000c commits=2 rejects=2 writes=2
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw-<-0-dec] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000008 commits=2 rejects=2 writes=2
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-<-2147483647-inc] _____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-<-2147483647-dec] _____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw->--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw->--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw->--1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000c commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw->--1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000008 commits=2 rejects=3 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw->-2147483647-inc] _____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw->-2147483647-dec] _____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000a commits=0 rejects=3 writes=0
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[axi-hw-==--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[axi-hw-==--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-==--1-inc] ________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-==--1-dec] ________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-==-1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+TRACE event=3 state=0000000b commits=1 rejects=3 writes=1
+TRACE event=4 state=0000000b commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-==-1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+TRACE event=3 state=00000009 commits=1 rejects=3 writes=1
+TRACE event=4 state=00000009 commits=1 rejects=4 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-==-2147483647-inc] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-==-2147483647-dec] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000a commits=0 rejects=2 writes=0
+TRACE event=2 state=00000009 commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[axi-hw-!=--2147483648-inc] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=0000000b
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+___ test_profile_per_event_in_simulated_pipeline[axi-hw-!=--2147483648-dec] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000a commits=0 rejects=1 writes=0
+TRACE event=1 state=00000009 commits=1 rejects=1 writes=1
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000a got=00000009
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-!=--1-inc] ________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-!=--1-dec] ________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-!=-1-inc] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+TRACE event=3 state=0000000d commits=3 rejects=1 writes=3
+TRACE event=4 state=0000000e commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-!=-1-dec] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+TRACE event=3 state=00000007 commits=3 rejects=1 writes=3
+TRACE event=4 state=00000006 commits=4 rejects=1 writes=4
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 18720000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-!=-2147483647-inc] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000c commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+____ test_profile_per_event_in_simulated_pipeline[axi-hw-!=-2147483647-dec] ____
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000008 commits=2 rejects=1 writes=2
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw-true-1] __________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000c commits=2 rejects=0 writes=2
+TRACE event=2 state=0000000d commits=3 rejects=0 writes=3
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+_________ test_profile_per_event_in_simulated_pipeline[axi-hw-true--1] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=00000009 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000008 commits=2 rejects=0 writes=2
+TRACE event=2 state=00000007 commits=3 rejects=0 writes=3
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000009 got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-overflow] _________
+----------------------------- Captured stdout call -----------------------------
+REFERENCE: Int32 overflow at payload=0, retained=2147483647
+axi-hw original:
+TRACE event=-1 state=7ffffffe commits=0 rejects=0 writes=0
+TRACE event=0 state=7fffffff commits=1 rejects=0 writes=1
+TRACE event=1 state=7fffffff commits=1 rejects=1 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 16890000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=7ffffffe commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=7fffffff got=7ffffffe
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-underflow] ________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=00000001 commits=0 rejects=0 writes=0
+TRACE event=0 state=00000000 commits=1 rejects=0 writes=1
+TRACE event=1 state=00000000 commits=1 rejects=1 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 16890000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=00000001 commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=00000000 got=00000001
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+________ test_profile_per_event_in_simulated_pipeline[axi-hw-renaming] _________
+----------------------------- Captured stdout call -----------------------------
+axi-hw original:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw renamed:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+TRACE event=0 state=0000000b commits=1 rejects=0 writes=1
+TRACE event=1 state=0000000b commits=1 rejects=1 writes=1
+TRACE event=2 state=0000000b commits=1 rejects=2 writes=1
+PASS: profile trace
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:194: $finish called at 17500000 (1ps)
+
+axi-hw inverted-guard-control:
+TRACE event=-1 state=0000000a commits=0 rejects=0 writes=0
+FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-153-behavior/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:151: trace event=0 word=0 expected=0000000b got=0000000a
+       Time: 15910000  Scope: kpol_bram_pipeline_axi_tb.check_descriptor
+
+10 failed, 127 passed in 13.62s
+
+exit_code=1

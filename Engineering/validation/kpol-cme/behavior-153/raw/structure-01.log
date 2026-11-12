@@ -1,0 +1,19 @@
+{"started_at": "2026-11-13T00:17:24.978034+02:00", "host": "AORUS-5-SE", "commit": "9ea20b1732fb592366785878e96f0318da324dbe", "worktree_status": [" M Engineering/requirements/kpol.md", " M Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md", " M Engineering/validation/README.md", " M Project/registers/goals-needs-work-items.md", "?? Engineering/validation/kpol-cme/behavior-153/raw/baseline-matrix-01.log", "?? Engineering/validation/kpol-cme/behavior-153/raw/full-tests-01.log", "?? Engineering/validation/kpol-cme/behavior-153/raw/open-flow-01.log", "?? Engineering/validation/kpol-cme/behavior-153/raw/profile-matrix-02.log", "?? Engineering/validation/kpol-cme/behavior-153/report.md"], "command": ["bash", "-c", "set -euo pipefail\npython3 --version\npython3 -m pytest --version\niverilog -V 2>&1 | sed -n \"1p\"\nverilator --version\nyosys -V\npython3 /home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/update_kpol153_index.py\nKM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-math-bit python3 Project/tools/check_links.py\npython3 Project/tools/check_wp_documents.py\npython3 /home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-math-bit/scripts/inspect_math_formatting.py Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md Engineering/requirements/kpol.md Engineering/validation/README.md Engineering/validation/kpol-cme/behavior-153/report.md Project/registers/goals-needs-work-items.md\ngit diff --check"], "source_sha256": {"Engineering/hw/tests/test_kpol_bram_pipeline.py": "f5117917280e9fe866900d0dd93f78ccd75bbd1a57b91066985a3ddd78532850", "Engineering/hw/tests/kpol_bram_pipeline_tb.sv": "44d98e6c43f45e42ff8f490e5dada0b5e82aeff25848fb09d4293c36bb1166c5", "Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv": "fe1d5b88909715d525ce7089ea38b642dc14aa162c45a29f2662cd554407cb08", "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv": "fa386071d982ad1c112fac0c3731602f1c4626569d0f3c2c53d35b03e4159c28", "Engineering/hw/rtl/core/km_autonomous_sequencer.sv": "f61dd56b4308c7df4b84a4c1166bb65f127a752071cd3520340c3308eaf1dc82", "Engineering/hw/rtl/core/km_concept_micro_engine.sv": "5db242da39af98e0e73b998a7d65b7d97ac4b8626ed03b356b58b6f0927228e4", "Engineering/hw/rtl/core/km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297", "Engineering/hw/rtl/core/kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6", "Engineering/hw/scripts/compile_kpol_bram_image.py": "af59218bfcf23871b0ae29734129b02785dc88e0720d231e033235172fe2f28f", "Engineering/sw/kpol-ref/kpol_reference.py": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e"}}
+Python 3.14.4
+pytest 9.0.2
+Icarus Verilog version 12.0 (stable) ()
+Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+Yosys 0.52 (git sha1 fee39a3284c90249e1d9684cf6944ffbbcbb8f90)
+WP index: 6 new artifacts, 345 entries; prior entries unchanged.
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 11, пропущено 0
+{
+  "documents_checked": 111,
+  "immutable_checked": 108,
+  "errors": []
+}
+=== Inspecting 5 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[OK] No violations of the checked math and advanced GFM formatting rules found.
+Target-renderer compatibility still requires a rendering check.
+
+exit_code=0
