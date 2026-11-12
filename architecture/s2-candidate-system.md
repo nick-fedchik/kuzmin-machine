@@ -99,7 +99,7 @@ BRAM-конвеєром.
 | Конфігурація | Об'єкт і спосіб перевірки | Що не переноситься автоматично |
 |---|---|---|
 | `CFG-P` | [Інтеграційний тест](../hw/tests/test_kpol_bram_pipeline.py) окремо перевіряє direct і ручний AXI-шлях для двох скомпільованих образів; це симуляція. | Фізичний результат CFG-R не доводить виконання образів чи часовий контракт sequencer/CME. |
-| `CFG-R` | [PYNQ-Z1 top](../hw/boards/pynq-z1/kpol_txn_gate_pynq_z1_top.v), [ручна AXI-обгортка](../hw/rtl/bus/kpol_txn_gate_axi_lite.sv), [AV-10](../experiments/AV-10/report.md), [AV-11](../experiments/AV-11/report.md); фізичний gate-шлях. | Обгортка інстанціює `kpol_txn_gate` v1, а не sequencer/CME/gate v2; це не доказ S3–S5 чи виконання довільного KPOL. |
+| `CFG-R` | [PYNQ-Z1 top](../hw/boards/pynq-z1/kpol_txn_gate_pynq_z1_top.v), [ручна AXI-обгортка](../hw/rtl/bus/kpol_txn_gate_axi_lite.sv) ([специфікація інтерфейсу й карта регістрів](../specs/hw/kpol-txn-gate-axi-lite-interface.md)), [AV-10](../experiments/AV-10/report.md), [AV-11](../experiments/AV-11/report.md); фізичний gate-шлях. | Обгортка інстанціює `kpol_txn_gate` v1, а не sequencer/CME/gate v2; це не доказ S3–S5 чи виконання довільного KPOL. |
 | `CFG-I` | [I/O trigger](../hw/rtl/io/km_io_trigger_engine.sv) та [його тестбенч](../hw/tb/km_io_trigger_engine_tb.sv); окремий RTL-блок, також інстанційований в AXI-обгортці. | Вихід I/O trigger не ототожнюється з шляхом commit/reject CFG-R або подією CFG-P. |
 
 У CFG-R на базі уточнення `ja1` оголошено **виходом** і підключено до
@@ -113,7 +113,7 @@ PL-генератора. `JA2/JA3` — виходи формувачів імп�
 | Інтерфейс / відповідальність | Кандидат і локатор | Контракт або прогалина |
 |---|---|---|
 | Текст → образ | [компіляційний скрипт](../hw/scripts/compile_kpol_bram_image.py), [референс KPOL](../sw/kpol-ref/kpol_reference.py) | `parse_module` → `compile_concept_microcode_bram_image`; підтримувана мова не консолідована (#19). |
-| Завантаження → BRAM | [ручна обгортка конвеєра](../hw/rtl/bus/kpol_bram_pipeline_axi.sv), [BRAM](../hw/rtl/core/km_concept_bram.sv) | У цій конфігурації через регістри задають адресу/дані; конфлікти, формати й межі потребують окремого контракту. Це не ручна обгортка #48. |
+| Завантаження → BRAM | [ручна обгортка конвеєра](../hw/rtl/bus/kpol_bram_pipeline_axi.sv), [BRAM](../hw/rtl/core/km_concept_bram.sv) | У цій конфігурації через регістри задають адресу/дані; конфлікти, формати й межі потребують окремого контракту. Це не ручна обгортка #48 ([специфікація інтерфейсу](../specs/hw/kpol-txn-gate-axi-lite-interface.md)). |
 | Подія → стан | [секвенсер](../hw/rtl/core/km_autonomous_sequencer.sv), [CME](../hw/rtl/core/km_concept_micro_engine.sv), [gate v2](../hw/rtl/core/kpol_txn_gate_v2.sv) | Параметр/ідентифікатор події → дескриптор → рішення → запис стану; черга, одночасні події й часовий контракт не погоджені. |
 | Стимул PL → фізичні виходи | [PYNQ-Z1 top](../hw/boards/pynq-z1/kpol_txn_gate_pynq_z1_top.v), [AV-10](../experiments/AV-10/report.md), [AV-11](../experiments/AV-11/report.md) | CFG-R: монітор JA1 і виходи JA2/JA3; прийняття власником — §6. Це не встановлений фізичний шлях через BRAM-конвеєр. |
 | Зовнішній вхід → I/O trigger | [I/O trigger](../hw/rtl/io/km_io_trigger_engine.sv), [testbench](../hw/tb/km_io_trigger_engine_tb.sv) | CFG-I: окремий інтерфейс `ext_pin_i`, не тотожний генератору серії CFG-R. |
