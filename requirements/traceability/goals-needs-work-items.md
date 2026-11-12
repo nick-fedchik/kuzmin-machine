@@ -1,20 +1,21 @@
-# Цілі, потреби і перший зріз трасування
+# Цілі, потреби та реєстр двонапрямного трасування
 
-* **Версія:** 0.4.0 (робоча пропозиція)
+* **Версія:** 0.5.0 (робоча пропозиція)
 * **Дата:** 2026-11-12
-* **Issue:** [#118](https://github.com/nick-fedchik/kuzmin-machine/issues/118), у складі [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5)
+* **Issues:** [#118](https://github.com/nick-fedchik/kuzmin-machine/issues/118), [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5)
 * **Виконавець:** GitHub Copilot CLI, Auto; конкретна модель середовищем не показана.
 * **Рецензент:** ще не призначений.
-* **База файлів:** `d99e549edb859bce849f2f95e44e380f1fc5df94`.
+* **База файлів першого зрізу:** `d99e549edb859bce849f2f95e44e380f1fc5df94`.
+* **База продовження:** `82d55c8e4acc0af44672784ef5bd846b858b2723`.
 
 ## 1. Межі та результат
 
 Повної матриці S2, погоджених потреб і нової бази MVP поки **немає**.
-Цей документ починає трасування: пропонує цілі та потреби, показує
-кандидатні ланцюги і переглядає **відкриті** WI на зафіксованому зрізі.
-Вибрані закриті WI використано як контекст; повна ревізія закритих WI
-залишається в [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5).
-Це не незалежна рецензія і не зміна пріоритетів або статусів Issues.
+Документ розширив перший зріз: тепер є відтворюваний огляд усіх Issues
+репозиторію на дату продовження (§9), окрема доля 30 успадкованих REQ
+(§10) і зворотне трасування вибраних технічних артефактів (§8).
+Це все ще робоча пропозиція, а не затверджені вимоги, архітектура чи
+рішення щодо статусів. Відкриті та закриті WI не редагувалися.
 
 Історичні `REQ-*` наведено лише як кандидати: їхні `PASS` та заяви про
 ASPICE не підтверджують виконання. Для кожного з них уже є
@@ -157,7 +158,7 @@ TRL 1–3; для TRL 3 він обмежує підтвердження кон�
 у зрізі немає визначеної задачі чи протоколу користувацької перевірки,
 а для Q4 треба рішення про застосовність до MVP.
 
-## 7. Рішення власника після зрізу
+## 7. Рішення власника після першого зрізу
 
 Таблиця §5 відображає стан на момент знімка. Після рецензії власник
 2026-11-12 ухвалив такі рішення; їх записано в самих Issues.
@@ -167,8 +168,10 @@ TRL 1–3; для TRL 3 він обмежує підтвердження кон�
 | [#80](https://github.com/nick-fedchik/kuzmin-machine/issues/80) | Закрито як відкладену разом із бізнес-сценаріями | Сценарій не реалізовано; повернутися після перевірки G1–G3 |
 | [#67](https://github.com/nick-fedchik/kuzmin-machine/issues/67), [#68](https://github.com/nick-fedchik/kuzmin-machine/issues/68) | Закрито як відкладені до потреби в захищеному завантаженні | Q4 вилучено з поточних меж; захист **не** реалізовано і **не** перевірено, F-06 лишається чинним |
 | [#73](https://github.com/nick-fedchik/kuzmin-machine/issues/73) | Порогу немає; вимірювання розвідувальне | Можна отримати розподіл затримки, але висновку «підтверджено / спростовано» немає; мітку `blocked` знято |
-| [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64) | Власник не має експертизи для погодження критерію | Корекцію критерію за специфікацією AXI має підтвердити незалежний технічний рецензент; задача лишається `blocked` |
+| [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64) | Власник делегував технічне рішення виконавцю; PR #121 прийнято без незалежної рецензії через обмеження квоти Antigravity | Issue закрито разом із PR #121. AXI-64 не спростував гіпотезу лише для перевіреного генератора, параметрів і властивостей; самоперевірка, не HIL і не TRL-гейт. Деталі й обмеження — §8 та [звіт](../../experiments/AXI-64/report.md). |
 | [#120](https://github.com/nick-fedchik/kuzmin-machine/issues/120) | Створено дослідження Q3 | Ланцюг G3/N4 → Q3 отримав WI; протокол і критерій висновку чекають погодження власника до запуску |
+| [#118](https://github.com/nick-fedchik/kuzmin-machine/issues/118) | Перший зріз прийнято власником через злиття PR #119 | Зріз відображає 19 Issues, а не повний корпус. Епік #5 залишається відкритим. |
+| [#122](https://github.com/nick-fedchik/kuzmin-machine/issues/122) | Задачу незалежної рецензії PR #121 закрито за рішенням власника | Рецензії не було; це не Review Report і не незалежне підтвердження AXI-64. |
 
 ## 8. Зворотне трасування артефактів
 
@@ -200,12 +203,204 @@ TRL 1–3; для TRL 3 він обмежує підтвердження кон�
 | [`AV-04`](../../experiments/AV-04/report.md) | `REQ-SYS-005` | G1/N1 | — | Закритий; лише ядро v1. |
 | [`AV-07`](../../experiments/AV-07/report.md) | Чутливість тестбенчів | G1/N1 | — | Закритий; більшість мутантів у демо-FSM, які планується вилучити. |
 | [`AV-08`](../../experiments/AV-08/report.md) | `REQ-HW-009` | G1/N1 | — | Закритий; масштабування демо, не ядра S3. |
-| [`KPOL-FIX`](../../experiments/KPOL-FIX/report.md) | `REQ-SW-001…006` | G1/N2 | [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64) | Заява про виправлення F-04 спирається на 4 направлені кейси; див. #64. |
+| [`KPOL-FIX`](../../experiments/KPOL-FIX/report.md) | `REQ-SW-001…006` | G1/N2 | [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64) | Історична заява про виправлення F-04 спиралася на 4 направлені кейси; поточний генератор окремо перевірено у [AXI-64](../../experiments/AXI-64/report.md). Перевірка не охоплює функціональний запуск `dispatch`, PROT чи всі параметри. |
+| [`AXI-64`](../../experiments/AXI-64/report.md), [властивості](../../experiments/AXI-64/scripts/axi64_props.sv), [сирі дані](../../experiments/AXI-64/raw/axi64_formal/axi64_results.csv) | Гіпотеза #64, кандидат `REQ-HW-008` | G1/N1 | [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64), [PR #121](https://github.com/nick-fedchik/kuzmin-machine/pull/121) | P1–P6 доведено ABC PDR для одного згенерованого модуля за припущень master і скидання (звіт, §2); 7/7 cover досягнуто; 4 F-04-мутанти виявлено контрприкладами. Не спростовано в межах методу; незалежної рецензії немає. |
 
 Підсумок: без обґрунтування — демо-FSM `poc-demo`, `km_predicate_evaluator`,
 `km_concept_bram_core`, MCU-runtime і статичний аналізатор. Рішення про них
 належить до S3 ([#6](https://github.com/nick-fedchik/kuzmin-machine/issues/6))
 або окремого WI; цей документ їх не вилучає.
+
+## 9. Ретроспективне трасування всіх Issues
+
+### 9.1. Знімок і правила класифікації
+
+Знімок [`all-issues-2026-11-12.json`](all-issues-2026-11-12.json)
+одержано 2026-11-12 через `gh issue list`. Він містить усі 80
+Issues, видимих команді `gh issue list --state all --limit 250` на момент
+запиту: 65 `CLOSED`, 15 `OPEN`. SHA-256:
+`e717fa72468520fb0faab148305c0e4edb7da9374e9e534ca88831db915d6c43`.
+Знімок містить номер, назву, тіло, мітки, стани й часові мітки; коментарі
+перевірялися окремо. Він є незмінним історичним зрізом, не поточним беклогом.
+Рішення власника, що спираються на коментарі закриття (зокрема #64, #65, #122),
+наведено за текстом коментарів Issue; знімок їх не містить і в цьому документі
+їх не перевірено повторно.
+
+Відтворення:
+
+```bash
+gh issue list --repo nick-fedchik/kuzmin-machine --state all --limit 250 \
+  --json number,title,body,labels,state,createdAt,updatedAt,closedAt,url
+```
+
+Для продуктового WI наведено найближчу ціль/потребу/REQ або питання.
+Процесні WI належать до G4/N5; технічне трасування до продукту для них
+непридатне. `REQ-*` — лише історичні кандидати (§10). `CLOSED` означає
+стан Issue, а не доказ виконання критерію: відкладення, відхилення,
+негативний результат і рутинне закриття позначено окремо. Невідомий за
+наявними WP результат не домислюється. Таблиця не змінює статуси Issues.
+
+### 9.2. Реєстр
+
+| Issue | Стан | Трасування | Результат / прогалина |
+|---|---|---|---|
+| [#1](https://github.com/nick-fedchik/kuzmin-machine/issues/1) | CLOSED | G4/N5; [migration register](../../process/MIGRATION-REGISTER.md) | Міграція PoC — організаційний результат; технічні твердження джерела лишаються історичними. |
+| [#2](https://github.com/nick-fedchik/kuzmin-machine/issues/2) | CLOSED | G4/N5; [TRL passport §1](../../process/trl/TRL-passport.md) | Аудит TRL 1 перервано через квоту; Audit Report відсутній. |
+| [#3](https://github.com/nick-fedchik/kuzmin-machine/issues/3) | CLOSED | G4/N5; [TRL passport §2](../../process/trl/TRL-passport.md) | Спільний аудит TRL 2 перервано через квоту; висновку аудиту немає. |
+| [#4](https://github.com/nick-fedchik/kuzmin-machine/issues/4) | CLOSED | G1/N1; [TRL passport §3](../../process/trl/TRL-passport.md), PR #44/#93 | Застарілу постановку закрито; не є новим підтвердженням TRL 3 системи. |
+| [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5) | OPEN | G1–G4/N1–N5; цей WP | Епік не завершено: потрібні рішення про вимоги, архітектури, повну трасу та Review Report. |
+| [#6](https://github.com/nick-fedchik/kuzmin-machine/issues/6) | OPEN | G1/N1; [refactoring plan](../../architecture/refactoring-plan.md) | S3: ядро без задачних FSM і вибір об'єкта не завершені; `poc-demo` лишається рішенням власника. |
+| [#7](https://github.com/nick-fedchik/kuzmin-machine/issues/7) | OPEN | G1/N2; [BRAM test](../../hw/tests/test_kpol_bram_pipeline.py) | S4: є симуляція двох образів; результат фізичного виконання зафіксованого бітстріму не наведено в цьому WP. |
+| [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8) | OPEN | G1/N2; [KPOL reference](../../sw/kpol-ref/kpol_reference.py), #19 | S5: компілятор підтримує обмежений шлях; підмножина KPOL ще не погоджена. |
+| [#9](https://github.com/nick-fedchik/kuzmin-machine/issues/9) | OPEN | G1/N1; [I/O RTL](../../hw/rtl/io/km_io_trigger_engine.sv), #72/#73 | S6 залишається відкритим. AV-10, про який повідомив власник, ще не оформлено у версійованому WP цього дерева. |
+| [#10](https://github.com/nick-fedchik/kuzmin-machine/issues/10) | CLOSED | G4/N5; [PROJECT-MANUAL](../../process/PROJECT-MANUAL.md) | Закрито як рутинну задачу; не означає виконання S2–S6 чи досягнення TRL 4. |
+| [#11](https://github.com/nick-fedchik/kuzmin-machine/issues/11) | CLOSED | G1/N1; [AXI testbench](../../hw/tb/kpol_txn_gate_axi_lite_tb.sv), #38/#42 | Address-width mismatch виправляли пов'язані WI; не є доказом контракту ручної обгортки #48. |
+| [#12](https://github.com/nick-fedchik/kuzmin-machine/issues/12) | CLOSED | G4/N5; [Verilator flow](../../hw/scripts/run_open_flow.sh) | Окремий гейт відхилено власником; відсутність попереджень у всіх конфігураціях не доведена. |
+| [#13](https://github.com/nick-fedchik/kuzmin-machine/issues/13) | CLOSED | G4/N5; [migration register](../../process/MIGRATION-REGISTER.md) | Навігаційна проблема з посиланням на неіснуючий файл; окремого доказу виправлення у знімку немає. |
+| [#14](https://github.com/nick-fedchik/kuzmin-machine/issues/14) | CLOSED | G1/N1; [AV-07](../../experiments/AV-07/report.md), #6 | Окремий coverage gate відхилено; прогалини AV-07 для ядра/BRAM/AXI/top цим не усунені. |
+| [#15](https://github.com/nick-fedchik/kuzmin-machine/issues/15) | CLOSED | G4/N5; [AV-07 review](../../experiments/AV-07/review.md) | Рутинну задачу закрито; нової перевірки v2 статус Issue сам по собі не засвідчує. |
+| [#16](https://github.com/nick-fedchik/kuzmin-machine/issues/16) | CLOSED | G4/N5; архівні QA/HIL WP | Закрито як рутинну роботу; історичні «Hardware Verified» не стають фізичним доказом. |
+| [#17](https://github.com/nick-fedchik/kuzmin-machine/issues/17) | CLOSED | G4/N5; [KPOL-FIX](../../experiments/KPOL-FIX/report.md) | Закрито як рутинну задачу; незалежної рецензії KPOL-FIX це не створює. |
+| [#18](https://github.com/nick-fedchik/kuzmin-machine/issues/18) | OPEN | G1/N1; `REQ-SYS-001/006`; [v2 RTL](../../hw/rtl/core/kpol_txn_gate_v2.sv) | Формальної перевірки v2 немає; узгодити об'єкт із #6/#62. |
+| [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19) | OPEN | G1/N2; [KPOL specs](../../specs/kpol/README.md), #60 | Звіт аудиту виявив розбіжності; потрібна консолідована специфікація підтриманої підмножини. |
+| [#20](https://github.com/nick-fedchik/kuzmin-machine/issues/20) | OPEN | G4/N5 | Потрібне рішення про ліцензію, авторство та NOTICE; продуктова вимога непридатна. |
+| [#21](https://github.com/nick-fedchik/kuzmin-machine/issues/21) | OPEN | G4/N5; зовнішній `drafts` | Потрібне виправлення атрибуції у зовнішньому джерелі; цей репозиторій його не змінює. |
+| [#22](https://github.com/nick-fedchik/kuzmin-machine/issues/22) | CLOSED | G4/N5; [AV-03 runner](../../experiments/AV-03/scripts/run_av03.py) | Синтаксичне попередження скрипта; не змінює науковий результат AV-03. |
+| [#23](https://github.com/nick-fedchik/kuzmin-machine/issues/23) | CLOSED | G4/N5; [experiment plan](../../experiments/PLAN.md) | Редакційна нумерація плану; не є продуктовою вимогою чи доказом експерименту. |
+| [#24](https://github.com/nick-fedchik/kuzmin-machine/issues/24) | CLOSED | G4/N5; [review rules](../../process/review-rules.md) | Адаптація процесної настанови до структури; не підтверджує виконання будь-якого огляду. |
+| [#25](https://github.com/nick-fedchik/kuzmin-machine/issues/25) | CLOSED | G4/N5; [migration register](../../process/MIGRATION-REGISTER.md) | Рутинне закриття не доводить створення tag `poc-final` у зовнішньому `drafts`. |
+| [#27](https://github.com/nick-fedchik/kuzmin-machine/issues/27) | CLOSED | G4/N5; [PROJECT-MANUAL](../../process/PROJECT-MANUAL.md) | Процедуру злиття з одним обліковим записом уточнено; це процесний контроль. |
+| [#28](https://github.com/nick-fedchik/kuzmin-machine/issues/28) | CLOSED | G4/N5; [CI workflow](../../.github/workflows/ci.yml) | Додано Yosys `synth_xilinx` як CI-крок; успіх синтезу не доводить фізичну функціональність. |
+| [#29](https://github.com/nick-fedchik/kuzmin-machine/issues/29) | CLOSED | G4/N5; [PROJECT-MANUAL](../../process/PROJECT-MANUAL.md) | Делегування тегування зафіксовано; процесне рішення, не продуктова вимога. |
+| [#30](https://github.com/nick-fedchik/kuzmin-machine/issues/30) | CLOSED | G4/N5; [README](../../README.md) | Метадані власника; не є вимогою до МК. |
+| [#31](https://github.com/nick-fedchik/kuzmin-machine/issues/31) | CLOSED | G4/N5; [link checker](../../tools/check_links.py) | `file:///` посилання були навігаційним дефектом; не свідчать про помилку runtime. |
+| [#33](https://github.com/nick-fedchik/kuzmin-machine/issues/33) | CLOSED | G4/N5; [procurement record](../../hw/boards/bench-procurement.md) | Закупівля — передумова стенда, не підтвердження вимірювань або роботи обладнання. |
+| [#35](https://github.com/nick-fedchik/kuzmin-machine/issues/35) | CLOSED | G4/N5; [procurement record](../../hw/boards/bench-procurement.md) | Виправлено твердження про роз'єм PYNQ-Z1; технічні критерії не змінює. |
+| [#38](https://github.com/nick-fedchik/kuzmin-machine/issues/38) | CLOSED | G1/N1; [AXI RTL](../../hw/rtl/bus/kpol_txn_gate_axi_lite.sv), #11/#42 | Reset-дефект ручної обгортки виправлявся пов'язаною роботою; AXI-64 не стосується цієї обгортки. |
+| [#42](https://github.com/nick-fedchik/kuzmin-machine/issues/42) | CLOSED | G1/N1; [AXI testbench](../../hw/tb/kpol_txn_gate_axi_lite_tb.sv), #11/#38 | Виправлено адресу тесту для лічильника; специфікаційну прогалину #48 це не закриває. |
+| [#46](https://github.com/nick-fedchik/kuzmin-machine/issues/46) | CLOSED | G4/N5; [PROJECT-MANUAL](../../process/PROJECT-MANUAL.md) | Власник затвердив WIP/перехресну рецензію в одному PR; процесне рішення. |
+| [#47](https://github.com/nick-fedchik/kuzmin-machine/issues/47) | CLOSED | G4/N5; [ASPICE steps](../../process/aspice-steps.md) | Уточнено процесні твердження/шкалу вердиктів; відповідність ASPICE не встановлюється закриттям. |
+| [#48](https://github.com/nick-fedchik/kuzmin-machine/issues/48) | OPEN | G1/N1; `REQ-HW-008`; [manual AXI RTL](../../hw/rtl/bus/kpol_txn_gate_axi_lite.sv) | Карта регістрів і reset contract не оформлені як специфікація. AXI-64 тестував інший, згенерований slave. |
+| [#51](https://github.com/nick-fedchik/kuzmin-machine/issues/51) | CLOSED | G4/N5; [migration register](../../process/MIGRATION-REGISTER.md) | Виправлено шляхи до drafts; навігаційне виправлення не підтверджує зміст зовнішніх джерел. |
+| [#53](https://github.com/nick-fedchik/kuzmin-machine/issues/53) | CLOSED | G4/N5; [PROJECT-MANUAL](../../process/PROJECT-MANUAL.md) | Уточнено класи вердиктів/незалежності Review Report; це процесний результат. |
+| [#55](https://github.com/nick-fedchik/kuzmin-machine/issues/55) | CLOSED | G4/N5; [TRL evidence](../../docs/trl-evidence/) | Глосарії створені як супровідні WP; не є технічним доказом. |
+| [#59](https://github.com/nick-fedchik/kuzmin-machine/issues/59) | CLOSED | G4/N5; [provenance checker](../../tools/check_report_provenance.py), #75 | Повторний прогін не дав повного збігу; рецензія «Не перевірено». S1 не пройдено в межах заявленого відтворення. |
+| [#60](https://github.com/nick-fedchik/kuzmin-machine/issues/60) | CLOSED | G1/N2; [KPOL-FIX](../../experiments/KPOL-FIX/report.md), #19 | Виявлено розбіжності специфікації й референсу; негативний результат лишає #19 відкритою. |
+| [#61](https://github.com/nick-fedchik/kuzmin-machine/issues/61) | CLOSED | G4/N5; #5 | Закрито власником як рутинну роботу; не є доказом відсутності сиріт або завершення S2. |
+| [#62](https://github.com/nick-fedchik/kuzmin-machine/issues/62) | OPEN | G1/N1; `REQ-SYS-001/006`; [AV-04](../../experiments/AV-04/report.md), #18 | Formal fail-closed для визначеного об'єкта не підтверджено; AV-04 стосується v1. |
+| [#63](https://github.com/nick-fedchik/kuzmin-machine/issues/63) | CLOSED | G1/N2; Python/C/RTL parity | Власник відхилив окремий gate; паритет трьох реалізацій цим не доведений. |
+| [#64](https://github.com/nick-fedchik/kuzmin-machine/issues/64) | CLOSED | G1/N1; [AXI-64](../../experiments/AXI-64/report.md), [PR #121](https://github.com/nick-fedchik/kuzmin-machine/pull/121) | P1–P6 доведено ABC PDR для одного згенерованого модуля; 7/7 cover, 4 мутанти. Не спростовано в межах методу; незалежної рецензії немає. |
+| [#65](https://github.com/nick-fedchik/kuzmin-machine/issues/65) | CLOSED | G1/N1; #14/#6 | Поріг 95 % скасовано власником; це не 95 % результат і не релізний gate. |
+| [#66](https://github.com/nick-fedchik/kuzmin-machine/issues/66) | CLOSED | G1/N2; #7 | Власник відхилив окремий експеримент; виконання програм через BRAM без пересинтезу не підтверджене. |
+| [#67](https://github.com/nick-fedchik/kuzmin-machine/issues/67) | CLOSED | G1/N1; Q4, #115 | Secure Boot/anti-rollback відкладено; апаратний захист не реалізовано й не перевірено. |
+| [#68](https://github.com/nick-fedchik/kuzmin-machine/issues/68) | CLOSED | G1/N1; Q4, #115 | Відкладено; повного перебору бітових інверсій не було, цілісність образу не підтверджена. |
+| [#69](https://github.com/nick-fedchik/kuzmin-machine/issues/69) | CLOSED | G1/N2; #8/#19 | Власник відхилив окрему умову; компіляцію без ручного RTL для всіх еталонів не доведено. |
+| [#70](https://github.com/nick-fedchik/kuzmin-machine/issues/70) | CLOSED | G1/N2; KPOL triad, #19 | Окремий gate незалежності не планується; коректність доказів цим не підтверджується. |
+| [#71](https://github.com/nick-fedchik/kuzmin-machine/issues/71) | CLOSED | G4/N5; mutation gate | 100% mutation score не прийнято як релізний gate; це не доказ такого результату. |
+| [#72](https://github.com/nick-fedchik/kuzmin-machine/issues/72) | OPEN | G1/N1; [I/O RTL](../../hw/rtl/io/km_io_trigger_engine.sv) | Власник повідомив про AV-10 у роботі з Antigravity; фізичні дані/звіт у цьому Git-зрізі відсутні. |
+| [#73](https://github.com/nick-fedchik/kuzmin-machine/issues/73) | OPEN | G1/N1; #9/#72 | Порога немає; дослідження розвідувальне. Власник повідомив 50 нс (20 нс синхронізатор + 30 нс шлюз); сирі дані тут не зафіксовані. |
+| [#74](https://github.com/nick-fedchik/kuzmin-machine/issues/74) | CLOSED | G4/N5; [TRL passport](../../process/trl/TRL-passport.md) | Рутинне закриття не є незалежним аудитом або підтвердженням TRL 4. |
+| [#75](https://github.com/nick-fedchik/kuzmin-machine/issues/75) | CLOSED | G4/N5; [baseline report](../../process/validation/75-reproduce-av/baseline-report.md), #59 | Відтворення AV не збіглося повністю; зафіксовано негативний результат для S1. |
+| [#76](https://github.com/nick-fedchik/kuzmin-machine/issues/76) | CLOSED | G1/N1; [formal semantics report](../../docs/research/theory/formal-semantics-76-report.md) | Джерела не визначають одну повну операційну семантику; це межа матеріалів, не неможливість формалізації. |
+| [#77](https://github.com/nick-fedchik/kuzmin-machine/issues/77) | CLOSED | G2/N3; [Turing report](../../docs/research/theory/turing-completeness-77-report.md), #76 | Контрприклад стосується конкретної конструкції, не є загальним доказом неповноти МК. |
+| [#78](https://github.com/nick-fedchik/kuzmin-machine/issues/78) | CLOSED | G1/N1; #76 | Закрито як дубль #76; питання конкуренції, fairness і меж ресурсів лишаються невирішеними. |
+| [#79](https://github.com/nick-fedchik/kuzmin-machine/issues/79) | CLOSED | G1/N1; Q1, #76/#78 | Відкладено до визначення правил і експерименту; виконувану еталонну модель не створено. |
+| [#80](https://github.com/nick-fedchik/kuzmin-machine/issues/80) | CLOSED | G1/G2; Q2/Q3 | Відкладено; промислова придатність і перевага над baseline не підтверджені. |
+| [#81](https://github.com/nick-fedchik/kuzmin-machine/issues/81) | CLOSED | G1/N1; #76/#79 | Відкладено разом із віртуальною моделлю; закриття не створює conformance traces. |
+| [#82](https://github.com/nick-fedchik/kuzmin-machine/issues/82) | CLOSED | G2/N3; [prior-art review](../../docs/trl-evidence/event-languages-prior-art.md) | Обмежений огляд задокументовано; глобальна новизна й вичерпність пошуку не доведені. |
+| [#83](https://github.com/nick-fedchik/kuzmin-machine/issues/83) | CLOSED | G2/N3; benchmark question | Широкий benchmark закрито; кількісної переваги над обраним baseline не встановлено. |
+| [#84](https://github.com/nick-fedchik/kuzmin-machine/issues/84) | CLOSED | G4/N5; [publication boundary](../../docs/PUBLICATION-BOUNDARY.md) | Дослідницькі та редакційні матеріали розділено; сценарії не відновлювати без нового рішення. |
+| [#86](https://github.com/nick-fedchik/kuzmin-machine/issues/86) | CLOSED | G4/N5; [procurement](../../hw/boards/bench-procurement.md) | Замовлення зафіксовано як ресурсний факт; закупівля не є HIL-тестом. |
+| [#103](https://github.com/nick-fedchik/kuzmin-machine/issues/103) | CLOSED | G4/N5; [WP configuration](../../docs/governance/work-products.md), #104 | Класифікацію WP/маршрутизацію оформили; відповідність ASPICE цим не доведена. |
+| [#104](https://github.com/nick-fedchik/kuzmin-machine/issues/104) | CLOSED | G4/N5; [WP catalog](../../docs/governance/work-products.md) | Каталог створено як керівний WP; він не доводить виконання робіт. |
+| [#105](https://github.com/nick-fedchik/kuzmin-machine/issues/105) | CLOSED | G4/N5; [templates](../../process/templates/work-products/README.md) | Шаблони створено як засіб оформлення, не як доказ завершення WP. |
+| [#106](https://github.com/nick-fedchik/kuzmin-machine/issues/106) | CLOSED | G4/N5; README та окремі WP | Навігаційні README розмежовано із самостійними документами. |
+| [#108](https://github.com/nick-fedchik/kuzmin-machine/issues/108) | CLOSED | G4/N5; [WP inventory](../../docs/governance/work-product-inventory.md) | Інвентар WP створено; його класифікація не є доказом коректності кожного WP. |
+| [#110](https://github.com/nick-fedchik/kuzmin-machine/issues/110) | CLOSED | G4/N5; [archive](../../docs/archive/README.md) | Бізнес-сценарії й попередні редакції архівовано за рішенням власника. |
+| [#112](https://github.com/nick-fedchik/kuzmin-machine/issues/112) | CLOSED | G4/N5; [CI register](../../process/configuration-items.md) | Межі критичних CI/AV визначено; це не доказ виконання вимог виробу. |
+| [#114](https://github.com/nick-fedchik/kuzmin-machine/issues/114) | CLOSED | G1/N1, G1/N2; [assessment](../../docs/research/verification/requirements-trace-assessment-114.md) | 30 REQ перевірено як історичні; 15 згаданих шляхів відсутні в базовому дереві. Report не є актуальною RTM чи незалежною рецензією. |
+| [#115](https://github.com/nick-fedchik/kuzmin-machine/issues/115) | OPEN | G1/N1; Q4, [test](../../sw/kpol-ref/tests/test_kpol_reference.py) | `assertTrue` перевіряє непорожній кортеж, не bool; потрібне окреме виправлення й негативний тест. |
+| [#117](https://github.com/nick-fedchik/kuzmin-machine/issues/117) | CLOSED | G4/N5; [review on PR #116](https://github.com/nick-fedchik/kuzmin-machine/pull/116#issuecomment-6818504443) | Рецензія #114 виконана з обмеженням незалежності; не є незалежною рецензією цього WP. |
+| [#118](https://github.com/nick-fedchik/kuzmin-machine/issues/118) | CLOSED | G4/N5; [PR #119](https://github.com/nick-fedchik/kuzmin-machine/pull/119) | Злитий перший зріз 19 відкритих WI; цей реєстр розширює охоплення, але не закриває #5. |
+| [#120](https://github.com/nick-fedchik/kuzmin-machine/issues/120) | OPEN | G3/N4; Q3; залежність #19 | Протокол і критерій не погоджено; не запускати дослідження до визначення KPOL subset. |
+| [#122](https://github.com/nick-fedchik/kuzmin-machine/issues/122) | CLOSED | G4/N5; PR #121 | Власник закрив задачу без незалежної рецензії через ліміт Antigravity; Review Report відсутній. |
+
+### 9.3. Підсумок
+
+Відкриті WI у знімку: #5–#9, #18–#21, #48, #62, #72–#73, #115 і #120
+(15 загалом). Найважливіші незавершені продуктові ланцюги: S3–S6 (#6–#9),
+KPOL subset (#19), карта регістрів (#48), формальний gate (#62), тест #115
+та Q3 (#120). Ліцензійна й атрибуційна роботи (#20–#21) — процесні
+передумови, не продуктові вимоги.
+
+Закриті WI охоплюють виконані процесні/дефектні роботи, негативні
+результати (#60, #75, #76), відкладені чи відхилені роботи (#12, #14,
+#63, #65–#71, #79–#81) та застарілі/рутинно закриті задачі (#2–#4,
+#10, #15–#17, #25, #55, #61, #74). Статус Issue не є verdict вимоги.
+Рішення щодо сиріт у коді, актуальної архітектури й MVP лишаються за
+власником у межах #5.
+
+## 10. Доля успадкованих вимог REQ
+
+[`requirements.md`](../requirements.md) — перенесений історичний реєстр;
+його `PASS`, шляхи та заяви ASPICE не є чинним baseline. Усі 30 рядків
+оцінено індивідуально у [звіті #114, §§3–5](../../docs/research/verification/requirements-trace-assessment-114.md).
+Тут наведено рішення для трасування: зберегти ID як історичний кандидат,
+не затверджувати як вимогу й не називати виконаним. «Критерій/доказ» —
+межа підтвердження зі звіту #114, а не приймальний критерій.
+
+| ID | Кандидатний зв'язок | Критерій / доказ за #114 | Рішення та прогалина |
+|---|---|---|---|
+| `REQ-SYS-001` | G1/N1; #6/#18/#62 | AV-04 v1 допускає commit за hazard; v2 не доведено | Не вважати v1 задоволенням; визначити об'єкт і поведінку в S2/S3. |
+| `REQ-SYS-002` | G1/N1; #9/#72/#73 | Симуляції компонентів; історичний поріг <500 нс не перевірений | Поріг не прийнято; #73 — exploratory без порога. |
+| `REQ-SYS-003` | G1/N1; #9 | Фіксовані такти й нульовий jitter не доведені; межі виміру не узгоджені | Визначити об'єкт і метод до будь-якого висновку. |
+| `REQ-SYS-004` | G1/N1; #6, Q1/#76 | Окремий каскад у симуляції; повна семантика concurrency відсутня | Розвести семантику, чергу й реалізацію. |
+| `REQ-SYS-005` | G1/N1; #6 | Кандидатний знак перевірено; усі overflow випадки — ні | Потрібні ширина арифметики й межі. |
+| `REQ-SYS-006` | G1/N1; #18/#62 | Симуляція unknown hazard при конкретному параметрі | Не формально перевірено для v2; статус непідтверджений. |
+| `REQ-SYS-007` | G1/N1; Q4, #67/#68 | Програмні ACL тести; апаратний access control не доведений | Власник відклав security scope; поточна потреба невстановлена. |
+| `REQ-SYS-008` | G1/N1; Q4, #67/#68/#115 | Програмний підпис/verify; Secure Boot не підтверджено; #115 defect | Відкладена; виправлення #115 не означає підтвердження boot security. |
+| `REQ-SYS-009` | G1/N2; #19/#70/#76 | Хешування не доводить повноти/правильності proof | Семантика proof та незалежність не узгоджені. |
+| `REQ-SYS-010` | G4/N5; #65/#71 | Mutation tests для вибраних наборів | У #71 гейт M < 1.0 не прийнято як релізний; саму вимогу 100 % лишено для рішення у #5 ([#114](../../docs/research/verification/requirements-trace-assessment-114.md)). Mutation testing — засіб, не acceptance gate. |
+| `REQ-HW-001` | G1/N1; #6 | Окремі CME дії; універсальність довільних задач не доведена | Визначити immutable core у S3. |
+| `REQ-HW-002` | G1/N1; #6/#19 | Opcode гілки є; всі опкоди й межі не тестовано | Вивести з погодженої KPOL підмножини. |
+| `REQ-HW-003` | G1/N1; #6/#19 | Окремі арифметичні операції; не всі випадки | Уточнити overflow, ширину й supported subset. |
+| `REQ-HW-004` | G1/N1; #19 | RTL перевертає guard; відповідність авторській семантиці не встановлена | Не формулювати нову вимогу без першоджерела/узгодження. |
+| `REQ-HW-005` | G1/N2; #7 | BRAM адреси/структура в симуляції; не всі одночасні доступи/фізична BRAM | Потрібні контракт інтерфейсу й окремі перевірки S4. |
+| `REQ-HW-006` | G1/N2; #7 | Перевірено 4 послідовні запити; end-to-end контракт не доведено | Визначити значення «4 такти», межі та wait states. |
+| `REQ-HW-007` | G1/N1; #6/#76 | RTL FIFO 16; план згадує 64 | Розбіжність 16/64, колізії й переповнення не вирішено. |
+| `REQ-HW-008` | G1/N1; #48/#64 | AXI-64 перевірив вибраний генератор; ручний bridge #48 має незадокументовану карту | Розділити два контракти; #64 не закриває #48. |
+| `REQ-HW-009` | G1/N2; #7, AV-08 | Оцінки fmax для окремих обгорток; є synthesis-only дані | Не гарантувати частоту для довільної топології. |
+| `REQ-HW-010` | G1/N1; #6 | Один simulation сценарій не доводить відсутність latch/glitch у всіх станах | Визначити об'єкт, стани й метод перевірки. |
+| `REQ-SW-001` | G1/N2; #8/#19 | Обмежені вирази й правило; довільний AST не покритий | Специфікувати subset і метрики образу; 1024 bytes не приймати автоматично. |
+| `REQ-SW-002` | G1/N2; #19 | Вибрані guards, не всі вирази/операнди | Повна граматика/семантичне покриття відсутні. |
+| `REQ-SW-003` | G1/N2; #19 | Тести вибраних INC/ADD | Не доведені всі дії, overflow і типи. |
+| `REQ-SW-004` | G1/N2; #19 | Окремі шляхи `•`/`not`, не повна еквівалентність | Відповідність синтаксису першоджерелу не встановлена. |
+| `REQ-SW-005` | G1/N2; #19 | Приклад передає cascade map явно; автодедукцію не доведено | Не затверджувати автоматичне виведення до уточнення. |
+| `REQ-SW-006` | G1/N1; Q4, #67/#68/#115 | HMAC тести програмні; anti-replay залежить від `seen_nonces`; test defect #115 | Security scope відкладено; виправити тест окремо, апаратного boot-proof немає. |
+| `REQ-SW-007` | G1/N1; Q4, static analyzer | Окремі ACL перевірки; повнота моделі невідома | Security scope відкладено; обґрунтування аналізатора див. §8. |
+| `REQ-SW-008` | G1/N2; MCU runtime | Хостові збірки; STM32/ESP32 target не перевірено | Потреба runtime і цільова плата не встановлені. |
+| `REQ-SW-009` | G1/N2; #8/#19, #64 окремо | Тести вибраних генераторів; AXI-64 — один generated slave | Не доводить усі топології чи інтеграцію з ядром. |
+| `REQ-SW-010` | G4/N5; #5 | Наявність генератора/текстового тесту не доводить двоспрямовану RTM | Не затверджувати автоматичний compliance synthesis; RTM лишається WP. |
+
+**Висновок щодо REQ.** Жоден із 30 історичних рядків цим продовженням не
+стає прийнятою вимогою. Для S2 власник має погодити межі MVP, потреби,
+підмножину KPOL і долю надмірних/необґрунтованих тверджень. Після цього
+створювати нові атомарні ID лише для узгоджених перевірних вимог, зберігши
+зв'язок з історичними ID.
+
+## 11. Що залишилося до S2
+
+Цей документ класифікує історичний знімок Issues і 30 успадкованих REQ;
+він не виконує решту #5. Потрібні рішення й артефакти:
+
+1. Погодити межі системи, стейкхолдерів і потреби G/N; нинішні G/N — кандидати.
+2. Визначити KPOL subset на основі #19; після цього погодити протокол #120.
+3. Вирішити прогалини #6/#18/#48/#62 і долю артефактів §8 без обґрунтування.
+4. Підготувати системну, HW та SW архітектурні пропозиції з межами компонентів,
+   інтерфейсами, розподілом вимог і способами перевірки.
+5. Провести незалежну рецензію повного WP; #117 стосувалася PR #116,
+   а AXI-64 прийнято власником без незалежної рецензії. Статуси S2, MVP
+   і TRL не змінювати без окремого рішення.
 
 ## Історія версій
 
@@ -215,6 +410,7 @@ TRL 1–3; для TRL 3 він обмежує підтвердження кон�
 | 0.2.0 | 2026-11-12 | За рецензією PR #119: окремі ланки ланцюга в таблиці WI; докази й причини блокування #64/#67/#68/#73; суперечність v1 і `REQ-SYS-001`; джерела й місця порога 95 %; входи для Q3; причина закриття #78. |
 | 0.3.0 | 2026-11-12 | §7: рішення власника щодо #64, #67, #68, #73, #80 і нове дослідження Q3 (#120). |
 | 0.4.0 | 2026-11-12 | §4 розділено на окремі ланки; додано §8 зворотного трасування артефактів. |
+| 0.5.0 | 2026-11-12 | Після злиття #119/#121: враховано результат AXI-64, знімок усіх 80 Issues, індивідуальну класифікацію 30 успадкованих REQ, відкриті прогалини й наступні рішення для #5. |
 
 ## Абревіатури та глосарій
 
