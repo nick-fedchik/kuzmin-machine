@@ -26,13 +26,15 @@ set_property IOSTANDARD LVCMOS33 [get_ports rgb5_g]
 set_property LOC G14 [get_ports rgb5_b]
 set_property IOSTANDARD LVCMOS33 [get_ports rgb5_b]
 
-# PMODA (Pmod JA) Header: Pin 1 (JA1) = Stimulus In, Pin 2 (JA2) & Pin 3 (JA3) = Reactive Out
+# PMODA (Pmod JA) Header: Pin 1 (JA1) = Stimulus In, Pin 2 (JA2) & Pin 3 (JA3) = Reactive Out, Pin 4 (JA4) = AXI Monitor
 set_property LOC Y18 [get_ports ja1]
 set_property IOSTANDARD LVCMOS33 [get_ports ja1]
 set_property LOC Y19 [get_ports ja2]
 set_property IOSTANDARD LVCMOS33 [get_ports ja2]
 set_property LOC Y16 [get_ports ja3]
 set_property IOSTANDARD LVCMOS33 [get_ports ja3]
+set_property LOC Y17 [get_ports ja4]
+set_property IOSTANDARD LVCMOS33 [get_ports ja4]
 
 # Pushbuttons (BTN0 = Trigger, BTN1..3)
 set_property LOC D19 [get_ports {btn[0]}]
