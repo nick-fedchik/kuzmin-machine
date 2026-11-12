@@ -16,8 +16,8 @@
 | [model.md](model.md) | Model | Дворівнева аналітична модель детермінізму: рефлекторний рівень ПЛІС (80 нс) + когнітивний рівень GPU, часові баланси та параметри шин. |
 | [protocol.md](protocol.md) | Protocol | Загальна методика дослідницької перевірки, етапи валідації, метрики $T_{\text{react}}$ та $T_{\text{e2e}}$, критерії успіху/спростування. |
 | [report.md](report.md) | Report | Звіт про поточний стан дослідження, теоретичні розрахунки, межі застосовності та відкриті інженерні питання. |
-| [data/](data/README.md) | Guide | Каталог первинних вимірювальних даних (траси VCD, осцилограми PicoScope, дампи журналів). |
-| [experiments/EXP-GPU-01/](experiments/EXP-GPU-01/README.md) | Guide | Окремий пакет стендового HIL-експерименту на обладнанні PYNQ-Z1 + Jetson AGX Orin J501 + PicoScope. |
+| [data/](data/README.md) | Guide | Каталог первинних вимірювальних даних (траси VCD, осцилограми Raspberry Pi Pico, дампи журналів). |
+| [experiments/EXP-GPU-01/](experiments/EXP-GPU-01/README.md) | Guide | Окремий пакет стендового HIL-експерименту на обладнанні PYNQ-Z1 + Jetson AGX Orin J501 + Raspberry Pi Pico. |
 
 ## Зв'язок з архітектурою та інженерними рішеннями
 
