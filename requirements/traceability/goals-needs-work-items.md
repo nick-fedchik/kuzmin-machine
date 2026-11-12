@@ -1,6 +1,6 @@
 # Цілі, потреби та реєстр двонапрямного трасування
 
-* **Версія:** 0.9.0 (робоча пропозиція)
+* **Версія:** 0.9.1 (робоча пропозиція)
 * **Дата:** 2026-11-12
 * **Issues:** [#118](https://github.com/nick-fedchik/kuzmin-machine/issues/118), [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5)
 * **Виконавець:** GitHub Copilot CLI, Auto; конкретна модель середовищем не показана.
@@ -496,7 +496,7 @@ python3 tools/check_links.py
 
 | Ціль / потреба → об'єкт | Вимога або предмет рішення | Design / WI | Перевірка → результат і межа |
 |---|---|---|---|
-| G1/N2 → CFG-P | `C-SYS-001/002`, `C-SW-001`, `C-HW-001` — чернетки; B1/B3/B4 | [Архітектура §§2–5](../../architecture/s2-candidate-system.md#2-системна-межа-для-обговорення); #7/#8/#19 | [Інтеграційний тест](../../hw/tests/test_kpol_bram_pipeline.py) — direct/AXI симуляція двох образів. Фізичне виконання програм на одному бітстрімі тут не встановлено; S4/S5 цим не оголошено виконаними. |
+| G1/N2 → CFG-P | `C-SYS-001/002`, `C-SW-001`, `C-HW-001` (нормалізовано в `REQ-SYS-017`, `REQ-SW-013`, `REQ-HW-018`); B1/B3/B4 | [Архітектура §§2–5](../../architecture/s2-candidate-system.md#2-системна-межа-для-обговорення), [системна межа](../../architecture/system-boundary-allocation-b1.md); #7/#8/#19, [#136](https://github.com/nick-fedchik/kuzmin-machine/issues/136) | [Інтеграційний тест](../../hw/tests/test_kpol_bram_pipeline.py) та [HIL S4](../../experiments/S4-07/report.md) (PR #137) — фізичне виконання двох програм на одному бітстрімі доведено. Рішення B1, B2, B4, B5 формалізовано. |
 | G1/N1 → CFG-R | Прийнятий власником результат AV-10 (§12); питання інтеграції B2 | [PYNQ-Z1 top](../../hw/boards/pynq-z1/kpol_txn_gate_pynq_z1_top.v), [ручна обгортка](../../hw/rtl/bus/kpol_txn_gate_axi_lite.sv); #9/#72/#73 | [AV-10](../../experiments/AV-10/report.md), [AV-11](../../experiments/AV-11/report.md), [підсумковий S6 Report](../../process/trl/reviews/review-gate-s6-autonomy.md). Gate v1 і PL-генератор, не sequencer/CME/gate v2; результат не переноситься на CFG-P. |
 | G1/N1 → CFG-I | Контракт зовнішнього входу, не результат компіляції KPOL | [I/O trigger](../../hw/rtl/io/km_io_trigger_engine.sv), B2 | [Тестбенч](../../hw/tb/km_io_trigger_engine_tb.sv) — симуляція окремого блока. Його вхід `ext_pin_i` не ототожнюється з виходом монітора JA1 у CFG-R. |
 | G1/N1 → черга CFG-P | B5: навантаження, одночасність, відмова/втрата при переповненні | [Sequencer](../../hw/rtl/core/km_autonomous_sequencer.sv), #6/#7 | RTL містить FIFO 16, план — 64. Ні одне число не обрано новою вимогою; спочатку потрібні погоджені сценарій і поведінка. |
@@ -526,7 +526,7 @@ python3 tools/check_links.py
 
 | Прямий шлях | Об'єкт / зворотний шлях | Стан і перевірка |
 |---|---|---|
-| G1/N2 → B3 → #19 → B3-REQ-01–06 | [KPOL-CME-1 v0.1.0, Decision B3-01](../../specs/kpol/kpol-cme-subset-0.1.0.md), CI-15 | Запропоновано; власник має явно прийняти версію/SHA. Матриця §6 Specification повертає від кожного компонента/тесту до B3-REQ і WI. |
+| G1/N2 → B3 → #19 → B3-REQ-01–06 | [KPOL-CME-1 v0.1.0, Decision B3-01](../../specs/kpol/kpol-cme-subset-0.1.0.md), CI-15 | B3-01 погоджено власником у [PR #142](https://github.com/nick-fedchik/kuzmin-machine/pull/142#issuecomment-6825334563) для SHA `21a109eb4d1e962bf94d066207415c00e4d7576e`; реалізацію та регресії ще належить виконати в #8. Матриця §6 Specification повертає від кожного компонента/тесту до B3-REQ і WI. |
 | B3-REQ-01/03/04/05 → #8 → frontend/backend/CLI | `Parser`, `check_module`, `compile_concept_microcode_bram_image`, `verify_module`, `compile_kpol_bram_image.py` | Frontend ширший за профіль; whitelist, діагностика та Proof gate до емісії ще не реалізовані. Регресії задано в §7 Specification, а не оголошено пройденими. |
 | B3-REQ-02/06 → #8 → CME-RAW-1 / CFG-P | `ConceptMicroDescriptor.pack`, disassembler, sequencer/CME/gate v2; історичні REQ-SW-001–004, REQ-HW-002/003/005/006 | Наявний [pipeline test](../../hw/tests/test_kpol_bram_pipeline.py) — direct/AXI симуляція двох сценаріїв. Матриця §6 явно відділяє ці результати від нових граничних сценаріїв і HIL. |
 | G4/N5 → #19 → архівування | [Git-архів](../../specs/kpol/history.md), CI-02, [fixtures](../../sw/kpol-ref/tests/fixtures/kpol-v01-examples.md) → `test_kpol_reference.py` | Повні дельти — за immutable SHA; старі шляхи тільки навігаційні. Три регресійні приклади збережено без зміни, не названо програмами нового профілю. |
@@ -550,6 +550,7 @@ B4/#133 — lifecycle loader, B5/#135 — чергу/навантаження. #
 | 0.7.1 | 2026-11-12 | Зафіксовано прийняття власником AV-10: 100 подій достатньо, результат прийнято для S6 у перевіреній конфігурації; попереднє зауваження знято. |
 | 0.8.0 | 2026-11-12 | Додано трасування конфігурацій CFG-P/R/I, джерела пізніших результатів S6 і п'ять конкретних рішень власника щодо меж та контрактів S2. |
 | 0.9.0 | 2026-11-12 | Додано §15: B3-01, кандидатні B3-REQ, реалізаційні прогалини #8 і Git-архів дельт після PR #131 (#19). |
+| 0.9.1 | 2026-11-12 | Зафіксовано погодження власником B3-01 на конкретному SHA та відокремлено його від реалізації, що лишається в #8. |
 
 ## Абревіатури та глосарій
 
