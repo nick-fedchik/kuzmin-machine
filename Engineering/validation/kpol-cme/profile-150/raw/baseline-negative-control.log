@@ -1,0 +1,553 @@
+Baseline: 0f92dcddc3c0a88c2aca7aad25b0b9ae2ee87148
+Date: 2026-11-12T20:39:15.050649+02:00 Host: AORUS-5-SE
+Control: old compiler; adapter ignores the new profile keyword, CLI unchanged.
+.F.F            [100%]
+=================================== FAILURES ===================================
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M {}') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Empty {} }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario NoExpect { step E(P = 5); } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Before { expect S == 10; step E(P = 5); } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { assert A on E expect S >= 0; }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Trace {\n            step E(P = 5); expect S == 12;\n            step E(P: 25); expect S == 12;\n        } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Trace {\n            step E(P = Unknown); expect S == 11;\n            step E(P: 25); expect S == 11;\n        } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Trace {\n            step E(P = 2147483648); expect S == 11;\n            step E(P: 25); expect S == 11;\n        } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Trace {\n            step E(P = 5); expect S >= 0;\n            step E(P: 25); expect S >= 0;\n        } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Trace {\n            step E(P = 5); expect S == 10 + 1;\n            step E(P: 25); expect S == 10 + 1;\n        } }') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_cli_rejects_before_output (diagnostic='B3-SYNTAX') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1958: in test_profile_cli_rejects_before_output
+    self.assertIn(diagnostic, result.stderr)
+E   AssertionError: 'B3-SYNTAX' not found in 'Traceback (most recent call last):\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 25, in <module>\n    main()\n    ~~~~^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 18, in main\n    parse_module(args.source.read_text(encoding="utf-8"))\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/kpol_reference.py", line 1276, in parse_module\n    module = Parser(source).parse()\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/kpol_reference.py", line 304, in parse\n    self.expect("Problem")\n    ~~~~~~~~~~~^^^^^^^^^^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/kpol_reference.py", line 292, in expect\n    self.fail(f"expected {value!r}, got {self.token.value!r}")\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/kpol_reference.py", line 282, in fail\n    raise KpolError(f"{token.line}:{token.column}: {message}")\nkpol_reference.KpolError: 1:1: expected \'Problem\', got \'invalid\'\n'
+_ KpolCmeProfileTests.test_profile_cli_rejects_before_output (diagnostic='B3-TYPE') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1958: in test_profile_cli_rejects_before_output
+    self.assertIn(diagnostic, result.stderr)
+E   AssertionError: 'B3-TYPE' not found in 'Traceback (most recent call last):\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 25, in <module>\n    main()\n    ~~~~^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 18, in main\n    parse_module(args.source.read_text(encoding="utf-8"))\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/kpol_reference.py", line 1277, in parse_module\n    check_module(module)\n    ~~~~~~~~~~~~^^^^^^^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/kpol_reference.py", line 783, in check_module\n    raise KpolError(f"initial value of {state.name!r} has type {actual}, expected {expected}")\nkpol_reference.KpolError: initial value of \'S\' has type KType(name=\'Bool\', unit=None), expected KType(name=\'Int32\', unit=None)\n'
+_ KpolCmeProfileTests.test_profile_cli_rejects_before_output (diagnostic='B3-GUARD') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1957: in test_profile_cli_rejects_before_output
+    self.assertNotEqual(result.returncode, 0)
+E   AssertionError: 0 == 0
+_ KpolCmeProfileTests.test_profile_cli_rejects_before_output (diagnostic='B3-PROOF') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1958: in test_profile_cli_rejects_before_output
+    self.assertIn(diagnostic, result.stderr)
+E   AssertionError: 'B3-PROOF' not found in 'Traceback (most recent call last):\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 25, in <module>\n    main()\n    ~~~~^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 20, in main\n    with args.image.open("xb") as output:\n         ~~~~~~~~~~~~~~~^^^^^^\n  File "/usr/lib/python3.14/pathlib/__init__.py", line 772, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileExistsError: [Errno 17] File exists: \'/tmp/tmpenu9fs5j/image.bin\'\n'
+__________ KpolCmeProfileTests.test_profile_cli_rejects_before_output __________
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1967: in test_profile_cli_rejects_before_output
+    self.assertIn("B3-IO", result.stderr)
+E   AssertionError: 'B3-IO' not found in 'Traceback (most recent call last):\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 25, in <module>\n    main()\n    ~~~~^^\n  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/hw/scripts/compile_kpol_bram_image.py", line 20, in main\n    with args.image.open("xb") as output:\n         ~~~~~~~~~~~~~~~^^^^^^\n  File "/usr/lib/python3.14/pathlib/__init__.py", line 772, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileExistsError: [Errno 17] File exists: \'/tmp/tmpenu9fs5j/image.bin\'\n'
+----------------------------- Captured stdout call -----------------------------
+uuuu
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='true', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]00\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]00\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == -2147483648', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == -2147483648', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == -2147483648', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == -2147483648', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 0', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 0', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 0', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 0', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 2147483647', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 2147483647', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 2147483647', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P == 2147483647', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]01\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]01\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != -2147483648', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != -2147483648', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != -2147483648', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != -2147483648', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 0', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 0', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 0', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 0', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 2147483647', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 2147483647', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 2147483647', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P != 2147483647', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]02\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]02\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > -2147483648', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > -2147483648', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > -2147483648', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > -2147483648', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 0', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 0', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 0', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 0', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 2147483647', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 2147483647', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 2147483647', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P > 2147483647', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]03\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]03\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < -2147483648', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < -2147483648', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < -2147483648', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < -2147483648', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 0', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 0', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 0', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 0', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 2147483647', action='S + 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 2147483647', action='S + 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 2147483647', action='S - 1', rule='NotifyStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_encodes_guards_and_renaming (guard='P < 2147483647', action='S - 1', rule='NegativeStep') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1866: in test_profile_encodes_guards_and_renaming
+    self.assertEqual(
+E   AssertionError: b'\n\[29 chars]04\x0b\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00' != b'\n\[29 chars]04\x03\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00[4012 chars]\x00'
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='constant assignment') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='payload assignment') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='larger step') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='false guard') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='state guard') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='nonliteral limit') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='range guard') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='compound guard') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='inverted guard') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='limit overflow') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='negative initial') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='initial overflow') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='unknown state') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='computed initial') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='missing invariant') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='wrong invariant') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='extra contract') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='extra event') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='extra state') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='extra rule') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='extra action') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='change') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='reject') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='unsupported parameter') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+_ KpolCmeProfileTests.test_profile_rejects_unsupported_programs (case='unsupported state') _
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1907: in test_profile_rejects_unsupported_programs
+    with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+________ KpolCmeProfileTests.test_profile_rejects_unsupported_programs _________
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1909: in test_profile_rejects_unsupported_programs
+    with self.assertRaisesRegex(KpolError, "B3-SHAPE"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: KpolError not raised
+----------------------------- Captured stdout call -----------------------------
+uuuuuuuuuuuuuuuuuuuuuuuuu
+=========================== short test summary info ============================
+SUBFAILED(proof='Proof M {}') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Empty {} }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario NoExpect { step E(P = 5); } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Before { expect S == 10; step E(P = 5); } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { assert A on E expect S >= 0; }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Trace {\n            step E(P = 5); expect S == 12;\n            step E(P: 25); expect S == 12;\n        } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Trace {\n            step E(P = Unknown); expect S == 11;\n            step E(P: 25); expect S == 11;\n        } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Trace {\n            step E(P = 2147483648); expect S == 11;\n            step E(P: 25); expect S == 11;\n        } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Trace {\n            step E(P = 5); expect S >= 0;\n            step E(P: 25); expect S >= 0;\n        } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(proof='Proof M { scenario Trace {\n            step E(P = 5); expect S == 10 + 1;\n            step E(P: 25); expect S == 10 + 1;\n        } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+SUBFAILED(diagnostic='B3-SYNTAX') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output
+SUBFAILED(diagnostic='B3-TYPE') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output
+SUBFAILED(diagnostic='B3-GUARD') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output
+SUBFAILED(diagnostic='B3-PROOF') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output
+SUBFAILED(guard='true', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='true', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == -2147483648', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == -2147483648', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == -2147483648', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == -2147483648', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 0', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 0', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 0', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 0', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 2147483647', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 2147483647', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 2147483647', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P == 2147483647', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != -2147483648', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != -2147483648', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != -2147483648', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != -2147483648', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 0', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 0', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 0', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 0', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 2147483647', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 2147483647', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 2147483647', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P != 2147483647', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > -2147483648', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > -2147483648', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > -2147483648', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > -2147483648', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 0', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 0', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 0', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 0', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 2147483647', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 2147483647', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 2147483647', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P > 2147483647', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < -2147483648', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < -2147483648', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < -2147483648', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < -2147483648', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 0', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 0', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 0', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 0', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 2147483647', action='S + 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 2147483647', action='S + 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 2147483647', action='S - 1', rule='NotifyStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(guard='P < 2147483647', action='S - 1', rule='NegativeStep') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+SUBFAILED(case='constant assignment') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='payload assignment') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='larger step') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='false guard') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='state guard') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='nonliteral limit') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='range guard') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='compound guard') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='inverted guard') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='limit overflow') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='negative initial') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='initial overflow') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='unknown state') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='computed initial') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='missing invariant') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='wrong invariant') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='extra contract') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='extra event') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='extra state') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='extra rule') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='extra action') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='change') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='reject') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='unsupported parameter') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+SUBFAILED(case='unsupported state') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+101 failed, 2 passed, 51 deselected, 30 subtests passed in 1.55s
+Observed pytest exit: 1
