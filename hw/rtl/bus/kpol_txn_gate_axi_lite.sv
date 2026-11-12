@@ -54,7 +54,11 @@ module kpol_txn_gate_axi_lite (
 
     // EXP-06: Physical I/O pins for "0p0" reactive trigger
     input  logic        ext_pin_0p0_i,
-    output logic        reactive_out_0p0_o
+    output logic        reactive_out_0p0_o,
+    // S6/H4: Direct transaction gate reaction outputs
+    output logic        txn_committed_o,
+    output logic        txn_rejected_o,
+    output logic        txn_rejected_inv_o
 );
     localparam logic [1:0] AXI_RESP_OKAY   = 2'b00;
     localparam logic [1:0] AXI_RESP_SLVERR = 2'b10;
@@ -222,6 +226,9 @@ module kpol_txn_gate_axi_lite (
 
     assign status_monitor_o = status_q;
     assign state_monitor_o  = state;
+    assign txn_committed_o    = committed;
+    assign txn_rejected_o     = rejected;
+    assign txn_rejected_inv_o = rejected_invariant;
 
     function automatic [31:0] merge_write_bytes(
         input logic [31:0] old_value,
