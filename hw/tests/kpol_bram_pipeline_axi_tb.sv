@@ -12,6 +12,17 @@ module kpol_bram_pipeline_axi_tb;
     logic [31:0] image [0:255];
     reg [4095:0] image_a, image_b;
 
+    // Сигнали зовнішнього тригера та апаратної телеметрії
+    logic ext_hw_trigger_valid_i = 0;
+    logic [5:0] ext_hw_trigger_cid_i = 0;
+    logic [31:0] ext_hw_trigger_param_i = 0;
+    wire hw_trigger_ready_o;
+    wire hw_commit_pulse_o;
+    wire hw_reject_pulse_o;
+    wire hw_pipeline_busy_o;
+    wire fifo_overflow_o;
+    wire [31:0] events_dropped_count_o;
+
     always #5 clk = ~clk;
 
     kpol_bram_pipeline_axi dut (.*);
@@ -98,6 +109,16 @@ module kpol_bram_pipeline_axi_tb;
         wait_idle();
     endtask
 
+    task automatic send_hw_trigger(input [5:0] cid, input [31:0] value);
+        @(negedge clk);
+        ext_hw_trigger_cid_i = cid;
+        ext_hw_trigger_param_i = value;
+        ext_hw_trigger_valid_i = 1;
+        @(negedge clk);
+        ext_hw_trigger_valid_i = 0;
+        wait_idle();
+    endtask
+
     task automatic check_state(input [31:0] expected, input reg [63:0] label);
         reg [31:0] actual;
         write_reg('h004, 0, 4'hf, 0);
@@ -131,17 +152,31 @@ module kpol_bram_pipeline_axi_tb;
         check_state(11, "image A");
         send_event(25);
         check_state(11, "image A");
+
+        // Перевірка апаратного зовнішнього тригера (REQ-SYS-011)
+        send_hw_trigger(6'd0, 5);
+        check_state(12, "image A via HW trigger");
+
         load_image(image_b);
         send_event(5);
         check_state(9, "image B");
         send_event(25);
         check_state(9, "image B");
+
         read_reg('h018, value);
-        if (value !== 4) $fatal(1, "incorrect event count");
+        if (value !== 5) $fatal(1, "incorrect event count: %0d", value);
         read_reg('h01c, value);
-        if (value !== 2) $fatal(1, "incorrect commit count");
+        if (value !== 3) $fatal(1, "incorrect commit count: %0d", value);
         read_reg('h020, value);
-        if (value !== 2) $fatal(1, "incorrect reject count");
+        if (value !== 2) $fatal(1, "incorrect reject count: %0d", value);
+
+        // Перевірка регістрів телеметрії черги
+        read_reg('h028, value);
+        if (value !== 0) $fatal(1, "expected 0 dropped events, got %0d", value);
+        read_reg('h02c, value);
+        // ready повинен бути 1
+        if (value[7] !== 1'b1) $fatal(1, "expected ready flag in reg 0x02c, got %h", value);
+
         $display("PASS: both compiled images");
         $finish;
     end
