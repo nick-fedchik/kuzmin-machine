@@ -28,6 +28,7 @@
 | [`architecture/`](architecture/) | Архітектура, план рефакторингу |
 | [`specs/kpol/`](specs/kpol/README.md) | Специфікації мови KPOL |
 | [`docs/`](docs/) | Джерела, теорія, дослідження, стратегія, бізнес/прогнози, докази TRL та незмінні архівні оригінали; [навігація](docs/PUBLICATION-BOUNDARY.md) |
+| [Work Products](docs/governance/work-products.md) | Типи робочих продуктів, призначення каталогів і [шаблони](process/templates/work-products/README.md) |
 | [`hw/`](hw/) | RTL (`core`, `bus`, `io`, `poc-demo`), тестбенчі, плата PYNQ-Z1, скрипти |
 | [`sw/`](sw/) | Еталонна реалізація KPOL, рантайми PYNQ / MCU, статичний аналізатор |
 | [`experiments/`](experiments/) | Експерименти AV-xx: звіт, рецензія, скрипти, сирі дані |
