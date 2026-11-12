@@ -15,6 +15,7 @@ from kpol_reference import (
     EventInput,
     Interpreter,
     KpolError,
+    Parser,
     UNKNOWN,
     parse_module,
     verify_module,
@@ -1830,6 +1831,142 @@ endmodule
         signed_image = compile_signed_bram_image(bram_bytes, secret_key=secret)
         self.assertEqual(len(signed_image), 1024 + 64)  # 1024 data + 64 header
         self.assertTrue(verify_bram_signature(signed_image, secret_key=secret))
+
+
+class KpolCmeProfileTests(unittest.TestCase):
+    @staticmethod
+    def source(guard="P < 20", action="S + 1", initial="10", rule="Step", proof=""):
+        return f"""
+        Problem M {{ Invariants {{ NonNeg: S >= 0; }} }}
+        Solution M {{
+            state S: Int32 = {initial};
+            event E(P: Int32);
+            rule {rule} on E when {guard} {{ set S := {action}; }}
+        }}
+        {proof}
+        """
+
+    def compile_profile(self, source, **kwargs):
+        return compile_concept_microcode_bram_image(
+            Parser(source).parse(), profile="KPOL-CME-1", **kwargs
+        )
+
+    def test_profile_encodes_guards_and_renaming(self):
+        predicates = {"true": 0, "==": 1, "!=": 2, ">": 3, "<": 4}
+        for operation, opcode in predicates.items():
+            for limit in (-2147483648, 0, 2147483647):
+                for action, action_opcode in (("S + 1", 1), ("S - 1", 2)):
+                    guard = "true" if operation == "true" else f"P {operation} {limit}"
+                    operand = 0 if operation == "true" else limit & 0xFFFFFFFF
+                    expected = struct.pack(
+                        "<IIII", 10, operand, opcode | 0x300 | (action_opcode << 24), 0
+                    ) + bytes(1008)
+                    for rule in ("Step", "NotifyStep", "NegativeStep"):
+                        with self.subTest(guard=guard, action=action, rule=rule):
+                            self.assertEqual(
+                                self.compile_profile(self.source(guard, action, rule=rule)),
+                                expected,
+                            )
+
+    def test_profile_rejects_unsupported_programs(self):
+        source = self.source()
+        cases = {
+            "constant assignment": self.source(action="42"),
+            "payload assignment": self.source(action="P"),
+            "larger step": self.source(action="S + 2"),
+            "false guard": self.source(guard="false"),
+            "state guard": self.source(guard="S < 20"),
+            "nonliteral limit": self.source(guard="P < 10 + 10"),
+            "range guard": self.source(guard="P >= 5"),
+            "compound guard": self.source(guard="P < 20 and P > 0"),
+            "inverted guard": self.source(guard="not (P < 20)"),
+            "limit overflow": self.source(guard="P < 2147483648"),
+            "negative initial": self.source(initial="-1"),
+            "initial overflow": self.source(initial="2147483648"),
+            "unknown state": self.source(initial="Unknown"),
+            "computed initial": self.source(initial="5 + 5"),
+            "missing invariant": source.replace("NonNeg: S >= 0;", ""),
+            "wrong invariant": source.replace("S >= 0;", "S > 0;"),
+            "extra contract": source.replace(
+                "Invariants {", "Goals { End: S > 0; } Invariants {"
+            ),
+            "extra event": source.replace("event E(", "event F(); event E("),
+            "extra state": source.replace("state S:", "state T: Int32 = 1; state S:"),
+            "extra rule": source.replace(
+                "rule Step", "rule Other on E { set S := S - 1; } rule Step"
+            ),
+            "extra action": source.replace("set S := S + 1;", "set S := S + 1; set S := S + 1;"),
+            "change": source.replace("on E when P < 20", "on change(S) when true"),
+            "reject": source.replace("on E when", "on reject E when"),
+            "unsupported parameter": self.source(guard="true").replace("P: Int32", "P: Bool"),
+            "unsupported state": self.source(action="true").replace(
+                "S: Int32 = 10", "S: Bool = false"
+            ).replace("S >= 0", "S == false"),
+        }
+        for name, program in cases.items():
+            with self.subTest(case=name), self.assertRaisesRegex(KpolError, "B3-"):
+                self.compile_profile(program)
+        with self.assertRaisesRegex(KpolError, "B3-SHAPE"):
+            self.compile_profile(source, cascade_map={})
+        with self.assertRaisesRegex(KpolError, "B3-PROFILE"):
+            compile_concept_microcode_bram_image(Parser(source).parse(), profile="unknown")
+
+    def test_profile_checks_proof_before_emission(self):
+        proof = """Proof M { scenario Trace {
+            step E(P = 5); expect S == 11;
+            step E(P: 25); expect S == 11;
+        } }"""
+        self.assertEqual(
+            self.compile_profile(self.source(proof=proof)),
+            self.compile_profile(self.source()),
+        )
+        invalid = [
+            "Proof M {}",
+            "Proof M { scenario Empty {} }",
+            "Proof M { scenario NoExpect { step E(P = 5); } }",
+            "Proof M { scenario Before { expect S == 10; step E(P = 5); } }",
+            "Proof M { assert A on E expect S >= 0; }",
+            proof.replace("S == 11", "S == 12"),
+            proof.replace("P = 5", "P = Unknown"),
+            proof.replace("S == 11", "S >= 0"),
+            proof.replace("S == 11", "S == 10 + 1"),
+        ]
+        for program in invalid:
+            with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                self.compile_profile(self.source(proof=program))
+        with self.assertRaisesRegex(KpolError, "B3-TYPE"):
+            self.compile_profile(self.source(proof=proof.replace("P = 5", "P = 2147483648")))
+
+    def test_profile_cli_rejects_before_output(self):
+        cli = REPO_ROOT / "hw" / "scripts" / "compile_kpol_bram_image.py"
+        cases = [
+            ("invalid syntax", "B3-SYNTAX"),
+            (self.source(initial="true"), "B3-TYPE"),
+            (self.source(guard="false"), "B3-GUARD"),
+            (self.source(proof="Proof M {}"), "B3-PROOF"),
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "input.kpol"
+            image = Path(directory) / "image.bin"
+            for program, diagnostic in cases:
+                source.write_text(program, encoding="utf-8")
+                with self.subTest(diagnostic=diagnostic):
+                    result = subprocess.run(
+                        [sys.executable, str(cli), str(source), str(image)],
+                        capture_output=True, text=True,
+                    )
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(diagnostic, result.stderr)
+                    self.assertFalse(image.exists())
+            source.write_text(self.source(), encoding="utf-8")
+            image.write_bytes(b"existing image")
+            result = subprocess.run(
+                [sys.executable, str(cli), str(source), str(image)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("B3-IO", result.stderr)
+            self.assertEqual(image.read_bytes(), b"existing image")
 
 
 if __name__ == "__main__":

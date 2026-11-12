@@ -1,11 +1,11 @@
 # KPOL-CME-1: специфікація початкової підмножини й ABI образу
 
-* **Версія:** 0.1.1
+* **Версія:** 0.2.0
 * **Дата:** 2026-11-12
 * **Статус:** Decision B3-01 погоджено власником для v0.1.0 у
   [PR #142](https://github.com/nick-fedchik/kuzmin-machine/pull/142#issuecomment-6825334563)
   на SHA `21a109eb4d1e962bf94d066207415c00e4d7576e`; цільовий контракт
-  для #8, не реалізований baseline.
+  для #8. Явний профільний шлях додано в #150, не весь baseline.
 * **WI:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19);
   реалізація й регресії — [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Походження:** G1/N2, B3 у [кандидатній архітектурі](../../design/s2-candidate-system.md#71-пять-рішень-і-їхній-стан);
@@ -47,7 +47,11 @@ v0.1.0 на SHA `21a109eb4d1e962bf94d066207415c00e4d7576e`; рішення
 і скінченні траси можуть відрізнятися.
 
 Цей документ визначає **цільовий контракт для #8**, а не стверджує його
-виконання поточним компілятором. Відомі дефекти з §7 робочого контракту
+повне виконання компілятором та апаратною системою. У #150 реалізовано
+окремий `profile="KPOL-CME-1"` і CLI; результати та межі —
+у [Report](../../validation/kpol-cme/profile-150/report.md).
+Безпрофільний API лишається експериментальним для сумісності.
+Відомі дефекти з §7 робочого контракту
 не стають правилами мови. Назва `KPOL-CME-1` — ID профілю, не KPOL v1.0.
 No-Go історичного аудиту для повного стандарту v1.0 не скасовується.
 Це похідна інженерна специфікація, не специфікація М. Ю. Кузьміна.
@@ -190,6 +194,8 @@ RANGE, BITMASK, ASSIGN, ADD, SUB та біти 2/3 **існують у RTL**,
 Усі B3-REQ — **кандидати**, пріоритет P1, походження G1/N2 і WI #19.
 Вони задають цільові перевірки для реалізації #8; погодження профілю
 не свідчить, що ці перевірки вже пройдено.
+Уточнення #150 трасується через [Requirement KPOL](../../requirements/kpol.md);
+граматику погодженого профілю не розширено за новими RFC.
 
 | ID | Перевірний контракт / обґрунтування |
 |---|---|
@@ -200,9 +206,13 @@ RANGE, BITMASK, ASSIGN, ADD, SUB та біти 2/3 **існують у RTL**,
 | B3-REQ-05 | За наявності Proof виконати його до емісії: `total_checks > 0`, `passed_checks == total_checks`, без failures; це перевірка заданих сценаріїв, не довільної траси. |
 | B3-REQ-06 | Підтвердити переходи й відмови за §3 поведінковими тестами, включно з межами, перейменуванням, direct/AXI. Не називати ці симуляції HIL і не переносити їх висновки на інші CFG. |
 
-Запропоновані класи діагностики (ще **не реалізований CLI API**):
+Класи діагностики профільного CLI в #150:
 `B3-SYNTAX`, `B3-TYPE`, `B3-SHAPE` (кількість декларацій/правил/дій),
 `B3-GUARD`, `B3-ACTION`, `B3-INVARIANT`, `B3-PROOF`.
+Додатково `B3-PROFILE` — невідомий профіль API,
+`B3-ACL` — відмова чинної ACL-перевірки, `B3-IO` — читання/створення файла.
+Помилки типів, у тому числі аргументи Proof поза Int32, належать
+`B3-TYPE`; коректно типізований, але позапрофільний Proof — `B3-PROOF`.
 Перевіряльник повідомляє хоча б першу конкретну причину; накопичення
 всіх помилок не вимагається. Неможливість створити новий файл — окрема
 I/O-помилка, не «непідтримана мова».
@@ -220,12 +230,12 @@ PASS. Перевірені до цього PR приклади й межі ре�
 
 | Конструкція / вимога | Компонент і стан реалізації на базі | Поведінкова перевірка / результат або прогалина |
 |---|---|---|
-| Problem/Solution, один Int32 state/event/rule/set; B3-REQ-01 | `Parser`, `check_module`: реалізовано ширший frontend. Фільтр профілю **не реалізовано**. | `test_consolidated_example_proof_and_cme_pipeline`: приклад CounterDemo. Відмови за зайві декларації/дії — прогалина #8. |
-| initial і числові межі; B3-REQ-01/06 | `_normalize`, `Interpreter`: Int32; compiler `_eval_int` може мовчки дати 0. | `test_out_of_range_input_is_rejected_but_boundary_is_accepted` — лише референсне payload. Весь домен CME й initial, ±Int32 — прогалина #8. |
-| `true`, `<`, `>`, `==`, `!=`; B3-REQ-01/02 | `compile_concept_microcode_bram_image`, CME `pred_raw_res`: часткове lowering; евристика імені дефектна. | direct/AXI `test_kpol_images_change_behavior_in_same_simulated_hardware`: лише `<20`, payload 5/25; інші guards, межі й `NotifyStep` — прогалина #8. |
+| Problem/Solution, один Int32 state/event/rule/set; B3-REQ-01 | `_compile_cme1_profile`: явний whitelist за `profile="KPOL-CME-1"`. Ширший Parser і legacy API збережені. | `KpolCmeProfileTests.test_profile_rejects_unsupported_programs`: зайві декларації, типи, дії та конструкції відхиляються. |
+| initial і числові межі; B3-REQ-01/06 | Профіль приймає тільки дозволений літерал, не fallback `_eval_int`. | Профільні негативні випадки й Int32-літерали; повна поведінкова перевірка домену в RTL не заявляється. |
+| `true`, `<`, `>`, `==`, `!=`; B3-REQ-01/02 | Профільний emitter не використовує евристики імен; flags=03, guard над payload. | `test_profile_encodes_guards_and_renaming`: ручне очікування CME-RAW-1 для guards/літералів/INC/DEC/імен. Наявні direct/AXI сценарії — лише обмежені траси. |
 | `S+1`, `S-1`, invariant `S>=0`; B3-REQ-02/06 | `Interpreter._execute`, CME `candidate_state_w` і gate v2: реалізовані окремі переходи, не доведений увесь профіль. | Той самий [pipeline test](../../hw/tests/test_kpol_bram_pipeline.py) — стани 11/9, не overflow/underflow; `test_invariant_failure_rolls_back_whole_transaction` — референс, не CME. |
-| Proof/scenario/step/expect; B3-REQ-05 | `verify_module`: реалізовано скінченні перевірки; [CLI](../../hw/scripts/compile_kpol_bram_image.py) їх зараз не викликає. | `test_consolidated_example_proof_and_cme_pipeline`: ненульові checks; обов'язковий pre-emission Proof gate — прогалина #8. |
-| Діагностика відмов; B3-REQ-03/04 | `parse_module` діагностує frontend; загальний whitelist CME і B3-коди **не реалізовано**. | Контрприклади §7 робочого контракту; регресії «відмова без образу» для всіх виключень §2.1 — прогалина #8. |
+| Proof/scenario/step/expect; B3-REQ-05 | Профіль відрізняє відсутній від порожнього Proof, перевіряє форму і `verify_module` до емісії. | `test_profile_checks_proof_before_emission`: позитивний/хибний/порожній/позапрофільний Proof. Це не доказ усіх трас. |
+| Діагностика відмов; B3-REQ-03/04 | CLI використовує профіль і B3-коди; вихід відкривається `xb` лише після перевірок. | `test_profile_cli_rejects_before_output`: syntax/type/guard/Proof та незмінний existing output. |
 | CME-RAW-1; B3-REQ-02 | `ConceptMicroDescriptor.pack`, disassembler; [CME](../../hw/rtl/core/km_concept_micro_engine.sv), [sequencer](../../hw/rtl/core/km_autonomous_sequencer.sv). Історичні REQ-SW-001, REQ-HW-005/006. | `test_v10_concept_microcode_bram_generation` перевіряє поля; pipeline — два виконання у симуляції, не загальна еквівалентність/HIL. |
 | Вхідна валідація/CID; §3 | `Interpreter._validate_payload`: референс; у raw-образі імен немає. Інтеграційна перевірка перед PL не встановлена. | #136/B1 і #134/B2; не оголошується завершеною в #19. |
 | Loader / життєвий цикл | Сирий образ — вхід B4/#133; фази запису/виконання не змінюються цим документом. | #7/#48 — робота Antigravity; фізичних запусків у #19 немає. |
@@ -271,6 +281,7 @@ B3-REQ компілятором, закриття #8/#5 або досягнен�
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.2.0 | 2026-11-12 | #150: явний профільний emitter, whitelist, діагностика й Proof gate; оновлено трасування без розширення B3-01 та без заяви про повну B3-REQ-06. |
 | 0.1.1 | 2026-11-12 | Редакція NG: структура, навігація та оформлення WP; нових результатів не заявлено. |
 | 0.1.0 | 2026-11-12 | Запропоновано B3-01, граматику KPOL-CME-1, переходи, CME-RAW-1, діагностику, трасування й приймальні сценарії #8; усунено суперечність опису W2 у суміжному B4. |
 | 0.1.1 | 2026-11-12 | Зафіксовано погодження власником Decision B3-01 для KPOL-CME-1 v0.1.0 на SHA `21a109eb4d1e962bf94d066207415c00e4d7576e`; уточнено межі погодження. |

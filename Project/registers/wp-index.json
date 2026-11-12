@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "date": "2026-11-12",
   "entries": [
     {
@@ -366,6 +366,12 @@
       "path": "Engineering/hw/toolchain/xc7.md",
       "direction": "Engineering",
       "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/requirements/kpol.md",
+      "direction": "Engineering",
+      "wp_type": "Requirement / SYS / SW",
       "immutable_input": false
     },
     {
@@ -1161,6 +1167,60 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/baseline-negative-control.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/full-tests-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/full-tests-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/profile-and-pipeline-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/profile-regressions-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/raw/structure-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/profile-150/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/raw/run-20261112-01/checks.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -1795,6 +1855,12 @@
       "direction": "Research",
       "wp_type": "Source",
       "immutable_input": true
+    },
+    {
+      "path": "Research/sources/author/rfc-2026-11-12.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
     },
     {
       "path": "Research/sources/vendor/pynq-z1-sch-f0.pdf",

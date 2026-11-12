@@ -1,6 +1,6 @@
 # Цілі, потреби та зв'язки поточного складу
 
-* **Версія:** 0.1.1
+* **Версія:** 0.2.0
 * **Дата:** 2026-11-12
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -18,6 +18,7 @@ ID G/N збережені; нових вимог і числових крите�
 |---|---|---|---|
 | G1/N1: визначені правила й працездатність | Які правила авторської машини можна реалізувати без здогадів? | [#76](../../Research/studies/author-semantics/report.md), [джерела](../../Research/sources/README.md). | Повна семантика не отримана; не переносити це автоматично на власний KPOL-контракт. |
 | G1/N2: KPOL → об'єкт виконання | B1–B5, KPOL-CME-1, loader і ingress | [Solution](../../Engineering/solutions/compiler-bram-pipeline.md), [вимоги](../../Engineering/requirements/requirements.md), [S4](../../Engineering/validation/experiments/S4-07/report.md). | Поточний цільовий CFG-P; повноту профілю не оголошено. |
+| G1/N1–N2: уточнення правил і профільний compiler | [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), частина #8; RFC-005–008 | [Source](../../Research/sources/author/rfc-2026-11-12.md) → [Requirement](../../Engineering/requirements/kpol.md) → [B3](../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md) → [Report](../../Engineering/validation/kpol-cme/profile-150/report.md). | Strict-path відокремлений від legacy; очікування черги й багатоядерний fallback не реалізовані цим кроком. |
 | G1/N1: межі fail-closed | Gate v2 за заданих властивостей і припущень | [S3](../../Engineering/validation/experiments/S3-62/report.md), [RTL](../../Engineering/hw/rtl/core/kpol_txn_gate_v2.sv). | Доказ компонента, не безпечність усієї системи. |
 | G1/N1: реактивна затримка | Окремий CFG-R | [AV-10](../../Engineering/validation/experiments/AV-10/report.md), [AV-11](../../Engineering/validation/experiments/AV-11/report.md). | Власник прийняв 100 подій і p99 ≤ 60 нс для перевіреної CFG-R після вимірювання; не попередня реєстрація й не доказ CFG-P. |
 | G2/N3: можливий внесок і новизна | Зіставлення конкретних тверджень | [Prior art](../../Research/studies/prior-art/report.md), [#77](../../Research/studies/turing-construction/report.md). | Обмежені результати; новизну не встановлено. |
@@ -38,6 +39,7 @@ NG не замінено закриттям старих Issues.
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.2.0 | 2026-11-12 | Додано двонапрямний ланцюг Source/RFC → вимоги → профільний compiler → перевірки #150. |
 | 0.1.0 | 2026-11-12 | Поточні ланцюги без копіювання історичного беклогу. |
 | 0.1.1 | 2026-11-12 | Поточні рішення власника щодо ліцензії та відкритих WI. |
 

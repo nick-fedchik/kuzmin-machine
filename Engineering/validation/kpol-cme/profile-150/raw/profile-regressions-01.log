@@ -1,0 +1,32 @@
+....            [100%]
+=================================== FAILURES ===================================
+_ KpolCmeProfileTests.test_profile_checks_proof_before_emission (proof='Proof M { scenario Trace {\n            step E(P = 2147483648); expect S == 11;\n            step E(P: 25); expect S == 11;\n        } }') _
+Engineering/sw/kpol-ref/kpol_reference.py:1440: in _compile_cme1_profile
+    check_module(module)
+Engineering/sw/kpol-ref/kpol_reference.py:893: in check_module
+    raise KpolError(
+E   kpol_reference.KpolError: scenario 'Trace' argument 'P' type KType(name='Number', unit=None) incompatible with KType(name='Int32', unit=None)
+
+The above exception was the direct cause of the following exception:
+Traceback (most recent call last):
+  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/tests/../kpol_reference.py", line 1440, in _compile_cme1_profile
+    check_module(module)
+    ~~~~~~~~~~~~^^^^^^^^
+  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Engineering/sw/kpol-ref/tests/../kpol_reference.py", line 893, in check_module
+    raise KpolError(
+        f"scenario {proof.name!r} argument {p_name!r} type {arg_type} incompatible with {p_type}"
+    )
+kpol_reference.KpolError: scenario 'Trace' argument 'P' type KType(name='Number', unit=None) incompatible with KType(name='Int32', unit=None)
+
+The above exception was the direct cause of the following exception:
+
+kpol_reference.KpolError: B3-TYPE: module M: scenario 'Trace' argument 'P' type KType(name='Number', unit=None) incompatible with KType(name='Int32', unit=None)
+
+During handling of the above exception, another exception occurred:
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1936: in test_profile_checks_proof_before_emission
+    with self.subTest(proof=program), self.assertRaisesRegex(KpolError, "B3-PROOF"):
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: "B3-PROOF" does not match "B3-TYPE: module M: scenario 'Trace' argument 'P' type KType(name='Number', unit=None) incompatible with KType(name='Int32', unit=None)"
+=========================== short test summary info ============================
+SUBFAILED(proof='Proof M { scenario Trace {\n            step E(P = 2147483648); expect S == 11;\n            step E(P: 25); expect S == 11;\n        } }') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+1 failed, 4 passed, 51 deselected, 128 subtests passed in 0.51s

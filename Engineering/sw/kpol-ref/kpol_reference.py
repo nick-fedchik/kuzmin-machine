@@ -239,6 +239,7 @@ class Module:
     problem_hash: str | None = None
     solution_hash: str | None = None
     proof_hash: str | None = None
+    proof_present: bool = False
 
 
 @dataclass
@@ -354,7 +355,8 @@ class Parser:
                 self.fail("expected event, state, or rule declaration")
 
         proofs: list[ProofItem] = []
-        if self.accept("Proof"):
+        proof_present = self.accept("Proof")
+        if proof_present:
             proof_name = self.identifier()
             if proof_name != name:
                 self.fail(f"Problem/Proof name mismatch: {name!r} vs {proof_name!r}")
@@ -376,6 +378,7 @@ class Parser:
             tuple(states),
             tuple(rules),
             tuple(proofs),
+            proof_present=proof_present,
         )
 
     def assert_decl(self) -> AssertPropertyDecl:
@@ -1428,12 +1431,143 @@ def disassemble_concept_microcode(data: bytes) -> list[ConceptMicroDescriptor]:
     return descriptors
 
 
+def _compile_cme1_profile(
+    module: Module,
+    cascade_map: dict[str | int, str | int] | None,
+    acl_table: dict[str, int] | None,
+) -> bytes:
+    try:
+        check_module(module)
+    except KpolError as error:
+        raise KpolError(f"B3-TYPE: module {module.name}: {error}") from error
+
+    def fail(code: str, message: str) -> None:
+        raise KpolError(f"{code}: module {module.name}: {message}")
+
+    def integer(expr: Expr, code: str, location: str, minimum: int = -2147483648) -> int:
+        if isinstance(expr, Literal) and type(expr.value) is int:
+            value = expr.value
+        elif (
+            isinstance(expr, Unary) and expr.operator == "-"
+            and isinstance(expr.operand, Literal) and type(expr.operand.value) is int
+        ):
+            value = -expr.operand.value
+        else:
+            fail(code, f"{location}: expected an Int32 literal")
+        if not minimum <= value <= 2147483647:
+            fail(code, f"{location}: literal outside [{minimum}, 2147483647]")
+        return value
+
+    if cascade_map is not None:
+        fail("B3-SHAPE", "cascade_map is outside KPOL-CME-1")
+    if len(module.states) != 1 or len(module.events) != 1 or len(module.rules) != 1:
+        fail("B3-SHAPE", "expected exactly one state, event and rule")
+    state, event, rule = module.states[0], module.events[0], module.rules[0]
+    if state.type_ref != TypeRef("Int32") or len(event.parameters) != 1:
+        fail("B3-SHAPE", f"state {state.name} and event {event.name}: expected Int32 state and one parameter")
+    parameter, parameter_type = event.parameters[0]
+    if parameter_type != TypeRef("Int32"):
+        fail("B3-SHAPE", f"event {event.name}: parameter {parameter} must be Int32")
+    initial = integer(state.initial, "B3-SHAPE", f"state {state.name} initial", minimum=0)
+    if rule.event != event.name or rule.reject or rule.watch or rule.covers is not None:
+        fail("B3-SHAPE", f"rule {rule.name}: expected an ordinary rule on {event.name}")
+    if len(rule.actions) != 1 or rule.actions[0].name != state.name:
+        fail("B3-SHAPE", f"rule {rule.name}: expected one assignment to {state.name}")
+    if (
+        len(module.requirements) != 1
+        or module.requirements[0].kind != "Invariant"
+        or module.requirements[0].event is not None
+        or module.requirements[0].target is not None
+        or module.requirements[0].expression != Binary(">=", Name(state.name), Literal(0))
+    ):
+        fail("B3-INVARIANT", f"expected only the invariant {state.name} >= 0")
+
+    action = rule.actions[0].expression
+    if not (
+        isinstance(action, Binary) and action.operator in {"+", "-"}
+        and action.left == Name(state.name)
+        and isinstance(action.right, Literal) and type(action.right.value) is int
+        and action.right.value == 1
+    ):
+        fail("B3-ACTION", f"rule {rule.name}: expected {state.name} + 1 or {state.name} - 1")
+    action_opcode = CME_ACT_INC if action.operator == "+" else CME_ACT_DEC
+    guard = rule.guard
+    operand = 0
+    if isinstance(guard, Literal) and guard.value is True:
+        predicate = CME_PRED_NOP
+    elif (
+        isinstance(guard, Binary) and guard.operator in {"<", ">", "==", "!="}
+        and guard.left == Name(parameter)
+    ):
+        predicate = {
+            "<": CME_PRED_LT, ">": CME_PRED_GT, "==": CME_PRED_EQ, "!=": CME_PRED_NEQ,
+        }[guard.operator]
+        operand = integer(guard.right, "B3-GUARD", f"rule {rule.name} guard")
+    else:
+        fail("B3-GUARD", f"rule {rule.name}: expected true or {parameter} compared with an Int32 literal")
+
+    if module.proof_present and not module.proofs:
+        fail("B3-PROOF", "Proof must contain at least one scenario")
+    for scenario in module.proofs:
+        if not isinstance(scenario, ScenarioDecl):
+            fail("B3-PROOF", "only scenario is supported, not Proof/assert")
+        location = f"scenario {scenario.name}"
+        seen_step = False
+        expects = 0
+        for item in scenario.steps:
+            if isinstance(item, StepAction):
+                if (
+                    item.event_name != event.name or len(item.arguments) != 1
+                    or item.arguments[0][0] != parameter
+                ):
+                    fail("B3-PROOF", f"{location}: expected step {event.name}({parameter}=integer)")
+                integer(item.arguments[0][1], "B3-PROOF", location)
+                seen_step = True
+            elif isinstance(item, ExpectCheck):
+                expr = item.expression
+                if not (
+                    seen_step and isinstance(expr, Binary) and expr.operator == "=="
+                    and expr.left == Name(state.name)
+                ):
+                    fail("B3-PROOF", f"{location}: expected {state.name} == integer after a step")
+                integer(expr.right, "B3-PROOF", location)
+                expects += 1
+            else:
+                fail("B3-PROOF", f"{location}: unsupported scenario item")
+        if not seen_step or not expects:
+            fail("B3-PROOF", f"{location}: expected at least one step and expect")
+    if module.proofs:
+        try:
+            report = verify_module(module)
+        except KpolError as error:
+            fail("B3-PROOF", f"reference execution failed: {error}")
+        if not report.total_checks or report.passed_checks != report.total_checks or report.failures:
+            reasons = "; ".join(f"{f.scenario_or_assert}: {f.message}" for f in report.failures)
+            fail("B3-PROOF", f"Proof failed: {reasons}")
+
+    violations = check_module_security_acl(module, acl_table)
+    if violations:
+        fail("B3-ACL", "; ".join(violations))
+    descriptor = ConceptMicroDescriptor(
+        cid=0, name=state.name, current_state=initial, operand_val=operand,
+        pred_opcode=predicate, guard_flags=CME_GUARD_ASSUMPTION_EN | CME_GUARD_INVARIANT_EN,
+        action_opcode=action_opcode,
+    )
+    return descriptor.pack() + bytes(63 * 16)
+
+
 def compile_concept_microcode_bram_image(
     module: Module,
     cascade_map: dict[str | int, str | int] | None = None,
     acl_table: dict[str, int] | None = None,
+    *,
+    profile: str | None = None,
 ) -> bytes:
-    """Compiles high-level KPOL AST into an executable 1024-byte BRAM image for km_concept_micro_engine."""
+    """Compile a named CME profile, or use the experimental legacy lowering when unset."""
+    if profile is not None:
+        if profile != "KPOL-CME-1":
+            raise KpolError(f"B3-PROFILE: unsupported profile {profile!r}")
+        return _compile_cme1_profile(module, cascade_map, acl_table)
     _reject_unsupported_u32_codegen(module)
     violations = check_module_security_acl(module, acl_table)
     if violations:
@@ -1943,7 +2077,8 @@ def generate_mutants(module: Module) -> list[tuple[str, Module]]:
             mut_rules = list(module.rules)
             mut_rules[r_idx] = mut_rule
             mut_mod = Module(
-                module.name, module.requirements, module.events, module.states, tuple(mut_rules), module.proofs
+                module.name, module.requirements, module.events, module.states, tuple(mut_rules), module.proofs,
+                proof_present=module.proof_present,
             )
             mutants.append((f"ROR:{rule.name}:{desc}", mut_mod))
 
@@ -1961,7 +2096,8 @@ def generate_mutants(module: Module) -> list[tuple[str, Module]]:
                     mut_rules = list(module.rules)
                     mut_rules[r_idx] = mut_rule
                     mut_mod = Module(
-                        module.name, module.requirements, module.events, module.states, tuple(mut_rules), module.proofs
+                        module.name, module.requirements, module.events, module.states, tuple(mut_rules), module.proofs,
+                        proof_present=module.proof_present,
                     )
                     mutants.append((f"SVR:{rule.name}:{action.name}_bool_inverted", mut_mod))
                 elif isinstance(val, int):
@@ -1975,7 +2111,8 @@ def generate_mutants(module: Module) -> list[tuple[str, Module]]:
                         mut_rules = list(module.rules)
                         mut_rules[r_idx] = mut_rule
                         mut_mod = Module(
-                            module.name, module.requirements, module.events, module.states, tuple(mut_rules), module.proofs
+                            module.name, module.requirements, module.events, module.states, tuple(mut_rules), module.proofs,
+                            proof_present=module.proof_present,
                         )
                         mutants.append((f"SVR:{rule.name}:{action.name}_val_{val}_to_{val+delta}", mut_mod))
 
@@ -2529,6 +2666,7 @@ def parse_triad_files(problem_src: str, solution_src: str, proof_src: str | None
         problem_hash=hashlib.sha256(problem_src.encode("utf-8")).hexdigest(),
         solution_hash=hashlib.sha256(solution_src.encode("utf-8")).hexdigest(),
         proof_hash=hashlib.sha256(proof_src.encode("utf-8")).hexdigest(),
+        proof_present=parsed.proof_present,
     )
 
 
@@ -2561,6 +2699,7 @@ def link_modules(modules: list[Module], target_name: str = "SystemComposite") ->
         tuple(all_states),
         tuple(all_rules),
         tuple(all_proofs),
+        proof_present=any(module.proof_present for module in modules),
     )
     check_module(composite)
     return composite
