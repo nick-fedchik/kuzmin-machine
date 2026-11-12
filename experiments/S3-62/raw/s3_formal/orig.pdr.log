@@ -1,0 +1,6 @@
+ABC command line: "read_aiger /tmp/s3_62_coy1x2ot/orig.aig; fold; strash; pdr".
+
+Warning: The last output is interpreted as a constraint.
+Invariant F[1] : 244 clauses with 0 flops (out of 112) (cex = 0, ave = 6.80)
+Verification of invariant with 244 clauses was successful.  Time =     0.00 sec
+Property proved.  Time =     0.04 sec
