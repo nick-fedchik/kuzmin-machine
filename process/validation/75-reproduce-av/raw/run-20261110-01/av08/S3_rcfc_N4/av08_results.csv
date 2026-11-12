@@ -1,2 +1,0 @@
-series,N,seed,status,lut,ff,srl,carry4,bram,lutram,dsp,fmax_mhz,placed_lutx,placed_ffx,placed_carry4,placed_ramb18
-S3_rcfc,4,,SYNTH_ONLY,328,217,0,31,0,0,0,,,,,

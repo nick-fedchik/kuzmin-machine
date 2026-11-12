@@ -1,3 +1,0 @@
-S1_lanes  N=8    seed=1  OK         LUT=1028   FF=1404   SRL=0    CARRY4=64    BRAM=0 LUTRAM=0 fmax=147.93
-S1_lanes  N=8    seed=2  OK         LUT=1028   FF=1404   SRL=0    CARRY4=64    BRAM=0 LUTRAM=0 fmax=153.92
-S1_lanes  N=8    seed=3  OK         LUT=1028   FF=1404   SRL=0    CARRY4=64    BRAM=0 LUTRAM=0 fmax=142.8

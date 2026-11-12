@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/mfedchyk/GitHub/nick-fedchik/kuzmin-machine-ng/Engineering/validation/spec-conformance/namespace-import-probe.py", line 39, in <module>
+    raise AssertionError("unresolved import was silently accepted")
+AssertionError: unresolved import was silently accepted

@@ -1,0 +1,151 @@
+........                                                                 [100%]
+8 passed in 0.92s
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.025 MB sources in 2 modules, into 0.023 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.004 s (elab=0.000, cvt=0.002, bld=0.000); cpu 0.004 s on 1 threads; alloced 7.992 MB
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.023 MB sources in 2 modules, into 0.023 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.005 s (elab=0.000, cvt=0.002, bld=0.000); cpu 0.005 s on 1 threads; alloced 7.996 MB
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:150:10: Cell pin connected by name with empty reference: 'rejected_input_o'
+  150 |         .rejected_input_o(),
+      |          ^~~~~~~~~~~~~~~~
+                          ... For warning description see https://verilator.org/warn/PINCONNECTEMPTY?v=5.032
+                          ... Use "/* verilator lint_off PINCONNECTEMPTY */" and lint_on around source to disable this message.
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:151:10: Cell pin connected by name with empty reference: 'rejected_invariant_o'
+  151 |         .rejected_invariant_o(),
+      |          ^~~~~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:152:10: Cell pin connected by name with empty reference: 'rejected_hazard_o'
+  152 |         .rejected_hazard_o(),
+      |          ^~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:155:10: Cell pin connected by name with empty reference: 'hazard_blocked_o'
+  155 |         .hazard_blocked_o(),
+      |          ^~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:157:10: Cell pin connected by name with empty reference: 'alert_observed_o'
+  157 |         .alert_observed_o()
+      |          ^~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/bus/kpol_bram_pipeline_axi.sv:102:10: Cell pin connected by name with empty reference: 'collision_detected_o'
+  102 |         .collision_detected_o()
+      |          ^~~~~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/bus/kpol_bram_pipeline_axi.sv:123:10: Cell pin connected by name with empty reference: 'fifo_full_o'
+  123 |         .fifo_full_o(),
+      |          ^~~~~~~~~~~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:129:53: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'fifo_count_q' generates 5 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  129 |     assign hw_trigger_ready_o       = (fifo_count_q < QUEUE_DEPTH);
+      |                                                     ^
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:130:53: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'fifo_count_q' generates 5 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  130 |     assign fifo_full_o              = (fifo_count_q == QUEUE_DEPTH);
+      |                                                     ^~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:177:49: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_rd_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  177 |                 fifo_rd_ptr_q <= (fifo_rd_ptr_q + 1'b1) % QUEUE_DEPTH;
+      |                                                 ^
+%Warning-WIDTHTRUNC: rtl/core/km_autonomous_sequencer.sv:177:31: Operator ASSIGNDLY expects 4 bits on the Assign RHS, but Assign RHS's MODDIV generates 32 bits.
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  177 |                 fifo_rd_ptr_q <= (fifo_rd_ptr_q + 1'b1) % QUEUE_DEPTH;
+      |                               ^~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:189:55: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_wr_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  189 |                             fifo_cid_q[(fifo_wr_ptr_q + 1) % QUEUE_DEPTH]   <= hw_trigger_cid_i;
+      |                                                       ^
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:190:57: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_wr_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  190 |                             fifo_param_q[(fifo_wr_ptr_q + 1) % QUEUE_DEPTH] <= hw_trigger_param_i;
+      |                                                         ^
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:191:61: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_wr_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  191 |                             fifo_wr_ptr_q <= (fifo_wr_ptr_q + 2) % QUEUE_DEPTH;
+      |                                                             ^
+%Warning-WIDTHTRUNC: rtl/core/km_autonomous_sequencer.sv:191:43: Operator ASSIGNDLY expects 4 bits on the Assign RHS, but Assign RHS's MODDIV generates 32 bits.
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  191 |                             fifo_wr_ptr_q <= (fifo_wr_ptr_q + 2) % QUEUE_DEPTH;
+      |                                           ^~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:195:66: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_wr_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  195 |                             fifo_wr_ptr_q      <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
+      |                                                                  ^
+%Warning-WIDTHTRUNC: rtl/core/km_autonomous_sequencer.sv:195:48: Operator ASSIGNDLY expects 4 bits on the Assign RHS, but Assign RHS's MODDIV generates 32 bits.
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  195 |                             fifo_wr_ptr_q      <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
+      |                                                ^~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:187:42: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'fifo_count_q' generates 5 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  187 |                         if (fifo_count_q < (QUEUE_DEPTH - 1)) begin
+      |                                          ^
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:201:57: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_wr_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  201 |                         fifo_wr_ptr_q <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
+      |                                                         ^
+%Warning-WIDTHTRUNC: rtl/core/km_autonomous_sequencer.sv:201:39: Operator ASSIGNDLY expects 4 bits on the Assign RHS, but Assign RHS's MODDIV generates 32 bits.
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  201 |                         fifo_wr_ptr_q <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
+      |                                       ^~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:182:34: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'fifo_count_q' generates 5 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  182 |                 if (fifo_count_q < QUEUE_DEPTH) begin
+      |                                  ^
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:217:53: Operator ADD expects 32 bits on the LHS, but LHS's VARREF 'fifo_wr_ptr_q' generates 4 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  217 |                     fifo_wr_ptr_q <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
+      |                                                     ^
+%Warning-WIDTHTRUNC: rtl/core/km_autonomous_sequencer.sv:217:35: Operator ASSIGNDLY expects 4 bits on the Assign RHS, but Assign RHS's MODDIV generates 32 bits.
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  217 |                     fifo_wr_ptr_q <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
+      |                                   ^~
+%Warning-WIDTHEXPAND: rtl/core/km_autonomous_sequencer.sv:214:34: Operator LT expects 32 bits on the LHS, but LHS's VARREF 'fifo_count_q' generates 5 bits.
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  214 |                 if (fifo_count_q < QUEUE_DEPTH) begin
+      |                                  ^
+%Warning-UNUSEDPARAM: rtl/core/km_autonomous_sequencer.sv:13:19: Parameter is not used: 'NUM_CONCEPTS'
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   13 |     parameter int NUM_CONCEPTS = 64,
+      |                   ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:85:28: Signal is not used: 'cme_rejected'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   85 |     wire                   cme_rejected;
+      |                            ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:86:28: Signal is not used: 'cme_hazard_obs'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   86 |     wire                   cme_hazard_obs;
+      |                            ^~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:87:28: Signal is not used: 'cme_unknown_haz'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   87 |     wire                   cme_unknown_haz;
+      |                            ^~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:89:28: Signal is not used: 'cme_state_changed'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   89 |     wire                   cme_state_changed;
+      |                            ^~~~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:90:28: Bits of signal are not used: 'cme_subscriber_cid'[31:6]
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   90 |     wire [31:0]            cme_subscriber_cid;
+      |                            ^~~~~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_concept_micro_engine.sv:17:36: Signal is not used: 'event_id_i'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer.cme_inst'
+   17 |     input  logic [7:0]             event_id_i,
+      |                                    ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_concept_micro_engine.sv:44:18: Bits of signal are not used: 'guard_flags_w'[7:4]
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer.cme_inst'
+   44 |     logic [7:0]  guard_flags_w;
+      |                  ^~~~~~~~~~~~~
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.143 MB sources in 6 modules, into 0.085 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.015 s (elab=0.002, cvt=0.007, bld=0.000); cpu 0.015 s on 1 threads; alloced 9.168 MB
+Warning: Replacing memory \fifo_param_q with list of registers. See rtl/core/km_autonomous_sequencer.sv:184
+Warning: Replacing memory \fifo_cid_q with list of registers. See rtl/core/km_autonomous_sequencer.sv:183
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+NG RTL simulation, lint and XC7 logic synthesis completed; no P&R, bitstream or HIL performed.

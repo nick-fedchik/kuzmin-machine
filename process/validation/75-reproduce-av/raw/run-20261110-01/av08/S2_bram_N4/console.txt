@@ -1,3 +1,0 @@
-S2_bram   N=4    seed=1  OK         LUT=27     FF=100    SRL=0    CARRY4=0     BRAM=1 LUTRAM=0 fmax=493.83
-S2_bram   N=4    seed=2  OK         LUT=27     FF=100    SRL=0    CARRY4=0     BRAM=1 LUTRAM=0 fmax=498.01
-S2_bram   N=4    seed=3  OK         LUT=27     FF=100    SRL=0    CARRY4=0     BRAM=1 LUTRAM=0 fmax=432.9

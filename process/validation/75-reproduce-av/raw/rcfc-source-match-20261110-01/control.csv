@@ -1,6 +1,0 @@
-series,N,seed,status,lut,ff,srl,carry4,bram,lutram,dsp,fmax_mhz,placed_lutx,placed_ffx,placed_carry4,placed_ramb18
-S3_rcfc,4,,SYNTH_ONLY,328,217,0,31,0,0,0,,,,,
-S3_rcfc,8,,SYNTH_ONLY,328,218,0,31,0,0,0,,,,,
-S3_rcfc,16,,SYNTH_ONLY,324,219,0,31,0,0,0,,,,,
-S3_rcfc,32,,SYNTH_ONLY,321,220,0,31,0,0,0,,,,,
-S3_rcfc,64,,SYNTH_ONLY,321,221,0,31,0,0,0,,,,,
