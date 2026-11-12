@@ -1,0 +1,38 @@
+{
+  "host": "pynq-2",
+  "timestamp_utc": "2026-11-12T12:25:04.586232+00:00",
+  "bitstream_sha256": "975278cf33ac0e7eb6711e54e6fe32e1f4b431eef18e4be42cb42b9af386e951",
+  "image_sha256": [
+    "4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d",
+    "00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3"
+  ],
+  "image_a": {
+    "name": "increase",
+    "expected_state": 11,
+    "states": [
+      11,
+      11
+    ],
+    "counts": [
+      2,
+      1,
+      1
+    ],
+    "status": "PASS"
+  },
+  "image_b": {
+    "name": "decrease",
+    "expected_state": 9,
+    "states": [
+      9,
+      9
+    ],
+    "counts": [
+      4,
+      2,
+      2
+    ],
+    "status": "PASS"
+  },
+  "verdict": "NOT_REFUTED"
+}
