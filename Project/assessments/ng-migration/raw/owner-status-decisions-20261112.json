@@ -1,0 +1,48 @@
+{
+  "captured_at": "2026-11-12T16:40:26.835233+00:00",
+  "owner_decision_date": "2026-11-12",
+  "repository": "nick-fedchik/kuzmin-machine",
+  "project": "Kuzmin Machine",
+  "issues": [
+    {
+      "number": 5,
+      "title": "S2: комплексне трасування цілей, вимог, архітектури й робіт",
+      "state": "OPEN",
+      "stateReason": "REOPENED",
+      "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/5",
+      "project_status": "Postponed"
+    },
+    {
+      "number": 8,
+      "title": "S5: Компілятор KPOL → образ BRAM (прогалина 4)",
+      "state": "OPEN",
+      "stateReason": null,
+      "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/8",
+      "project_status": "Todo"
+    },
+    {
+      "number": 20,
+      "title": "Ліцензія та авторство репо (Р5)",
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/20",
+      "project_status": "Done"
+    },
+    {
+      "number": 115,
+      "title": "Тест підпису образу v1.0 не перевіряє булевий результат",
+      "state": "OPEN",
+      "stateReason": null,
+      "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/115",
+      "project_status": "Todo"
+    },
+    {
+      "number": 120,
+      "title": "Q3: дослідження зручності програмування KPOL",
+      "state": "OPEN",
+      "stateReason": null,
+      "url": "https://github.com/nick-fedchik/kuzmin-machine/issues/120",
+      "project_status": "Todo"
+    }
+  ]
+}

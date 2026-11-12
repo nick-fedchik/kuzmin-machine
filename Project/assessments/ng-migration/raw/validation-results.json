@@ -1,0 +1,130 @@
+{
+  "version": "0.1.0",
+  "date": "2026-11-12",
+  "phase": "completed",
+  "scope": "local NG relocation, not scientific/HIL acceptance",
+  "checks": [
+    {
+      "name": "inherited-provenance",
+      "command": [
+        "python3",
+        "Project/tools/check_report_provenance.py",
+        "--json"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "output": "provenance.json",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "pytest",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "output": "pytest.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "links",
+      "command": [
+        "python3",
+        "Project/tools/check_links.py"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "output": "links.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "wp-structure",
+      "command": [
+        "python3",
+        "Project/tools/check_wp_documents.py"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "output": "wp-structure.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "github-yaml",
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import yaml; [yaml.safe_load(p.read_text()) for p in Path('.github').rglob('*.yml')]; print('GitHub YAML parses successfully')"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "output": "github-yaml.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "namespace-import-counterexample",
+      "command": [
+        "python3",
+        "Engineering/validation/spec-conformance/namespace-import-probe.py"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "output": "namespace-import-counterexample.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "shell-build_bram_pipeline",
+      "command": [
+        "bash",
+        "-n",
+        "Engineering/hw/boards/pynq-z1/build_bram_pipeline.sh"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "output": "shell-build_bram_pipeline.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "shell-run_open_flow",
+      "command": [
+        "bash",
+        "-n",
+        "Engineering/hw/scripts/run_open_flow.sh"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "output": "shell-run_open_flow.log",
+      "expected_outcome_observed": true
+    },
+    {
+      "name": "rtl-flow",
+      "command": [
+        "bash",
+        "Engineering/hw/scripts/run_open_flow.sh"
+      ],
+      "cwd": "kuzmin-machine-ng",
+      "exit_code": 0,
+      "output": "rtl.log",
+      "expected_outcome_observed": true,
+      "limits": "component strict lint, pipeline warnings nonfatal, XC7 logic synthesis; no P&R/STA/HIL"
+    }
+  ],
+  "all_expected_outcomes_observed": true,
+  "inherited_limitations": [
+    "experimental Report sidecars absent; S1 NOT_ASSESSED",
+    "namespace-import probe reproduces inherited unresolved-import counterexample",
+    "no independent NG review, physical HIL, new bitstream, Git initialization or publication"
+  ]
+}

@@ -7,4 +7,4 @@ __pycache__/
 build/
 /tmp/
 # VDA QMC prohibits redistribution of the locally obtained PAM.
-/process/Automotive-SPICE-PAM-v41.pdf
+Automotive-SPICE-PAM-v41.pdf

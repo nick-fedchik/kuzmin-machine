@@ -1,4 +1,0 @@
-series,N,seed,status,lut,ff,srl,carry4,bram,lutram,dsp,fmax_mhz,placed_lutx,placed_ffx,placed_carry4,placed_ramb18
-S1_lanes,64,1,TIMING_FAIL,7022,10275,0,511,0,0,0,88.04,10763,10275,573,0
-S1_lanes,64,2,TIMING_FAIL,7022,10275,0,511,0,0,0,76.74,10763,10275,573,0
-S1_lanes,64,3,TIMING_FAIL,7022,10275,0,511,0,0,0,96.54,10763,10275,573,0

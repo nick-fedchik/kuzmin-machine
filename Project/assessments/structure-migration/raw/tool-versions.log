@@ -1,0 +1,7 @@
+Python 3.14.4
+pytest 9.0.2
+gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Icarus Verilog version 12.0 (stable) ()
+Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+Yosys 0.52 (git sha1 fee39a3284c90249e1d9684cf6944ffbbcbb8f90)
+Z3 version 4.13.3 - 64 bit

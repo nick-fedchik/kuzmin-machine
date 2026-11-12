@@ -1,0 +1,1902 @@
+{
+  "version": "0.1.0",
+  "date": "2026-11-12",
+  "entries": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "direction": "technical-root",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/experiment.yml",
+      "direction": "technical-root",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/finding.yml",
+      "direction": "technical-root",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/task.yml",
+      "direction": "technical-root",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": ".github/pull_request_template.md",
+      "direction": "technical-root",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "direction": "technical-root",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": ".gitignore",
+      "direction": "technical-root",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "AGENTS.md",
+      "direction": "technical-root",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "AUTHORS.md",
+      "direction": "technical-root",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "CLAUDE.md",
+      "direction": "technical-root",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/configurations/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/decisions/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/bram-pipeline-event-integration.md",
+      "direction": "Engineering",
+      "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/refactoring-plan.md",
+      "direction": "Engineering",
+      "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/report-b1-system-boundary.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/report-b2-event-integration.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/reviews/review-b1-system-boundary.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/reviews/review-b2-event-integration.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/s2-candidate-system.md",
+      "direction": "Engineering",
+      "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/software/compiler.md",
+      "direction": "Engineering",
+      "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/design/system-boundary-allocation-b1.md",
+      "direction": "Engineering",
+      "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/RUNBOOK.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/build_bram_pipeline.sh",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/hil-bench-wiring-guide.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/hil/hil_io_trigger.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/hil/hil_kpol_bram_pipeline.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/kpol_bram_pipeline.xdc",
+      "direction": "Engineering",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/pico-logic-analyzer-guide.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/pico/pico_capture.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/pico/pico_firmware_pio.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/report-hw-wiring-guide.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/report-pico-logic-analyzer.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/report-top-pmod-integration.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/reviews/review-hw-wiring-guide.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/reviews/review-pico-logic-analyzer.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/reviews/review-top-pmod-integration.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/core/km_autonomous_sequencer.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/core/km_concept_bram.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/core/km_concept_micro_engine.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/core/kpol_txn_gate_v2.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/io/km_io_trigger_engine.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/scripts/compile_kpol_bram_image.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/scripts/run_open_flow.sh",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tb/km_autonomous_sequencer_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tb/km_concept_bram_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tb/km_concept_micro_engine_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tb/km_io_trigger_engine_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tb/kpol_txn_gate_v2_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_decrease.kpol",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_increase.kpol",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_kpol_bram_hil_runner.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_kpol_bram_pipeline.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_pico_capture.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_testbenches.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/toolchain/xc7.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/requirements/requirements.md",
+      "direction": "Engineering",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/solutions/compiler-bram-pipeline.md",
+      "direction": "Engineering",
+      "wp_type": "Solution",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/event-queue-ingress-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/kpol-image-loader-pipeline-contract.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/kpol-txn-gate-axi-lite-interface.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/report-b4-image-loader-contract.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/report-b5-queue-ingress.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/reviews/review-b4-image-loader-contract.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/hw/reviews/review-b5-queue-ingress.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/kpol/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/kpol/kpol-consolidated-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-ref/kpol_reference.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-ref/tests/fixtures/kpol-v01-examples.md",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/sw/kpol-ref/tests/test_kpol_reference.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/runtime/mcu/km_mcu_fpga_bridge.c",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/runtime/mcu/tests/test_km_mcu_fpga_bridge.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/runtime/pynq/kpol_direct_mmio_driver.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/runtime/pynq/tests/test_kpol_direct_mmio.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tools/static-analyzer/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tools/static-analyzer/design-analysis.md",
+      "direction": "Engineering",
+      "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tools/static-analyzer/km_static_analyzer.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tools/static-analyzer/tests/test_km_static_analyzer.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_100burst_run02.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_100burst_run02.lac",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_100burst_run03.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_100burst_run03.lac",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_100burst_run03_events.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_reactive_gate_run01.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_pynq_reactive_gate_run01.lac",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/raw/av10_waveform_screenshot.png",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/review.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/scripts/analyze_av10_burst.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-10/scripts/test_av10_latency.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/raw/av11_ps_quiet_run01.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/raw/av11_ps_quiet_run01.lac",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/raw/av11_ps_quiet_run01_events.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/raw/av11_ps_stressed_run02.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/raw/av11_ps_stressed_run02.lac",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/raw/av11_ps_stressed_run02_events.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/review.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/scripts/analyze_av11.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AV-11/scripts/test_av11_stress.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_araddr.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_araddr.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_araddr.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_araddr.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_araddr.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_bdrop.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_bdrop.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_bdrop.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_bdrop.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_bdrop.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_noaw.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_noaw.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_noaw.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_noaw.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_noaw.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_nostrb.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_nostrb.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_nostrb.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_nostrb.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/M_nostrb.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/axi64_provenance.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/axi64_results.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/km_aximodule_axi_lite_slave.sv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/orig.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/orig.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/orig.cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/orig.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/raw/axi64_formal/orig.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/scripts/run_axi64_formal.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/AXI-64/scripts/test_axi64_formal.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_f03_strobe.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_f03_strobe.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_f03_strobe.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_f03_strobe.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_f03_strobe.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_hazard_bypass.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_hazard_bypass.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_hazard_bypass.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_hazard_bypass.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_hazard_bypass.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_inv_bypass.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_inv_bypass.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_inv_bypass.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_inv_bypass.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_inv_bypass.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_state_leak.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_state_leak.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_state_leak.bmc.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_state_leak.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/M_state_leak.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/kpol_txn_gate_v2.sv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/orig.aig.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/orig.bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/orig.cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/orig.pdr.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/orig.smt2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/s3_provenance.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/raw/s3_formal/s3_results.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/review.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/scripts/run_s3_formal.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/scripts/s3_props.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S3-62/scripts/test_s3_formal.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/raw/bitstream.sha256",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/raw/decrease.bin",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/raw/increase.bin",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/raw/s4_hil_results.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/review.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/experiments/S4-07/scripts/test_s4_bram.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/fail-closed/protocol.md",
+      "direction": "Engineering",
+      "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/final-validation-20261110.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-01/focused.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-01/receipt.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-02/focused.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-02/full-pytest.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-02/links.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-02/mutant-interpreter-default-false.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-02/mutant-verifier-default-false.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/run-20261110-02/receipt.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/strict-links-20261110-01/links.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/raw/strict-links-20261110-01/receipt.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/fail-closed/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/raw/run-20261112-01/checks.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/raw/run-20261112-02/checks.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/namespace-import-probe.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/namespace-import-protocol.md",
+      "direction": "Engineering",
+      "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/namespace-import-report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/after.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/after.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/before.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/before.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/full-pytest.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/links.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-01/validation.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-02/baseline.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/raw-20261111-02/baseline.txt",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/u32-protocol.md",
+      "direction": "Engineering",
+      "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/spec-conformance/u32-report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "GEMINI.md",
+      "direction": "technical-root",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "LICENSE",
+      "direction": "technical-root",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "NOTICE",
+      "direction": "technical-root",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/README.md",
+      "direction": "Project",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/github-yaml.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/links.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/namespace-import-counterexample.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/owner-preparation-checks-20261112.json",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/owner-preparation-document-tests-20261112.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/owner-preparation-links-20261112.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/owner-preparation-wp-structure-20261112.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/owner-status-decisions-20261112.json",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/provenance.json",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/pytest.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/rtl.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/shell-build_bram_pipeline.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/shell-run_open_flow.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/validation-results.json",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/raw/wp-structure.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/ng-migration/report.md",
+      "direction": "Project",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/configurations.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/execution-results.json",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/github-statuses.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/links.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/pytest.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/rtl.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/tool-versions.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/raw/wp-structure.log",
+      "direction": "Project",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/structure-migration/report.md",
+      "direction": "Project",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/trl/report.md",
+      "direction": "Project",
+      "wp_type": "Report / Assessment",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/trl/reviews/review-gate-s3-core.md",
+      "direction": "Project",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/trl/reviews/review-gate-s6-autonomy.md",
+      "direction": "Project",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/assessments/trl/reviews/review-trl-passport-s1-s2.md",
+      "direction": "Project",
+      "wp_type": "Report / Review",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/guides/project-manual.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/plans/ng-transition.md",
+      "direction": "Project",
+      "wp_type": "Plan",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/layout.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/licensing.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/publication-boundary.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/review-rules.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/standards-position.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/work-items.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/policies/work-products.md",
+      "direction": "Project",
+      "wp_type": "Policy",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/configuration-items.md",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/goals-needs-work-items.md",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/migration-manifest.json",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/migration.md",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/open-work-items.md",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/path-map.json",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/work-products.md",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/wp-index.json",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/README.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/report.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/review.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/README.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/analysis-report.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/assessment-report.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/decision.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/design.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/guide.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/model.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/plan.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/policy.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/problem.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/protocol.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/register.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/requirement-hw.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/requirement-sw.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/requirement-sys.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/requirement.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/solution.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/source.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/templates/work-products/specification.md",
+      "direction": "Project",
+      "wp_type": "Template",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/check_links.py",
+      "direction": "Project",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/check_report_provenance.py",
+      "direction": "Project",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/check_wp_documents.py",
+      "direction": "Project",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/report-provenance.md",
+      "direction": "Project",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/tests/test_check_links.py",
+      "direction": "Project",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/tests/test_report_provenance.py",
+      "direction": "Project",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/tools/tests/test_wp_documents.py",
+      "direction": "Project",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "README.md",
+      "direction": "technical-root",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/README.md",
+      "direction": "Research",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/sources/README.md",
+      "direction": "Research",
+      "wp_type": "Register; записи нижче є картками Source.",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/sources/author/dou/dou-35914.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/sources/author/dou/dou-36556.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/sources/author/dou/dou-38994.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/sources/author/dou/dou-43177.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/sources/author/kuzmin-2024-example-for-AN.pdf",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/sources/author/kuzmin-2024-example-for-AN.pptx",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/sources/vendor/pynq-z1-sch-f0.pdf",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/studies/application-hypotheses/README.md",
+      "direction": "Research",
+      "wp_type": "Guide; Problem вбудований.",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/application-hypotheses/report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/README.md",
+      "direction": "Research",
+      "wp_type": "Guide; постановка Problem і опис зв'язків вбудовані.",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/formal-analysis.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/concept-assessment/README.md",
+      "direction": "Research",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/concept-assessment/data/opposition-passes/pass1-opus.md",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/studies/concept-assessment/data/opposition-passes/pass1-sol.md",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/studies/concept-assessment/data/opposition-passes/pass2-opus.md",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/studies/concept-assessment/data/opposition-passes/pass2-sol.md",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": true
+    },
+    {
+      "path": "Research/studies/concept-assessment/problem.md",
+      "direction": "Research",
+      "wp_type": "Problem",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/concept-assessment/protocol.md",
+      "direction": "Research",
+      "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/concept-assessment/report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/prior-art/README.md",
+      "direction": "Research",
+      "wp_type": "Guide; Problem вбудований.",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/prior-art/report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/turing-construction/README.md",
+      "direction": "Research",
+      "wp_type": "Guide; Problem і посилання на Model/Protocol вбудовані.",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/turing-construction/report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "pytest.ini",
+      "direction": "technical-root",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    }
+  ]
+}

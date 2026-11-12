@@ -1,3 +1,0 @@
-S1_stub   N=64   seed=1  OK         LUT=736    FF=7777   SRL=0    CARRY4=0     BRAM=0 LUTRAM=0 fmax=505.05
-S1_stub   N=64   seed=2  OK         LUT=736    FF=7777   SRL=0    CARRY4=0     BRAM=0 LUTRAM=0 fmax=509.94
-S1_stub   N=64   seed=3  OK         LUT=736    FF=7777   SRL=0    CARRY4=0     BRAM=0 LUTRAM=0 fmax=581.06
