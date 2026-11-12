@@ -59,10 +59,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 SPEC_PATH = REPO_ROOT / "specs" / "kpol" / "kpol-0.1.0.md"
 
 
-def examples_from_spec():
+def examples_from_spec(path=SPEC_PATH):
     examples = []
     current = None
-    for line in SPEC_PATH.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if current is None and line.strip() == "```kpol":
             current = []
         elif current is not None and line.strip() == "```":
@@ -86,6 +86,26 @@ class KpolReferenceTests(unittest.TestCase):
     def test_all_documented_examples_parse_and_typecheck(self):
         self.assertEqual([module.name for module in self.modules],
                          ["ReactorMonitor", "EuclidGCD", "EnergyMeter"])
+
+    def test_consolidated_example_proof_and_cme_pipeline(self):
+        examples = examples_from_spec(
+            REPO_ROOT / "specs" / "kpol" / "kpol-consolidated-0.1.0.md"
+        )
+        self.assertEqual(len(examples), 1)
+        module = parse_module(examples[0])
+        report = verify_module(module)
+        self.assertGreater(report.total_checks, 0)
+        self.assertEqual(report.passed_checks, report.total_checks)
+        self.assertFalse(report.failures)
+
+        pipeline_source = (
+            REPO_ROOT / "hw" / "tests" / "kpol_bram_pipeline_increase.kpol"
+        ).read_text(encoding="utf-8")
+        pipeline_module = parse_module(pipeline_source)
+        self.assertEqual(
+            compile_concept_microcode_bram_image(module),
+            compile_concept_microcode_bram_image(pipeline_module),
+        )
 
     def test_reactor_hazard_and_false_alarm_boundary(self):
         module = self.modules[0]
