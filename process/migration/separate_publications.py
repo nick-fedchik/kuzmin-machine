@@ -39,6 +39,19 @@ def verify_archive(archive, entries):
                 raise ValueError(f"Archive hash mismatch: {entry['source']}")
 
 
+def verify_destinations(root, entries, relocations):
+    destinations = {e["destination"] for e in entries if e["destination"]}
+    unknown = relocations.keys() - destinations
+    if unknown:
+        raise ValueError(f"Relocation without migration destination: {sorted(unknown)}")
+    current = [relocations.get(path, path) for path in destinations]
+    if len(current) != len(set(current)):
+        raise ValueError("Multiple migration destinations resolve to the same working copy")
+    for path in current:
+        if not (root / path).is_file():
+            raise ValueError(f"Missing working copy: {path}")
+
+
 def category(path):
     part = path.split("/")[0]
     return {
@@ -162,9 +175,8 @@ def main():
         if digest(previous) != data["previous_formal_sha256"]:
             raise ValueError("Previous canonical analysis checksum mismatch")
         if args.verify:
-            for entry in data["files"]:
-                if entry["destination"] and not (ROOT / entry["destination"]).is_file():
-                    raise ValueError(f"Missing working copy: {entry['destination']}")
+            relocations = json.loads((RECORD / "relocations.json").read_text())
+            verify_destinations(ROOT, data["files"], relocations)
             print(f"Verified {len(data['files'])} archived originals and all mapped destinations.")
             return
         for entry in data["files"]:

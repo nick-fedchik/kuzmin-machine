@@ -33,6 +33,28 @@ def test_archive_checks_content_and_complete_member_set(tmp_path, defect):
         MODULE["verify_archive"](archive, entries)
 
 
+def test_destinations_resolve_recorded_relocations_and_still_require_copies(tmp_path):
+    entries = [{"destination": "old/report.md"}, {"destination": "current.md"}]
+    (tmp_path / "archive").mkdir()
+    (tmp_path / "archive/report.md").write_text("historical report")
+    (tmp_path / "current.md").write_text("current copy")
+    relocations = {"old/report.md": "archive/report.md"}
+    MODULE["verify_destinations"](tmp_path, entries, relocations)
+    with pytest.raises(ValueError, match="Missing working copy"):
+        MODULE["verify_destinations"](tmp_path, entries, {})
+    (tmp_path / "archive/report.md").unlink()
+    with pytest.raises(ValueError, match="Missing working copy"):
+        MODULE["verify_destinations"](tmp_path, entries, relocations)
+
+
+def test_relocations_cannot_hide_unknown_or_duplicate_destinations(tmp_path):
+    entries = [{"destination": "old.md"}, {"destination": "other.md"}]
+    with pytest.raises(ValueError, match="without migration destination"):
+        MODULE["verify_destinations"](tmp_path, entries, {"typo.md": "archive.md"})
+    with pytest.raises(ValueError, match="same working copy"):
+        MODULE["verify_destinations"](tmp_path, entries, {"old.md": "other.md"})
+
+
 def test_links_follow_canonical_files_but_do_not_rewrite_code(tmp_path):
     text = "[core](../core.sv)\n```text\n[example](../core.sv)\n```\n"
     result = MODULE["rewrite"](

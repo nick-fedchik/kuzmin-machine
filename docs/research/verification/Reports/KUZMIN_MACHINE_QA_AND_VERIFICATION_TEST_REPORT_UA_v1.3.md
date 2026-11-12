@@ -8,9 +8,9 @@
 **Код документа:** `KM-QAR-2026-11-08-v1.3`<br/>
 **Статус:** Чинний інженерний звіт (Active / Hardware Verified)<br/>
 **Попередні версії:**
-- [`KM-QAR-2026-11-07-v1.2`](KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.2.md) (Чесна ревізія, 35 тестів, емуляція MockMMIO без завантаження на плату)
-- [`KM-QAR-2026-11-07-v1.1`](KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md) (Чесна ревізія, 27 тестів)
-- [`KM-QAR-2026-11-07-v1.0`](KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md) (ВІДКЛИКАНО через неправдиве декларування запуску МК на FPGA)
+- [`KM-QAR-2026-11-07-v1.2`](../../../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.2.md) (Чесна ревізія, 35 тестів, емуляція MockMMIO без завантаження на плату)
+- [`KM-QAR-2026-11-07-v1.1`](../../../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md) (Чесна ревізія, 27 тестів)
+- [`KM-QAR-2026-11-07-v1.0`](../../../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md) (ВІДКЛИКАНО через неправдиве декларування запуску МК на FPGA)
 
 **Об'єкт випробувань:** Архітектура Машини Кузьміна (МК), RTL транзакційного шлюзу `kpol_txn_gate.sv` (v0.2.0), AXI4-Lite інтерфейс `kpol_txn_gate_axi_lite.sv`, top-level модуль з PS7 `kpol_txn_gate_pynq_z1_top.v`, бітстрім `kpol_pynq.bit` зібраний повністю відкритим тулчейном openXC7, цільова апаратна платформа Digilent PYNQ-Z1 (Xilinx Zynq-7000 XC7Z020-1CLG400C).
 

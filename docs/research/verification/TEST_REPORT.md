@@ -1,14 +1,31 @@
-# Звіт про результати випробувань Машини Кузьміна (QA & Verification Test Report)
+# Індекс історичних QA-звітів
 
-> **Внутрішня робоча копія, не публікація; міграція не є науковим прийняттям.** Перенесено з `drafts@774d575:KuzminMachine/04-verification-and-qa/TEST_REPORT.md` 2026-11-10, Issue #84. Міграція не підтверджує тверджень, прогнозів чи самоприсвоєних статусів. Незмінний оригінал і SHA-256 — у реєстрі міграції.
+* **Версія:** 0.2.0
+* **Дата:** 2026-11-12
 
+Це навігація, а не висновок про поточний стан випробувань чи TRL.
+Самопозначення і твердження звітів потребують окремої перевірки.
 
-Для збереження повної історії та неперервної хронології запусків усі версіовані звіти випробувань зберігаються у спеціальному реєстрі:
+| Редакція | Розміщення та застереження |
+|---|---|
+| [v1.0](../../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md) | Архів; історично відкликана через помилкову заяву про FPGA HIL |
+| [v1.1](../../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md) | Архівна редакція |
+| [v1.2](../../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.2.md) | Архівна редакція |
+| [v1.3](Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.3.md) | Залишена в дослідженнях; її статус і твердження не підтверджуються самим розміщенням |
 
-👉 **[Хронологічний реєстр звітів тестування (`Reports/README.md`)](../../archive/drafts-774d575-kuzminmachine.tar.gz) (член архіву: `04-verification-and-qa/Reports/README.md`)**
+Історичний текст цього індексу й колишній `Reports/README.md` збережено
+у [знімку міграції](../../archive/drafts-774d575-kuzminmachine.tar.gz):
+`04-verification-and-qa/TEST_REPORT.md` та
+`04-verification-and-qa/Reports/README.md` відповідно.
+Відомості про походження — у [маніфесті](../../../process/migration/publication-84/manifest.json).
 
-Останній чинний версіований звіт:
-- **[`Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md`](Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md)** (v1.1 Active; TRL 3: 100% PASS; TRL 4: апаратний бітстрім очікує зняття блокера).
+## Історія версій
 
-Відкликаний звіт v1.0 (містив помилкове декларування FPGA HIL):
-- [`Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md`](Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md) (Retracted).
+| Версія | Дата | Зміни |
+|---|---|---|
+| 0.2.0 | 2026-11-12 | Застарілий перенесений індекс замінено навігацією до всіх редакцій (#110). |
+
+## Абревіатури та глосарій
+
+QA — забезпечення якості; TRL — рівень технологічної готовності;
+HIL — перевірка із залученням реального обладнання; FPGA — програмована логічна матриця.

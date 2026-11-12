@@ -1,6 +1,6 @@
 # Інвентар Work Products
 
-* **Версія:** 0.2.0 (робоча класифікація)
+* **Версія:** 0.3.0 (робоча класифікація)
 * **Дата:** 2026-11-12
 * **Issue:** [#108](https://github.com/nick-fedchik/kuzmin-machine/issues/108)
 * **База:** `5ab7a6b297cb0762f402265f6a9e4a89231cee94`, гілка #108; вихідний `main` після PR #107 — `898552ebb7b01e7836e8e1a657fb267b72604bfb`.
@@ -44,8 +44,8 @@
 | [Паспорт TRL](../../process/trl/TRL-passport.md) | Report / Assessment | Самооцінка; обмеження незалежності рецензії наведено в документі | Залишити як самооцінку; CI-13 |
 | [Економічний аналіз](../business/economic-analysis.md) | Report / Analysis | Історичний текст, винесений з README; прогнози та шляхи потребують перевірки | Залишити як історичний аналіз; не подавати прогнози як встановлені факти |
 | [Проєктний опис статичного аналізатора](../../sw/tools/static-analyzer/design-analysis.md) | Design | Похідний математичний і проєктний опис, винесений з README | Залишити з [навігацією](../../sw/tools/static-analyzer/README.md); окремо перевіряти заявлені можливості |
-| Історичні QA-звіти: [v1.0](../research/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md), [v1.1](../research/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md), [v1.2](../research/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.2.md), [v1.3](../research/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.3.md) | Report | Перенесені історичні редакції; їхні самопозначення не підтверджені міграцією, на них є посилання | Не видаляти і не зводити автоматично; спочатку зіставити походження, відмінності та посилання |
-| Мемо перспектив: [v1.0](../research/opposition/KUZMIN_MACHINE_APPLICATION_PROSPECTS_MEMO_UA_v1.0.md), [v1.1](../research/opposition/KUZMIN_MACHINE_APPLICATION_PROSPECTS_MEMO_UA_v1.1.md), [v1.2.1](../trl-evidence/application-prospects-memo.md) | Report / Analysis | Пов'язані редакції в різних каталогах; v1.2.1 перенесено з файла v1.2, докладного порівняння не виконано | Порівняти зміст і зв'язки перед рішенням про розміщення; не вважати їх дублікатами за назвою |
+| Історичні QA-звіти: [v1.0](../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.0.md), [v1.1](../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.1.md), [v1.2](../archive/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.2.md), [v1.3](../research/verification/Reports/KUZMIN_MACHINE_QA_AND_VERIFICATION_TEST_REPORT_UA_v1.3.md) | Report | Історичні редакції; їхні самопозначення не підтверджені міграцією | v1.0–v1.2 перенесено до архіву, v1.3 залишено в дослідженнях; не зводити редакції автоматично (#110) |
+| Мемо перспектив: [v1.0](../archive/opposition/KUZMIN_MACHINE_APPLICATION_PROSPECTS_MEMO_UA_v1.0.md), [v1.1](../archive/opposition/KUZMIN_MACHINE_APPLICATION_PROSPECTS_MEMO_UA_v1.1.md), [v1.2.1](../trl-evidence/application-prospects-memo.md) | Report / Analysis | Пов'язані редакції; v1.2.1 перенесено з файла v1.2 | v1.0–v1.1 перенесено до архіву, v1.2.1 залишено на місці; не вважати їх дублікатами (#110) |
 
 CI-01…CI-13 — посилання на записи реєстру CI, а не твердження про
 затверджену базову конфігурацію або призначення відповідальних.
@@ -94,7 +94,7 @@ CI-01…CI-13 — посилання на записи реєстру CI, а н�
 | [Високорівнева мова](../research/software/Kuzmin-Machine-High-Level-Language-Specification-UA.md), [проблемно-орієнтована мова](../research/software/Kuzmin-Machine-Problem-Oriented-Language-Specification-UA.md), [еталонна VM](../research/software/Kuzmin-Machine-Reference-VM-and-Cycle-Accurate-Simulator-UA.md) | Specification | Історичні похідні проєкти; не вважати автоматично авторською або консолідованою специфікацією |
 | [HIL-мемо](../research/hardware/MEMO-FPGA-KuzminMachine-openXC7-HIL-Execution.md), [звіт стенда](../research/hardware/Reports/Kuzmin-Machine-FPGA-Physical-Benchmark-Report-UA.md), [мемо TRL](../research/verification/KUZMIN_MACHINE_TRL_ASSESSMENT_MEMO_UA_v1.0.md), [матриця TRL](../research/verification/Kuzmin-Machine-TRL-Assessment-Matrix-UA.md) | Report | Історичні описи й оцінки; твердження і межі звіряти із сирими даними та поточним паспортом |
 | [Програма доменної ефективності](../research/verification/Kuzmin-Machine-Domain-Efficacy-Verification-Plan-UA.md), [беклог FPGA](../research/verification/Kuzmin-Machine-FPGA-Experiment-Backlog-UA.md), [набір верифікації](../research/verification/Kuzmin-Machine-Verification-and-Benchmark-Suite-UA.md) | Plan | Історичні плани з твердженнями про виконання; не сприймати як поточний стан експериментів без перевірки |
-| [Історичний індекс QA](../research/verification/TEST_REPORT.md) | Guide | Містить історичну заяву про v1.1, але існують і v1.2–v1.3; залишити з попередженням, не використовувати як реєстр поточного стану |
+| [Індекс історичних QA-звітів](../research/verification/TEST_REPORT.md) | Guide | Навігація до v1.0–v1.3 без висновку про поточний стан; історичний оригінал збережено в архіві (#110) |
 
 ### 2.3. Бізнес, обладнання і засоби
 
@@ -102,7 +102,7 @@ CI-01…CI-13 — посилання на записи реєстру CI, а н�
 |---|---|---|
 | [План бізнесу](../business/Business_Development_Plan.md) | Plan | Історичний сценарій; не підтверджує здійснення заходів |
 | [Обґрунтування бізнесу](../business/Business_Feasibility_Study.md), [патентування та комерціалізація](../business/commercialization-models-and-patent-strategy.md) | Report / Analysis | Історичні економічні припущення та альтернативи; перевірити перед використанням у рішеннях |
-| [Автомобільна сфера](../business/automotive-safety-cybersecurity.md), [авіоніка](../business/avionics-safety-critical.md), [медицина](../business/medicine-biomedical-devices.md), [маркетинг](../business/martech-realtime-bidding.md), [логістика](../business/logistics-warehouse-coldchain.md), [оборонна сфера](../business/miltech-defense-aerospace.md), [гральна індустрія](../business/gambling-fairness-rng-integrity.md), [ризики ставок](../business/sports-betting-realtime-risk.md) | Report / Analysis | Галузеві сценарії, а не підтверджена перевага чи відповідність стандартам; переглянути корисність окремо |
+| [Автомобільна сфера](../archive/business/automotive-safety-cybersecurity.md), [авіоніка](../archive/business/avionics-safety-critical.md), [медицина](../archive/business/medicine-biomedical-devices.md), [маркетинг](../archive/business/martech-realtime-bidding.md), [логістика](../archive/business/logistics-warehouse-coldchain.md), [оборонна сфера](../archive/business/miltech-defense-aerospace.md), [гральна індустрія](../archive/business/gambling-fairness-rng-integrity.md), [ризики ставок](../archive/business/sports-betting-realtime-risk.md) | Report / Analysis | Галузеві сценарії архівовано за рішенням власника (#110); це не підтвердження переваги чи відповідності стандартам |
 | [Гранти та звітність](../business/ukrainian-grants-funding-and-reporting-guide.md) | Guide | Історичний довідник; умови програм потрібно звіряти з офіційними джерелами |
 | [Внески та учасники](MEMO_CONTRIBUTIONS_AND_PARTICIPANTS_STATUS_UA.md) | Report / Analysis | Матеріал про атрибуцію; рішення про ліцензію та авторство — #20 |
 | [Інструкція XC7](../toolchain/xc7.md), [апаратний runbook](../../hw/RUNBOOK.md) | Guide | Інструкції до інструментів; перед виконанням звірити команди й версії середовища |
@@ -183,17 +183,17 @@ CI-01…CI-13 — посилання на записи реєстру CI, а н�
 | Знахідка і підстава | Пропозиція |
 |---|---|
 | У [настанові, S3](../../process/PROJECT-MANUAL.md#4-віхи-trl-і-маршрут-до-mvp) наведено поріг мутаційного бала 95 %, тоді як #6 повідомляє про скасування порогу власником і вимагає тестів, що виявляють конкретні дефекти. | Не застосовувати поріг автоматично. Узгодити текст настанови з рішенням власника за її §10; цим інвентарем правила не змінено. |
-| [Історичний QA-індекс](../research/verification/TEST_REPORT.md) називає v1.1 останньою чинною, хоча в дереві є і v1.2–v1.3. Індекс має попередження про міграцію. | Не використовувати його для поточного статусу; можливе вилучення читабельного індексу або окрема навігація лише після перевірки посилань та рішення власника. Оригінал у знімку зберігається. |
-| Бізнес-аналіз, галузеві звіти й плани частково перетинаються; [аналіз](../business/economic-analysis.md) і [README](../business/README.md) посилаються на галузеві документи, а історичні TRL-матеріали — на бізнес-плани. | Кандидати для окремого змістовного порівняння й рішення про збереження або архівацію; схожість тем не доводить дублювання і не є підставою для видалення. |
+| [Історичний QA-індекс](../research/verification/TEST_REPORT.md) раніше називав v1.1 останньою чинною, хоча існують і v1.2–v1.3. | У #110 замінено на навігаційний індекс без тверджень про поточний статус; оригінал збережено у знімку. |
+| Бізнес-аналіз, галузеві звіти й плани частково перетинаються; [аналіз](../business/economic-analysis.md) та історичні TRL-матеріали залишаються доступними. | Вісім галузевих сценаріїв перенесено до [архіву](../archive/README.md#галузеві-бізнес-сценарії) за рішенням власника (#110); інші матеріали не видалено. |
 | [PoC RTL](../../hw/rtl/poc-demo/README.md) позначений до вилучення в S3, але використовується обгорткою та експериментами AV-07/08. | Не вилучати в #108; виконувати #6 після перевірки збірки, тестів і відтворення. |
 | На базі інвентаря 146 Markdown-файлів не мають однакових Git-blob ідентифікаторів. Серед усіх файлів є 136 груп однакових blob, що охоплюють 413 шляхів; зокрема експериментальні дані можуть повторюватися у різних запусках. | Це технічна ознака байтової тотожності, не рішення про непотрібність: перевірити маніфести, посилання, походження й вимоги відтворення до будь-якого прибирання. |
 | `docs/research/` змішує історичну міграцію та нові звіти; `docs/trl-evidence/` містить не лише TRL, а й опозицію та попередній рівень техніки; `process/validation/` і `experiments/` обидва містять перевірки. | Залишити наявні пакети й уточнені індекси; перенесення має сенс лише за конкретної потреби з оновленням посилань та збереженням походження. |
 
 ## 6. Що лишається перевірити
 
-Потрібні рішення власника щодо CI, відповідальних і кандидатів на
-прибирання, а також змістовне порівняння історичних редакцій і бізнесових
-сценаріїв. Повноту залежностей коду й зв'язків усіх сирих файлів не
+Потрібні рішення власника щодо CI, відповідальних і решти кандидатів на
+прибирання, а також змістовне зіставлення історичних редакцій за потреби.
+Повноту залежностей коду й зв'язків усіх сирих файлів не
 доведено. Перед переміщенням або вилученням окремо перевіряють первинні
 джерела, посилання, архів, маніфести та відтворюваність.
 
@@ -203,6 +203,7 @@ CI-01…CI-13 — посилання на записи реєстру CI, а н�
 |---|---|---|
 | 0.1.0 | 2026-11-12 | Перша черга інвентаризації та зв'язків із наявними Issue. |
 | 0.2.0 | 2026-11-12 | Додано огляд усіх Markdown-документів, пакетів даних і коду, відкритих WI, меж CI та кандидатів на окремий перегляд. |
+| 0.3.0 | 2026-11-12 | Відображено рішення про архівування та оновлення QA-індексу (#110). |
 
 ## Абревіатури та глосарій
 
