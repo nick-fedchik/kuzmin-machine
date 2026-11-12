@@ -1,0 +1,12 @@
+design,engine,status,frame,seconds,failed,reached,unreached
+original (kpol_txn_gate_v2),abc pdr,PASSED,,0.06,[],[],[]
+original (kpol_txn_gate_v2),smtbmc z3 bmc t=8,PASSED,,0.071,[],[],[]
+original (kpol_txn_gate_v2),smtbmc z3 cover t=8,PASSED,,0.066,[],"['C1_commit', 'C2_reject_hazard', 'C3_reject_inv', 'C4_reject_input', 'C5_alert_observed', 'C6_state_changed']",[]
+M_hazard_bypass: hazard check bypassed (commits during hazard),abc pdr,FAILED,2,0.032,[],[],[]
+M_hazard_bypass: hazard check bypassed (commits during hazard),smtbmc z3 bmc t=8,FAILED,,0.062,"['P1_fail_closed_hazard', 'P6_rejection_hazard']",[],[]
+M_inv_bypass: invariant check bypassed (commits on invariant violation),abc pdr,FAILED,2,0.034,[],[],[]
+M_inv_bypass: invariant check bypassed (commits on invariant violation),smtbmc z3 bmc t=8,FAILED,,0.062,"['P2_fail_closed_invariant', 'P7_rejection_invariant']",[],[]
+M_state_leak: state mutates upon invariant rejection,abc pdr,FAILED,2,0.046,[],[],[]
+M_state_leak: state mutates upon invariant rejection,smtbmc z3 bmc t=8,FAILED,,0.062,['P8_state_integrity'],[],[]
+M_f03_strobe: F-03 classic defect: committed asserts on raw event strobe,abc pdr,FAILED,2,0.032,[],[],[]
+M_f03_strobe: F-03 classic defect: committed asserts on raw event strobe,smtbmc z3 bmc t=8,FAILED,,0.064,"['P1_fail_closed_hazard', 'P2_fail_closed_invariant', 'P3_fail_closed_input', 'P5_mutual_exclusion', 'P9_state_commit']",[],[]

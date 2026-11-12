@@ -1,0 +1,14 @@
+##   0:00:00  Solver: z3
+##   0:00:00  Checking cover reachability in step 0..
+##   0:00:00  Checking cover reachability in step 1..
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at s3_formal: C6_state_changed
+##   0:00:00  Reached cover statement in step 2 at s3_formal: C5_alert_observed
+##   0:00:00  Reached cover statement in step 2 at s3_formal: C1_commit
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at s3_formal: C2_reject_hazard
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at s3_formal: C4_reject_input
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Reached cover statement in step 2 at s3_formal: C3_reject_inv
+##   0:00:00  Status: PASSED

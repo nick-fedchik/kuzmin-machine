@@ -1,0 +1,19 @@
+{
+  "timestamp_utc": "2026-11-12T11:57:15.673162+00:00",
+  "experiment": "S3-62",
+  "issue": 62,
+  "related_issue": 18,
+  "parent_requirement": "S3",
+  "scientific_hypothesis": "H6",
+  "rtl_sha256": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6",
+  "props_sha256": "c71a9498c44060a8976b29850ec5a82bc7fa691ea4f242931bc0f8647971dd64",
+  "platform": {
+    "node": "AORUS-5-SE",
+    "system": "Linux",
+    "release": "7.0.0-42-generic",
+    "machine": "x86_64"
+  },
+  "bmc_depth": 8,
+  "cover_depth": 8,
+  "verdict": "NOT_REFUTED"
+}
