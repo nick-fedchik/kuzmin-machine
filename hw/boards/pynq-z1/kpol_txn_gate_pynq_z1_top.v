@@ -7,7 +7,10 @@ module kpol_txn_gate_pynq_z1_top (
     output wire       rgb5_g,
     output wire       rgb5_b,
     input  wire [3:0] btn,
-    input  wire [1:0] sw
+    input  wire [1:0] sw,
+    output wire       ja1,
+    output wire       ja2,
+    output wire       ja3
 );
     wire [3:0] fclk_unbuffered;
     wire fclk0;
@@ -128,6 +131,14 @@ module kpol_txn_gate_pynq_z1_top (
         .ext_pin_0p0_i(btn[0]),
         .reactive_out_0p0_o(reactive_out_0p0)
     );
+
+    // PMODA Signals:
+    // JA1 (Pin 1): Stimulus Monitor (driven by BTN0 directly to Pico Channel 1)
+    // JA2 (Pin 2): Reactive Output from RTL Transaction Gate (to Pico Channel 2)
+    // JA3 (Pin 3): Mirror of Reactive Output
+    assign ja1 = btn[0];
+    assign ja2 = reactive_out_0p0;
+    assign ja3 = reactive_out_0p0;
 
     // Green LEDs LD0..LD3:
     // LD0 = Committed OR Reactive Pin "0p0" Active
