@@ -1,0 +1,28 @@
+{"started_at": "2026-11-12T20:50:32.757170+02:00", "host": "AORUS-5-SE", "commit": "26f803b2b7984fdcfbbe38d19047ac33a8b1d649", "command": ["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"], "source_sha256": {"Engineering/sw/kpol-ref/kpol_reference.py": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "Engineering/sw/kpol-ref/tests/test_kpol_reference.py": "385d0129b5aa7ab0f71c7fe9334f9d8f18d5ae0a122f5610bd2dde8fb6c37e35", "Engineering/hw/scripts/compile_kpol_bram_image.py": "af59218bfcf23871b0ae29734129b02785dc88e0720d231e033235172fe2f28f"}}
+............................................ [ 25%]
+.................................................................................F...... [ 76%]
+.........................................                                [100%]
+=================================== FAILURES ===================================
+____________________ test_cli_uses_same_root_from_other_cwd ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-230/test_cli_uses_same_root_from_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a4ef9b96c80>
+
+    def test_cli_uses_same_root_from_other_cwd(tmp_path, monkeypatch):
+        monkeypatch.delenv("KM_DRAFTS_REPO", raising=False)
+        results = [
+            subprocess.run(
+                [sys.executable, str(TOOL)], cwd=cwd, capture_output=True, text=True
+            )
+            for cwd in (TOOL.parents[1], tmp_path)
+        ]
+>       assert results[0].returncode == results[1].returncode == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/bin/python3', '/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-150-kpol/Project/tools/ch...ся (пропущено 11).\nБитих посилань: 6; посилань file:: 0; посилань на drafts: перевірено 0, пропущено 11\n', stderr='').returncode
+
+Project/tools/tests/test_check_links.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED Project/tools/tests/test_check_links.py::test_cli_uses_same_root_from_other_cwd
+1 failed, 172 passed, 300 subtests passed in 8.57s
+
+exit_code=1

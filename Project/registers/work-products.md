@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.1.1
+* **Версія:** 0.2.0
 * **Дата:** 2026-11-12
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -18,7 +18,7 @@
 
 | WP | Основне місце / шаблон | Стан і межа |
 |---|---|---|
-| Source | [Каталог](../../Research/sources/README.md), [форма](../templates/work-products/source.md) | 4 дописи, презентація у двох форматах і vendor-схема; незмінні копії. |
+| Source | [Каталог](../../Research/sources/README.md), [уточнення RFC](../../Research/sources/author/rfc-2026-11-12.md), [форма](../templates/work-products/source.md) | 4 дописи, презентація у двох форматах і vendor-схема — незмінні копії; нова картка переданих відповідей має окремі межі походження. |
 | Problem | [Q01–Q21](../../Research/studies/concept-assessment/problem.md), постановки в README пакетів; [форма](../templates/work-products/problem.md) | Явну карту верифікованих авторських відповідей ще не створено. |
 | Model | [Формальний розбір](../../Research/studies/author-semantics/formal-analysis.md), модель у [#77](../../Research/studies/turing-construction/report.md); [форма](../templates/work-products/model.md) | Похідні моделі, не первинна специфікація автора. |
 | Protocol | [Опозиція](../../Research/studies/concept-assessment/protocol.md), методи у звітах; [форма](../templates/work-products/protocol.md) | Для завершених робіт метод вбудований, не нова попередня реєстрація. |
@@ -29,7 +29,7 @@
 
 | WP | Основне місце / шаблон | Стан і межа |
 |---|---|---|
-| Requirement | [Реєстр](../../Engineering/requirements/requirements.md); [SYS](../templates/work-products/requirement-sys.md), [HW](../templates/work-products/requirement-hw.md), [SW](../templates/work-products/requirement-sw.md) | Ідентифікатори й статуси збережено, нової baseline немає. |
+| Requirement | [Реєстр](../../Engineering/requirements/requirements.md), [KPOL](../../Engineering/requirements/kpol.md); [SYS](../templates/work-products/requirement-sys.md), [HW](../templates/work-products/requirement-hw.md), [SW](../templates/work-products/requirement-sw.md) | Додано трасування уточнень і SW-крок #150 без розширення B3-01; B5 v2 Proposed, не реалізований RTL. |
 | Specification | [KPOL](../../Engineering/specifications/kpol/README.md), [HW](../../Engineering/specifications/hw/README.md); [форма](../templates/work-products/specification.md) | Цільовий профіль відрізняється від ширшого поточного фронтенду. |
 | Design | [B1](../../Engineering/design/system-boundary-allocation-b1.md), [B2](../../Engineering/design/bram-pipeline-event-integration.md); [форма](../templates/work-products/design.md) | Межа й інтеграція, не доказ готовності всього продукту. |
 | Decision | [Карта](../../Engineering/decisions/README.md), розділи контрактів; [форма ADR](../templates/work-products/decision.md) | Не створено дубльованих рішень. |
@@ -47,7 +47,7 @@
 | Policy | [Розміщення](../policies/layout.md), [ліцензійний режим](../policies/licensing.md), [WP](../policies/work-products.md); [форма](../templates/work-products/policy.md) | Межі й повноваження визначає власник. |
 | Register | Цей запис, [цілі](goals-needs-work-items.md), [відкриті WI](open-work-items.md), [CI](configuration-items.md); [форма](../templates/work-products/register.md) | Нові актуальні карти, не копії історичних зрізів. |
 | Template | [Єдине місце](../templates/README.md), [покриття](../templates/work-products/README.md) | Усі 19 типів, 4 підтипи Report, SYS/HW/SW; placeholder дозволений у формі. |
-| Report / Experiment | [Перевірки](../../Engineering/validation/README.md); [форма](../templates/report.md) | Пакети мають різні об'єкти; відсутні sidecar не вигадано. |
+| Report / Analysis / Experiment | [Перевірки](../../Engineering/validation/README.md), [профіль #150](../../Engineering/validation/kpol-cme/profile-150/report.md); [форма](../templates/report.md) | Пакети мають різні об'єкти; #150 містить хостові/RTL перевірки, не HIL. |
 | Report / Review | Рецензії біля об'єктів; [форма](../templates/review.md) | Успадковані рецензії оригіналів, не нове прийняття NG. |
 | Report / Assessment | [TRL](../assessments/trl/report.md); [форма](../templates/work-products/assessment-report.md) | Самооцінка, не сертифікація. |
 
@@ -68,6 +68,7 @@
 |---|---|---|
 | 0.1.0 | 2026-11-12 | Поточні WP й місця зберігання, без старого інвентаризаційного зрізу. |
 | 0.1.1 | 2026-11-12 | Політика пропрієтарного режиму та реєстр поточних рішень щодо WI. |
+| 0.2.0 | 2026-11-12 | Source уточнень RFC, Requirement KPOL, Report профільного compiler #150 та файловий індекс. |
 
 ## Абревіатури та глосарій
 

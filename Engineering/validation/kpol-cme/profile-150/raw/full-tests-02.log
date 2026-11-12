@@ -1,0 +1,7 @@
+{"started_at": "2026-11-12T20:53:05.344068+02:00", "host": "AORUS-5-SE", "commit": "26f803b2b7984fdcfbbe38d19047ac33a8b1d649", "command": ["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"], "source_sha256": {"Engineering/sw/kpol-ref/kpol_reference.py": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "Engineering/sw/kpol-ref/tests/test_kpol_reference.py": "385d0129b5aa7ab0f71c7fe9334f9d8f18d5ae0a122f5610bd2dde8fb6c37e35", "Engineering/hw/scripts/compile_kpol_bram_image.py": "af59218bfcf23871b0ae29734129b02785dc88e0720d231e033235172fe2f28f"}}
+............................................ [ 25%]
+........................................................................................ [ 76%]
+.........................................                                [100%]
+173 passed, 300 subtests passed in 8.84s
+
+exit_code=0
