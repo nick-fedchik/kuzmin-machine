@@ -45,7 +45,7 @@
 
 Реалізовано [перевіряльник](../../../tools/check_report_provenance.py)
 і [контракт трасування](../../../tools/report-provenance.md), на який
-тепер посилається [шаблон звіту](../../templates/report.md).
+тепер посилається [шаблон звіту](https://github.com/nick-fedchik/kuzmin-machine/blob/fc97238a5491aca19b820d570d4bcf6c66202f23/process/templates/report.md).
 
 Після рецензії автоматично інвентаризуються всі `.md`/`.txt` у
 `experiments/` рекурсивно й без залежності від регістру розширення.

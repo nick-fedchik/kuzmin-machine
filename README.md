@@ -23,13 +23,14 @@
 
 | Каталог | Вміст |
 | :--- | :--- |
-| [`process/`](process/) | [Настанова проєкту](process/PROJECT-MANUAL.md), [правила рецензування](process/review-rules.md), [методика аудиту ASPICE](process/audit/ASPICE-Audit-Method.md), [реєстр міграції](process/MIGRATION-REGISTER.md), [паспорт TRL](process/trl/TRL-passport.md), шаблони |
+| [`process/`](process/) | [Настанова проєкту](process/PROJECT-MANUAL.md), [правила рецензування](process/review-rules.md), [методика аудиту ASPICE](process/audit/ASPICE-Audit-Method.md), [реєстр міграції](process/MIGRATION-REGISTER.md), [паспорт TRL](process/trl/TRL-passport.md) |
 | [`requirements/`](requirements/) | Вимоги та трасування |
 | [`architecture/`](architecture/) | Архітектура, план рефакторингу |
 | [`specs/kpol/`](specs/kpol/README.md) | Специфікації мови KPOL |
 | [`docs/`](docs/) | Джерела, теорія, дослідження, стратегія, бізнес/прогнози, докази TRL та незмінні архівні оригінали; [навігація](docs/PUBLICATION-BOUNDARY.md) |
+| [`docs/templates/`](docs/templates/README.md) | Єдиний каталог шаблонів документів і правил оформлення WP |
 | [Work Items](process/work-items.md) | Види робіт і питань, зв'язки Issue та правила розрізнення |
-| [Work Products](docs/governance/work-products.md) | Типи робочих продуктів, призначення каталогів і [шаблони](process/templates/work-products/README.md) |
+| [Work Products](docs/governance/work-products.md) | Типи робочих продуктів, призначення каталогів і [шаблони](docs/templates/work-products/README.md) |
 | [Інвентар Work Products](docs/governance/work-product-inventory.md) | Робоча класифікація документів, пакетів і пов'язаних Issue |
 | [Configuration Items](process/configuration-items.md) | Кандидати з результатів і критичних документів для керування конфігурацією |
 | [`hw/`](hw/) | RTL (`core`, `bus`, `io`, `poc-demo`), тестбенчі, плата PYNQ-Z1, скрипти |

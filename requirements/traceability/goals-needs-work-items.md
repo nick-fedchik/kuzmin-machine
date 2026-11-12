@@ -1,6 +1,6 @@
 # Цілі, потреби та реєстр двонапрямного трасування
 
-* **Версія:** 0.9.1 (робоча пропозиція)
+* **Версія:** 0.9.2 (робоча пропозиція)
 * **Дата:** 2026-11-12
 * **Issues:** [#118](https://github.com/nick-fedchik/kuzmin-machine/issues/118), [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5)
 * **Виконавець:** GitHub Copilot CLI, Auto; конкретна модель середовищем не показана.
@@ -317,7 +317,7 @@ gh issue list --repo nick-fedchik/kuzmin-machine --state all --limit 250 \
 | [#86](https://github.com/nick-fedchik/kuzmin-machine/issues/86) | CLOSED | G4/N5; [procurement](../../hw/boards/bench-procurement.md) | Замовлення зафіксовано як ресурсний факт; закупівля не є HIL-тестом. |
 | [#103](https://github.com/nick-fedchik/kuzmin-machine/issues/103) | CLOSED | G4/N5; [WP configuration](../../docs/governance/work-products.md), #104 | Класифікацію WP/маршрутизацію оформили; відповідність ASPICE цим не доведена. |
 | [#104](https://github.com/nick-fedchik/kuzmin-machine/issues/104) | CLOSED | G4/N5; [WP catalog](../../docs/governance/work-products.md) | Каталог створено як керівний WP; він не доводить виконання робіт. |
-| [#105](https://github.com/nick-fedchik/kuzmin-machine/issues/105) | CLOSED | G4/N5; [templates](../../process/templates/work-products/README.md) | Шаблони створено як засіб оформлення, не як доказ завершення WP. |
+| [#105](https://github.com/nick-fedchik/kuzmin-machine/issues/105) | CLOSED | G4/N5; [templates](../../docs/templates/work-products/README.md) | Шаблони створено як засіб оформлення, не як доказ завершення WP. |
 | [#106](https://github.com/nick-fedchik/kuzmin-machine/issues/106) | CLOSED | G4/N5; README та окремі WP | Навігаційні README розмежовано із самостійними документами. |
 | [#108](https://github.com/nick-fedchik/kuzmin-machine/issues/108) | CLOSED | G4/N5; [WP inventory](../../docs/governance/work-product-inventory.md) | Інвентар WP створено; його класифікація не є доказом коректності кожного WP. |
 | [#110](https://github.com/nick-fedchik/kuzmin-machine/issues/110) | CLOSED | G4/N5; [archive](../../docs/archive/README.md) | Бізнес-сценарії й попередні редакції архівовано за рішенням власника. |
@@ -551,6 +551,7 @@ B4/#133 — lifecycle loader, B5/#135 — чергу/навантаження. #
 | 0.8.0 | 2026-11-12 | Додано трасування конфігурацій CFG-P/R/I, джерела пізніших результатів S6 і п'ять конкретних рішень власника щодо меж та контрактів S2. |
 | 0.9.0 | 2026-11-12 | Додано §15: B3-01, кандидатні B3-REQ, реалізаційні прогалини #8 і Git-архів дельт після PR #131 (#19). |
 | 0.9.1 | 2026-11-12 | Зафіксовано погодження власником B3-01 на конкретному SHA та відокремлено його від реалізації, що лишається в #8. |
+| 0.9.2 | 2026-11-12 | Навігаційне посилання #105 оновлено до docs/templates без зміни історичних статусів і трасування (#5). |
 
 ## Абревіатури та глосарій
 
