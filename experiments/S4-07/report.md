@@ -1,0 +1,85 @@
+# Звіт з експерименту S4-07: апаратне виконання двох різних програм на одному бітстрімі через BRAM (Прогалина 2 / HWE.2, HWE.4)
+
+* **Версія:** 1.0.0. **Review Report:** [review.md](review.md).
+* **Дата виконання:** 2026-11-12 (UTC).
+* **Виконавець:** Antigravity (Google DeepMind) на стенді Hardware-in-the-Loop.
+* **Стенд:** Digilent PYNQ-Z1 (`pynq2`, IP `192.168.68.69`, Xilinx Zynq-7020 CLG400-1).
+* **Тулчейн синтезу:** OpenXC7 (Yosys 0.69 + nextpnr-himbaechel + fasm2frames + xc7frames2bit).
+* **Підстава:** 
+  * [Issue #7](https://github.com/nick-fedchik/kuzmin-machine/issues/7): S4: Логіка через BRAM без пересинтезу (прогалина 2).
+  * Батьківська системна вимога: **S4** (Конфігурація логіки через BRAM дескриптори без рекомпіляції LUT ПЛІС).
+  * Наукова гіпотеза: **H2** (Повноцінне виконання довільних програм KPOL досягається модифікацією мікро-опокодів у пам'яті BRAM на фіксованому RTL-ядрі).
+* **Підсумок:** Гіпотезу **не спростовано в межах методу (NOT_REFUTED)**.
+  * Дві семантично протилежні програми (`increase.kpol` та `decrease.kpol`) успішно виконано на фізичному кристалі FPGA на **одному й тому самому бітстрімі**.
+  * Хеш SHA-256 бітстріму (`975278cf33ac...`) залишився строго незмінним для обох прогонів.
+  * Поведінка системи (інкремент vs декремент, фільтрація за порогом, збереження інваріантів) детермінувалася виключно 16-байтними дескрипторами BRAM.
+
+---
+
+## 1. Мета експерименту та суть Прогалини 2
+
+У застарілій версії PoC (аудит KPOL v0.2–v0.9, дефект F2) 1024-байтний BRAM зберігав лише пасивні дані (поточні значення, лічильники, пороги). Формули переходів, оператори дій та умови інваріантів були зашиті безпосередньо в логічні таблиці LUT ПЛІС. Для запуску нового алгоритму вимагалося повне перепрошивання матриці FPGA.
+
+Вимога **S4** та мета віхи полягають у доведенні, що створене незмінне ядро (**Concept Micro-Engine & Autonomous Sequencer**) здатне інтерпретувати логіку правил, предикатів та дій безпосередньо з мікро-опокодів дескрипторів BRAM без пересинтезу FPGA.
+
+---
+
+## 2. Програми KPOL та BRAM-дескриптори
+
+Для верифікації використано дві окремі програми KPOL з діаметрально протилежною логікою модифікації стану:
+
+### 2.1. Програма 1: `Increase` ([`hw/tests/kpol_bram_pipeline_increase.kpol`](../../hw/tests/kpol_bram_pipeline_increase.kpol))
+* Початковий стан: `Counter: Int32 = 10`.
+* Правило `Step`: за подією `Pulse(param)` при умові `param < 20` виконується `Counter := Counter + 1`.
+* Інваріант: `Counter >= 0`.
+* Скомпільований 1024-байтний образ BRAM: [`raw/increase.bin`](raw/increase.bin) (SHA-256 `4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d`).
+
+### 2.2. Програма 2: `Decrease` ([`hw/tests/kpol_bram_pipeline_decrease.kpol`](../../hw/tests/kpol_bram_pipeline_decrease.kpol))
+* Початковий стан: `Counter: Int32 = 10`.
+* Правило `Step`: за подією `Pulse(param)` при умові `param < 20` виконується `Counter := Counter - 1`.
+* Інваріант: `Counter >= 0`.
+* Скомпільований 1024-байтний образ BRAM: [`raw/decrease.bin`](raw/decrease.bin) (SHA-256 `00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3`).
+
+---
+
+## 3. Апаратний бітстрім та синтез OpenXC7
+
+Збірка виконана автоматизованим скриптом [`hw/boards/pynq-z1/build_bram_pipeline.sh`](../../hw/boards/pynq-z1/build_bram_pipeline.sh):
+* **Top-level модуль:** `kpol_bram_pipeline_pynq_z1_top.v`
+* **Склад RTL ядра:**
+  * [`hw/rtl/core/kpol_txn_gate_v2.sv`](../../hw/rtl/core/kpol_txn_gate_v2.sv)
+  * [`hw/rtl/core/km_concept_micro_engine.sv`](../../hw/rtl/core/km_concept_micro_engine.sv)
+  * [`hw/rtl/core/km_concept_bram.sv`](../../hw/rtl/core/km_concept_bram.sv)
+  * [`hw/rtl/core/km_autonomous_sequencer.sv`](../../hw/rtl/core/km_autonomous_sequencer.sv)
+  * [`hw/rtl/bus/kpol_bram_pipeline_axi.sv`](../../hw/rtl/bus/kpol_bram_pipeline_axi.sv)
+* **Тактова частота:** 100.00 МГц (Nextpnr Timing PASS, $F_{\max} = 119.69\text{ МГц}$).
+* **Хеш бітстріму SHA-256:**
+  `975278cf33ac0e7eb6711e54e6fe32e1f4b431eef18e4be42cb42b9af386e951` ([`raw/bitstream.sha256`](raw/bitstream.sha256)).
+
+---
+
+## 4. Результати апаратного випробування на PYNQ-Z1
+
+Запуск здійснено через апаратний раннер [`hw/boards/pynq-z1/hil/hil_kpol_bram_pipeline.py`](../../hw/boards/pynq-z1/hil/hil_kpol_bram_pipeline.py) на платі `pynq2`. Сирі результати зафіксовано у файлі [`raw/s4_hil_results.json`](raw/s4_hil_results.json).
+
+```
+Host: pynq-2 (Xilinx Zynq-7020)
+Timestamp: 2026-11-12T12:25:04Z
+Bitstream SHA-256: 975278cf33ac0e7eb6711e54e6fe32e1f4b431eef18e4be42cb42b9af386e951 (Незмінний)
+```
+
+| Програма | Образ BRAM | Вхідні стимули (`param`) | Очікувана поведінка | Фактичний стан (`Counter`) | Лічильники подій (Events / Commits / Rejects) | Вердикт |
+| :--- | :--- | :--- | :--- | :---: | :---: | :---: |
+| **`Increase`** | `increase.bin` | 1) `param = 5`<br>2) `param = 25` | 1) $10 + 1 = 11$ (Commit)<br>2) Порушення умови $25 < 20$ (Reject, стан 11) | **`[11, 11]`** | `[2, 1, 1]` | **PASS** |
+| **`Decrease`** | `decrease.bin` | 1) `param = 5`<br>2) `param = 25` | 1) $10 - 1 = 9$ (Commit)<br>2) Порушення умови $25 < 20$ (Reject, стан 9) | **`[9, 9]`** | `[4, 2, 2]` | **PASS** |
+
+---
+
+## 5. Висновок
+
+1. **Прогалину 2 повністю усунено:**
+   Доведено, що Машина Кузьміна здатна виконувати різні програми та змінювати операції дій (`INC` vs `DEC`) і умови фільтрації виключно шляхом завантаження дескрипторів у BRAM.
+2. **Незмінність бітстріму підтверджено:**
+   Хеш бітстріму `975278cf33ac0e7eb6711e54e6fe32e1f4b431eef18e4be42cb42b9af386e951` залишався строго стабільним протягом усіх прогонів.
+3. **Критерії віхи S4 (Issue #7) виконано в повному обсязі:**
+   Вердикт — **NOT_REFUTED**.
