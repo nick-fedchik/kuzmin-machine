@@ -1,0 +1,123 @@
+WI #19 / B3 validation after merging B4 main
+2026-11-12T15:28:05+02:00
+AORUS-5-SE
+867fd83b1aace1eab011eb92b33c744ac03173a0
+Python 3.14.4
+pytest 9.0.2
+== Archive validation script ==
+import hashlib
+import re
+import subprocess
+from pathlib import Path
+
+BASE = "727c19ecb08a6bd45cffea541a64db01acaab148"
+
+
+def blocks(text):
+    return re.findall(r"^```kpol\n(.*?)^```", text, re.M | re.S)
+
+
+for minor in range(1, 10):
+    path = f"specs/kpol/kpol-0.{minor}.0.md"
+    original = subprocess.check_output(["git", "show", f"{BASE}:{path}"])
+    stub = Path(path).read_text(encoding="utf-8")
+    assert f"https://github.com/nick-fedchik/kuzmin-machine/blob/{BASE}/{path}" in stub
+    assert "```kpol" not in stub
+    print(f"ARCHIVE_OK {path} original_sha256={hashlib.sha256(original).hexdigest()}")
+
+original = subprocess.check_output(
+    ["git", "show", f"{BASE}:specs/kpol/kpol-0.1.0.md"], text=True
+)
+fixture = Path("sw/kpol-ref/tests/fixtures/kpol-v01-examples.md").read_text(
+    encoding="utf-8"
+)
+expected = blocks(original)
+actual = blocks(fixture)
+assert len(expected) == len(actual) == 3
+assert actual == expected
+for index, block in enumerate(actual, 1):
+    print(f"FIXTURE_IDENTICAL {index} sha256={hashlib.sha256(block.encode()).hexdigest()}")
+
+mutant = fixture.replace("Temp > 120", "Temp > 121", 1)
+assert blocks(mutant) != expected
+print("NEGATIVE_CONTROL_OK: a changed fixture block is not equal to the Git original")
+print("PASS: archive targets exist; historical fixtures preserved without code changes")
+== Archive validation result ==
+ARCHIVE_OK specs/kpol/kpol-0.1.0.md original_sha256=836a1a6f41c92a9a328140ee5e510b4c2e1844d8b37989eeb635ffeb62049afb
+ARCHIVE_OK specs/kpol/kpol-0.2.0.md original_sha256=9aa80193a6b824e02ddf969cab7252553206c5a0d5750ae5d06f2638059c8a23
+ARCHIVE_OK specs/kpol/kpol-0.3.0.md original_sha256=2c7731c4b294c1ead400e11b5258faa6104dda6c72324ac32ba97389e4128d56
+ARCHIVE_OK specs/kpol/kpol-0.4.0.md original_sha256=4b7382bf62ded8ea1a3acc5d0163b77c9d94e88e9e9d2d24b44be8431fd69aa7
+ARCHIVE_OK specs/kpol/kpol-0.5.0.md original_sha256=969fed95ff14b5a42a029d79ef257c6aca818e4ba893b52410c1f51d0374e84b
+ARCHIVE_OK specs/kpol/kpol-0.6.0.md original_sha256=24088ed314b3820caad2e65183b347dd7a4c3825ac340e6f947b9202dfb8712e
+ARCHIVE_OK specs/kpol/kpol-0.7.0.md original_sha256=a1072aed37d0857b36995e0719cd53e563a8e68cd3a9660e167de59fc49bc535
+ARCHIVE_OK specs/kpol/kpol-0.8.0.md original_sha256=a38a8ea354722ec9399cfe7d1220a6ec3513ab4927711e65560ebe2aa44bbe88
+ARCHIVE_OK specs/kpol/kpol-0.9.0.md original_sha256=6f9e8abc4ea98e0880bc9dbb89a4367c9d0080bb2b8c41e4514cf79475556519
+FIXTURE_IDENTICAL 1 sha256=3d955ce0fce5e48454369c197f41a6cdb86334f5788f3580562a80088b4d23c2
+FIXTURE_IDENTICAL 2 sha256=483751f39c94f2d19b6bb7382de04ef2c1e313629dbf479c35d0632b329425bf
+FIXTURE_IDENTICAL 3 sha256=2f84e14fa18197dacb07b90f54f86e533fcbf254d1ee68f1ec8c4f21fb9ca46b
+NEGATIVE_CONTROL_OK: a changed fixture block is not equal to the Git original
+PASS: archive targets exist; historical fixtures preserved without code changes
+== W2 consistency script ==
+import re
+import struct
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path("sw/kpol-ref").resolve()))
+from kpol_reference import compile_concept_microcode_bram_image, parse_module
+
+for name, action in (("increase", 1), ("decrease", 2)):
+    source = Path(f"hw/tests/kpol_bram_pipeline_{name}.kpol").read_text()
+    image = compile_concept_microcode_bram_image(parse_module(source))
+    expected = (10, 20, (action << 24) | (3 << 8) | 4, 0)
+    words = struct.unpack_from("<4I", image)
+    assert words == expected, (name, words, expected)
+    print(f"W2_EXAMPLE_OK {name}: {[hex(word) for word in words]}")
+
+path = "specs/hw/kpol-image-loader-pipeline-contract.md"
+doc = Path(path).read_text()
+for bits, field in (
+    ("7:0", "pred_opcode"),
+    ("15:8", "guard_flags"),
+    ("23:16", "hazard_limit"),
+    ("31:24", "action_opcode"),
+):
+    assert f"`[{bits}]`: `{field}`" in doc
+    print(f"B4_W2_DOCUMENT_OK [{bits}]={field}")
+
+rtl = Path("hw/rtl/core/km_concept_micro_engine.sv").read_text()
+for field, lo, hi in (
+    ("pred_opcode", 64, 71),
+    ("guard_flags", 72, 79),
+    ("hazard_limit", 80, 87),
+    ("action_opcode", 88, 95),
+):
+    assert re.search(
+        rf"assign\s+{field}_w\s*=\s*descriptor_i\[{hi}:{lo}\]", rtl
+    )
+    print(f"CME_RTL_FIELD_OK {field}=descriptor_i[{hi}:{lo}]")
+
+print("PASS: documented W2 matches actual compiler examples and RTL slices")
+== W2 consistency result ==
+W2_EXAMPLE_OK increase: ['0xa', '0x14', '0x1000304', '0x0']
+W2_EXAMPLE_OK decrease: ['0xa', '0x14', '0x2000304', '0x0']
+B4_W2_DOCUMENT_OK [7:0]=pred_opcode
+B4_W2_DOCUMENT_OK [15:8]=guard_flags
+B4_W2_DOCUMENT_OK [23:16]=hazard_limit
+B4_W2_DOCUMENT_OK [31:24]=action_opcode
+CME_RTL_FIELD_OK pred_opcode=descriptor_i[71:64]
+CME_RTL_FIELD_OK guard_flags=descriptor_i[79:72]
+CME_RTL_FIELD_OK hazard_limit=descriptor_i[87:80]
+CME_RTL_FIELD_OK action_opcode=descriptor_i[95:88]
+PASS: documented W2 matches actual compiler examples and RTL slices
+== python3 -m pytest -q ==
+............................................ [ 23%]
+........................................................................ [ 61%]
+........................................................................ [ 98%]
+..                                                                       [100%]
+190 passed, 172 subtests passed in 8.47s
+== python3 tools/check_links.py ==
+Увага: KM_DRAFTS_REPO не задано або це не git-репозиторій — посилання на drafts не перевіряються (пропущено 21).
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 0, пропущено 21
+== git diff --check origin/main HEAD ==
+ALL_CHECKS_PASSED

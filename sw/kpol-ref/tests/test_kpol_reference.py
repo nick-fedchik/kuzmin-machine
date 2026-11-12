@@ -56,10 +56,10 @@ from kpol_reference import (
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SPEC_PATH = REPO_ROOT / "specs" / "kpol" / "kpol-0.1.0.md"
+HISTORICAL_EXAMPLES_PATH = Path(__file__).parent / "fixtures" / "kpol-v01-examples.md"
 
 
-def examples_from_spec(path=SPEC_PATH):
+def examples_from_spec(path=HISTORICAL_EXAMPLES_PATH):
     examples = []
     current = None
     for line in path.read_text(encoding="utf-8").splitlines():
