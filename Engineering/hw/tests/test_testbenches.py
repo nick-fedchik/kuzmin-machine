@@ -24,7 +24,8 @@ TESTBENCHES = {
         "УСІ 5 ТЕСТОВИХ СЦЕНАРІЇВ УНІВЕРСАЛЬНОГО ЯДРА CME УСПІШНО ПРОЙДЕНО"),
     "km_autonomous_sequencer_tb.sv": (
         [f"{CORE}/kpol_txn_gate_v2.sv", f"{CORE}/km_concept_micro_engine.sv",
-         f"{CORE}/km_concept_bram.sv", f"{CORE}/km_autonomous_sequencer.sv"], None),
+         f"{CORE}/km_concept_bram.sv", f"{CORE}/km_autonomous_sequencer.sv"],
+        "АВТОНОМНЕ ВИКОНАННЯ, ЧЕРГА ТА НЕЗМІННЕ ЯДРО УСПІШНО ДОВЕДЕНО"),
     "km_io_trigger_engine_tb.sv": ([f"{IO}/km_io_trigger_engine.sv"], None),
 }
 
