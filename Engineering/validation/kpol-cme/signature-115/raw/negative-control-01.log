@@ -1,0 +1,96 @@
+DATE: 2026-11-13T15:03:12.356713+02:00
+HOST: AORUS-5-SE
+PLATFORM: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+PYTHON: 3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]
+CWD: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-115-signature
+BASE: ca2936441090b0facef414aa83e4f489f0d7664f
+HEAD: ca2936441090b0facef414aa83e4f489f0d7664f
+SHA256 Engineering/sw/kpol-ref/tests/test_kpol_reference.py: 942df129e65ff5ec5b32f4cc3cf54f8df89a3f3f8901f07ddf5af1d966d07e30
+SHA256 Engineering/sw/kpol-ref/kpol_reference.py: ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e
+REFERENCE_UNCHANGED_FROM_BASE: true
+
+COMMAND: python3 -
+STDIN_PYTHON_BEGIN
+
+from pathlib import Path
+import subprocess
+import sys
+import unittest
+from unittest.mock import Mock, patch
+
+base = "ca2936441090b0facef414aa83e4f489f0d7664f"
+path = Path("Engineering/sw/kpol-ref/tests/test_kpol_reference.py").resolve()
+baseline = subprocess.check_output(
+    ["git", "show", f"{base}:{path.relative_to(Path.cwd())}"], text=True
+)
+fixed = path.read_text()
+reason = "CONTROL_SIGNATURE_REJECTED"
+for label, source, rejected in (
+    ("baseline_mock_rejection", baseline, True),
+    ("fixed_mock_rejection", fixed, True),
+    ("fixed_real_verifier", fixed, False),
+):
+    namespace = {"__file__": str(path), "__name__": f"signature115_{label}"}
+    exec(compile(source, str(path), "exec"), namespace)
+    test = namespace["KpolReferenceTests"](
+        "test_v10_concept_microcode_bram_generation"
+    )
+    suite = unittest.TestSuite([test])
+    print(f"\nCASE: {label}", flush=True)
+    if rejected:
+        verifier = Mock(return_value=(False, reason))
+        with patch.dict(namespace, verify_bram_signature=verifier):
+            result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(suite)
+        verifier.assert_called_once()
+    else:
+        result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(suite)
+    assert result.testsRun == 1 and not result.errors
+    if label == "fixed_mock_rejection":
+        assert len(result.failures) == 1
+        assert reason in result.failures[0][1]
+    else:
+        assert result.wasSuccessful()
+print("\nCONTROL_EXPECTATIONS_MET: baseline missed rejection; fixed caught it; real passed")
+
+STDIN_PYTHON_END
+
+CASE: baseline_mock_rejection
+test_v10_concept_microcode_bram_generation (signature115_baseline_mock_rejection.KpolReferenceTests.test_v10_concept_microcode_bram_generation)
+KPOL v1.0 / Refactoring Step 3: Генерація 16-байтних мікрокод-дескрипторів для CME. ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+
+CASE: fixed_mock_rejection
+test_v10_concept_microcode_bram_generation (signature115_fixed_mock_rejection.KpolReferenceTests.test_v10_concept_microcode_bram_generation)
+KPOL v1.0 / Refactoring Step 3: Генерація 16-байтних мікрокод-дескрипторів для CME. ... FAIL
+
+======================================================================
+FAIL: test_v10_concept_microcode_bram_generation (signature115_fixed_mock_rejection.KpolReferenceTests.test_v10_concept_microcode_bram_generation)
+KPOL v1.0 / Refactoring Step 3: Генерація 16-байтних мікрокод-дескрипторів для CME.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-115-signature/Engineering/sw/kpol-ref/tests/test_kpol_reference.py", line 1834, in test_v10_concept_microcode_bram_generation
+    self.assertTrue(valid, msg)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: False is not true : CONTROL_SIGNATURE_REJECTED
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=1)
+
+CASE: fixed_real_verifier
+test_v10_concept_microcode_bram_generation (signature115_fixed_real_verifier.KpolReferenceTests.test_v10_concept_microcode_bram_generation)
+KPOL v1.0 / Refactoring Step 3: Генерація 16-байтних мікрокод-дескрипторів для CME. ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+
+CONTROL_EXPECTATIONS_MET: baseline missed rejection; fixed caught it; real passed
+
+EXIT_CODE: 0

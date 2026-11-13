@@ -1,0 +1,48 @@
+DATE: 2026-11-13T15:04:45.663085+02:00
+HOST: AORUS-5-SE
+PLATFORM: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+PYTHON: 3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]
+CWD: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-115-signature
+BASE: ca2936441090b0facef414aa83e4f489f0d7664f
+HEAD: ca2936441090b0facef414aa83e4f489f0d7664f
+SHA256 Engineering/sw/kpol-ref/tests/test_kpol_reference.py: 942df129e65ff5ec5b32f4cc3cf54f8df89a3f3f8901f07ddf5af1d966d07e30
+SHA256 Engineering/sw/kpol-ref/kpol_reference.py: ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e
+REFERENCE_UNCHANGED_FROM_BASE: true
+
+COMMAND: env KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 16, пропущено 0
+
+EXIT_CODE: 0
+
+COMMAND: python3 -
+STDIN_PYTHON_BEGIN
+
+import json
+from pathlib import Path
+import subprocess
+
+index = Path("Project/registers/wp-index.json")
+base = json.loads(subprocess.check_output([
+    "git", "show",
+    "ca2936441090b0facef414aa83e4f489f0d7664f:Project/registers/wp-index.json"
+]))
+current = json.loads(index.read_text())
+old = {row["path"]: row for row in base["entries"]}
+new = {row["path"]: row for row in current["entries"]}
+assert len(new) == len(current["entries"])
+assert all(new[path] == row for path, row in old.items())
+prefix = "Engineering/validation/kpol-cme/signature-115/"
+assert set(new) - set(old) == {
+    prefix + name for name in (
+        "report.md", "raw/negative-control-01.log", "raw/regressions-01.log",
+        "raw/checks-01.log", "raw/structure-01.log",
+    )
+}
+assert all(Path(path).exists() for path in new)
+assert list(new) == sorted(new)
+print(f"INDEX: {len(new)} entries; all {len(old)} previous entries preserved; all paths exist")
+
+STDIN_PYTHON_END
+INDEX: 382 entries; all 377 previous entries preserved; all paths exist
+
+EXIT_CODE: 0

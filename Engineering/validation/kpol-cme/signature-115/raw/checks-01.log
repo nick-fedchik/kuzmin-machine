@@ -1,0 +1,40 @@
+DATE: 2026-11-13T15:03:56.403550+02:00
+HOST: AORUS-5-SE
+PLATFORM: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+PYTHON: 3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]
+CWD: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-115-signature
+BASE: ca2936441090b0facef414aa83e4f489f0d7664f
+HEAD: ca2936441090b0facef414aa83e4f489f0d7664f
+SHA256 Engineering/sw/kpol-ref/tests/test_kpol_reference.py: 942df129e65ff5ec5b32f4cc3cf54f8df89a3f3f8901f07ddf5af1d966d07e30
+SHA256 Engineering/sw/kpol-ref/kpol_reference.py: ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e
+REFERENCE_UNCHANGED_FROM_BASE: true
+
+COMMAND: python3 -m pytest -q
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+............................................ [ 61%]
+................ [ 66%]
+........................................................................ [ 89%]
+................................                                         [100%]
+308 passed, 300 subtests passed in 22.65s
+
+EXIT_CODE: 0
+
+COMMAND: python3 Project/tools/check_links.py
+Увага: KM_DRAFTS_REPO не задано або це не git-репозиторій — посилання на drafts не перевіряються (пропущено 16).
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 0, пропущено 16
+
+EXIT_CODE: 0
+
+COMMAND: python3 Project/tools/check_wp_documents.py
+{
+  "documents_checked": 126,
+  "immutable_checked": 108,
+  "errors": []
+}
+
+EXIT_CODE: 0
+
+COMMAND: git diff --check
+
+EXIT_CODE: 0
