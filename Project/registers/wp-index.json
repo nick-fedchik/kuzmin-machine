@@ -2079,6 +2079,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/epistemology-and-learning.md",
+      "direction": "Research",
+      "wp_type": "Model / Analysis",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/README.md",
       "direction": "Research",
       "wp_type": "Guide",
