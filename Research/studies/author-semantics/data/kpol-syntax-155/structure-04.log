@@ -1,0 +1,14 @@
+{"timestamp": "2026-11-13T09:37:59.133475+02:00", "host": "AORUS-5-SE", "commit": "eb5cd7193e5c7aae7aef824903865ce0372678fc", "worktree_status": [], "source_sha256": "bb05d4af14869b93a6ae8c06608df7b078f9ae8cd363b54822b942899f0e5f0d", "reference_sha256": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "command": ["bash", "-c", "set -euo pipefail\npython3 /home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/update_kpol155_index.py\ngit diff --quiet cfdfe9ef44cc2c3fb027b8375f519503fde29358 -- Engineering/hw Engineering/sw Project/registers/migration-manifest.json\ngit diff --quiet 59b16d904b7ff86a0da538fe1ac29f706de760e0 -- Project/patents Project/README.md Project/registers/work-products.md\nKM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-math-bit python3 Project/tools/check_links.py\npython3 Project/tools/check_wp_documents.py\nmapfile -t docs < <(git diff --name-only 59b16d904b7ff86a0da538fe1ac29f706de760e0 | grep \"\\.md$\")\npython3 /home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-math-bit/scripts/inspect_math_formatting.py \"${docs[@]}\"\ngit diff --check"]}
+WP index: 1 new artifacts; 361 entries; prior entries unchanged; version 0.5.0.
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 11, пропущено 0
+{
+  "documents_checked": 119,
+  "immutable_checked": 108,
+  "errors": []
+}
+=== Inspecting 19 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[OK] No violations of the checked math and advanced GFM formatting rules found.
+Target-renderer compatibility still requires a rendering check.
+
+exit_code=0
