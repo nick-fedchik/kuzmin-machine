@@ -1,0 +1,30 @@
+{"started_at": "2026-11-13T23:49:22.730828+02:00", "host": "AORUS-5-SE", "commit": "d7ae62af96073777373ad46cbca602f0fb0c4fc7", "worktree_status": [" M Engineering/validation/README.md", " M Project/registers/goals-needs-work-items.md", " M Project/registers/work-products.md", " M Project/registers/wp-index.json", "?? Engineering/validation/kpol-cme/queue-retention-151/"], "command": ["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"], "source_sha256": {"Engineering/hw/rtl/core/km_autonomous_sequencer.sv": "6911173ffc7ea4570112f66916ade54b21bdfb3645560d5eb242ae6777debad9", "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv": "308b6b9bbeda40c7078328f4ee12886f82290b0b07b8c4e24bbbed148b7e2ef5", "Engineering/hw/rtl/core/km_concept_micro_engine.sv": "5db242da39af98e0e73b998a7d65b7d97ac4b8626ed03b356b58b6f0927228e4", "Engineering/hw/rtl/core/km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297", "Engineering/hw/rtl/core/kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6", "Engineering/hw/tb/km_autonomous_sequencer_tb.sv": "fabe1a00e116c1af02ae866bb5cbadb45eb7285838152ea0805d14bc77c51932", "Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv": "1ffbf2ffde8170b12e4fe918d652f1979f9c4e80b7819dd4193aa73cce2dacec", "Engineering/hw/tests/test_kpol_bram_pipeline.py": "d080e5822275c76bc2c3ba0e06f46c09051e999894aadbcbcd8bb52a40f80fcf", "Engineering/hw/tests/test_testbenches.py": "c01ca6608cef747ccf5154cb760651bc567866abbe24c7ca06361e0271ba9eb4"}}
+........................................................................ [ 22%]
+........................................................................ [ 45%]
+............................................ [ 58%]
+...................................................................................F.... [ 86%]
+...........................................                              [100%]
+=================================== FAILURES ===================================
+____________________ test_cli_uses_same_root_from_other_cwd ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-261/test_cli_uses_same_root_from_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7521b8037f50>
+
+    def test_cli_uses_same_root_from_other_cwd(tmp_path, monkeypatch):
+        monkeypatch.delenv("KM_DRAFTS_REPO", raising=False)
+        results = [
+            subprocess.run(
+                [sys.executable, str(TOOL)], cwd=cwd, capture_output=True, text=True
+            )
+            for cwd in (TOOL.parents[1], tmp_path)
+        ]
+>       assert results[0].returncode == results[1].returncode == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/bin/python3', '/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Proje...ся (пропущено 16).\nБитих посилань: 4; посилань file:: 0; посилань на drafts: перевірено 0, пропущено 16\n', stderr='').returncode
+
+Project/tools/tests/test_check_links.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED Project/tools/tests/test_check_links.py::test_cli_uses_same_root_from_other_cwd
+1 failed, 318 passed, 300 subtests passed in 20.86s
+
+exit_code=1

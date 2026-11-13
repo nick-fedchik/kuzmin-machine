@@ -1,0 +1,121 @@
+{"started_at": "2026-11-13T23:42:01.494173+02:00", "host": "AORUS-5-SE", "commit": "836bde772203b982f9421e492bfb202fb845c102", "worktree_status": ["?? Engineering/validation/kpol-cme/queue-retention-151/"], "command": ["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider", "Engineering/hw/tests/test_testbenches.py", "Engineering/hw/tests/test_kpol_bram_pipeline.py", "-k", "autonomous_sequencer or queue_retention or axi_hw_trigger", "--tb=short"], "source_sha256": {"Engineering/hw/rtl/core/km_autonomous_sequencer.sv": "f61dd56b4308c7df4b84a4c1166bb65f127a752071cd3520340c3308eaf1dc82", "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv": "fa386071d982ad1c112fac0c3731602f1c4626569d0f3c2c53d35b03e4159c28", "Engineering/hw/rtl/core/km_concept_micro_engine.sv": "5db242da39af98e0e73b998a7d65b7d97ac4b8626ed03b356b58b6f0927228e4", "Engineering/hw/rtl/core/km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297", "Engineering/hw/rtl/core/kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6", "Engineering/hw/tb/km_autonomous_sequencer_tb.sv": "fabe1a00e116c1af02ae866bb5cbadb45eb7285838152ea0805d14bc77c51932", "Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv": "1ffbf2ffde8170b12e4fe918d652f1979f9c4e80b7819dd4193aa73cce2dacec", "Engineering/hw/tests/test_kpol_bram_pipeline.py": "7f56490f60da8722bac18cf2d0d8089fd942e55f72b79b1709d40e707dd44ca2", "Engineering/hw/tests/test_testbenches.py": "c01ca6608cef747ccf5154cb760651bc567866abbe24c7ca06361e0271ba9eb4"}}
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+________________ test_testbench[km_autonomous_sequencer_tb.sv] _________________
+Engineering/hw/tests/test_testbenches.py:66: in test_testbench
+    assert run.returncode == 0, out[-3000:]
+E   AssertionError: === 1. ЗАВАНТАЖЕННЯ ОБРАЗУ BRAM (Secure Boot через Порт A) ===
+E     === 2. ПОДАЧА ФІЗИЧНОГО АПАРАТНОГО ТРИГЕРА НА КОНЦЕПТ 0 ===
+E     === 3. РЕЗУЛЬТАТИ АВТОНОМНОГО ВИКОНАННЯ У КРЕМНІЇ ===
+E     Опрацьовано подій: 2 (очікується 2)
+E     Успішних комітів:  2 (очікується 2)
+E     Відхилень:        0 (очікується 0)
+E     Останній стан:    55 (очікується 55)
+E     Фізичний стан Концепту 0 у BRAM: 11 (очікується 11: 10+1)
+E     Фізичний стан Концепту 1 у BRAM: 55 (очікується 55: 50+5)
+E     === 4. ТЕСТ ВІДХИЛЕННЯ ТРАНЗАКЦІЇ (Fail-Closed Reject) ===
+E     Відхилень після Reject: 1 (очікується 1)
+E     === 5. B5 v2: УТРИМАННЯ БЕЗ ВТРАТ ТА АРБІТРАЖ КАСКАДІВ (QUEUE_DEPTH=16) ===
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Engineering/hw/tb/km_autonomous_sequencer_tb.sv:427: [FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=7 ovf=1 ev=23 comm=22/22 rej=1 we=22 st1=150/150 st4=201/201
+E            Time: 2367000  Scope: km_autonomous_sequencer_tb.$unm_blk_74
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-258/test_testbench_km_autonomous_s0/sim.vvp'], ret...rej=1 we=22 st1=150/150 st4=201/201\n       Time: 2367000  Scope: km_autonomous_sequencer_tb.$unm_blk_74\n', stderr='').returncode
+____________ test_sequencer_queue_retention_parameterized_depths[4] ____________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:243: in test_sequencer_queue_retention_parameterized_depths
+    assert result.returncode == 0, out
+E   AssertionError: === 1. ЗАВАНТАЖЕННЯ ОБРАЗУ BRAM (Secure Boot через Порт A) ===
+E     === 2. ПОДАЧА ФІЗИЧНОГО АПАРАТНОГО ТРИГЕРА НА КОНЦЕПТ 0 ===
+E     === 3. РЕЗУЛЬТАТИ АВТОНОМНОГО ВИКОНАННЯ У КРЕМНІЇ ===
+E     Опрацьовано подій: 2 (очікується 2)
+E     Успішних комітів:  2 (очікується 2)
+E     Відхилень:        0 (очікується 0)
+E     Останній стан:    55 (очікується 55)
+E     Фізичний стан Концепту 0 у BRAM: 11 (очікується 11: 10+1)
+E     Фізичний стан Концепту 1 у BRAM: 55 (очікується 55: 50+5)
+E     === 4. ТЕСТ ВІДХИЛЕННЯ ТРАНЗАКЦІЇ (Fail-Closed Reject) ===
+E     Відхилень після Reject: 1 (очікується 1)
+E     === 5. B5 v2: УТРИМАННЯ БЕЗ ВТРАТ ТА АРБІТРАЖ КАСКАДІВ (QUEUE_DEPTH=4) ===
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Engineering/hw/tb/km_autonomous_sequencer_tb.sv:427: [FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=19 ovf=1 ev=11 comm=10/10 rej=1 we=10 st1=90/90 st4=201/201
+E            Time: 1407000  Scope: km_autonomous_sequencer_tb.$unm_blk_74
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-258/test_sequencer_queue_retention0/seq_q4.vvp'], ...0 rej=1 we=10 st1=90/90 st4=201/201\n       Time: 1407000  Scope: km_autonomous_sequencer_tb.$unm_blk_74\n', stderr='').returncode
+____________ test_sequencer_queue_retention_parameterized_depths[8] ____________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:243: in test_sequencer_queue_retention_parameterized_depths
+    assert result.returncode == 0, out
+E   AssertionError: === 1. ЗАВАНТАЖЕННЯ ОБРАЗУ BRAM (Secure Boot через Порт A) ===
+E     === 2. ПОДАЧА ФІЗИЧНОГО АПАРАТНОГО ТРИГЕРА НА КОНЦЕПТ 0 ===
+E     === 3. РЕЗУЛЬТАТИ АВТОНОМНОГО ВИКОНАННЯ У КРЕМНІЇ ===
+E     Опрацьовано подій: 2 (очікується 2)
+E     Успішних комітів:  2 (очікується 2)
+E     Відхилень:        0 (очікується 0)
+E     Останній стан:    55 (очікується 55)
+E     Фізичний стан Концепту 0 у BRAM: 11 (очікується 11: 10+1)
+E     Фізичний стан Концепту 1 у BRAM: 55 (очікується 55: 50+5)
+E     === 4. ТЕСТ ВІДХИЛЕННЯ ТРАНЗАКЦІЇ (Fail-Closed Reject) ===
+E     Відхилень після Reject: 1 (очікується 1)
+E     === 5. B5 v2: УТРИМАННЯ БЕЗ ВТРАТ ТА АРБІТРАЖ КАСКАДІВ (QUEUE_DEPTH=8) ===
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Engineering/hw/tb/km_autonomous_sequencer_tb.sv:427: [FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=15 ovf=1 ev=15 comm=14/14 rej=1 we=14 st1=110/110 st4=201/201
+E            Time: 1727000  Scope: km_autonomous_sequencer_tb.$unm_blk_74
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-258/test_sequencer_queue_retention1/seq_q8.vvp'], ...rej=1 we=14 st1=110/110 st4=201/201\n       Time: 1727000  Scope: km_autonomous_sequencer_tb.$unm_blk_74\n', stderr='').returncode
+___________ test_sequencer_queue_retention_parameterized_depths[16] ____________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:243: in test_sequencer_queue_retention_parameterized_depths
+    assert result.returncode == 0, out
+E   AssertionError: === 1. ЗАВАНТАЖЕННЯ ОБРАЗУ BRAM (Secure Boot через Порт A) ===
+E     === 2. ПОДАЧА ФІЗИЧНОГО АПАРАТНОГО ТРИГЕРА НА КОНЦЕПТ 0 ===
+E     === 3. РЕЗУЛЬТАТИ АВТОНОМНОГО ВИКОНАННЯ У КРЕМНІЇ ===
+E     Опрацьовано подій: 2 (очікується 2)
+E     Успішних комітів:  2 (очікується 2)
+E     Відхилень:        0 (очікується 0)
+E     Останній стан:    55 (очікується 55)
+E     Фізичний стан Концепту 0 у BRAM: 11 (очікується 11: 10+1)
+E     Фізичний стан Концепту 1 у BRAM: 55 (очікується 55: 50+5)
+E     === 4. ТЕСТ ВІДХИЛЕННЯ ТРАНЗАКЦІЇ (Fail-Closed Reject) ===
+E     Відхилень після Reject: 1 (очікується 1)
+E     === 5. B5 v2: УТРИМАННЯ БЕЗ ВТРАТ ТА АРБІТРАЖ КАСКАДІВ (QUEUE_DEPTH=16) ===
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Engineering/hw/tb/km_autonomous_sequencer_tb.sv:427: [FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=7 ovf=1 ev=23 comm=22/22 rej=1 we=22 st1=150/150 st4=201/201
+E            Time: 2367000  Scope: km_autonomous_sequencer_tb.$unm_blk_74
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-258/test_sequencer_queue_retention2/seq_q16.vvp'],...rej=1 we=22 st1=150/150 st4=201/201\n       Time: 2367000  Scope: km_autonomous_sequencer_tb.$unm_blk_74\n', stderr='').returncode
+___________ test_sequencer_queue_retention_parameterized_depths[32] ____________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:243: in test_sequencer_queue_retention_parameterized_depths
+    assert result.returncode == 0, out
+E   AssertionError: === 1. ЗАВАНТАЖЕННЯ ОБРАЗУ BRAM (Secure Boot через Порт A) ===
+E     === 2. ПОДАЧА ФІЗИЧНОГО АПАРАТНОГО ТРИГЕРА НА КОНЦЕПТ 0 ===
+E     === 3. РЕЗУЛЬТАТИ АВТОНОМНОГО ВИКОНАННЯ У КРЕМНІЇ ===
+E     Опрацьовано подій: 2 (очікується 2)
+E     Успішних комітів:  2 (очікується 2)
+E     Відхилень:        0 (очікується 0)
+E     Останній стан:    55 (очікується 55)
+E     Фізичний стан Концепту 0 у BRAM: 11 (очікується 11: 10+1)
+E     Фізичний стан Концепту 1 у BRAM: 55 (очікується 55: 50+5)
+E     === 4. ТЕСТ ВІДХИЛЕННЯ ТРАНЗАКЦІЇ (Fail-Closed Reject) ===
+E     Відхилень після Reject: 1 (очікується 1)
+E     === 5. B5 v2: УТРИМАННЯ БЕЗ ВТРАТ ТА АРБІТРАЖ КАСКАДІВ (QUEUE_DEPTH=32) ===
+E     FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Engineering/hw/tb/km_autonomous_sequencer_tb.sv:427: [FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=5 ovf=1 ev=41 comm=40/40 rej=1 we=40 st1=240/240 st4=201/201
+E            Time: 3807000  Scope: km_autonomous_sequencer_tb.$unm_blk_74
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-258/test_sequencer_queue_retention3/seq_q32.vvp'],...rej=1 we=40 st1=240/240 st4=201/201\n       Time: 3807000  Scope: km_autonomous_sequencer_tb.$unm_blk_74\n', stderr='').returncode
+______________ test_axi_hw_trigger_managed_burst_and_sw_collision ______________
+Engineering/hw/tests/test_kpol_bram_pipeline.py:283: in test_axi_hw_trigger_managed_burst_and_sw_collision
+    assert result.returncode == 0, out
+E   AssertionError: FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:195: hw_burst: expected hw_trigger_ready_o=0 during sw_trigger collision
+E            Time: 15507000  Scope: kpol_bram_pipeline_axi_tb.run.$unm_blk_69
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-258/test_axi_hw_trigger_managed_bu0/axi_burst.vvp'...o=0 during sw_trigger collision\n       Time: 15507000  Scope: kpol_bram_pipeline_axi_tb.run.$unm_blk_69\n', stderr='').returncode
+=========================== short test summary info ============================
+FAILED Engineering/hw/tests/test_testbenches.py::test_testbench[km_autonomous_sequencer_tb.sv]
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[4]
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[8]
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[16]
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[32]
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_axi_hw_trigger_managed_burst_and_sw_collision
+6 failed, 142 deselected in 0.32s
+
+exit_code=1
