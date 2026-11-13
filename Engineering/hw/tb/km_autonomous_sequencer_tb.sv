@@ -201,7 +201,7 @@ module km_autonomous_sequencer_tb #(
             // але Концепт 0 гарантовано ще у фазі читання дескриптора.
             // Чекаємо перший імпульс commit_pulse, коли bramb_addr вказує на CID 0 (або за лічильником).
             seen_commits = 0;
-            while (!(commit_pulse === 1'b1 && bram_b_addr === {6'd0, 2'b00})) begin
+            while (!(commit_pulse === 1'b1 && bram_b_addr[7:2] === 6'd0)) begin
                 @(posedge clk);
                 #1;
                 seen_commits = seen_commits + 1;
@@ -422,10 +422,10 @@ module km_autonomous_sequencer_tb #(
             read_concept_state(6'd4, st4);
             if (fifo_full !== 1'b0 || hw_trigger_ready !== 1'b1 ||
                 fifo_overflow !== 1'b0 || events_dropped_count !== 32'd0 ||
-                comm_count !== exp_commits || bram_we_total != exp_commits ||
-                st1 !== exp1 || st4 !== exp4) begin
-                $fatal(1, "[FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=%0d ovf=%0b comm=%0d/%0d we=%0d st1=%0d/%0d st4=%0d/%0d",
-                       events_dropped_count, fifo_overflow, comm_count, exp_commits, bram_we_total, st1, exp1, st4, exp4);
+                comm_count !== exp_commits || events_count !== (exp_commits + 1) || rej_count !== 32'd1 ||
+                bram_we_total != exp_commits || st1 !== exp1 || st4 !== exp4) begin
+                $fatal(1, "[FAIL] 5A: full/empty або нульовий payload під stall дав збій: drop=%0d ovf=%0b ev=%0d comm=%0d/%0d rej=%0d we=%0d st1=%0d/%0d st4=%0d/%0d",
+                       events_dropped_count, fifo_overflow, events_count, comm_count, exp_commits, rej_count, bram_we_total, st1, exp1, st4, exp4);
             end
             $display("[OK] 5A: Межі full/empty та param=0 під stall (%0d тактів очікування, 0 втрат)", stall_cnt);
 
@@ -462,10 +462,10 @@ module km_autonomous_sequencer_tb #(
             read_concept_state(6'd1, st1);
             read_concept_state(6'd3, st3);
             if (fifo_overflow !== 1'b0 || events_dropped_count !== 32'd0 ||
-                comm_count !== exp_commits || bram_we_total != exp_commits ||
-                st0 !== exp0 || st1 !== exp1 || st3 !== exp3) begin
-                $fatal(1, "[FAIL] 5B: Колізія за 2 вільних слотів порушила інваріанти: drop=%0d ovf=%0b comm=%0d/%0d st0=%0d/%0d st1=%0d/%0d st3=%0d/%0d",
-                       events_dropped_count, fifo_overflow, comm_count, exp_commits, st0, exp0, st1, exp1, st3, exp3);
+                comm_count !== exp_commits || events_count !== (exp_commits + 1) || rej_count !== 32'd1 ||
+                bram_we_total != exp_commits || st0 !== exp0 || st1 !== exp1 || st3 !== exp3) begin
+                $fatal(1, "[FAIL] 5B: Колізія за 2 вільних слотів порушила інваріанти: drop=%0d ovf=%0b ev=%0d comm=%0d/%0d rej=%0d st0=%0d/%0d st1=%0d/%0d st3=%0d/%0d",
+                       events_dropped_count, fifo_overflow, events_count, comm_count, exp_commits, rej_count, st0, exp0, st1, exp1, st3, exp3);
             end
             // Перевірка суворого порядку: передостанній commit — каскад CID=1, останній — зовнішній CID=3
             if (commit_log_cid[commit_log_cnt - 2] !== 6'd1 || commit_log_cid[commit_log_cnt - 1] !== 6'd3) begin
@@ -513,10 +513,10 @@ module km_autonomous_sequencer_tb #(
             read_concept_state(6'd1, st1);
             read_concept_state(6'd5, st5);
             if (fifo_overflow !== 1'b0 || events_dropped_count !== 32'd0 ||
-                comm_count !== exp_commits || bram_we_total != exp_commits ||
-                st0 !== exp0 || st1 !== exp1 || st5 !== exp5) begin
-                $fatal(1, "[FAIL] 5C: Колізія за 1 вільного слота втратила або здублювала подію: drop=%0d ovf=%0b comm=%0d/%0d we=%0d st0=%0d/%0d st1=%0d/%0d st5=%0d/%0d",
-                       events_dropped_count, fifo_overflow, comm_count, exp_commits, bram_we_total,
+                comm_count !== exp_commits || events_count !== (exp_commits + 1) || rej_count !== 32'd1 ||
+                bram_we_total != exp_commits || st0 !== exp0 || st1 !== exp1 || st5 !== exp5) begin
+                $fatal(1, "[FAIL] 5C: Колізія за 1 вільного слота втратила або здублювала подію: drop=%0d ovf=%0b ev=%0d comm=%0d/%0d rej=%0d we=%0d st0=%0d/%0d st1=%0d/%0d st5=%0d/%0d",
+                       events_dropped_count, fifo_overflow, events_count, comm_count, exp_commits, rej_count, bram_we_total,
                        st0, exp0, st1, exp1, st5, exp5);
             end
             if (commit_log_cid[commit_log_cnt - 2] !== 6'd1 || commit_log_cid[commit_log_cnt - 1] !== 6'd5) begin
@@ -566,10 +566,10 @@ module km_autonomous_sequencer_tb #(
             read_concept_state(6'd1, st1);
             read_concept_state(6'd4, st4);
             if (fifo_overflow !== 1'b0 || events_dropped_count !== 32'd0 ||
-                comm_count !== exp_commits || bram_we_total != exp_commits ||
-                st0 !== exp0 || st1 !== exp1 || st4 !== exp4) begin
-                $fatal(1, "[FAIL] 5D: Full-каскад або одночасний cascade/external/dequeue дав збій: drop=%0d ovf=%0b comm=%0d/%0d we=%0d st0=%0d/%0d st1=%0d/%0d st4=%0d/%0d",
-                       events_dropped_count, fifo_overflow, comm_count, exp_commits, bram_we_total,
+                comm_count !== exp_commits || events_count !== (exp_commits + 1) || rej_count !== 32'd1 ||
+                bram_we_total != exp_commits || st0 !== exp0 || st1 !== exp1 || st4 !== exp4) begin
+                $fatal(1, "[FAIL] 5D: Full-каскад або одночасний cascade/external/dequeue дав збій: drop=%0d ovf=%0b ev=%0d comm=%0d/%0d rej=%0d we=%0d st0=%0d/%0d st1=%0d/%0d st4=%0d/%0d",
+                       events_dropped_count, fifo_overflow, events_count, comm_count, exp_commits, rej_count, bram_we_total,
                        st0, exp0, st1, exp1, st4, exp4);
             end
             if (commit_log_cid[commit_log_cnt - 2] !== 6'd1 || commit_log_cid[commit_log_cnt - 1] !== 6'd4) begin
@@ -602,10 +602,10 @@ module km_autonomous_sequencer_tb #(
             read_concept_state(6'd1, st1);
             read_concept_state(6'd3, st3);
             if (fifo_overflow !== 1'b0 || events_dropped_count !== 32'd0 ||
-                comm_count !== exp_commits || bram_we_total != exp_commits ||
-                st0 !== exp0 || st1 !== exp1 || st3 !== exp3) begin
-                $fatal(1, "[FAIL] 5E: Керована пачка втратила або здублювала події: drop=%0d ovf=%0b comm=%0d/%0d we=%0d st0=%0d/%0d st1=%0d/%0d st3=%0d/%0d",
-                       events_dropped_count, fifo_overflow, comm_count, exp_commits, bram_we_total,
+                comm_count !== exp_commits || events_count !== (exp_commits + 1) || rej_count !== 32'd1 ||
+                bram_we_total != exp_commits || st0 !== exp0 || st1 !== exp1 || st3 !== exp3) begin
+                $fatal(1, "[FAIL] 5E: Керована пачка втратила або здублювала події: drop=%0d ovf=%0b ev=%0d comm=%0d/%0d rej=%0d we=%0d st0=%0d/%0d st1=%0d/%0d st3=%0d/%0d",
+                       events_dropped_count, fifo_overflow, events_count, comm_count, exp_commits, rej_count, bram_we_total,
                        st0, exp0, st1, exp1, st3, exp3);
             end
             $display("[OK] 5E: Керована пачка %0d подій з каскадами — 0 втрат, точна збіжність BRAM", 3 * QUEUE_DEPTH);
@@ -659,10 +659,10 @@ module km_autonomous_sequencer_tb #(
             read_concept_state(6'd1, st1);
             read_concept_state(6'd3, st3);
             if (fifo_overflow !== 1'b1 || events_dropped_count !== 32'd3 || hw_trigger_ready !== 1'b1 ||
-                comm_count !== exp_commits || bram_we_total != exp_commits ||
-                st1 !== exp1 || st3 !== exp3) begin
-                $fatal(1, "[FAIL] 6: Політика обліку втрат незупинного джерела не спрацювала точно: drop=%0d (очік. 3) ovf=%b ready=%b comm=%0d/%0d st1=%0d/%0d st3=%0d/%0d",
-                       events_dropped_count, fifo_overflow, hw_trigger_ready, comm_count, exp_commits, st1, exp1, st3, exp3);
+                comm_count !== exp_commits || events_count !== (exp_commits + 1) || rej_count !== 32'd1 ||
+                bram_we_total != exp_commits || st1 !== exp1 || st3 !== exp3) begin
+                $fatal(1, "[FAIL] 6: Політика обліку втрат незупинного джерела не спрацювала точно: drop=%0d (очік. 3) ovf=%b ready=%b ev=%0d comm=%0d/%0d rej=%0d st1=%0d/%0d st3=%0d/%0d",
+                       events_dropped_count, fifo_overflow, hw_trigger_ready, events_count, comm_count, exp_commits, rej_count, st1, exp1, st3, exp3);
             end
             $display("[OK] 6: Незупинне джерело зафіксувало рівно 3 втрачені події (overflow=1) без псування прийнятої черги");
         end
