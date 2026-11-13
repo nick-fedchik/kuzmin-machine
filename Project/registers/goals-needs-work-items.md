@@ -1,7 +1,7 @@
 # Цілі, потреби та зв'язки поточного складу
 
-* **Версія:** 0.3.0
-* **Дата:** 2026-11-12
+* **Версія:** 0.4.0
+* **Дата:** 2026-11-13
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
 * **Джерело ID:** [оригінальний реєстр, §3](https://github.com/nick-fedchik/kuzmin-machine/blob/707fdba697d92ef9874c9013eb6f4f3cb2796d70/requirements/traceability/goals-needs-work-items.md#3-цілі-сторони-й-потреби).
@@ -19,6 +19,7 @@ ID G/N збережені; нових вимог і числових крите�
 | G1/N1: визначені правила й працездатність | Які правила авторської машини можна реалізувати без здогадів? | [#76](../../Research/studies/author-semantics/report.md), [джерела](../../Research/sources/README.md). | Повна семантика не отримана; не переносити це автоматично на власний KPOL-контракт. |
 | G1/N2: KPOL → об'єкт виконання | B1–B5, KPOL-CME-1, loader і ingress | [Solution](../../Engineering/solutions/compiler-bram-pipeline.md), [вимоги](../../Engineering/requirements/requirements.md), [S4](../../Engineering/validation/experiments/S4-07/report.md). | Поточний цільовий CFG-P; повноту профілю не оголошено. |
 | G1/N1–N2: уточнення правил і профільний compiler | [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), частина #8; RFC-005–008 | [Source](../../Research/sources/author/rfc-2026-11-12.md) → [Requirement](../../Engineering/requirements/kpol.md) → [B3](../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md) → [Report](../../Engineering/validation/kpol-cme/profile-150/report.md). | Strict-path відокремлений від legacy; очікування черги й багатоядерний fallback не реалізовані цим кроком. |
+| G1/N2: поведінка виконуваного профілю | B3-REQ-06, [#153](https://github.com/nick-fedchik/kuzmin-machine/issues/153), частина #8 | [B3 §3/§7](../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md) → [direct/AXI тести](../../Engineering/hw/tests/test_kpol_bram_pipeline.py) → [Report](../../Engineering/validation/kpol-cme/behavior-153/report.md). | Скінченна матриця переходів і відмов, виправлено підміну нульового payload; без HIL, input validator або retention #151. |
 | G1/N1: межі fail-closed | Gate v2 за заданих властивостей і припущень | [S3](../../Engineering/validation/experiments/S3-62/report.md), [RTL](../../Engineering/hw/rtl/core/kpol_txn_gate_v2.sv). | Доказ компонента, не безпечність усієї системи. |
 | G1/N1: реактивна затримка | Окремий CFG-R | [AV-10](../../Engineering/validation/experiments/AV-10/report.md), [AV-11](../../Engineering/validation/experiments/AV-11/report.md). | Власник прийняв 100 подій і p99 ≤ 60 нс для перевіреної CFG-R після вимірювання; не попередня реєстрація й не доказ CFG-P. |
 | G1/N1: усунення Callback Bottleneck (FPGA + GPU) | Як виконати масив підписок без затримок послідовних шин та host-драйвера GPU? | [Рішення B6](../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md) → Дослідження [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md) ([EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/README.md)). | Архітектурна пропозиція B6 та дослідницький HIL-експеримент (PYNQ-Z1 + Jetson J501 + PicoScope); статус Proposed / Planned. |
@@ -40,6 +41,7 @@ NG не замінено закриттям старих Issues.
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.4.0 | 2026-11-13 | Ланцюг B3-REQ-06 → поведінкові direct/AXI перевірки → Report #153. |
 | 0.3.0 | 2026-11-12 | Додано ланцюг ADR B6 → EXP-GPU-01 для розв'язання Callback Bottleneck на GPU. |
 | 0.2.0 | 2026-11-12 | Додано двонапрямний ланцюг Source/RFC → вимоги → профільний compiler → перевірки #150. |
 | 0.1.0 | 2026-11-12 | Поточні ланцюги без копіювання історичного беклогу. |

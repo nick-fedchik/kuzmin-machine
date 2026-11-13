@@ -11,6 +11,12 @@ module kpol_bram_pipeline_axi_tb;
     wire [31:0] rdata;
     logic [31:0] image [0:255];
     reg [4095:0] image_a, image_b;
+    localparam int MAX_EVENTS = 64;
+    logic [31:0] trace_data [0:MAX_EVENTS*3-1];
+    reg [4095:0] trace_file;
+    logic trace_mode = 0;
+    logic [31:0] initial_expected;
+    integer trace_length, trace_writes = 0;
 
     // Сигнали зовнішнього тригера та апаратної телеметрії
     logic ext_hw_trigger_valid_i = 0;
@@ -24,6 +30,14 @@ module kpol_bram_pipeline_axi_tb;
     wire [31:0] events_dropped_count_o;
 
     always #5 clk = ~clk;
+    always @(posedge clk) begin
+        if (!rst_n) trace_writes = 0;
+        else if (trace_mode && dut.b_we) begin
+            if (dut.b_addr !== 0 || dut.b_wstrb !== 4'hf)
+                $fatal(1, "trace: write outside W0 or partial write");
+            trace_writes = trace_writes + 1;
+        end
+    end
 
     kpol_bram_pipeline_axi dut (.*);
 
@@ -127,8 +141,58 @@ module kpol_bram_pipeline_axi_tb;
             $fatal(1, "%0s: expected state %0d, got %0d", label, expected, actual);
     endtask
 
+    task automatic check_descriptor(input logic [31:0] expected, input integer step);
+        logic [31:0] actual, word_expected;
+        for (int word_index = 0; word_index < 4; word_index++) begin
+            write_reg('h004, word_index, 4'hf, 0);
+            read_reg('h008, actual);
+            word_expected = word_index == 0 ? expected : image[word_index];
+            if (actual !== word_expected)
+                $fatal(1, "trace event=%0d word=%0d expected=%h got=%h",
+                       step, word_index, word_expected, actual);
+        end
+        $display("TRACE event=%0d state=%h commits=%0d rejects=%0d writes=%0d",
+                 step, expected, dut.commits, dut.rejects, trace_writes);
+    endtask
+
     initial begin : run
         reg [31:0] value;
+        integer expected_commits;
+        trace_mode = $value$plusargs("trace=%s", trace_file);
+        if (trace_mode) begin
+            if (!$value$plusargs("image_a=%s", image_a) ||
+                !$value$plusargs("events=%d", trace_length) ||
+                !$value$plusargs("initial=%h", initial_expected))
+                $fatal(1, "trace requires image, events and initial");
+            if (trace_length < 1 || trace_length > MAX_EVENTS)
+                $fatal(1, "trace length out of range");
+            $readmemh(trace_file, trace_data, 0, trace_length*3-1);
+            repeat (3) @(negedge clk);
+            rst_n = 1;
+            load_image(image_a);
+            check_descriptor(initial_expected, -1);
+            expected_commits = 0;
+            for (int i = 0; i < trace_length; i++) begin
+                if ($test$plusargs("hw_events")) begin
+                    write_reg('h00c, 123, 4'hf, 0);
+                    send_hw_trigger(6'd0, trace_data[3*i]);
+                end else send_event(trace_data[3*i]);
+                check_descriptor(trace_data[3*i+1], i);
+                expected_commits = expected_commits + int'(trace_data[3*i+2]);
+                read_reg('h018, value);
+                if (value !== i+1) $fatal(1, "trace: incorrect event count");
+                read_reg('h01c, value);
+                if (value !== expected_commits || trace_writes !== expected_commits)
+                    $fatal(1, "trace: incorrect commit/write count");
+                read_reg('h020, value);
+                if (value !== i+1-expected_commits) $fatal(1, "trace: incorrect reject count");
+                read_reg('h028, value);
+                if (value !== 0 || fifo_overflow_o)
+                    $fatal(1, "trace: unexpected event loss");
+            end
+            $display("PASS: profile trace");
+            $finish;
+        end
         if (!$value$plusargs("image_a=%s", image_a) ||
             !$value$plusargs("image_b=%s", image_b))
             $fatal(1, "two image paths are required");

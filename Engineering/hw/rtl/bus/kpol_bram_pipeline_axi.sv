@@ -82,9 +82,7 @@ module kpol_bram_pipeline_axi (
     // Арбітраж ініціації події: програмний тригер MMIO або фізичний зовнішній пін
     wire seq_trigger_valid = sw_trigger || ext_hw_trigger_valid_i;
     wire [5:0] seq_trigger_cid = sw_trigger ? 6'd0 : ext_hw_trigger_cid_i;
-    wire [31:0] seq_trigger_param = sw_trigger ? event_param :
-                                    ((ext_hw_trigger_param_i != 32'd0) ? ext_hw_trigger_param_i :
-                                     ((event_param != 32'd0) ? event_param : 32'd1));
+    wire [31:0] seq_trigger_param = sw_trigger ? event_param : ext_hw_trigger_param_i;
 
     km_concept_bram bram (
         .clk(clk),

@@ -1,6 +1,6 @@
 {
-  "version": "0.3.1",
-  "date": "2026-11-12",
+  "version": "0.4.0",
+  "date": "2026-11-13",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -1170,6 +1170,42 @@
       "path": "Engineering/validation/fail-closed/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Experiment",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/behavior-153/raw/baseline-matrix-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/behavior-153/raw/full-tests-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/behavior-153/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/behavior-153/raw/profile-matrix-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/behavior-153/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/behavior-153/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
       "immutable_input": false
     },
     {

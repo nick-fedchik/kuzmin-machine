@@ -1,7 +1,7 @@
 # Вимоги KPOL після відповідей на RFC-005–008
 
-* **Версія:** 0.1.0
-* **Дата:** 2026-11-12
+* **Версія:** 0.2.0
+* **Дата:** 2026-11-13
 * **Тип WP:** Requirement / SYS / SW
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI, Auto.
 * **WI:** [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), частина [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
@@ -48,17 +48,20 @@
 | B3-REQ-02 → SYS-01 | Для одного Int32 state/event/rule та INC/DEC емітувати CME-RAW-1 із signed порівнянням payload. Імена не впливають на guard/opcode. | `test_profile_encodes_guards_and_renaming`: ручне пакування W0–W3, границі signed літералів; direct/AXI — окремі наявні сценарії. |
 | B3-REQ-04 | CLI розрізняє `B3-SYNTAX`, `B3-TYPE`, профільні B3-коди та I/O; ненульовий код, наявний образ незмінний, новий при відмові відсутній. | `test_profile_cli_rejects_before_output`; помилкові grammar/type/guard/Proof та existing output. |
 | B3-REQ-05 → SYS-06 | Якщо Proof присутній, він містить дозволені непорожні scenario/step/expect та проходить ненульову скінченну перевірку до пакування. | `test_profile_checks_proof_before_emission`: правильний, хибний, порожній, непідтриманий Proof. |
+| B3-REQ-06 → SYS-06 | Для дозволених трас звіряти початковий і кожний наступний стан, незмінність W1–W3 та commit/reject/записи; нульовий payload не підміняти. | `test_profile_per_event_in_simulated_pipeline`: direct, AXI-MMIO, AXI-HW, signed guards, overflow/underflow, перейменування, інверсний negative control; [Report #153](../validation/kpol-cme/behavior-153/report.md). |
 
 Підтримані діапазони, граматика й правила §2–4 профілю є залежним
 контрактом. Нефункціональний поріг часу/пам'яті джерелом не заданий.
-Скінченний Proof не доводить усіх трас; B3-REQ-06 у повному обсязі,
-вхідний валідатор перед PL, HIL, backpressure й Serial Fallback не закриваються.
+Скінченний Proof і поведінкова матриця не доводять усіх трас.
+Вхідний валідатор перед PL, HIL, backpressure й Serial Fallback не закриваються.
 
 ## 4. Трасування та результати
 
 Прямий шлях: G1/N1–N2 → Source/RFC → SYS-01–06 та B3-REQ →
 профільний compiler/CLI → `KpolCmeProfileTests` →
 [Report](../validation/kpol-cme/profile-150/report.md).
+Продовження B3-REQ-06: §3/§7 профілю →
+`test_profile_per_event_in_simulated_pipeline` → [Report #153](../validation/kpol-cme/behavior-153/report.md).
 Зворотний шлях задається ID й назвами перевірок у таблицях вище.
 Історичні REQ-SW-001–003 є входами, не дубльованими PASS.
 
@@ -71,6 +74,7 @@
 | Версія | Дата | Зміни |
 |---|---|---|
 | 0.1.0 | 2026-11-12 | Входи RFC-005–008, межі профілю та перевірні критерії #150. |
+| 0.2.0 | 2026-11-13 | Трасування поведінкової матриці B3-REQ-06 / #153; межі повного доказу збережено. |
 
 ## Абревіатури та глосарій
 
