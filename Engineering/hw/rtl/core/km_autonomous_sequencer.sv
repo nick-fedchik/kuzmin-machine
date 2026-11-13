@@ -61,11 +61,37 @@ module km_autonomous_sequencer #(
 
     // Внутрішня апаратна черга подій
     localparam int PTR_WIDTH = (QUEUE_DEPTH > 1) ? $clog2(QUEUE_DEPTH) : 1;
+    localparam logic [31:0]          DEPTH_U32 = QUEUE_DEPTH;
+    localparam logic [PTR_WIDTH:0]   DEPTH_CNT = DEPTH_U32[PTR_WIDTH:0];
+    localparam logic [31:0]          ONE_U32   = 32'd1;
+    localparam logic [PTR_WIDTH-1:0] PTR_ONE   = ONE_U32[PTR_WIDTH-1:0];
+
     logic [5:0]            fifo_cid_q   [QUEUE_DEPTH];
     logic [DATA_WIDTH-1:0] fifo_param_q [QUEUE_DEPTH];
     logic [PTR_WIDTH-1:0]  fifo_wr_ptr_q;
     logic [PTR_WIDTH-1:0]  fifo_rd_ptr_q;
     logic [PTR_WIDTH:0]    fifo_count_q;
+
+    wire [PTR_WIDTH-1:0] rd_ptr_next1 = (({1'b0, fifo_rd_ptr_q} + {{PTR_WIDTH{1'b0}}, 1'b1}) >= DEPTH_CNT)
+                                      ? '0 : (fifo_rd_ptr_q + PTR_ONE);
+    wire [PTR_WIDTH-1:0] wr_ptr_next1 = (({1'b0, fifo_wr_ptr_q} + {{PTR_WIDTH{1'b0}}, 1'b1}) >= DEPTH_CNT)
+                                      ? '0 : (fifo_wr_ptr_q + PTR_ONE);
+    wire [PTR_WIDTH-1:0] wr_ptr_next2 = (({1'b0, wr_ptr_next1} + {{PTR_WIDTH{1'b0}}, 1'b1}) >= DEPTH_CNT)
+                                      ? '0 : (wr_ptr_next1 + PTR_ONE);
+
+    // 1-слотовий внутрішній буфер утримання full-каскаду (B5 v2, #151):
+    // запобігає втраті каскаду при fifo_count_q == QUEUE_DEPTH без зупинки вичитки FIFO
+    // та без повторної фіксації (commit) поточної транзакції у BRAM.
+    logic                  cascade_pending_valid_q;
+    logic [5:0]            cascade_pending_cid_q;
+    logic [DATA_WIDTH-1:0] cascade_pending_param_q;
+
+    // Монітор утримання зовнішнього входу під час hw_trigger_ready_o == 0 (REQ-HW-015):
+    // штатне очікування зі стабільними valid/cid/param не рахується втратою;
+    // зняття valid або перезапис payload до появи ready == 1 фіксується як втрата незупинного джерела.
+    logic                  stalled_ext_q;
+    logic [5:0]            stalled_cid_q;
+    logic [DATA_WIDTH-1:0] stalled_param_q;
 
     // Регістри активної події
     logic [5:0]            active_cid_q;
@@ -117,7 +143,7 @@ module km_autonomous_sequencer #(
     logic [31:0] dropped_count_q;
     logic        overflow_latched_q;
 
-    assign busy_o                   = (state_q != ST_IDLE) || (fifo_count_q != 0);
+    assign busy_o                   = (state_q != ST_IDLE) || (fifo_count_q != 0) || cascade_pending_valid_q;
     assign events_processed_count_o = ev_count_q;
     assign committed_count_o        = comm_count_q;
     assign rejected_count_o         = rej_count_q;
@@ -125,46 +151,73 @@ module km_autonomous_sequencer #(
     assign events_dropped_count_o   = dropped_count_q;
     assign fifo_overflow_o          = overflow_latched_q;
 
-    // Сигнал готовності: 1 при наявності хоча б одного вільного слота (REQ-HW-014)
-    assign hw_trigger_ready_o       = (fifo_count_q < QUEUE_DEPTH);
-    assign fifo_full_o              = (fifo_count_q == QUEUE_DEPTH);
-
     // Однотактові строби результату транзакції на такті фіксації
     assign commit_pulse_o           = (state_q == ST_EVAL_GATE) && cme_committed;
     assign reject_pulse_o           = (state_q == ST_EVAL_GATE) && !cme_committed;
 
-    // Умови запитів до черги
-    wire dequeue_req = (state_q == ST_IDLE) && (fifo_count_q > 0);
-    wire cascade_req = (state_q == ST_EVAL_GATE) && cme_committed &&
-                       cme_trigger_subscriber && (cme_subscriber_cid[5:0] != active_cid_q);
-    wire ext_req     = hw_trigger_valid_i;
+    // Умови запитів до черги та арбітражу каскаду над зовнішнім входом (B5 v2, REQ-SYS-014, REQ-HW-014)
+    wire dequeue_req   = (state_q == ST_IDLE) && (fifo_count_q > 0);
+    wire cascade_req   = (state_q == ST_EVAL_GATE) && cme_committed &&
+                         cme_trigger_subscriber && (cme_subscriber_cid[5:0] != active_cid_q);
+    wire cascade_valid = cascade_pending_valid_q || cascade_req;
+    wire [5:0]            cascade_cid   = cascade_pending_valid_q ? cascade_pending_cid_q
+                                                                  : cme_subscriber_cid[5:0];
+    wire [DATA_WIDTH-1:0] cascade_param = cascade_pending_valid_q ? cascade_pending_param_q
+                                                                  : cme_updated_state;
+
+    wire [PTR_WIDTH+1:0] ext_slots_needed = cascade_req
+        ? {{PTR_WIDTH{1'b0}}, 2'd2}
+        : {{PTR_WIDTH{1'b0}}, 2'd1};
+
+    // Сигнал готовності враховує резервування слота під активний або утриманий каскад:
+    // при 1 вільному слоті та одночасному cascade_req сигнал ready опускається у 0 до фронту.
+    assign hw_trigger_ready_o       = !cascade_pending_valid_q &&
+                                      (({1'b0, fifo_count_q} + ext_slots_needed) <= {1'b0, DEPTH_CNT});
+    assign fifo_full_o              = (fifo_count_q == DEPTH_CNT);
+
+    wire cascade_enq = cascade_valid && ((fifo_count_q < DEPTH_CNT) || dequeue_req);
+    wire ext_accept  = hw_trigger_valid_i && hw_trigger_ready_o;
+    wire same_stalled_payload = (hw_trigger_cid_i == stalled_cid_q) &&
+                                (hw_trigger_param_i == stalled_param_q);
+
+    wire [PTR_WIDTH:0] enq_delta = (cascade_enq && ext_accept) ? {{(PTR_WIDTH-1){1'b0}}, 2'd2}
+                                 : ((cascade_enq || ext_accept) ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0);
+    wire [PTR_WIDTH:0] deq_delta = dequeue_req ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            state_q            <= ST_IDLE;
-            bram_b_addr_o      <= '0;
-            bram_b_wdata_o     <= '0;
-            bram_b_wstrb_o     <= 4'b0000;
-            bram_b_we_o        <= 1'b0;
-            cme_event_valid    <= 1'b0;
+            state_q                 <= ST_IDLE;
+            bram_b_addr_o           <= '0;
+            bram_b_wdata_o          <= '0;
+            bram_b_wstrb_o          <= 4'b0000;
+            bram_b_we_o             <= 1'b0;
+            cme_event_valid         <= 1'b0;
 
-            fifo_wr_ptr_q      <= '0;
-            fifo_rd_ptr_q      <= '0;
-            fifo_count_q       <= '0;
+            fifo_wr_ptr_q           <= '0;
+            fifo_rd_ptr_q           <= '0;
+            fifo_count_q            <= '0;
 
-            active_cid_q       <= '0;
-            active_param_q     <= '0;
-            desc_w0_q          <= '0;
-            desc_w1_q          <= '0;
-            desc_w2_q          <= '0;
-            desc_w3_q          <= '0;
+            cascade_pending_valid_q <= 1'b0;
+            cascade_pending_cid_q   <= '0;
+            cascade_pending_param_q <= '0;
 
-            ev_count_q         <= 32'd0;
-            comm_count_q       <= 32'd0;
-            rej_count_q        <= 32'd0;
-            last_state_q       <= 32'd0;
-            dropped_count_q    <= 32'd0;
-            overflow_latched_q <= 1'b0;
+            stalled_ext_q           <= 1'b0;
+            stalled_cid_q           <= '0;
+            stalled_param_q         <= '0;
+
+            active_cid_q            <= '0;
+            active_param_q          <= '0;
+            desc_w0_q               <= '0;
+            desc_w1_q               <= '0;
+            desc_w2_q               <= '0;
+            desc_w3_q               <= '0;
+
+            ev_count_q              <= 32'd0;
+            comm_count_q            <= 32'd0;
+            rej_count_q             <= 32'd0;
+            last_state_q            <= 32'd0;
+            dropped_count_q         <= 32'd0;
+            overflow_latched_q      <= 1'b0;
         end else begin
             // За замовчуванням деактивуємо строби
             bram_b_we_o     <= 1'b0;
@@ -174,58 +227,64 @@ module km_autonomous_sequencer #(
             // 1. УПРАВЛІННЯ ЧЕРГОЮ FIFO (Арбітраж: Каскад > Зовнішній тригер)
             // ================================================================
             if (dequeue_req) begin
-                fifo_rd_ptr_q <= (fifo_rd_ptr_q + 1'b1) % QUEUE_DEPTH;
+                fifo_rd_ptr_q <= rd_ptr_next1;
             end
 
-            if (cascade_req) begin
-                // Каскадна подія має найвищий пріоритет (REQ-SYS-014)
-                if (fifo_count_q < QUEUE_DEPTH) begin
-                    fifo_cid_q[fifo_wr_ptr_q]   <= cme_subscriber_cid[5:0];
-                    fifo_param_q[fifo_wr_ptr_q] <= cme_updated_state;
+            if (cascade_enq && ext_accept) begin
+                // Наявні >= 2 вільні слоти: каскад стає першим, зовнішня подія — слідом
+                fifo_cid_q[fifo_wr_ptr_q]    <= cascade_cid;
+                fifo_param_q[fifo_wr_ptr_q]  <= cascade_param;
+                fifo_cid_q[wr_ptr_next1]     <= hw_trigger_cid_i;
+                fifo_param_q[wr_ptr_next1]   <= hw_trigger_param_i;
+                fifo_wr_ptr_q                <= wr_ptr_next2;
+                cascade_pending_valid_q      <= 1'b0;
+            end else if (cascade_enq) begin
+                fifo_cid_q[fifo_wr_ptr_q]   <= cascade_cid;
+                fifo_param_q[fifo_wr_ptr_q] <= cascade_param;
+                fifo_wr_ptr_q               <= wr_ptr_next1;
+                cascade_pending_valid_q     <= 1'b0;
+            end else if (ext_accept) begin
+                fifo_cid_q[fifo_wr_ptr_q]   <= hw_trigger_cid_i;
+                fifo_param_q[fifo_wr_ptr_q] <= hw_trigger_param_i;
+                fifo_wr_ptr_q               <= wr_ptr_next1;
+            end else if (cascade_req) begin
+                // Черга повна без одночасної вичитки (full-каскад у ST_EVAL_GATE):
+                // утримуємо каскад у 1-слотовому регістрі до наступного такту ST_IDLE,
+                // де dequeue_req гарантовано звільнить слот у FIFO.
+                cascade_pending_valid_q <= 1'b1;
+                cascade_pending_cid_q   <= cme_subscriber_cid[5:0];
+                cascade_pending_param_q <= cme_updated_state;
+            end
 
-                    if (ext_req) begin
-                        if (fifo_count_q < (QUEUE_DEPTH - 1)) begin
-                            // Є місце для обох: зовнішня подія записується у наступний слот
-                            fifo_cid_q[(fifo_wr_ptr_q + 1) % QUEUE_DEPTH]   <= hw_trigger_cid_i;
-                            fifo_param_q[(fifo_wr_ptr_q + 1) % QUEUE_DEPTH] <= hw_trigger_param_i;
-                            fifo_wr_ptr_q <= (fifo_wr_ptr_q + 2) % QUEUE_DEPTH;
-                            fifo_count_q  <= fifo_count_q + 2;
-                        end else begin
-                            // Місце лише для каскаду, зовнішня подія відкидається (REQ-SYS-013)
-                            fifo_wr_ptr_q      <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
-                            fifo_count_q       <= fifo_count_q + 1;
-                            overflow_latched_q <= 1'b1;
-                            dropped_count_q    <= dropped_count_q + 32'd1;
-                        end
-                    end else begin
-                        fifo_wr_ptr_q <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
-                        fifo_count_q  <= fifo_count_q + 1;
-                    end
-                end else begin
-                    // Черга повністю повна: каскад переповнює (REQ-SYS-013)
-                    overflow_latched_q <= 1'b1;
-                    dropped_count_q    <= dropped_count_q + 32'd1;
-                    if (ext_req) begin
-                        dropped_count_q <= dropped_count_q + 32'd2;
-                    end
-                end
-            end else if (ext_req) begin
-                // Немає каскаду, надходить лише зовнішня подія
-                if (fifo_count_q < QUEUE_DEPTH) begin
-                    fifo_cid_q[fifo_wr_ptr_q]   <= hw_trigger_cid_i;
-                    fifo_param_q[fifo_wr_ptr_q] <= hw_trigger_param_i;
-                    fifo_wr_ptr_q <= (fifo_wr_ptr_q + 1) % QUEUE_DEPTH;
-                    fifo_count_q  <= dequeue_req ? fifo_count_q : (fifo_count_q + 1);
-                end else begin
-                    // Черга переповнена: фіксація без мовчазних втрат (REQ-SYS-013, REQ-HW-015)
-                    overflow_latched_q <= 1'b1;
-                    dropped_count_q    <= dropped_count_q + 32'd1;
-                    fifo_count_q       <= dequeue_req ? (fifo_count_q - 1) : fifo_count_q;
+            fifo_count_q <= fifo_count_q + enq_delta - deq_delta;
+
+            // Моніторинг протоколу утримання на зовнішньому вході (REQ-SYS-013, REQ-HW-015)
+            if (!stalled_ext_q) begin
+                if (hw_trigger_valid_i && !hw_trigger_ready_o) begin
+                    stalled_ext_q   <= 1'b1;
+                    stalled_cid_q   <= hw_trigger_cid_i;
+                    stalled_param_q <= hw_trigger_param_i;
                 end
             end else begin
-                // Немає записів, лише можлива вичитка
-                if (dequeue_req) begin
-                    fifo_count_q <= fifo_count_q - 1;
+                if (!hw_trigger_valid_i) begin
+                    // Незупинне джерело зняло valid до появи ready == 1 -> фактична втрата події
+                    overflow_latched_q <= 1'b1;
+                    dropped_count_q    <= dropped_count_q + 32'd1;
+                    stalled_ext_q      <= 1'b0;
+                end else if (!same_stalled_payload) begin
+                    // Незупинне джерело перезаписало неприйняту подію новою
+                    overflow_latched_q <= 1'b1;
+                    dropped_count_q    <= dropped_count_q + 32'd1;
+                    if (hw_trigger_ready_o) begin
+                        stalled_ext_q <= 1'b0;
+                    end else begin
+                        stalled_ext_q   <= 1'b1;
+                        stalled_cid_q   <= hw_trigger_cid_i;
+                        stalled_param_q <= hw_trigger_param_i;
+                    end
+                end else if (hw_trigger_ready_o) begin
+                    // Кероване джерело коректно утримало подію до прийняття — 0 втрат
+                    stalled_ext_q <= 1'b0;
                 end
             end
 
