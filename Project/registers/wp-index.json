@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "date": "2026-11-13",
   "entries": [
     {
@@ -1273,6 +1273,36 @@
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/signature-115/raw/checks-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/signature-115/raw/negative-control-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/signature-115/raw/regressions-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/signature-115/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/signature-115/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
     },
     {
       "path": "Engineering/validation/spec-conformance/namespace-import-probe.py",

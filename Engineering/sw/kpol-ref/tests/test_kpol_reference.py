@@ -1830,7 +1830,8 @@ endmodule
         secret = b"KuzminMachineSecretKeyForCME_001"
         signed_image = compile_signed_bram_image(bram_bytes, secret_key=secret)
         self.assertEqual(len(signed_image), 1024 + 64)  # 1024 data + 64 header
-        self.assertTrue(verify_bram_signature(signed_image, secret_key=secret))
+        valid, msg = verify_bram_signature(signed_image, secret_key=secret)
+        self.assertTrue(valid, msg)
 
 
 class KpolCmeProfileTests(unittest.TestCase):
