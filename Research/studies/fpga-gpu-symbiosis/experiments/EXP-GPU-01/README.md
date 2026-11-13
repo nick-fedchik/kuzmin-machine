@@ -14,6 +14,7 @@
 |---|---|---|
 | [protocol.md](protocol.md) | Protocol | Нормативний протокол випробувань: вимірювані метрики, часові допуски, покроковий регламент вимірювань, критерії Pass/Fail. |
 | [plan.md](plan.md) | Plan | Операційний план підготовки стенду, монтаж з'єднувального шлейфу DuPont, розподіл пінів та календарний графік 4 фаз. |
+| [j501-hardware-interface.md](j501-hardware-interface.md) | Specification | Інженерний аналіз несучої плати Seeed Studio reServer Industrial J501 (схемотехніка DI/DO/CAN, оптрони SFH690BT, часовий бюджет). |
 | [Експеримент EXP-GPU-02](../EXP-GPU-02/README.md) | Guide | Наступний HIL-експеримент: динамічне оновлення правил у BRAM на льоту (Zero-Downtime Rule Injection). |
 | [Пакет дослідження](../../README.md) | Guide | Загальний дослідницький пакет: постановка проблеми, аналітична модель, загальний протокол та аналітичний звіт. |
 | [Рішення B6](../../../../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md) | Decision | Архітектурне рішення (ADR B6): концепція Persistent Mega-Kernel для усунення Callback Bottleneck. |
