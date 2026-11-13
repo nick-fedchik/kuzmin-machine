@@ -1,6 +1,6 @@
 # KPOL: консолідований робочий контракт фронтенду та CME-бекенду
 
-* **Версія:** 0.4.0 (версія документа; чернетка, не стандарт KPOL v1.0)
+* **Версія:** 0.5.0 (версія документа; чернетка, не стандарт KPOL v1.0)
 * **Дата:** 2026-11-13
 * **Issue:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19), вхід для [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)
 * **База реалізації:** `0ada974` у `nick-fedchik/kuzmin-machine`.
@@ -72,6 +72,13 @@ native контракту — у [Requirement §3.1](../../requirements/kpol.md#
 лексика `#`, повна граматика та native ABI не вважаються завершеними.
 [Report #157](../../../Research/studies/author-semantics/kpol-syntax-157-report.md)
 містить точний diff і поточну оцінку AUTH/Q-AUTH; правила §2–7 не змінені.
+
+[Окремий Source #159](../../../Research/sources/author/group-execution-2026-11-13.md)
+уточнює роль індексів залежно від типу: для Token підрядкове → Min, надрядкове →
+Max; успіх вмісту відділено від кратності успіху групи.
+Це не підтримана можливість current DSL/CME. Max=0 та інші типи індексів
+не отримали повної семантики; [Report #159](../../../Research/studies/author-semantics/kpol-syntax-159-report.md)
+частково уточнює Q-AUTH-01, не змінює поточну граматику/ABI.
 
 ## 2. Синтаксис поточного фронтенду
 
@@ -278,7 +285,7 @@ HMAC-обгортка з `compile_signed_bram_image` додає 64-байтни�
 
 | Конструкція / можливість | Стан фронтенду / референсу | CME та інші межі / тест |
 |---|---|---|
-| Native Concept/Define/Group, виконувані дужки Static, Name/Help, адресні групи Source | Не реалізовано як native frontend; `•` має розбіжну семантику NOT | KPOL-AUTH/Q-AUTH і Reports #155/#157; дефекти/прогалини не змінюють CME-RAW-1 |
+| Native Concept/Define/Group, типізовані Min/Max, виконувані дужки Static, Name/Help, адресні групи Source | Не реалізовано як native frontend; `•` має розбіжну семантику NOT | KPOL-AUTH/Q-AUTH і Reports #155/#157/#159; дефекти/прогалини не змінюють CME-RAW-1 |
 | Problem/Solution, event/state/rule/set | Реалізовано парсером і перевіркою типів | Наскрізно перевірено лише обмежені сценарії §4; `test_all_documented_examples_parse_and_typecheck` — приклади історичного v0.1, `test_consolidated_example_proof_and_cme_pipeline` — приклад §4 та його зв'язок з образом increase |
 | Assumptions, Invariants, Hazards, Alerts, Goals | Реалізовано в Interpreter | Не всі вирази переносяться в CME; `test_v02_alert_observation_and_fail_closed_hazard`, `test_invariant_failure_rolls_back_whole_transaction` |
 | `on reject`, `covers` | Реалізовано в референсі з перевіркою hazard-цілі | Не доказ довільних reject-дій у CME; `test_rejected_unknown_sensor_data_latches_fault` |
@@ -374,6 +381,7 @@ No-Go для v1.0 не скасовується автоматично.
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.0 | 2026-11-13 | #159: межа підтримки типізованих індексів Collection/Array; current grammar/ABI незмінні. |
 | 0.4.0 | 2026-11-13 | #157: межа підтримки виконуваних дужок Static, оцінка уточнень; current grammar/ABI не змінено. |
 | 0.3.0 | 2026-11-13 | #155: явна межа native авторського синтаксису й current DSL; `•`, Name/Help та адреси, без змін реалізації. |
 | 0.2.0 | 2026-11-12 | #150: окремий strict KPOL-CME-1 і CLI Proof gate; відмежовано незмінний експериментальний API та його контрприклади. |

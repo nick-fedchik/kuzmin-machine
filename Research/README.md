@@ -1,6 +1,6 @@
 # Дослідження
 
-* **Версія:** 0.5.0
+* **Версія:** 0.6.0
 * **Дата:** 2026-11-13
 * **Тип WP:** Guide
 * **Супровід:** власник проєкту; оновлення за результатом дослідження.
@@ -15,7 +15,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 
 | Питання / пакет | Останній результат | Стан і відкрита частина | WI джерельного проєкту |
 |---|---|---|---|
-| [Авторська семантика](studies/author-semantics/README.md) | [Редакція Static / уточнення](studies/author-semantics/kpol-syntax-157-report.md), [попередній KPOL impact](studies/author-semantics/kpol-syntax-155-report.md), [історичний звіт](studies/author-semantics/report.md) | Виконувана роль дужок уточнена; фаза/ефекти, повна граматика й native ABI ще відкриті. | #76, #78, #155, #157 |
+| [Авторська семантика](studies/author-semantics/README.md) | [Типізовані Min/Max](studies/author-semantics/kpol-syntax-159-report.md), [Static / уточнення](studies/author-semantics/kpol-syntax-157-report.md), [KPOL impact](studies/author-semantics/kpol-syntax-155-report.md), [історичний звіт](studies/author-semantics/report.md) | Token-індекси означають Min/Max; Max=0, фаза/ефекти дужок, повна граматика й native ABI ще відкриті. | #76, #78, #155, #157, #159 |
 | [Конструкція МТ](studies/turing-construction/README.md) | [Звіт](studies/turing-construction/report.md) | Контрприклад до конкретного ескізу, не до всіх можливих машин. | #77 |
 | [Обґрунтованість концепції](studies/concept-assessment/README.md) | [Зведення](studies/concept-assessment/report.md) | Обмежений корпус; питання авторові не прирівняні до відповідей. | Джерельна опозиція |
 | [Попередній рівень техніки](studies/prior-art/README.md) | [Аналіз](studies/prior-art/report.md) | Представницькі аналоги, аналіз когнітивних ієрархій та патентний ландшафт (CII). | #82 |
@@ -37,6 +37,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-13 | #159: аналіз окремого фрагмента про типізовані Min/Max. |
 | 0.5.0 | 2026-11-13 | #157: окрема оцінка редакції Static та переданих уточнень, без закриття повної семантики. |
 | 0.4.0 | 2026-11-13 | #155: новий Source і зіставлення авторського синтаксису з KPOL. |
 | 0.3.0 | 2026-11-13 | Додано реєстрацію експерименту EXP-GPU-02 та оновлення prior-art. |

@@ -1,0 +1,72 @@
+{"timestamp": "2026-11-13T14:26:28.155927+02:00", "host": "AORUS-5-SE", "Python": "3.14.4", "base_commit": "d511a7ab388e6850571edc44ecaf616044ac1b1a", "command": ["python3", "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol159_checks.py", "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-159-group-bounds"], "source_sha256": "4616a5e8950bede557b9bdb14ed9cfca8c7740c6c5d7b3ec930d0b7d552fc723", "audit_sha256": "d12c8bbb113de1f1070504fce398b20db0f094f4a0eed657eb8910654a4f8dd6", "reference_sha256": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "reproducer_source": "import hashlib\nimport json\nimport os\nimport platform\nimport subprocess\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\n\nroot = Path(sys.argv[1])\ndata = root / \"Research/studies/author-semantics/data/kpol-syntax-159\"\nsource = root / \"Research/sources/author/Презентация1.pptx\"\nout = data / \"checks-01.log\"\nrecord = {\n    \"timestamp\": datetime.now().astimezone().isoformat(), \"host\": platform.node(),\n    \"Python\": platform.python_version(),\n    \"base_commit\": subprocess.check_output([\"git\", \"rev-parse\", \"HEAD\"], cwd=root, text=True).strip(),\n    \"command\": [\"python3\", *sys.argv],\n    \"source_sha256\": hashlib.sha256(source.read_bytes()).hexdigest(),\n    \"audit_sha256\": hashlib.sha256((data / \"source-audit-01.json\").read_bytes()).hexdigest(),\n    \"reference_sha256\": hashlib.sha256((root / \"Engineering/sw/kpol-ref/kpol_reference.py\").read_bytes()).hexdigest(),\n    \"reproducer_source\": Path(__file__).read_text(),\n}\nwith out.open(\"x\") as handle:\n    handle.write(json.dumps(record, ensure_ascii=False) + \"\\n\")\n    handle.flush()\n    def files(*args):\n        return {p.decode() for p in subprocess.check_output([\"git\", *args, \"-z\"], cwd=root).split(b\"\\0\") if p}\n    old = json.loads(subprocess.check_output([\"git\", \"show\", \"HEAD:Project/registers/wp-index.json\"], cwd=root))\n    current = json.loads((root / \"Project/registers/wp-index.json\").read_text())\n    paths = files(\"ls-files\") | files(\"ls-files\", \"--others\", \"--exclude-standard\")\n    indexed = {e[\"path\"] for e in current[\"entries\"]}\n    assert len(indexed) == len(current[\"entries\"]) and indexed == paths\n    assert all(e in current[\"entries\"] for e in old[\"entries\"])\n    protected = [\n        \"Engineering/sw\", \"Engineering/hw\",\n        \"Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md\",\n        \"Project/registers/migration-manifest.json\",\n        \"Research/studies/author-semantics/data/kpol-syntax-155\",\n        \"Research/studies/author-semantics/data/kpol-syntax-157\",\n        \"Research/studies/author-semantics/kpol-syntax-155-report.md\",\n        \"Research/studies/author-semantics/kpol-syntax-157-report.md\",\n        *[e[\"path\"] for e in old[\"entries\"] if e[\"path\"].startswith(\"Research/sources/author/\")],\n    ]\n    assert not subprocess.check_output([\"git\", \"diff\", \"HEAD\", \"--\", *protected], cwd=root)\n    owner = Path(\"/home/mfedchyk/GitHub/nick-fedchik/kuzmin-machine/Research/sources/author/Презентация1.pptx\")\n    assert source.read_bytes() == owner.read_bytes()\n    assert record[\"source_sha256\"] == \"4616a5e8950bede557b9bdb14ed9cfca8c7740c6c5d7b3ec930d0b7d552fc723\"\n    md = sorted(p for p in files(\"diff\", \"--name-only\", \"HEAD\") | files(\"ls-files\", \"--others\", \"--exclude-standard\") if p.endswith(\".md\"))\n    handle.write(json.dumps({\n        \"index_entries\": len(indexed), \"old_entries_preserved\": len(old[\"entries\"]),\n        \"changed_md\": md, \"protected_paths_unchanged\": protected, \"owner_input_byte_identical\": True,\n    }, ensure_ascii=False, indent=2) + \"\\n\")\n    commands = [\n        [\"python3\", \"Project/tools/check_links.py\"],\n        [\"python3\", \"Project/tools/check_wp_documents.py\"],\n        [\"python3\", \"/home/mfedchyk/GitHub/nick-fedchik/drafts/scripts/inspect_math_formatting.py\", *md],\n        [\"git\", \"--no-pager\", \"diff\", \"--check\", \"HEAD\"],\n        [\"python3\", \"-m\", \"pytest\", \"-q\"],\n    ]\n    for command in commands:\n        handle.write(\"command: \" + json.dumps(command) + \"\\n\")\n        handle.flush()\n        result = subprocess.run(command, cwd=root, env=dict(os.environ, KM_DRAFTS_REPO=\"/home/mfedchyk/GitHub/nick-fedchik/drafts\"), stdout=handle, stderr=subprocess.STDOUT)\n        handle.write(f\"\\nexit_code={result.returncode}\\n\")\n        handle.flush()\n        if result.returncode:\n            print(\"\\n\".join(out.read_text().splitlines()[-35:]))\n            raise SystemExit(result.returncode)\nprint(\"\\n\".join(out.read_text().splitlines()[-24:]))\n"}
+{
+  "index_entries": 377,
+  "old_entries_preserved": 372,
+  "changed_md": [
+    "Engineering/design/software/compiler.md",
+    "Engineering/requirements/kpol.md",
+    "Engineering/specifications/kpol/README.md",
+    "Engineering/specifications/kpol/kpol-consolidated-0.1.0.md",
+    "Project/registers/goals-needs-work-items.md",
+    "Research/README.md",
+    "Research/sources/README.md",
+    "Research/sources/author/group-execution-2026-11-13.md",
+    "Research/studies/author-semantics/README.md",
+    "Research/studies/author-semantics/kpol-syntax-159-report.md"
+  ],
+  "protected_paths_unchanged": [
+    "Engineering/sw",
+    "Engineering/hw",
+    "Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md",
+    "Project/registers/migration-manifest.json",
+    "Research/studies/author-semantics/data/kpol-syntax-155",
+    "Research/studies/author-semantics/data/kpol-syntax-157",
+    "Research/studies/author-semantics/kpol-syntax-155-report.md",
+    "Research/studies/author-semantics/kpol-syntax-157-report.md",
+    "Research/sources/author/clarifications-2026-11-13.md",
+    "Research/sources/author/dou/dou-35914.md",
+    "Research/sources/author/dou/dou-36556.md",
+    "Research/sources/author/dou/dou-38994.md",
+    "Research/sources/author/dou/dou-43177.md",
+    "Research/sources/author/introduction-2026-11-13.md",
+    "Research/sources/author/introduction-revision-2026-11-13.md",
+    "Research/sources/author/kuzmin-2024-example-for-AN.pdf",
+    "Research/sources/author/kuzmin-2024-example-for-AN.pptx",
+    "Research/sources/author/rfc-2026-11-12.md",
+    "Research/sources/author/Введение. Понятия. Группы. Синтаксис.pptx",
+    "Research/sources/author/Введение_1. Понятия. Группы. Синтаксис.pptx"
+  ],
+  "owner_input_byte_identical": true
+}
+command: ["python3", "Project/tools/check_links.py"]
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 16, пропущено 0
+
+exit_code=0
+command: ["python3", "Project/tools/check_wp_documents.py"]
+{
+  "documents_checked": 125,
+  "immutable_checked": 108,
+  "errors": []
+}
+
+exit_code=0
+command: ["python3", "/home/mfedchyk/GitHub/nick-fedchik/drafts/scripts/inspect_math_formatting.py", "Engineering/design/software/compiler.md", "Engineering/requirements/kpol.md", "Engineering/specifications/kpol/README.md", "Engineering/specifications/kpol/kpol-consolidated-0.1.0.md", "Project/registers/goals-needs-work-items.md", "Research/README.md", "Research/sources/README.md", "Research/sources/author/group-execution-2026-11-13.md", "Research/studies/author-semantics/README.md", "Research/studies/author-semantics/kpol-syntax-159-report.md"]
+=== Inspecting 10 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[OK] No violations of the checked math and advanced GFM formatting rules found.
+Target-renderer compatibility still requires a rendering check.
+
+exit_code=0
+command: ["git", "--no-pager", "diff", "--check", "HEAD"]
+
+exit_code=0
+command: ["python3", "-m", "pytest", "-q"]
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+............................................ [ 61%]
+................ [ 66%]
+........................................................................ [ 89%]
+................................                                         [100%]
+308 passed, 300 subtests passed in 20.37s
+
+exit_code=0
