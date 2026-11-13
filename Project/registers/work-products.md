@@ -43,6 +43,7 @@
 | WP | Основне місце / шаблон | Стан і межа |
 |---|---|---|
 | Plan | [NG](../plans/ng-transition.md), [EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/plan.md), [EXP-GPU-02](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/plan.md); [форма](../templates/work-products/plan.md) | Додано плани експериментів EXP-GPU-01 та EXP-GPU-02. |
+| Specification / Patent Draft | [Портфель](../patents/README.md), [KM-PAT-01](../patents/patent-apparatus-heterogeneous-event-engine.md), [KM-PAT-02](../patents/patent-method-hierarchical-event-control.md) | Чернетки заявок на винахід (пристрій та спосіб) для УКРНОІВІ/PCT/USPTO. |
 | Guide | [Навігація](../README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md); [форма](../templates/work-products/guide.md) | README пакетів не потребують окремого сховища docs. |
 | Policy | [Розміщення](../policies/layout.md), [ліцензійний режим](../policies/licensing.md), [WP](../policies/work-products.md); [форма](../templates/work-products/policy.md) | Межі й повноваження визначає власник. |
 | Register | Цей запис, [цілі](goals-needs-work-items.md), [відкриті WI](open-work-items.md), [CI](configuration-items.md); [форма](../templates/work-products/register.md) | Нові актуальні карти, не копії історичних зрізів. |
