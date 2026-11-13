@@ -1,0 +1,39 @@
+{"timestamp": "2026-11-13T14:05:04.309676+02:00", "host": "AORUS-5-SE", "Python": "3.14.4", "commit": "132afc5c1f3b3032910a4a354e5efd2bcec64c3e", "source_sha256": "acdd9854b4a7a72fd1e1b18300f802ea5d7bdcac625c288a6756a73df4c4547b", "reference_sha256": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "source_delta_sha256": "7b7e445506ebc8466c6140c99718cda7e948bf8730048841555563f5199f1f48", "command": ["python3", "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157_structure.py", "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-157-author-revision"]}
+command: ["python3", "Project/tools/check_links.py"]
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 16, пропущено 0
+exit_code: 0
+command: ["python3", "Project/tools/check_wp_documents.py"]
+{
+  "documents_checked": 123,
+  "immutable_checked": 108,
+  "errors": []
+}
+exit_code: 0
+command: ["python3", "/home/mfedchyk/GitHub/nick-fedchik/drafts/scripts/inspect_math_formatting.py", "Engineering/design/software/compiler.md", "Engineering/requirements/kpol.md", "Engineering/specifications/kpol/README.md", "Engineering/specifications/kpol/kpol-consolidated-0.1.0.md", "Project/registers/goals-needs-work-items.md", "Research/README.md", "Research/sources/README.md", "Research/sources/author/clarifications-2026-11-13.md", "Research/sources/author/introduction-revision-2026-11-13.md", "Research/studies/author-semantics/README.md", "Research/studies/author-semantics/kpol-syntax-157-report.md"]
+=== Inspecting 11 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[OK] No violations of the checked math and advanced GFM formatting rules found.
+Target-renderer compatibility still requires a rendering check.
+exit_code: 0
+command: ["git", "--no-pager", "diff", "--check", "HEAD"]
+exit_code: 0
+{
+  "index_entries": 372,
+  "base_entries_preserved": 362,
+  "new_entries": 10,
+  "changed_markdown_checked": 11,
+  "protected_diff_empty": [
+    "Engineering/sw",
+    "Engineering/hw",
+    "Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md",
+    "Project/registers/migration-manifest.json",
+    "Research/studies/author-semantics/data/kpol-syntax-155",
+    "Research/studies/author-semantics/kpol-syntax-155-report.md",
+    "Research/sources/author/introduction-2026-11-13.md",
+    "Research/sources/author/rfc-2026-11-12.md",
+    "Research/sources/author/Введение. Понятия. Группы. Синтаксис.pptx"
+  ],
+  "owner_input_byte_identical": true
+}
+
+exit_code=0

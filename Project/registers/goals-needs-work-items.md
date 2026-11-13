@@ -1,6 +1,6 @@
 # Цілі, потреби та зв'язки поточного складу
 
-* **Версія:** 0.5.0
+* **Версія:** 0.6.0
 * **Дата:** 2026-11-13
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -21,6 +21,7 @@ ID G/N збережені; нових вимог і числових крите�
 | G1/N1–N2: уточнення правил і профільний compiler | [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), частина #8; RFC-005–008 | [Source](../../Research/sources/author/rfc-2026-11-12.md) → [Requirement](../../Engineering/requirements/kpol.md) → [B3](../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md) → [Report](../../Engineering/validation/kpol-cme/profile-150/report.md). | Strict-path відокремлений від legacy; очікування черги й багатоядерний fallback не реалізовані цим кроком. |
 | G1/N2: поведінка виконуваного профілю | B3-REQ-06, [#153](https://github.com/nick-fedchik/kuzmin-machine/issues/153), частина #8 | [B3 §3/§7](../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md) → [direct/AXI тести](../../Engineering/hw/tests/test_kpol_bram_pipeline.py) → [Report](../../Engineering/validation/kpol-cme/behavior-153/report.md). | Скінченна матриця переходів і відмов, виправлено підміну нульового payload; без HIL, input validator або retention #151. |
 | G1/N1–N2, G3/N4: авторські поняття й native синтаксис | [#155](https://github.com/nick-fedchik/kuzmin-machine/issues/155), частина #8; пов'язано з #120 | [Source/слайди](../../Research/sources/author/introduction-2026-11-13.md) → [AUTH/Q-AUTH](../../Engineering/requirements/kpol.md#31-кандидати-за-новою-презентацією) → [Design](../../Engineering/design/software/compiler.md) / [Specification](../../Engineering/specifications/kpol/README.md) → [Report](../../Research/studies/author-semantics/kpol-syntax-155-report.md). | Новий матеріал проаналізовано; native frontend/ABI не реалізовано, user-study не проведено; current CME відділено від авторської структури. |
+| G1/N1–N2, G3/N4: редакція Static й виконувані дужки | [#157](https://github.com/nick-fedchik/kuzmin-machine/issues/157), продовження #155, частина #8 | [PPTX](../../Research/sources/author/introduction-revision-2026-11-13.md) / [уточнення](../../Research/sources/author/clarifications-2026-11-13.md) → [AUTH-08/Q-AUTH](../../Engineering/requirements/kpol.md#31-кандидати-за-новою-презентацією) → [Design](../../Engineering/design/software/compiler.md#32-редакція-static-та-виконувана-граматика) → [Report](../../Research/studies/author-semantics/kpol-syntax-157-report.md). | Зміна тексту лише слайда 5; виконувана роль задана, фаза/ефекти й native ABI не погоджені. Код/профіль незмінні, #151 не реалізовано. |
 | G1/N1: межі fail-closed | Gate v2 за заданих властивостей і припущень | [S3](../../Engineering/validation/experiments/S3-62/report.md), [RTL](../../Engineering/hw/rtl/core/kpol_txn_gate_v2.sv). | Доказ компонента, не безпечність усієї системи. |
 | G1/N1: реактивна затримка | Окремий CFG-R | [AV-10](../../Engineering/validation/experiments/AV-10/report.md), [AV-11](../../Engineering/validation/experiments/AV-11/report.md). | Власник прийняв 100 подій і p99 ≤ 60 нс для перевіреної CFG-R після вимірювання; не попередня реєстрація й не доказ CFG-P. |
 | G1/N1: усунення Callback Bottleneck (FPGA + GPU) | Як виконати масив підписок без затримок послідовних шин та host-драйвера GPU? | [Рішення B6](../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md) → Дослідження [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md) ([EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/README.md), [EXP-GPU-02](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/README.md)). | Архітектурна пропозиція B6 та дослідницькі HIL-експерименти (PYNQ-Z1 + Jetson J501 + Raspberry Pi Pico); статус Proposed / Planned. |
@@ -37,13 +38,14 @@ ID G/N збережені; нових вимог і числових крите�
 #5 відкладено, #8/#120/#115 залишені відкритими.
 Це не повторна перевірка всіх історичних WI. Відсутність незалежної рецензії
 NG не замінено закриттям старих Issues.
-Нові #150/#153/#155 є окремими продовженнями #8, не закриттям
+Нові #150/#153/#155/#157 є окремими продовженнями #8, не закриттям
 повної мови, #120 або відкладеної #5.
 
 ## Історія версій
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-13 | #157: окреме трасування редакції Static, уточнень, AUTH-08/Q-AUTH-07 та Report. |
 | 0.5.0 | 2026-11-13 | #155: ланцюг Source → AUTH/Q-AUTH → native Design/Specification → Report. |
 | 0.4.0 | 2026-11-13 | Ланцюг B3-REQ-06 → поведінкові direct/AXI перевірки → Report #153. |
 | 0.3.0 | 2026-11-12 | Додано ланцюг ADR B6 → EXP-GPU-01 для розв'язання Callback Bottleneck на GPU. |

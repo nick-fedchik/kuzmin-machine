@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-11-13T13:58:17.042326+02:00",
+  "host": "AORUS-5-SE",
+  "base_commit": "132afc5c1f3b3032910a4a354e5efd2bcec64c3e",
+  "command": [
+    "python3",
+    "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157_supplement.py",
+    "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-157-author-revision"
+  ],
+  "reproducer_source": "import difflib\nimport hashlib\nimport json\nimport platform\nimport posixpath\nimport sys\nimport xml.etree.ElementTree as ET\nimport zipfile\nfrom datetime import datetime\nfrom pathlib import Path\nfrom urllib.parse import unquote\n\nroot = Path(sys.argv[1])\nout = root / \"Research/studies/author-semantics/data/kpol-syntax-157\"\naudit = json.loads((out / \"source-delta-01.json\").read_text())\nns = {\"p\": \"http://schemas.openxmlformats.org/presentationml/2006/main\"}\nresult = {\n    \"timestamp\": datetime.now().astimezone().isoformat(),\n    \"host\": platform.node(), \"base_commit\": audit[\"base_commit\"],\n    \"command\": [\"python3\", *sys.argv],\n    \"reproducer_source\": Path(__file__).read_text(),\n    \"packages\": {}, \"matching_paragraph_direct_baseline_changes\": [],\n    \"baseline_limit\": \"Direct run baseline, zero when absent; matching paragraph text only. Not a complete style cascade or renderer.\",\n}\n\n\ndef target(rel_part, name):\n    base = \"\" if rel_part == \"_rels/.rels\" else posixpath.dirname(posixpath.dirname(rel_part))\n    return unquote(name.lstrip(\"/\") if name.startswith(\"/\") else posixpath.normpath(base + \"/\" + name).lstrip(\"/\"))\n\n\nfor which in (\"old\", \"new\"):\n    deck = audit[which]\n    with zipfile.ZipFile(root / deck[\"path\"]) as archive:\n        parts = set(archive.namelist())\n        xml_count, missing, external = 0, [], []\n        slide_for_comment = {}\n        for slide in deck[\"slides\"]:\n            part = slide[\"part\"]\n            rel_part = posixpath.dirname(part) + \"/_rels/\" + posixpath.basename(part) + \".rels\"\n            for rel in ET.fromstring(archive.read(rel_part)):\n                if rel.get(\"Type\", \"\").endswith(\"/comments\"):\n                    slide_for_comment[target(rel_part, rel.get(\"Target\"))] = slide[\"number\"]\n        for part in sorted(parts):\n            if part.endswith((\".xml\", \".rels\")):\n                doc = ET.fromstring(archive.read(part))\n                xml_count += 1\n                if part.endswith(\".rels\"):\n                    for rel in doc:\n                        if rel.get(\"TargetMode\") == \"External\":\n                            external.append({\"part\": part, \"target\": rel.get(\"Target\")})\n                        elif target(part, rel.get(\"Target\")) not in parts:\n                            missing.append({\"part\": part, \"target\": rel.get(\"Target\")})\n        authors_doc = ET.fromstring(archive.read(\"ppt/commentAuthors.xml\"))\n        authors = {a.get(\"id\"): a.get(\"name\") for a in authors_doc}\n        comments = []\n        for part in sorted(p for p in parts if p.startswith(\"ppt/comments/\") and p.endswith(\".xml\")):\n            for comment in ET.fromstring(archive.read(part)):\n                comments.append({\n                    \"part\": part, \"slide\": slide_for_comment.get(part),\n                    \"author_id\": comment.get(\"authorId\"),\n                    \"author_name\": authors.get(comment.get(\"authorId\")),\n                    \"date\": comment.get(\"dt\"),\n                    \"text\": comment.find(\"p:text\", ns).text,\n                })\n        result[\"packages\"][which] = {\n            \"xml_and_rels_parsed\": xml_count,\n            \"missing_internal_targets\": missing,\n            \"external_relationships_not_fetched\": external,\n            \"comment_authors\": authors, \"comments\": comments,\n        }\n        assert not missing\n\n\ndef canonical(slide):\n    return {\n        p[\"paragraph\"]: [(c, r[\"baseline\"]) for r in p[\"runs\"] for c in r[\"text\"]]\n        for p in slide[\"styled_paragraphs\"]\n    }\n\n\nfor old, new in zip(audit[\"old\"][\"slides\"], audit[\"new\"][\"slides\"]):\n    a, b = canonical(old), canonical(new)\n    for match in difflib.SequenceMatcher(a=old[\"paragraphs\"], b=new[\"paragraphs\"], autojunk=False).get_matching_blocks():\n        for i, j in zip(range(match.a, match.a + match.size), range(match.b, match.b + match.size)):\n            before = a.get(i + 1, [(c, 0) for c in old[\"paragraphs\"][i]])\n            after = b.get(j + 1, [(c, 0) for c in new[\"paragraphs\"][j]])\n            if before != after:\n                result[\"matching_paragraph_direct_baseline_changes\"].append({\n                    \"slide\": old[\"number\"], \"old_paragraph\": i + 1, \"new_paragraph\": j + 1,\n                    \"old\": before, \"new\": after,\n                })\nresult[\"comment_meaning_fields_unchanged\"] = (\n    sorted((c[\"slide\"], c[\"author_name\"], c[\"text\"]) for c in result[\"packages\"][\"old\"][\"comments\"])\n    == sorted((c[\"slide\"], c[\"author_name\"], c[\"text\"]) for c in result[\"packages\"][\"new\"][\"comments\"])\n)\nwith (out / \"package-supplement-01.json\").open(\"x\") as handle:\n    json.dump(result, handle, ensure_ascii=False, indent=2)\n    handle.write(\"\\n\")\nprint(json.dumps({\n    \"xml_counts\": {k: v[\"xml_and_rels_parsed\"] for k, v in result[\"packages\"].items()},\n    \"missing_targets\": {k: v[\"missing_internal_targets\"] for k, v in result[\"packages\"].items()},\n    \"normalized_baseline_changes\": result[\"matching_paragraph_direct_baseline_changes\"],\n    \"comment_meaning_fields_unchanged\": result[\"comment_meaning_fields_unchanged\"],\n}))\n",
+  "packages": {
+    "old": {
+      "xml_and_rels_parsed": 58,
+      "missing_internal_targets": [],
+      "external_relationships_not_fetched": [],
+      "comment_authors": {
+        "1": "Михаил",
+        "2": "Кузьмин Михаил"
+      },
+      "comments": [
+        {
+          "part": "ppt/comments/comment1.xml",
+          "slide": 1,
+          "author_id": "1",
+          "author_name": "Михаил",
+          "date": "2019-01-09T10:02:23.793",
+          "text": "Необходимость единого формата данных обусловлена не столько сложностями отладки, сколько единый формат с очевидностью облегчает взаимодействие с любыми сторонними интересами. А интерес это и другие процессоры и другие компьютеры и протокол обмена в сети."
+        },
+        {
+          "part": "ppt/comments/comment2.xml",
+          "slide": 4,
+          "author_id": "2",
+          "author_name": "Кузьмин Михаил",
+          "date": "2021-06-01T12:20:35",
+          "text": "Добавить приципы индексации а группах содержащих группы. Такие как Mark"
+        }
+      ]
+    },
+    "new": {
+      "xml_and_rels_parsed": 57,
+      "missing_internal_targets": [],
+      "external_relationships_not_fetched": [],
+      "comment_authors": {
+        "1": "Кузьмин Михаил",
+        "0": "Михаил"
+      },
+      "comments": [
+        {
+          "part": "ppt/comments/comment1.xml",
+          "slide": 1,
+          "author_id": "0",
+          "author_name": "Михаил",
+          "date": "2019-01-09T10:02:23.793000000",
+          "text": "Необходимость единого формата данных обусловлена не столько сложностями отладки, сколько единый формат с очевидностью облегчает взаимодействие с любыми сторонними интересами. А интерес это и другие процессоры и другие компьютеры и протокол обмена в сети."
+        },
+        {
+          "part": "ppt/comments/comment4.xml",
+          "slide": 4,
+          "author_id": "1",
+          "author_name": "Кузьмин Михаил",
+          "date": "2021-06-01T12:20:35.000000000",
+          "text": "Добавить приципы индексации а группах содержащих группы. Такие как Mark"
+        }
+      ]
+    }
+  },
+  "matching_paragraph_direct_baseline_changes": [],
+  "baseline_limit": "Direct run baseline, zero when absent; matching paragraph text only. Not a complete style cascade or renderer.",
+  "comment_meaning_fields_unchanged": true
+}
