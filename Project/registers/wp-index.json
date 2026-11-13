@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "date": "2026-11-13",
   "entries": [
     {
@@ -1887,6 +1887,12 @@
       "immutable_input": true
     },
     {
+      "path": "Research/sources/author/introduction-2026-11-13.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
+    },
+    {
       "path": "Research/sources/author/kuzmin-2024-example-for-AN.pdf",
       "direction": "Research",
       "wp_type": "Source",
@@ -1900,6 +1906,12 @@
     },
     {
       "path": "Research/sources/author/rfc-2026-11-12.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/sources/author/Введение. Понятия. Группы. Синтаксис.pptx",
       "direction": "Research",
       "wp_type": "Source",
       "immutable_input": false
@@ -1929,7 +1941,49 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/frontend-probes-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/full-tests-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/source-audit-01.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/structure-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/structure-02.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/structure-03.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/author-semantics/formal-analysis.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/kpol-syntax-155-report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false

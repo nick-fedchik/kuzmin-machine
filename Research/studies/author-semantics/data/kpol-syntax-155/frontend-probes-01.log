@@ -1,0 +1,13 @@
+{"timestamp": "2026-11-13T09:26:25.292103+02:00", "host": "AORUS-5-SE", "commit": "cfdfe9ef44cc2c3fb027b8375f519503fde29358", "worktree_status": ["?? \"Research/sources/author/\\320\\222\\320\\262\\320\\265\\320\\264\\320\\265\\320\\275\\320\\270\\320\\265. \\320\\237\\320\\276\\320\\275\\321\\217\\321\\202\\320\\270\\321\\217. \\320\\223\\321\\200\\321\\203\\320\\277\\320\\277\\321\\213. \\320\\241\\320\\270\\320\\275\\321\\202\\320\\260\\320\\272\\321\\201\\320\\270\\321\\201.pptx\""], "source_sha256": "bb05d4af14869b93a6ae8c06608df7b078f9ae8cd363b54822b942899f0e5f0d", "reference_sha256": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "command": ["python3", "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol155_frontend_probes.py"]}
+{"probe": "actual_dot_alias", "source": "Problem DotProbe {}\nSolution DotProbe {\n state Flag: Bool = true;\n event Pulse();\n rule Step on Pulse when •Flag { set Flag := false; }\n}", "guard": {"operator": "not", "operand": {"value": "Flag"}}}
+{"probe": "lexeme_fragment", "fragment": "@", "result": "rejected", "diagnostic": "1:1: unexpected character '@'"}
+{"probe": "lexeme_fragment", "fragment": "!", "result": "rejected", "diagnostic": "1:1: unexpected character '!'"}
+{"probe": "lexeme_fragment", "fragment": "¬", "result": "rejected", "diagnostic": "1:1: unexpected character '¬'"}
+{"probe": "lexeme_fragment", "fragment": "[", "result": "rejected", "diagnostic": "1:1: unexpected character '['"}
+{"probe": "lexeme_fragment", "fragment": "\"", "result": "rejected", "diagnostic": "1:1: unexpected character '\"'"}
+{"probe": "lexeme_fragment", "fragment": "«", "result": "rejected", "diagnostic": "1:1: unexpected character '«'"}
+{"probe": "current_profile_name", "rule_name": "Step", "source": "Problem CounterDemo { Invariants { NonNeg: Counter >= 0; } }\nSolution CounterDemo {\n state Counter: Int32 = 10;\n event Pulse(param: Int32);\n rule Step on Pulse when param < 20 { set Counter := Counter + 1; }\n}", "result": "accepted", "image_bytes": 1024}
+{"probe": "current_profile_name", "rule_name": "RuleNameLongerThanSixteen", "source": "Problem CounterDemo { Invariants { NonNeg: Counter >= 0; } }\nSolution CounterDemo {\n state Counter: Int32 = 10;\n event Pulse(param: Int32);\n rule RuleNameLongerThanSixteen on Pulse when param < 20 { set Counter := Counter + 1; }\n}", "result": "accepted", "image_bytes": 1024}
+Current profile images identical after renaming; author Name limits are not imposed retroactively.
+
+exit_code=0

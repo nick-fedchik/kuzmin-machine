@@ -1,0 +1,17 @@
+{"timestamp": "2026-11-13T09:34:10.193442+02:00", "host": "AORUS-5-SE", "commit": "cfdfe9ef44cc2c3fb027b8375f519503fde29358", "worktree_status": [" M AGENTS.md", " M Engineering/design/s2-candidate-system.md", " M Engineering/design/software/compiler.md", " M Engineering/requirements/kpol.md", " M Engineering/requirements/requirements.md", " M Engineering/solutions/compiler-bram-pipeline.md", " M Engineering/specifications/kpol/README.md", " M Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md", " M Engineering/specifications/kpol/kpol-consolidated-0.1.0.md", " M Project/registers/goals-needs-work-items.md", " M Project/registers/migration.md", " M Research/README.md", " M Research/sources/README.md", " M Research/studies/author-semantics/README.md", " M Research/studies/author-semantics/formal-analysis.md", " M Research/studies/author-semantics/report.md", " M Research/studies/concept-assessment/report.md", "?? Research/sources/author/introduction-2026-11-13.md", "?? \"Research/sources/author/\\320\\222\\320\\262\\320\\265\\320\\264\\320\\265\\320\\275\\320\\270\\320\\265. \\320\\237\\320\\276\\320\\275\\321\\217\\321\\202\\320\\270\\321\\217. \\320\\223\\321\\200\\321\\203\\320\\277\\320\\277\\321\\213. \\320\\241\\320\\270\\320\\275\\321\\202\\320\\260\\320\\272\\321\\201\\320\\270\\321\\201.pptx\"", "?? Research/studies/author-semantics/data/", "?? Research/studies/author-semantics/kpol-syntax-155-report.md"], "source_sha256": "bb05d4af14869b93a6ae8c06608df7b078f9ae8cd363b54822b942899f0e5f0d", "reference_sha256": "ef11f660d4c5ba23d1110a46fd4e946ab192b86416ba7f41b04ddbe0eb36800e", "command": ["bash", "-c", "set -euo pipefail\npython3 /home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/update_kpol155_index.py\nKM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-math-bit python3 Project/tools/check_links.py\npython3 Project/tools/check_wp_documents.py\nmapfile -t docs < <({ git diff --name-only; git ls-files --others --exclude-standard; } | grep \"\\.md$\")\npython3 /home/mfedchyk/GitHub/nick-fedchik/drafts-wt-copilot-math-bit/scripts/inspect_math_formatting.py \"${docs[@]}\"\ngit diff --check"]}
+WP index: 8 new artifacts; 356 entries; prior entries unchanged; version 0.5.0.
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 11, пропущено 0
+{
+  "documents_checked": 116,
+  "immutable_checked": 108,
+  "errors": []
+}
+=== Inspecting 19 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[FAIL] Research/studies/author-semantics/formal-analysis.md (2 issues):
+  L 506 [ERR-MATH-09]: Unprotected inline math '$w_i = s_i (\text{Go } \text{¤}.A \to (v_i) \text{ Do } \text{¤}+d.Q \to (f_i))$' contains Markdown conflicting chars ('_' or '*'). Use GitHub protected syntax $`w_i = s_i (\text{Go } \text{¤}.A \to (v_i) \text{ Do } \text{¤}+d.Q \to (f_i))`$ to prevent italics/bold corruption.
+  L 517 [ERR-MATH-09]: Unprotected inline math '$\frac{1}{T}\int_0^T u(t)i(t)\,dt$' contains Markdown conflicting chars ('_' or '*'). Use GitHub protected syntax $`\frac{1}{T}\int_0^T u(t)i(t)\,dt`$ to prevent italics/bold corruption.
+
+[ERROR] Found 2 formatting violation(s). Run with --fix or repair manually.
+
+exit_code=1
