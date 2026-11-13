@@ -1,6 +1,6 @@
 # KPOL: консолідований робочий контракт фронтенду та CME-бекенду
 
-* **Версія:** 0.3.0 (версія документа; чернетка, не стандарт KPOL v1.0)
+* **Версія:** 0.4.0 (версія документа; чернетка, не стандарт KPOL v1.0)
 * **Дата:** 2026-11-13
 * **Issue:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19), вхід для [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)
 * **База реалізації:** `0ada974` у `nick-fedchik/kuzmin-machine`.
@@ -62,6 +62,16 @@ Boolean-коди та адресна розкладка не переносят�
 [Report #155](../../../Research/studies/author-semantics/kpol-syntax-155-report.md)
 містить прямі probes, зіставлення й Q-AUTH; кандидати майбутнього
 native контракту — у [Requirement §3.1](../../requirements/kpol.md#31-кандидати-за-новою-презентацією).
+
+[Редакція #157](../../../Research/sources/author/introduction-revision-2026-11-13.md)
+змінює текст лише слайда 5: OpenBracket/CloseBracket у Static,
+пояснення порожніх/непорожніх дужок. Їхню виконувану роль уточнено
+[окремим повідомленням](../../../Research/sources/author/clarifications-2026-11-13.md).
+Це не робить дужки current DSL виконуваними native концептами й не
+додає opcode до CME-RAW-1. Канонічні імена, фаза й ефекти — Q-AUTH-07;
+лексика `#`, повна граматика та native ABI не вважаються завершеними.
+[Report #157](../../../Research/studies/author-semantics/kpol-syntax-157-report.md)
+містить точний diff і поточну оцінку AUTH/Q-AUTH; правила §2–7 не змінені.
 
 ## 2. Синтаксис поточного фронтенду
 
@@ -268,7 +278,7 @@ HMAC-обгортка з `compile_signed_bram_image` додає 64-байтни�
 
 | Конструкція / можливість | Стан фронтенду / референсу | CME та інші межі / тест |
 |---|---|---|
-| Native Concept/Define/Group, Name/Help, адресні групи нового Source | Не реалізовано як native frontend; `•` має розбіжну семантику NOT | KPOL-AUTH/Q-AUTH і Report #155; дефекти/прогалини не змінюють CME-RAW-1 |
+| Native Concept/Define/Group, виконувані дужки Static, Name/Help, адресні групи Source | Не реалізовано як native frontend; `•` має розбіжну семантику NOT | KPOL-AUTH/Q-AUTH і Reports #155/#157; дефекти/прогалини не змінюють CME-RAW-1 |
 | Problem/Solution, event/state/rule/set | Реалізовано парсером і перевіркою типів | Наскрізно перевірено лише обмежені сценарії §4; `test_all_documented_examples_parse_and_typecheck` — приклади історичного v0.1, `test_consolidated_example_proof_and_cme_pipeline` — приклад §4 та його зв'язок з образом increase |
 | Assumptions, Invariants, Hazards, Alerts, Goals | Реалізовано в Interpreter | Не всі вирази переносяться в CME; `test_v02_alert_observation_and_fail_closed_hazard`, `test_invariant_failure_rolls_back_whole_transaction` |
 | `on reject`, `covers` | Реалізовано в референсі з перевіркою hazard-цілі | Не доказ довільних reject-дій у CME; `test_rejected_unknown_sensor_data_latches_fault` |
@@ -364,6 +374,7 @@ No-Go для v1.0 не скасовується автоматично.
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.4.0 | 2026-11-13 | #157: межа підтримки виконуваних дужок Static, оцінка уточнень; current grammar/ABI не змінено. |
 | 0.3.0 | 2026-11-13 | #155: явна межа native авторського синтаксису й current DSL; `•`, Name/Help та адреси, без змін реалізації. |
 | 0.2.0 | 2026-11-12 | #150: окремий strict KPOL-CME-1 і CLI Proof gate; відмежовано незмінний експериментальний API та його контрприклади. |
 | 0.1.1 | 2026-11-12 | Редакція NG: структура, навігація та оформлення WP; нових результатів не заявлено. |

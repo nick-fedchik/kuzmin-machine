@@ -1,6 +1,6 @@
 # Дослідження
 
-* **Версія:** 0.4.0
+* **Версія:** 0.5.0
 * **Дата:** 2026-11-13
 * **Тип WP:** Guide
 * **Супровід:** власник проєкту; оновлення за результатом дослідження.
@@ -15,7 +15,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 
 | Питання / пакет | Останній результат | Стан і відкрита частина | WI джерельного проєкту |
 |---|---|---|---|
-| [Авторська семантика](studies/author-semantics/README.md) | [Новий синтаксис / KPOL impact](studies/author-semantics/kpol-syntax-155-report.md), [історичний звіт](studies/author-semantics/report.md) | Новий Source уточнює Concept/Group/адреси; повна граматика й семантика ще не визначені. | #76, #78, #155 |
+| [Авторська семантика](studies/author-semantics/README.md) | [Редакція Static / уточнення](studies/author-semantics/kpol-syntax-157-report.md), [попередній KPOL impact](studies/author-semantics/kpol-syntax-155-report.md), [історичний звіт](studies/author-semantics/report.md) | Виконувана роль дужок уточнена; фаза/ефекти, повна граматика й native ABI ще відкриті. | #76, #78, #155, #157 |
 | [Конструкція МТ](studies/turing-construction/README.md) | [Звіт](studies/turing-construction/report.md) | Контрприклад до конкретного ескізу, не до всіх можливих машин. | #77 |
 | [Обґрунтованість концепції](studies/concept-assessment/README.md) | [Зведення](studies/concept-assessment/report.md) | Обмежений корпус; питання авторові не прирівняні до відповідей. | Джерельна опозиція |
 | [Попередній рівень техніки](studies/prior-art/README.md) | [Аналіз](studies/prior-art/report.md) | Представницькі аналоги, аналіз когнітивних ієрархій та патентний ландшафт (CII). | #82 |
@@ -37,6 +37,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.0 | 2026-11-13 | #157: окрема оцінка редакції Static та переданих уточнень, без закриття повної семантики. |
 | 0.4.0 | 2026-11-13 | #155: новий Source і зіставлення авторського синтаксису з KPOL. |
 | 0.3.0 | 2026-11-13 | Додано реєстрацію експерименту EXP-GPU-02 та оновлення prior-art. |
 | 0.2.0 | 2026-11-12 | Додано дослідницький пакет fpga-gpu-symbiosis (симбіоз ПЛІС і GPU, EXP-GPU-01). |

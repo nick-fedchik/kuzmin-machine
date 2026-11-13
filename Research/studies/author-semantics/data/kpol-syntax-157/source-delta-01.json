@@ -1,0 +1,5527 @@
+{
+  "timestamp": "2026-11-13T13:54:11.703083+02:00",
+  "host": "AORUS-5-SE",
+  "base_commit": "132afc5c1f3b3032910a4a354e5efd2bcec64c3e",
+  "command": [
+    "python3",
+    "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157_audit.py",
+    "/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-157-author-revision",
+    "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render",
+    "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/author-revision-reader-env/bin/python"
+  ],
+  "reproducer_source": "import difflib\nimport hashlib\nimport json\nimport platform\nimport posixpath\nimport subprocess\nimport sys\nimport xml.etree.ElementTree as ET\nimport zipfile\nfrom datetime import datetime\nfrom pathlib import Path\n\n\nroot, renders, reader = map(Path, sys.argv[1:4])\ndata_dir = root / \"Research/studies/author-semantics/data/kpol-syntax-157\"\ndata_dir.mkdir(parents=True, exist_ok=True)\nns = {\n    \"a\": \"http://schemas.openxmlformats.org/drawingml/2006/main\",\n    \"p\": \"http://schemas.openxmlformats.org/presentationml/2006/main\",\n    \"r\": \"http://schemas.openxmlformats.org/officeDocument/2006/relationships\",\n}\n\n\ndef sha(content):\n    return hashlib.sha256(content).hexdigest()\n\n\ndef git(*args, cwd=root):\n    return subprocess.check_output([\"git\", *args], cwd=cwd, text=True).strip()\n\n\ndef deck(name):\n    path = root / \"Research/sources/author\" / name\n    result = {\n        \"path\": str(path.relative_to(root)), \"bytes\": path.stat().st_size,\n        \"sha256\": sha(path.read_bytes()), \"slides\": [],\n    }\n    with zipfile.ZipFile(path) as archive:\n        assert archive.testzip() is None\n        parts = archive.namelist()\n        result[\"part_hashes\"] = {p: sha(archive.read(p)) for p in parts}\n        result[\"core_properties_xml\"] = archive.read(\"docProps/core.xml\").decode()\n        result[\"media_parts\"] = [p for p in parts if p.startswith(\"ppt/media/\")]\n        result[\"omml_parts\"] = [\n            p for p in parts if p.endswith(\".xml\")\n            and b\"http://schemas.openxmlformats.org/officeDocument/2006/math\" in archive.read(p)\n        ]\n        rels = {\n            e.get(\"Id\"): e.get(\"Target\")\n            for e in ET.fromstring(archive.read(\"ppt/_rels/presentation.xml.rels\"))\n        }\n        ids = ET.fromstring(archive.read(\"ppt/presentation.xml\")).findall(\"p:sldIdLst/p:sldId\", ns)\n        for number, item in enumerate(ids, 1):\n            part = posixpath.normpath(\"ppt/\" + rels[item.get(f\"{{{ns['r']}}}id\")])\n            doc = ET.fromstring(archive.read(part))\n            paragraphs, styled = [], []\n            for p_index, para in enumerate(doc.findall(\".//a:p\", ns), 1):\n                text = \"\".join(t.text or \"\" for t in para.findall(\".//a:t\", ns))\n                paragraphs.append(text)\n                runs = []\n                for run in para.findall(\"a:r\", ns):\n                    props = run.find(\"a:rPr\", ns)\n                    t = run.find(\"a:t\", ns)\n                    runs.append({\n                        \"text\": t.text or \"\" if t is not None else \"\",\n                        \"baseline\": int(props.get(\"baseline\", \"0\")) if props is not None else 0,\n                    })\n                if any(r[\"baseline\"] for r in runs):\n                    styled.append({\"paragraph\": p_index, \"runs\": runs})\n            notes = []\n            rel_part = posixpath.dirname(part) + \"/_rels/\" + posixpath.basename(part) + \".rels\"\n            if rel_part in parts:\n                for rel in ET.fromstring(archive.read(rel_part)):\n                    if rel.get(\"Type\", \"\").endswith(\"/notesSlide\"):\n                        note_part = posixpath.normpath(posixpath.dirname(part) + \"/\" + rel.get(\"Target\"))\n                        note_doc = ET.fromstring(archive.read(note_part))\n                        for shape in note_doc.findall(\".//p:sp\", ns):\n                            ph = shape.find(\".//p:ph\", ns)\n                            texts = [t.text or \"\" for t in shape.findall(\".//a:t\", ns)]\n                            if texts:\n                                notes.append({\n                                    \"part\": note_part,\n                                    \"placeholder\": ph.get(\"type\") if ph is not None else None,\n                                    \"texts\": texts,\n                                })\n            result[\"slides\"].append({\n                \"number\": number, \"part\": part,\n                \"xml_sha256\": result[\"part_hashes\"][part],\n                \"paragraphs\": paragraphs, \"styled_paragraphs\": styled, \"notes\": notes,\n            })\n    return result\n\n\nold = deck(\"Введение. Понятия. Группы. Синтаксис.pptx\")\nnew = deck(\"Введение_1. Понятия. Группы. Синтаксис.pptx\")\nassert old[\"sha256\"] == \"bb05d4af14869b93a6ae8c06608df7b078f9ae8cd363b54822b942899f0e5f0d\"\nassert new[\"sha256\"] == \"acdd9854b4a7a72fd1e1b18300f802ea5d7bdcac625c288a6756a73df4c4547b\"\nversions = json.loads(subprocess.check_output([\n    str(reader), \"-c\",\n    \"import importlib.metadata,json;print(json.dumps({p:importlib.metadata.version(p) for p in ['markitdown','python-pptx']}))\",\n], text=True))\nrecord = {\n    \"timestamp\": datetime.now().astimezone().isoformat(),\n    \"host\": platform.node(), \"base_commit\": git(\"rev-parse\", \"HEAD\"),\n    \"command\": [\"python3\", *sys.argv],\n    \"reproducer_source\": Path(__file__).read_text(),\n    \"readers\": {\"Python\": platform.python_version(), **versions,\n                \"LibreOffice\": subprocess.check_output([\"libreoffice\", \"--version\"], text=True).strip()},\n    \"old\": old, \"new\": new, \"deltas\": [], \"rendered_new\": [],\n}\nold_parts, new_parts = old[\"part_hashes\"], new[\"part_hashes\"]\nrecord[\"package_delta\"] = {\n    \"added\": sorted(new_parts.keys() - old_parts.keys()),\n    \"removed\": sorted(old_parts.keys() - new_parts.keys()),\n    \"changed\": sorted(p for p in old_parts.keys() & new_parts.keys() if old_parts[p] != new_parts[p]),\n}\nfor i in range(max(len(old[\"slides\"]), len(new[\"slides\"]))):\n    a = old[\"slides\"][i] if i < len(old[\"slides\"]) else None\n    b = new[\"slides\"][i] if i < len(new[\"slides\"]) else None\n    ap, bp = a[\"paragraphs\"] if a else [], b[\"paragraphs\"] if b else []\n    record[\"deltas\"].append({\n        \"slide\": i + 1,\n        \"xml_changed\": a is None or b is None or a[\"xml_sha256\"] != b[\"xml_sha256\"],\n        \"text_changed\": ap != bp,\n        \"baseline_runs_changed\": a is None or b is None or a[\"styled_paragraphs\"] != b[\"styled_paragraphs\"],\n        \"notes_changed\": a is None or b is None or a[\"notes\"] != b[\"notes\"],\n        \"paragraph_diff\": list(difflib.unified_diff(ap, bp, fromfile=f\"old/slide-{i+1}\", tofile=f\"new/slide-{i+1}\", lineterm=\"\")),\n    })\nfor slide in new[\"slides\"]:\n    image = renders / f\"slide-{slide['number']}.png\"\n    record[\"rendered_new\"].append({\"slide\": slide[\"number\"], \"session_file\": str(image), \"sha256\": sha(image.read_bytes())})\nwith (data_dir / \"source-delta-01.json\").open(\"x\") as handle:\n    json.dump(record, handle, ensure_ascii=False, indent=2)\n    handle.write(\"\\n\")\n\ndrafts = Path(\"/home/mfedchyk/GitHub/nick-fedchik/drafts\")\nrevision = git(\"rev-parse\", \"HEAD\", cwd=drafts)\nresponses = {\n    \"timestamp\": record[\"timestamp\"], \"host\": record[\"host\"],\n    \"source_repository\": \"nick-fedchik/drafts\", \"source_commit\": revision,\n    \"attribution_limit\": \"Owner-forwarded attribution; original correspondence channel not independently verified. Editorial conclusions excluded.\",\n    \"responses\": [],\n    \"owner_forwarded_note\": \"Отредактировал. OpenBracket  и CloseBracked должны быть выполняемые\",\n}\nfor suffix in [\n    \"RFC-008-reference-implementation-and-artifacts.md\",\n    \"details/RFC-011-lexical-delimiters-and-length.md\",\n    \"details/RFC-012-syntax-table-completion.md\",\n    \"details/RFC-013-execution-result-and-busy.md\",\n    \"details/RFC-014-address-format-and-resolution.md\",\n]:\n    path = \"KuzminMachine/RFC/\" + suffix\n    blob = subprocess.check_output([\"git\", \"show\", revision + \":\" + path], cwd=drafts)\n    text = blob.decode()\n    start = text.index(\"## Відповідь Автора\")\n    end = text.index(\"\\n---\", start)\n    responses[\"responses\"].append({\n        \"path\": path, \"file_sha256\": sha(blob),\n        \"heading\": text[start:].splitlines()[0],\n        \"verbatim_markdown\": text[start:end],\n    })\nwith (data_dir / \"forwarded-responses-01.json\").open(\"x\") as handle:\n    json.dump(responses, handle, ensure_ascii=False, indent=2)\n    handle.write(\"\\n\")\nprint(json.dumps({\n    \"old_bytes\": old[\"bytes\"], \"new_bytes\": new[\"bytes\"],\n    \"old_slides\": len(old[\"slides\"]), \"new_slides\": len(new[\"slides\"]),\n    \"text_changed_slides\": [d[\"slide\"] for d in record[\"deltas\"] if d[\"text_changed\"]],\n    \"responses_commit\": revision,\n}, ensure_ascii=False))\nfor delta in record[\"deltas\"]:\n    if delta[\"text_changed\"]:\n        print(\"\\n\" + \"\\n\".join(delta[\"paragraph_diff\"]))\n",
+  "readers": {
+    "Python": "3.14.4",
+    "markitdown": "0.1.9",
+    "python-pptx": "1.0.2",
+    "LibreOffice": "LibreOffice 26.2.6.3 620(Build:3)"
+  },
+  "old": {
+    "path": "Research/sources/author/Введение. Понятия. Группы. Синтаксис.pptx",
+    "bytes": 99096,
+    "sha256": "bb05d4af14869b93a6ae8c06608df7b078f9ae8cd363b54822b942899f0e5f0d",
+    "slides": [
+      {
+        "number": 1,
+        "part": "ppt/slides/slide1.xml",
+        "xml_sha256": "3f371e0aa00bbb70b9e1214d8058303eefe2b16f1bcffa51c9bf201162d2c63b",
+        "paragraphs": [
+          "Конструируя новый компьютер, акцентируя внимание на слове «новый», разумно обратить внимание на то, что мы обычно называем компьютером. И, первая, самая сложная часть предмета обсуждения, это безусловно, процессор. За его особые заслуги его вначале даже назвали «арифметико-логическим устройством». Выполнение арифметических операций очевидная задача, и она была решена достаточно быстро.  Имеется еще такая штука как память. Она наличествует и у человека, и даже как-то связана с интеллектом. С арифметикой интеллект связывают гораздо реже. Но, вопрос как пользоваться памятью актуальный и не только для человека.",
+          "Память компьютера представляется массивом бит разделенных для удобства адресации на ячейки фиксированного размера (8-16-32 бита) и работа процессора заключается в адресации ячеек памяти и выполнения каких-то манипуляций с ними. Одни ячейки содержат команды, другие содержат данные с которыми работают команды. В общем ничего понятного если наблюдать на эту кашу бит со стороны. Тот, кто занимался отладкой ПО без инструментов должен меня понять. Потому идея структурировать данные в памяти в что б они имели семантический смысл и структуру кажется не просто разумной, но и более высоким уровнем представления данных, чем массив двоичных данных. Итак, попробуем вместе сочинить простые и единые правила представления всех данных с минимальным количеством базовых понятий. Ибо это и есть синтаксис которым оперирует программист формулируя смысл понятиями, которые определяются правилами работы компьютера с данными. Такой подход избавляет от необходимости создавать пособия по программированию, а создавать понятия и систему программно. Одновременно сообщая их структуру и компьютеру и программисту. Опытный программист не обнаружит ничего нового. Мало ли какие правила можно сочинить. Их и так немало существует. Есть и хелпы и классы и объекты. Есть и события  и подписки.В чем же фишка?  Зачем сочинять все это по новому? А дело  том, что  вся текстовая красота после трансляции превращается в объектный код, затем этот код оптимизируется и компонуется и только после этого превращается в загрузочный в котором мало что остается от имен, хелпов и очень затруднительно узнать в этом загрузочном коде визуальную красоту заложенную программистом. Как минимум хелпы и имена исчезают. Порядок свойств и операторов совсем другой да и вообще что-то добавлено в код, что-то исчезло. Это приятно для оптимизации и выполнения машиной, но очень не приятно для вопросов отладки, верификации, протоколов обмена и визуализации. Я предлагаю оставить все как создал Бог в облике программиста! С хелпами, именами и порядком который задал программист в тексте программы и, само собой с новыми возможностями и приемами программирования. Понятно для реализации такой идеи понадобится умная адресация. Но все уже придумано. Так как структура одинаковая, то и относительная адресция будет работать всегда. Итак в бой!",
+          " Напомним что структура данных единая (Концепт). С необходимостью базовых понятия три:",
+          "1. Concept. –создание новой структуры данных (Концепта).",
+          "2. Token -  единица размера памяти 4бита.",
+          "3. Group-объединение структур данных. В синтаксисе выражается скобками.",
+          "К базовым понятиям с объективной необходимостью относится и незримо присутствующее обращение к концепту. Т.е. Адрес.",
+          "Из базовых понятий и единых правил строим строго формально все что образует систему.  Задача синтаксиса из текста создать структуру концепта. И посмотрим на структуру концепта.",
+          "Постановка задачи."
+        ],
+        "styled_paragraphs": [],
+        "notes": []
+      },
+      {
+        "number": 2,
+        "part": "ppt/slides/slide2.xml",
+        "xml_sha256": "ce451535d71c76d6e7c4bae854607b9697772342ec761740496da1e335bf7292",
+        "paragraphs": [
+          "Базовые понятия. Синтаксис. Структура",
+          "Задача синтаксиса из текстового вида создать новый концепт. У нас уже есть базовые концепты (Concept и Token) и мы можем начать создавать новые концепты применив правило граничащего с гениальностью судя по простоте создания первых трех элементов этой структуры и даже подписку.",
+          "",
+          "Синтаксис:   Имя класса Имя концепта Значение Help Подписки на события класса",
+          "Пример 1. Создание концепта Type. Этот концепт будет создавать новые концепты-типы данных размер которых (в токенах) указан в свойстве Size. Значение по умолчанию отсутствует, о чем говорит знак «_».",
+          "Concept Type  #' Определение концепта Type.»",
+          "                : Token \"\" _  #Определение динамического свойства размер.»",
+          "Пример 1. Создание концепта Token и Byte.",
+          "  Type Token 0      #' Определение типа Byte размером 2 токена.»",
+          "             : Token    \"\"          #Атрибут без имени для хранения значения данного типа.",
+          "",
+          "     Type Byte 1      #' Определение типа Byte размером 2 токена.»",
+          "             : Byte \"\"  _        #' Атрибут без имени для хранения значения данного типа.»",
+          "Концепт после знака «:» определяет подписку на событие инициализации за которым указан концепт создаваемый данной подпиской. Не очень сложно догадаться что элемент структуры Help определяется группой знаков начинающихся комбинацией «#‘»   и заканчивается закрывающей текстовой скобкой. Несколько сложнее со значением. Если в классе есть атрибут с пустым именем то, сразу за именем создаваемого концепта идет значение этого атрибута.",
+          "В принципе, вроде все понятно, но вот бедненько без возможности объединять концепты, потому учимся применять скобки.",
+          "   Структура концепта. Компоненты концепта.",
+          "Def. Байт. 1 каждого бита признак наличия соответствующей не обязательной компоненты.",
+          "Class.   Байт. Обязательный компонент.",
+          "Бит Def 0. Name. Name. Не обязательный компонент.  ",
+          "Бит Def 1. Help. Текст. Не обязательный компонент.",
+          "Бит Def 2. Subscribe. Подписки. Группа концептов. Не обязательный компонент.",
+          "Бит Def 3. Организация. Метод группирования и данные. Не обязательный компонент.",
+          "Бит Def 4. Attributes/Property. Свойства. Группа концептов. Не обязательный компонент.",
+          "Бит Def 5. Event. События. Группа концептов. Не обязательный компонент.",
+          "Бит Def 6. Method. Методы. Группа концептов запускаемых по событию инициализации. ",
+          "Бит Def 7.Child. Вложения. Группа концептов. Не обязательный компонент."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 6,
+            "runs": [
+              {
+                "text": "Concept ",
+                "baseline": 0
+              },
+              {
+                "text": "Type ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Определение ",
+                "baseline": 0
+              },
+              {
+                "text": "концепта ",
+                "baseline": 0
+              },
+              {
+                "text": "Type",
+                "baseline": 0
+              },
+              {
+                "text": ".»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 9,
+            "runs": [
+              {
+                "text": "  ",
+                "baseline": 0
+              },
+              {
+                "text": "Type ",
+                "baseline": 0
+              },
+              {
+                "text": "Token",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": 0
+              },
+              {
+                "text": "     ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Определение ",
+                "baseline": 0
+              },
+              {
+                "text": "типа ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte",
+                "baseline": 0
+              },
+              {
+                "text": " размером 2 токена.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 12,
+            "runs": [
+              {
+                "text": "     ",
+                "baseline": 0
+              },
+              {
+                "text": "Type ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "1",
+                "baseline": 0
+              },
+              {
+                "text": "     ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Определение ",
+                "baseline": 0
+              },
+              {
+                "text": "типа ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte",
+                "baseline": 0
+              },
+              {
+                "text": " размером 2 токена.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 13,
+            "runs": [
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "           ",
+                "baseline": 0
+              },
+              {
+                "text": ":",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte ",
+                "baseline": 0
+              },
+              {
+                "text": "\"\"  _",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "   ",
+                "baseline": 0
+              },
+              {
+                "text": "   ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут ",
+                "baseline": 0
+              },
+              {
+                "text": "без имени для хранения значения данного типа",
+                "baseline": 0
+              },
+              {
+                "text": ".»",
+                "baseline": 0
+              }
+            ]
+          }
+        ],
+        "notes": []
+      },
+      {
+        "number": 3,
+        "part": "ppt/slides/slide3.xml",
+        "xml_sha256": "59990cc38e3d4bd91ae846a0ae99331a58fbff33a5ce2ec27729549848665844",
+        "paragraphs": [
+          "Хранение",
+          "Объединение концептов осуществляется скобками что назовем группированием, а саму конструкцию группа. Все классы, реализующие группирование, наследуются от концепта Group. Концепты, содержащиеся в скобках, назовем содержимое группы, а каждый из них элементом группы. Правила группирования являются базовыми понятиями системы и составляют основу синтаксиса языка. Назначение каждых скобок строго определено и соответствует одному из классов-групп и потому непосредственно связано с выполнением, доступом и хранением в концептной машине и двоичным форматом. В системе предусмотрено использование следующих скобок:",
+          "Именованной скобкой назовем открывающую скобку непосредственно за которой (без пробела) следует имя группы (концепты Word или Name).",
+          "Круглые «(» и «)» и фигурные «{» и «}» скобки представляют собой группы классов по типу хранения Collection, реализующих объединение любых концептов с последовательным доступом. Доступ к элементам Collection возможен как по индексу, так и по имени элемента группы. Отличие в синтаксисе в том, что элементы в круглых скобках разделяются запятыми. Выбор вида скобок в руках пользователя и наглядности применения.",
+          "Квадратные скобки «[» и «]» представляют концепт Array, реализующий объединение любых концептов с произвольным доступом (по индексу) и параллельным выполнением выполняемых концептов.",
+          "Текстовые скобки ««» и «»» представляют группу Text объединяющую концепты типа Mark.",
+          "Именные скобки «\"» представляют концепт Name. Группа аналогична классу Text только не допускает вложения и размер ограничен 16-ю элементами.",
+          "Применение скобок к единственному элементу может имеет цель отличную от группирования. А именно:",
+          "1. Единственный концепт в текстовых скобках представляет собой именно сам концепт класса Mark, игнорируя его синтаксический, семантический и функциональный смысл. Так мы получаем возможность использовать в тексте знаки форматирования (например, перевод строки) без опасения, что этот знак повлияет на форматирование.",
+          "2. Единственный концепт в квадратных скобках обозначает индекс, переключатель, имя или ключ, для обращения к вложенным элементам  массива или коллекции.",
+          "3. Единственный концепт в круглых скобках (арифметическое выражение является одним концептом) не является группированием. Скобки в таком случае лишь выделяет семантический смысл концепта, находящегося в скобках, такой как приоритет, либо просто удобство для чтения. В этом случае надстрочные и подстрочные значения после круглых скобок имеют смысл, определенный для элемента класса концепта, находящегося в круглых скобках. Например, степень и индекс.",
+          "Пустые текстовые и именные скобки определяют пустой текст или пустое имя.",
+          "Пустые фигурные или круглые скобки определяют группу Collection.",
+          "Пустые квадратные скобки определяют группу Array.",
+          "Выполнение.",
+          "Результатом выполнения любого концепта является метасвойство (•) перечислимого типа Boolean  (?) инициирующее одноименное  Метасобытие.",
+          "Группы имеют свойства Min и Max задаваемые соответственно подстрочным и надстрочными значениями после закрывающей скобки. По умолчанию Min=1, Max=0 что соответствует одному обязательному выполнению группы Collection и выборке одного элемента один раз группе Array.",
+          "Для успешное выполнение концепта Collection необходимо успешное выполнение всех элементов группы (семантическое И)  >=Min и <=Max раз. При значении Min=0 выполнение группы считается успешным даже если не было успешного выполнения  ни одного элемента группы.",
+          "Успешное выполнение концепта Array выборка из Min элементов имеющих успешное выполнение (семантическое Или) Max раз."
+        ],
+        "styled_paragraphs": [],
+        "notes": [
+          {
+            "part": "ppt/notesSlides/notesSlide1.xml",
+            "placeholder": "sldNum",
+            "texts": [
+              "3"
+            ]
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "part": "ppt/slides/slide4.xml",
+        "xml_sha256": "44d515a1f01616dd463525022a3447ff5bf6120b06f3b257afc44f0c6e2fd364",
+        "paragraphs": [
+          "Определим группу  Boolean с применением правила именованной скобки.",
+          "  {“?\" Token {\"!\"  0   #True.» \"¬“ 1 #False.»}}",
+          "Элементами этой группы являются два концепта класса Token с именами ! и ¬ и значениями соответственно 0 и 1. Если мы определим данные как тип Boolean, то можем использовать имена  имен концептов этой группы как значения. Фактически мы получаем перечислимый тип, значениями которого являются имена концептов элементов группы хотя реально в переменной хранятся индексы элементов перечислимого множества.",
+          "\tПеречислимые типы имеют три вида значений:",
+          "1. Как концепты-элементы группы, или их значения.",
+          "2. Как индексы элемента группы.",
+          "3. Как имена концептов элементов группы.",
+          "4. Как события порожденные  присваиванием соответствующего значения.",
+          "Boolean F !      #Определение переменной типа Boolean и присвоение значения Истина.» (прим. 1)",
+          "F:=0      #Ошибка присваивания хотя именно 0 значение.» ",
+          "F|  ¬    #Событие не истинности, за которым должна следовать подписка.»  Аналог оператора If:",
+          "F |{ ! a + b ¬ a-b} #Подписка на событие F. При истинности сумма a и b, и разность если F-ложь» ",
+          "  {Compare Token{ \"=\"  0   #Равно»\">\"  1   #Больше.» \"<\"  2   #Меньше.» }}",
+          "Для перечислимого типа Compare именами значений служат знаки =, < и >",
+          "Алфавит грамматики представляет собой группу концептов класса Mark. И потому может представляться в виде отображения своего имени в тексте, в виде индекса этого знака в группе и конкретного концепта со своими свойствами, методами и событиями.",
+          " Text Mark ",
+          "’ Свойства концепта Mark",
+          "         :: Byte {Type #Тип шрифта» ",
+          "                      Size   #Размер шрифта» ",
+          "                      Index  #Индекс знака.»",
+          ". . .И другие свойства знака.",
+          "                  }",
+          "{Alphabet Mark {Numeral (\"0\"  Index = 48, \"1\" Index = 49,… “9“ Index= 57)",
+          "                             {Letter A Index=65}}",
+          "При таком определении четко определено что такое знак и алфавит. Знак это объект, а элемент алфавита это индекс этого объекта в группе Alphabet.",
+          "В группе определяющей перечислимый тип могут быть объекты любого класса. И тексты и группы операторов и события. Например, текстовая группа Weekdays в круглых скобках для разделения элементов группы запятыми в целях удобства. Если предполагается использование текста, как имен, то текст должен удовлетворять условиям имени.",
+          "(Weekdays   «Monday»,  «Tuesday», «Wednesday», «Thursday», «Friday», «Saturday»,   «Sunday» )",
+          "Weekdays Day =Monday",
+          "Перечислимые типы. События. Знаки. Алфавит. "
+        ],
+        "styled_paragraphs": [],
+        "notes": []
+      },
+      {
+        "number": 5,
+        "part": "ppt/slides/slide5.xml",
+        "xml_sha256": "69c3d095f31dddfdf2a7c701e8314cd41f39cf5d407570e2dab925307d725189",
+        "paragraphs": [
+          "Понятия определяются классом Define.",
+          "Примеры определения понятий.",
+          "Define Word { Letter } 15 #' От одной до 16 букв.»",
+          "Define Name [Word {«\"» {Mark} 0 15 «\"»}] #' Либо слово, либо до 16 знаков в прямых скобках.»",
+          "Define Help { «#» «'» {[Letter Mark ] }0255«»»} #' Начинается с пары знаков.»",
+          "Начинается с пары знаков « #' », за которыми может следовать либо буква, либо знак и заканчивается закрывающей текстовой скобкой .»",
+          "Пример именованной группы.",
+          "{\"?\"  #'  Boolean »      Token   (  \"!\"  0 #'True.»   ,  \"¬\"  1 #'False.» ) }  ",
+          "{OpenBracket «{» «[» «(» } #' Перечислимая группа открывающая скобка",
+          "",
+          "",
+          "",
+          "Непосредственно за открывающей скобкой имя группы.",
+          "",
+          "Define Concept \"Имя класса\" \"Имя концепта\"  Static Заголовок ",
+          "Define Атрибуты {\"Имя атрибута\" Значение} 015 ",
+          "Define Заголовок Help Атрибуты Подписки ",
+          "Т.е. Имя атрибута (берется из класса концепта) за которым следует значение этого атрибута. Исключением является атрибут с пустым именем, который обязан быть первым.",
+          "Define Подписки {\"Имя события\" { {«@» {Concept}015 }01 Операторы}115 } 015",
+          "Имя события за которым следуют, возможно, один или группа концептов являющихся формальными параметры определяемые знаком «@»  и операторы",
+          "Define Static { Concept} 015",
+          "Define \"Имя класса“ Name",
+          "Define \"Имя концепта“ Name",
+          "",
+          "Определение понятий. Синтаксис."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 3,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Word",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Letter",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "От ",
+                "baseline": 0
+              },
+              {
+                "text": "одной до 16 букв",
+                "baseline": 0
+              },
+              {
+                "text": ".»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 4,
+            "runs": [
+              {
+                "text": "Define ",
+                "baseline": 0
+              },
+              {
+                "text": "Name",
+                "baseline": 0
+              },
+              {
+                "text": " [Word {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"» ",
+                "baseline": 0
+              },
+              {
+                "text": "{Mark} ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "5",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"»",
+                "baseline": 0
+              },
+              {
+                "text": "}]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Либо слово, либо до 16 знаков в прямых скобках.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 5,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Help",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{ ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "'",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{[Letter Mark ] ",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "255",
+                "baseline": 30000
+              },
+              {
+                "text": "«»»",
+                "baseline": 0
+              },
+              {
+                "text": "} ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Начинается с пары знаков.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 6,
+            "runs": [
+              {
+                "text": "Начинается ",
+                "baseline": 0
+              },
+              {
+                "text": "с пары ",
+                "baseline": 0
+              },
+              {
+                "text": "знаков «",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": ", ",
+                "baseline": 0
+              },
+              {
+                "text": "за которыми может следовать либо буква, либо знак и ",
+                "baseline": 0
+              },
+              {
+                "text": "заканчивается",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "закрывающей текстовой скобкой .»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 9,
+            "runs": [
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "OpenBracket",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» «",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«(»",
+                "baseline": 0
+              },
+              {
+                "text": " } ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Перечислимая группа открывающая скобка",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 16,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут",
+                "baseline": 0
+              },
+              {
+                "text": "ы",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "Имя атрибута",
+                "baseline": 0
+              },
+              {
+                "text": "\" ",
+                "baseline": 0
+              },
+              {
+                "text": "Значение",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 19,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Подписки ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "Имя события",
+                "baseline": 0
+              },
+              {
+                "text": "\" ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "@",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Concept}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Операторы",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "1",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 21,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Static ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Concept",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              }
+            ]
+          }
+        ],
+        "notes": []
+      },
+      {
+        "number": 6,
+        "part": "ppt/slides/slide6.xml",
+        "xml_sha256": "d572f6947e505c3edc11fd752151f7e3a3f0a4c4fc58eb58dcc43aac06888d4b",
+        "paragraphs": [
+          "",
+          "Структура адреса. Двоичное представление.",
+          "Вид",
+          "Экспресс",
+          "Объект",
+          "Элемент",
+          "Адресная группа",
+          "Структура элемента адресной группы.",
+          "Код контента (Токен)",
+          "Индекс контента (Токен)",
+          "Код контента",
+          "Контент",
+          "0",
+          "Подписки",
+          "1",
+          "Имя",
+          "2",
+          "Help",
+          "3",
+          "Атрибуты",
+          "4",
+          "Выполняемый контент",
+          "5",
+          "События, понятия, подписки",
+          "6",
+          "Конструкты",
+          "7",
+          "Вложение",
+          "Три бита-код контента, и один бит признак адресации к статическому контенту.",
+          "Вид- токен. ",
+          "0-й разряд признак наличия адресной группы. Класса Array0.",
+          "1-й и -2-й разряды. Значения вида адресации имеют следующий смысл:",
+          "0-Относительная адресация. Без экспресс адреса, индекса объекта и  индекса элемента комплекта исключительно адресной группой. В отсутствии адресной группы(0-й разряд=0) адресация к стеку.",
+          "1-Адресация исключительно экспресс адресом.",
+          "2-Адресация объекта. Экспресс адрес + индекс объекта.",
+          "3-Внешняя адресация. Адресация вне элемента комплекта. Экспресс адрес + индекс объекта + индекс элемента комплекта",
+          "3-й разряд при внутренней адресации является признаком наличия физического адреса.  При внешней адресации имеет смысл расширения адресации вне комплекта. К серверам, экранам и устройствами управления и отображения.",
+          "Адресная группа класса Array0 элементов адреса.",
+          "Тест",
+          "Адресация.",
+          "Инициализация концепта.",
+          "Для чтения.",
+          "Для записи."
+        ],
+        "styled_paragraphs": [],
+        "notes": []
+      },
+      {
+        "number": 7,
+        "part": "ppt/slides/slide7.xml",
+        "xml_sha256": "543ef17eb23cd83eeb08823d499cd2765a77501bfcecab5f540a1b17591017e6",
+        "paragraphs": [
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "2",
+          "Marks",
+          "Знаки",
+          "Lexemes ",
+          "{Mark}16  Один или более знаков",
+          "3",
+          "Name",
+          "Имя",
+          "Lexemes ",
+          "[{Letter }16 {«\"»{Numeral}16 «\"»} {«\"» {Mark}16 «\"»}]",
+          "4",
+          "Text",
+          "Текст",
+          "Lexemes ",
+          "««» [ Mark,  Letter Numeral Official  Text] 1516«»»",
+          "5",
+          "Help",
+          "Комментарий",
+          "Lexemes ",
+          "«#» [ Mark,  Letter Numeral Official] 1516«»»",
+          "6",
+          "Value",
+          "Значение",
+          "Lexemes /Type",
+          "{Numeral }16 {«.» {Numeral 016}0",
+          "7",
+          "Boolean",
+          "Boolean",
+          "Lexemes /Type",
+          "[«!\" \"¬\"] Yes, No. По умолчанию Yes",
+          "8",
+          "Comment",
+          "Комментарий",
+          "Служебные",
+          "«’» {¶¬} 0128",
+          "Лексемы. Концепт Lexeme",
+          "Лексемы разделяются переменой типов знаков. Т.е. концом лексемы Marks является появление символа алфавита типа служебный, скобка, буква или цифра.",
+          "Name-это группа из не менее одной и не более 16 букв или такое же количество цифр или знаков группы Mark заключенных в именные скобки («\"»).",
+          "Text-последовательность любых знаков заключенных в текстовые скобки. Допускает вложения.",
+          "Комментарий начинается со знака «’», состоит из любых знаков, кроме ПС.",
+          "Help- последовательность любых знаков начинающаяся со знака «#» и завершающаяся текстовой скобкой («»»). Является свойством концепта.",
+          "Лексемы Value и Boolean создают соответствующие концепты-значения, размещающиеся во вложении.",
+          " ",
+          "Комбинации знаков формируют лексемы.",
+          "Text Lexeme {",
+          "                        Text Type #Тип лексемы» ",
+          "                         Integer First     #Позиция начала лексемы» ",
+          "                         Integer Length #Длина лексемы» ",
+          "          ’ Во вложении значение лексемы",
+          "                              }",
+          "Типы лексем генерируемых лексическим разбором."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 10,
+            "runs": [
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Mark",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Один или более знаков",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 15,
+            "runs": [
+              {
+                "text": "[{Letter }",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": " {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Numeral",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Mark",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}]",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 20,
+            "runs": [
+              {
+                "text": "««» [ Mark",
+                "baseline": 0
+              },
+              {
+                "text": ", ",
+                "baseline": 0
+              },
+              {
+                "text": " Letter Numeral Official  Text]",
+                "baseline": 0
+              },
+              {
+                "text": " 15",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«»»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 25,
+            "runs": [
+              {
+                "text": "«#» [ Mark",
+                "baseline": 0
+              },
+              {
+                "text": ", ",
+                "baseline": 0
+              },
+              {
+                "text": " Letter Numeral Official]",
+                "baseline": 0
+              },
+              {
+                "text": " 15",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«»»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 30,
+            "runs": [
+              {
+                "text": "{Numeral }",
+                "baseline": 0
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«.» ",
+                "baseline": 0
+              },
+              {
+                "text": "{Numeral ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              }
+            ]
+          },
+          {
+            "paragraph": 40,
+            "runs": [
+              {
+                "text": "«’» {",
+                "baseline": 0
+              },
+              {
+                "text": "¶",
+                "baseline": 0
+              },
+              {
+                "text": "¬",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " 0",
+                "baseline": -25000
+              },
+              {
+                "text": "128",
+                "baseline": 30000
+              }
+            ]
+          }
+        ],
+        "notes": []
+      },
+      {
+        "number": 8,
+        "part": "ppt/slides/slide8.xml",
+        "xml_sha256": "ad982d3d30315aa36f91fd2884218643b406bf51536b632446a2a48449e587b8",
+        "paragraphs": [
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "0",
+          "Marks",
+          "Знаки",
+          "Concept",
+          "Концепты знак и лексема",
+          "1",
+          "Lexemes",
+          "Лексемы",
+          "@ Lexem P ",
+          "[ { «(» P { «,»P}015  «)»}  { «[»{ P}16«]»} { «[»{ P}16«]»}] ",
+          "2",
+          "Date",
+          "Дата",
+          "Служеб",
+          "",
+          "3",
+          "Time",
+          "Время",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "4",
+          "Paragraph",
+          "Раздел",
+          "Syntax",
+          "",
+          "Концепты порождаемые концептом Text.",
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "",
+          "",
+          "",
+          "Concept",
+          "Концепты знак и лексема",
+          "",
+          "Group",
+          "",
+          "@ Lexem P ",
+          "[ { «(» P { «,»P}015  «)»}  { «[»{ P}16«]»} { «[»{ P}16«]»}] ",
+          "",
+          "SE",
+          "",
+          "Служеб",
+          "[«+» «-»]0 Exp {[«+» «-» «*» «/»] Exp}016",
+          "",
+          "Exp",
+          "Выражение",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "",
+          "Concept",
+          "",
+          "Syntax",
+          "«@» Type}01 Express {Name Help {Атрибут}016 {?}016  {Реализация}01} 16",
+          "Синтаксис концептов форматирования и редактирования текста.",
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "0",
+          "Font",
+          "Фонт",
+          "Concept",
+          "Концепты знак и лексема",
+          "1",
+          "Note",
+          "Примечание",
+          "@ Lexem P ",
+          "[ { «(» P { «,»P}015  «)»}  { «[»{ P}16«]»} { «[»{ P}16«]»}] ",
+          "2",
+          "Comment",
+          "Комментарий",
+          "Служеб",
+          "",
+          "3",
+          "Review",
+          "Рецензия",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "4",
+          "Table",
+          "Таблица",
+          "Syntax",
+          "",
+          "Синтаксис концептов операторов порождаемых транслятором.",
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "",
+          "For",
+          "",
+          "Concept",
+          "@ Integer  \" “ For  Integer To  < ¬ \" “ To  ?Exit",
+          "",
+          "Each",
+          "",
+          "Concept",
+          "@ Express “_“Each Group In",
+          "",
+          "Do",
+          "",
+          "Concept",
+          "Do Event{ While Until}",
+          "",
+          "",
+          "Выражение",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "",
+          "",
+          "",
+          "Syntax",
+          "«@» Type}01 Express {Name Help {Атрибут}016 {?}016  {Реализация}01} 16",
+          "Синтаксис концептов порождаемых транслятором."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 15,
+            "runs": [
+              {
+                "text": "[ { ",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "P { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": ",",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": "  «)»",
+                "baseline": 0
+              },
+              {
+                "text": "}  { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}] ",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 25,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 46,
+            "runs": [
+              {
+                "text": "[ { ",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "P { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": ",",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": "  «)»",
+                "baseline": 0
+              },
+              {
+                "text": "}  { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}] ",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 51,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "«+» «-»",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Exp",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{[",
+                "baseline": 0
+              },
+              {
+                "text": "«+» «-» «*» «",
+                "baseline": 0
+              },
+              {
+                "text": "/",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Exp",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 56,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 61,
+            "runs": [
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "@",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " Type",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": " Express",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Name",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Help",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "?",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "6 ",
+                "baseline": 30000
+              },
+              {
+                "text": " {",
+                "baseline": 0
+              },
+              {
+                "text": "Реализация",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 77,
+            "runs": [
+              {
+                "text": "[ { ",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "P { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": ",",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": "  «)»",
+                "baseline": 0
+              },
+              {
+                "text": "}  { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}] ",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 87,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 118,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 123,
+            "runs": [
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "@",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " Type",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": " Express",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Name",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Help",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "?",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "6 ",
+                "baseline": 30000
+              },
+              {
+                "text": " {",
+                "baseline": 0
+              },
+              {
+                "text": "Реализация",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          }
+        ],
+        "notes": []
+      }
+    ],
+    "part_hashes": {
+      "[Content_Types].xml": "0e3942ff24814e7f6c80560fb6e27864ea28345eff73139a553512cfd1e2c2af",
+      "_rels/.rels": "de11af9d3b354316b50c10ceff7203f24686fe9cbd4202a5e4655398a4c5004f",
+      "ppt/slides/_rels/slide3.xml.rels": "ea641b729b09a7dfcd4c63819446568879737559c0f6a0b80acee3ef0fe0ed1d",
+      "ppt/slides/_rels/slide1.xml.rels": "5d5a90373a909a2b25cff6930e3f200595b370c1de891e9544e4a25294544d8b",
+      "ppt/slides/_rels/slide4.xml.rels": "0df116ecbe6bb4335678a23162404dc5ecb32770e804e5161ee47ee39d0e46e2",
+      "ppt/slides/_rels/slide2.xml.rels": "0fe17cc9cc36df3642c7642e6d2c256ce36c7ae1176927c7ae5621086c43c5b1",
+      "ppt/slides/_rels/slide5.xml.rels": "0fe17cc9cc36df3642c7642e6d2c256ce36c7ae1176927c7ae5621086c43c5b1",
+      "ppt/slides/_rels/slide6.xml.rels": "0fe17cc9cc36df3642c7642e6d2c256ce36c7ae1176927c7ae5621086c43c5b1",
+      "ppt/slides/_rels/slide7.xml.rels": "0fe17cc9cc36df3642c7642e6d2c256ce36c7ae1176927c7ae5621086c43c5b1",
+      "ppt/slides/_rels/slide8.xml.rels": "0fe17cc9cc36df3642c7642e6d2c256ce36c7ae1176927c7ae5621086c43c5b1",
+      "ppt/_rels/presentation.xml.rels": "288d76781d825f3424641718cff53c12db644bda935baa6e76361b554cf35e4f",
+      "ppt/presentation.xml": "373dde830b4d1b92350f2f4f60691ba01a0a77226f258e0b54710887c46bc964",
+      "ppt/slides/slide7.xml": "543ef17eb23cd83eeb08823d499cd2765a77501bfcecab5f540a1b17591017e6",
+      "ppt/slides/slide6.xml": "d572f6947e505c3edc11fd752151f7e3a3f0a4c4fc58eb58dcc43aac06888d4b",
+      "ppt/slides/slide5.xml": "69c3d095f31dddfdf2a7c701e8314cd41f39cf5d407570e2dab925307d725189",
+      "ppt/slides/slide8.xml": "ad982d3d30315aa36f91fd2884218643b406bf51536b632446a2a48449e587b8",
+      "ppt/slides/slide4.xml": "44d515a1f01616dd463525022a3447ff5bf6120b06f3b257afc44f0c6e2fd364",
+      "ppt/slides/slide2.xml": "ce451535d71c76d6e7c4bae854607b9697772342ec761740496da1e335bf7292",
+      "ppt/slides/slide1.xml": "3f371e0aa00bbb70b9e1214d8058303eefe2b16f1bcffa51c9bf201162d2c63b",
+      "ppt/slides/slide3.xml": "59990cc38e3d4bd91ae846a0ae99331a58fbff33a5ce2ec27729549848665844",
+      "ppt/notesSlides/_rels/notesSlide1.xml.rels": "4f830a0af9b54f2b7b79c6fb0f88d45640d8f61f222315e7dc4aeb42b9941e81",
+      "ppt/slideLayouts/_rels/slideLayout5.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/_rels/slideLayout4.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/_rels/slideLayout6.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/notesSlides/notesSlide1.xml": "01fcbc65c6de966f0b1316db1deea6402ac112d4c5e4ec82c5dfdb542667da3d",
+      "ppt/slideLayouts/_rels/slideLayout2.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideMasters/slideMaster1.xml": "fa17426c35c3e98132dc0a3a2bd2d4f74af8e57267169d409fcf4cd0a7b53bc4",
+      "ppt/slideMasters/_rels/slideMaster1.xml.rels": "e9e503158ddaff4d9afa825a3d1048ffa1c1275291d9ab818812ff8e061ea8fd",
+      "ppt/slideLayouts/_rels/slideLayout3.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/_rels/slideLayout7.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/_rels/slideLayout8.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/slideLayout3.xml": "6124a47cefe0fa01261b435e00b7a8bd89554f6aba185a9ea9b89dc20468d967",
+      "ppt/slideLayouts/slideLayout2.xml": "ae30ae6ae903cf252f4e02db5f3014ae5d9be4e3ec9515f2b967e52b523bcc45",
+      "ppt/slideLayouts/slideLayout1.xml": "a7fcf15fd9ccb799660b625d1591363ec38ef2ef3b32482e2d242289c5795758",
+      "ppt/slideLayouts/_rels/slideLayout9.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/_rels/slideLayout10.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/_rels/slideLayout11.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/slideLayouts/slideLayout4.xml": "ee782ee59f94b7ffbef4f60b8da8c9df2c0a98ce258b2d7defd8c51b35db58bb",
+      "ppt/slideLayouts/slideLayout5.xml": "1f648e876ba7057b2d2514eeb2a49a274435de983a77786cd9bb880a01303629",
+      "ppt/slideLayouts/slideLayout6.xml": "d8cb9727ef065799efe9e8552f14ac74419c19c30606ad2ef160dfad14f5e0b8",
+      "ppt/slideLayouts/slideLayout11.xml": "8d233816430aca0f9d9c716ea3c894eace8376e84ef896e729cbb251a111429f",
+      "ppt/slideLayouts/slideLayout10.xml": "0b6a47af3073cf925289d457e9a874b2120bd0cda0fd4fbfeaae853d52e920e8",
+      "ppt/slideLayouts/slideLayout9.xml": "4ee14d56a5eef413938a85427487349d65ac89157e42c7a4ab688f1eb81c8a49",
+      "ppt/slideLayouts/slideLayout8.xml": "371acc6b2474a3f461aae912477125ae2ef6fadde13a6a730af7501187aaa4b0",
+      "ppt/slideLayouts/slideLayout7.xml": "b62e1d3ba6e427a31f0d90cef7d2c08eb6ab3116b4f61c81de43b5a00b1d32c6",
+      "ppt/slideLayouts/_rels/slideLayout1.xml.rels": "8246d333bf3764cd35563e3df1828c26bbc28890815a2987caf3e592791ba60d",
+      "ppt/notesMasters/notesMaster1.xml": "8f4c8c3bb87e08f4b606d7bb4a38264d2fa1eab36342a0c852a7cbd13efb636f",
+      "ppt/commentAuthors.xml": "4f838f9fef338187783077e7c5d357a2c799e73f0a876f4e7f0afd7972f930b9",
+      "ppt/theme/theme1.xml": "156114078dbf2c3a9d4f0425bcc27752bd2b73a86442a452af20773559fdeb88",
+      "ppt/theme/theme2.xml": "156114078dbf2c3a9d4f0425bcc27752bd2b73a86442a452af20773559fdeb88",
+      "ppt/notesMasters/_rels/notesMaster1.xml.rels": "c900da93a4de8bad9a582295b1dbcb892e6cfec52985354da973ebb3fab497c1",
+      "ppt/comments/comment1.xml": "0fc0353f46d5ca30aec7c85f50c96e2d9ff964de947449060b3c9a35d5de23a7",
+      "docProps/thumbnail.jpeg": "e5348194a7ff865d920115044dfeb8bb22262123a0d14e532a0d7004c61841e6",
+      "ppt/comments/comment2.xml": "513cf679f3b3020e62261f60ebfe5dc06512479d00c2d59fac88020a61849eee",
+      "ppt/tableStyles.xml": "0e7ac03251337ecbaf6c8ca13619db1caeda5c90c4e3210d45d6c3f5df4de103",
+      "ppt/viewProps.xml": "0a91989192f4d685fb3bcf3a2586669f161e4035aa32352708231fd9c8239dcb",
+      "ppt/presProps.xml": "bc8369d698552f82a03b0272ae8f87cc1d874ee9b7a6952c7dfada76be4b4236",
+      "docProps/app.xml": "cbd169a19d7b80b8dca32e7c9a4cce7fa31dad0dd71ea79f58a8f782fec38898",
+      "docProps/core.xml": "c7ab93baea94fd6ca85bdced05728f03f9ac9f33015125e15b55cfb4efb8e6ef"
+    },
+    "core_properties_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n<cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dc:title>Презентация PowerPoint</dc:title><dc:creator>Учетная запись Майкрософт</dc:creator><cp:lastModifiedBy>Учетная запись Майкрософт</cp:lastModifiedBy><cp:revision>50</cp:revision><dcterms:created xsi:type=\"dcterms:W3CDTF\">2026-11-09T10:37:06Z</dcterms:created><dcterms:modified xsi:type=\"dcterms:W3CDTF\">2026-11-13T07:06:47Z</dcterms:modified></cp:coreProperties>",
+    "media_parts": [],
+    "omml_parts": []
+  },
+  "new": {
+    "path": "Research/sources/author/Введение_1. Понятия. Группы. Синтаксис.pptx",
+    "bytes": 68129,
+    "sha256": "acdd9854b4a7a72fd1e1b18300f802ea5d7bdcac625c288a6756a73df4c4547b",
+    "slides": [
+      {
+        "number": 1,
+        "part": "ppt/slides/slide1.xml",
+        "xml_sha256": "9bbd668f5d4fa2846be06066eb9b2826f8c10299018cbf2fc6f4b0e5f5bcda0a",
+        "paragraphs": [
+          "Конструируя новый компьютер, акцентируя внимание на слове «новый», разумно обратить внимание на то, что мы обычно называем компьютером. И, первая, самая сложная часть предмета обсуждения, это безусловно, процессор. За его особые заслуги его вначале даже назвали «арифметико-логическим устройством». Выполнение арифметических операций очевидная задача, и она была решена достаточно быстро.  Имеется еще такая штука как память. Она наличествует и у человека, и даже как-то связана с интеллектом. С арифметикой интеллект связывают гораздо реже. Но, вопрос как пользоваться памятью актуальный и не только для человека.",
+          "Память компьютера представляется массивом бит разделенных для удобства адресации на ячейки фиксированного размера (8-16-32 бита) и работа процессора заключается в адресации ячеек памяти и выполнения каких-то манипуляций с ними. Одни ячейки содержат команды, другие содержат данные с которыми работают команды. В общем ничего понятного если наблюдать на эту кашу бит со стороны. Тот, кто занимался отладкой ПО без инструментов должен меня понять. Потому идея структурировать данные в памяти в что б они имели семантический смысл и структуру кажется не просто разумной, но и более высоким уровнем представления данных, чем массив двоичных данных. Итак, попробуем вместе сочинить простые и единые правила представления всех данных с минимальным количеством базовых понятий. Ибо это и есть синтаксис которым оперирует программист формулируя смысл понятиями, которые определяются правилами работы компьютера с данными. Такой подход избавляет от необходимости создавать пособия по программированию, а создавать понятия и систему программно. Одновременно сообщая их структуру и компьютеру и программисту. Опытный программист не обнаружит ничего нового. Мало ли какие правила можно сочинить. Их и так немало существует. Есть и хелпы и классы и объекты. Есть и события  и подписки.В чем же фишка?  Зачем сочинять все это по новому? А дело  том, что  вся текстовая красота после трансляции превращается в объектный код, затем этот код оптимизируется и компонуется и только после этого превращается в загрузочный в котором мало что остается от имен, хелпов и очень затруднительно узнать в этом загрузочном коде визуальную красоту заложенную программистом. Как минимум хелпы и имена исчезают. Порядок свойств и операторов совсем другой да и вообще что-то добавлено в код, что-то исчезло. Это приятно для оптимизации и выполнения машиной, но очень не приятно для вопросов отладки, верификации, протоколов обмена и визуализации. Я предлагаю оставить все как создал Бог в облике программиста! С хелпами, именами и порядком который задал программист в тексте программы и, само собой с новыми возможностями и приемами программирования. Понятно для реализации такой идеи понадобится умная адресация. Но все уже придумано. Так как структура одинаковая, то и относительная адресция будет работать всегда. Итак в бой!",
+          " Напомним что структура данных единая (Концепт). С необходимостью базовых понятия три:",
+          "1. Concept. –создание новой структуры данных (Концепта).",
+          "2. Token -  единица размера памяти 4бита.",
+          "3. Group-объединение структур данных. В синтаксисе выражается скобками.",
+          "К базовым понятиям с объективной необходимостью относится и незримо присутствующее обращение к концепту. Т.е. Адрес.",
+          "Из базовых понятий и единых правил строим строго формально все что образует систему.  Задача синтаксиса из текста создать структуру концепта. И посмотрим на структуру концепта.",
+          "Постановка задачи."
+        ],
+        "styled_paragraphs": [],
+        "notes": []
+      },
+      {
+        "number": 2,
+        "part": "ppt/slides/slide2.xml",
+        "xml_sha256": "4faebad4f3b46a30a7c849f4d4ebc47e8716119f0e7ad7e48a8ab5fc9b35c45c",
+        "paragraphs": [
+          "Базовые понятия. Синтаксис. Структура",
+          "Задача синтаксиса из текстового вида создать новый концепт. У нас уже есть базовые концепты (Concept и Token) и мы можем начать создавать новые концепты применив правило граничащего с гениальностью судя по простоте создания первых трех элементов этой структуры и даже подписку.",
+          "",
+          "Синтаксис:   Имя класса Имя концепта Значение Help Подписки на события класса",
+          "Пример 1. Создание концепта Type. Этот концепт будет создавать новые концепты-типы данных размер которых (в токенах) указан в свойстве Size. Значение по умолчанию отсутствует, о чем говорит знак «_».",
+          "Concept Type  #' Определение концепта Type.»",
+          "                : Token \"\" _  #Определение динамического свойства размер.»",
+          "Пример 1. Создание концепта Token и Byte.",
+          "  Type Token 0      #' Определение типа Byte размером 2 токена.»",
+          "             : Token    \"\"          #Атрибут без имени для хранения значения данного типа.",
+          "",
+          "     Type Byte 1      #' Определение типа Byte размером 2 токена.»",
+          "             : Byte \"\"  _        #' Атрибут без имени для хранения значения данного типа.»",
+          "Концепт после знака «:» определяет подписку на событие инициализации за которым указан концепт создаваемый данной подпиской. Не очень сложно догадаться что элемент структуры Help определяется группой знаков начинающихся комбинацией «#‘»   и заканчивается закрывающей текстовой скобкой. Несколько сложнее со значением. Если в классе есть атрибут с пустым именем то, сразу за именем создаваемого концепта идет значение этого атрибута.",
+          "В принципе, вроде все понятно, но вот бедненько без возможности объединять концепты, потому учимся применять скобки.",
+          "   Структура концепта. Компоненты концепта.",
+          "Def. Байт. 1 каждого бита признак наличия соответствующей не обязательной компоненты.",
+          "Class.   Байт. Обязательный компонент.",
+          "Бит Def 0. Name. Name. Не обязательный компонент.  ",
+          "Бит Def 1. Help. Текст. Не обязательный компонент.",
+          "Бит Def 2. Subscribe. Подписки. Группа концептов. Не обязательный компонент.",
+          "Бит Def 3. Организация. Метод группирования и данные. Не обязательный компонент.",
+          "Бит Def 4. Attributes/Property. Свойства. Группа концептов. Не обязательный компонент.",
+          "Бит Def 5. Event. События. Группа концептов. Не обязательный компонент.",
+          "Бит Def 6. Method. Методы. Группа концептов запускаемых по событию инициализации. ",
+          "Бит Def 7.Child. Вложения. Группа концептов. Не обязательный компонент."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 6,
+            "runs": [
+              {
+                "text": "Concept ",
+                "baseline": 0
+              },
+              {
+                "text": "Type ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Определение концепта ",
+                "baseline": 0
+              },
+              {
+                "text": "Type",
+                "baseline": 0
+              },
+              {
+                "text": ".»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 9,
+            "runs": [
+              {
+                "text": "  ",
+                "baseline": 0
+              },
+              {
+                "text": "Type ",
+                "baseline": 0
+              },
+              {
+                "text": "Token",
+                "baseline": 0
+              },
+              {
+                "text": " 0",
+                "baseline": 0
+              },
+              {
+                "text": "     ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Определение типа ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte",
+                "baseline": 0
+              },
+              {
+                "text": " размером 2 токена.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 12,
+            "runs": [
+              {
+                "text": "     ",
+                "baseline": 0
+              },
+              {
+                "text": "Type ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "1",
+                "baseline": 0
+              },
+              {
+                "text": "     ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Определение типа ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte",
+                "baseline": 0
+              },
+              {
+                "text": " размером 2 токена.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 13,
+            "runs": [
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "           ",
+                "baseline": 0
+              },
+              {
+                "text": ":",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Byte ",
+                "baseline": 0
+              },
+              {
+                "text": "\"\"  _",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "   ",
+                "baseline": 0
+              },
+              {
+                "text": "   ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут без имени для хранения значения данного типа.»",
+                "baseline": 0
+              }
+            ]
+          }
+        ],
+        "notes": []
+      },
+      {
+        "number": 3,
+        "part": "ppt/slides/slide3.xml",
+        "xml_sha256": "d5ffdcb36d6008f9ea3e1a902c4794cfa64988773da75f1aceac3fe5b5622fc1",
+        "paragraphs": [
+          "Хранение",
+          "Объединение концептов осуществляется скобками что назовем группированием, а саму конструкцию группа. Все классы, реализующие группирование, наследуются от концепта Group. Концепты, содержащиеся в скобках, назовем содержимое группы, а каждый из них элементом группы. Правила группирования являются базовыми понятиями системы и составляют основу синтаксиса языка. Назначение каждых скобок строго определено и соответствует одному из классов-групп и потому непосредственно связано с выполнением, доступом и хранением в концептной машине и двоичным форматом. В системе предусмотрено использование следующих скобок:",
+          "Именованной скобкой назовем открывающую скобку непосредственно за которой (без пробела) следует имя группы (концепты Word или Name).",
+          "Круглые «(» и «)» и фигурные «{» и «}» скобки представляют собой группы классов по типу хранения Collection, реализующих объединение любых концептов с последовательным доступом. Доступ к элементам Collection возможен как по индексу, так и по имени элемента группы. Отличие в синтаксисе в том, что элементы в круглых скобках разделяются запятыми. Выбор вида скобок в руках пользователя и наглядности применения.",
+          "Квадратные скобки «[» и «]» представляют концепт Array, реализующий объединение любых концептов с произвольным доступом (по индексу) и параллельным выполнением выполняемых концептов.",
+          "Текстовые скобки ««» и «»» представляют группу Text объединяющую концепты типа Mark.",
+          "Именные скобки «\"» представляют концепт Name. Группа аналогична классу Text только не допускает вложения и размер ограничен 16-ю элементами.",
+          "Применение скобок к единственному элементу может имеет цель отличную от группирования. А именно:",
+          "1. Единственный концепт в текстовых скобках представляет собой именно сам концепт класса Mark, игнорируя его синтаксический, семантический и функциональный смысл. Так мы получаем возможность использовать в тексте знаки форматирования (например, перевод строки) без опасения, что этот знак повлияет на форматирование.",
+          "2. Единственный концепт в квадратных скобках обозначает индекс, переключатель, имя или ключ, для обращения к вложенным элементам  массива или коллекции.",
+          "3. Единственный концепт в круглых скобках (арифметическое выражение является одним концептом) не является группированием. Скобки в таком случае лишь выделяет семантический смысл концепта, находящегося в скобках, такой как приоритет, либо просто удобство для чтения. В этом случае надстрочные и подстрочные значения после круглых скобок имеют смысл, определенный для элемента класса концепта, находящегося в круглых скобках. Например, степень и индекс.",
+          "Пустые текстовые и именные скобки определяют пустой текст или пустое имя.",
+          "Пустые фигурные или круглые скобки определяют группу Collection.",
+          "Пустые квадратные скобки определяют группу Array.",
+          "Выполнение.",
+          "Результатом выполнения любого концепта является метасвойство (•) перечислимого типа Boolean  (?) инициирующее одноименное  Метасобытие.",
+          "Группы имеют свойства Min и Max задаваемые соответственно подстрочным и надстрочными значениями после закрывающей скобки. По умолчанию Min=1, Max=0 что соответствует одному обязательному выполнению группы Collection и выборке одного элемента один раз группе Array.",
+          "Для успешное выполнение концепта Collection необходимо успешное выполнение всех элементов группы (семантическое И)  >=Min и <=Max раз. При значении Min=0 выполнение группы считается успешным даже если не было успешного выполнения  ни одного элемента группы.",
+          "Успешное выполнение концепта Array выборка из Min элементов имеющих успешное выполнение (семантическое Или) Max раз."
+        ],
+        "styled_paragraphs": [],
+        "notes": [
+          {
+            "part": "ppt/notesSlides/notesSlide3.xml",
+            "placeholder": "sldNum",
+            "texts": [
+              "<number>"
+            ]
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "part": "ppt/slides/slide4.xml",
+        "xml_sha256": "0b540c8c546fdb2e2972973c229f5b1d1c2659e8651ff85464f3204cb2ef8fd9",
+        "paragraphs": [
+          "Определим группу  Boolean с применением правила именованной скобки.",
+          "  {“?\" Token {\"!\"  0   #True.» \"¬“ 1 #False.»}}",
+          "Элементами этой группы являются два концепта класса Token с именами ! и ¬ и значениями соответственно 0 и 1. Если мы определим данные как тип Boolean, то можем использовать имена  имен концептов этой группы как значения. Фактически мы получаем перечислимый тип, значениями которого являются имена концептов элементов группы хотя реально в переменной хранятся индексы элементов перечислимого множества.",
+          "\tПеречислимые типы имеют три вида значений:",
+          "1. Как концепты-элементы группы, или их значения.",
+          "2. Как индексы элемента группы.",
+          "3. Как имена концептов элементов группы.",
+          "4. Как события порожденные  присваиванием соответствующего значения.",
+          "Boolean F !      #Определение переменной типа Boolean и присвоение значения Истина.» (прим. 1)",
+          "F:=0      #Ошибка присваивания хотя именно 0 значение.» ",
+          "F|  ¬    #Событие не истинности, за которым должна следовать подписка.»  Аналог оператора If:",
+          "F |{ ! a + b ¬ a-b} #Подписка на событие F. При истинности сумма a и b, и разность если F-ложь» ",
+          "  {Compare Token{ \"=\"  0   #Равно»\">\"  1   #Больше.» \"<\"  2   #Меньше.» }}",
+          "Для перечислимого типа Compare именами значений служат знаки =, < и >",
+          "Алфавит грамматики представляет собой группу концептов класса Mark. И потому может представляться в виде отображения своего имени в тексте, в виде индекса этого знака в группе и конкретного концепта со своими свойствами, методами и событиями.",
+          " Text Mark ",
+          "’ Свойства концепта Mark",
+          "         :: Byte {Type #Тип шрифта» ",
+          "                      Size   #Размер шрифта» ",
+          "                      Index  #Индекс знака.»",
+          ". . .И другие свойства знака.",
+          "                  }",
+          "{Alphabet Mark {Numeral (\"0\"  Index = 48, \"1\" Index = 49,… “9“ Index= 57)",
+          "                             {Letter A Index=65}}",
+          "При таком определении четко определено что такое знак и алфавит. Знак это объект, а элемент алфавита это индекс этого объекта в группе Alphabet.",
+          "В группе определяющей перечислимый тип могут быть объекты любого класса. И тексты и группы операторов и события. Например, текстовая группа Weekdays в круглых скобках для разделения элементов группы запятыми в целях удобства. Если предполагается использование текста, как имен, то текст должен удовлетворять условиям имени.",
+          "(Weekdays   «Monday»,  «Tuesday», «Wednesday», «Thursday», «Friday», «Saturday»,   «Sunday» )",
+          "Weekdays Day =Monday",
+          "Перечислимые типы. События. Знаки. Алфавит. "
+        ],
+        "styled_paragraphs": [],
+        "notes": []
+      },
+      {
+        "number": 5,
+        "part": "ppt/slides/slide5.xml",
+        "xml_sha256": "a9dbe057097d3eb3b453a5839f4c76630fda6188270a85327df510bbc9ff1b11",
+        "paragraphs": [
+          "Понятия определяются классом Define.",
+          "Примеры определения понятий.",
+          "Define Word { Letter } 15 #' От одной до 16 букв.»",
+          "Define Name [Word {«\"» {Mark} 0 15 «\"»}] #' Либо слово, либо до 16 знаков в прямых скобках.»",
+          "Define Help { «#» «'» {[Letter Mark ] }0255«»»} #' Начинается с пары знаков.»",
+          "Начинается с пары знаков « #' », за которыми может следовать либо буква, либо знак и заканчивается закрывающей текстовой скобкой .»",
+          "Пример именованной группы.",
+          "{\"?\"  #'  Boolean »      Token   (  \"!\"  0 #'True.»   ,  \"¬\"  1 #'False.» ) }  ",
+          "{OpenBracket «{» «[» «(» } #' Перечислимая группа открывающая скобка",
+          "",
+          "",
+          "",
+          "Непосредственно за открывающей скобкой имя группы.",
+          "",
+          "Define Concept \"Имя класса\" \"Имя концепта\"  Static Заголовок ",
+          "Define Атрибуты {\"Имя атрибута\" Значение} 015 ",
+          "Define Заголовок Help Атрибуты Подписки ",
+          "Т.е. Имя атрибута (берется из класса концепта) за которым следует значение этого атрибута. Исключением является атрибут с пустым именем, который обязан быть первым.",
+          "Define Подписки {\"Имя события\" { {«@» {Concept}015 }01 Операторы}115 } 015",
+          "Имя события за которым следуют, возможно, один или группа концептов являющихся формальными параметры определяемые знаком «@»  и операторы",
+          "Define Static {OpenBracket { Concept} 015 CloseBracket }",
+          "Не пустые скобки формируют статический концепт, пустые-определяют группу",
+          "Define \"Имя класса“ Name",
+          "Define \"Имя концепта“ Name",
+          "",
+          "Определение понятий. Синтаксис."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 3,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Word",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Letter",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "От одной до 16 букв.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 4,
+            "runs": [
+              {
+                "text": "Define ",
+                "baseline": 0
+              },
+              {
+                "text": "Name",
+                "baseline": 0
+              },
+              {
+                "text": " [Word {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"» ",
+                "baseline": 0
+              },
+              {
+                "text": "{Mark} ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "5",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"»",
+                "baseline": 0
+              },
+              {
+                "text": "}]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Либо слово, либо до 16 знаков в прямых скобках.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 5,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Help",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{ ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«'»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{[Letter Mark ] }",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "255",
+                "baseline": 30000
+              },
+              {
+                "text": "«»»",
+                "baseline": 0
+              },
+              {
+                "text": "} ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Начинается с пары знаков.»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 6,
+            "runs": [
+              {
+                "text": "Начинается с пары знаков «",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' »",
+                "baseline": 0
+              },
+              {
+                "text": ", за которыми может следовать либо буква, либо знак и заканчивается",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "закрывающей текстовой скобкой .»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 9,
+            "runs": [
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "OpenBracket ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» «",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«(»",
+                "baseline": 0
+              },
+              {
+                "text": " } ",
+                "baseline": 0
+              },
+              {
+                "text": "#",
+                "baseline": 30000
+              },
+              {
+                "text": "' ",
+                "baseline": 0
+              },
+              {
+                "text": "Перечислимая группа открывающая скобка",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 16,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибуты",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "Имя атрибута",
+                "baseline": 0
+              },
+              {
+                "text": "\" ",
+                "baseline": 0
+              },
+              {
+                "text": "Значение",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 19,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Подписки ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "Имя события",
+                "baseline": 0
+              },
+              {
+                "text": "\" ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "@",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " {Concept}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Операторы",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "1",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 21,
+            "runs": [
+              {
+                "text": "Define",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Static {",
+                "baseline": 0
+              },
+              {
+                "text": "OpenBracket ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Concept",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15 ",
+                "baseline": 30000
+              },
+              {
+                "text": "CloseBracket ",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              }
+            ]
+          }
+        ],
+        "notes": []
+      },
+      {
+        "number": 6,
+        "part": "ppt/slides/slide6.xml",
+        "xml_sha256": "5dcd95b99d91c3a0827d6d239b9aa292e33be821834408880ee1c8940bc5899d",
+        "paragraphs": [
+          "",
+          "Структура адреса. Двоичное представление.",
+          "Вид",
+          "Экспресс",
+          "Объект",
+          "Элемент",
+          "Адресная группа",
+          "Структура элемента адресной группы.",
+          "Код контента (Токен)",
+          "Индекс контента (Токен)",
+          "Код контента",
+          "Контент",
+          "0",
+          "Подписки",
+          "1",
+          "Имя",
+          "2",
+          "Help",
+          "3",
+          "Атрибуты",
+          "4",
+          "Выполняемый контент",
+          "5",
+          "События, понятия, подписки",
+          "6",
+          "Конструкты",
+          "7",
+          "Вложение",
+          "Три бита-код контента, и один бит признак адресации к статическому контенту.",
+          "Вид- токен. ",
+          "0-й разряд признак наличия адресной группы. Класса Array0.",
+          "1-й и -2-й разряды. Значения вида адресации имеют следующий смысл:",
+          "0-Относительная адресация. Без экспресс адреса, индекса объекта и  индекса элемента комплекта исключительно адресной группой. В отсутствии адресной группы(0-й разряд=0) адресация к стеку.",
+          "1-Адресация исключительно экспресс адресом.",
+          "2-Адресация объекта. Экспресс адрес + индекс объекта.",
+          "3-Внешняя адресация. Адресация вне элемента комплекта. Экспресс адрес + индекс объекта + индекс элемента комплекта",
+          "3-й разряд при внутренней адресации является признаком наличия физического адреса.  При внешней адресации имеет смысл расширения адресации вне комплекта. К серверам, экранам и устройствами управления и отображения.",
+          "Адресная группа класса Array0 элементов адреса.",
+          "Тест",
+          "Адресация.",
+          "Инициализация концепта.",
+          "Для чтения.",
+          "Для записи."
+        ],
+        "styled_paragraphs": [],
+        "notes": []
+      },
+      {
+        "number": 7,
+        "part": "ppt/slides/slide7.xml",
+        "xml_sha256": "4f660a3c7ec28934034273ae0fa12e8aeab5b9e91e32fee894081fc01872b468",
+        "paragraphs": [
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "2",
+          "Marks",
+          "Знаки",
+          "Lexemes ",
+          "{Mark}16  Один или более знаков",
+          "3",
+          "Name",
+          "Имя",
+          "Lexemes ",
+          "[{Letter }16 {«\"»{Numeral}16 «\"»} {«\"» {Mark}16 «\"»}]",
+          "4",
+          "Text",
+          "Текст",
+          "Lexemes ",
+          "««» [ Mark,  Letter Numeral Official  Text] 1516«»»",
+          "5",
+          "Help",
+          "Комментарий",
+          "Lexemes ",
+          "«#» [ Mark,  Letter Numeral Official] 1516«»»",
+          "6",
+          "Value",
+          "Значение",
+          "Lexemes /Type",
+          "{Numeral }16 {«.» {Numeral 016}0",
+          "7",
+          "Boolean",
+          "Boolean",
+          "Lexemes /Type",
+          "[«!\" \"¬\"] Yes, No. По умолчанию Yes",
+          "8",
+          "Comment",
+          "Комментарий",
+          "Служебные",
+          "«’» {¶¬} 0128",
+          "Лексемы. Концепт Lexeme",
+          "Лексемы разделяются переменой типов знаков. Т.е. концом лексемы Marks является появление символа алфавита типа служебный, скобка, буква или цифра.",
+          "Name-это группа из не менее одной и не более 16 букв или такое же количество цифр или знаков группы Mark заключенных в именные скобки («\"»).",
+          "Text-последовательность любых знаков заключенных в текстовые скобки. Допускает вложения.",
+          "Комментарий начинается со знака «’», состоит из любых знаков, кроме ПС.",
+          "Help- последовательность любых знаков начинающаяся со знака «#» и завершающаяся текстовой скобкой («»»). Является свойством концепта.",
+          "Лексемы Value и Boolean создают соответствующие концепты-значения, размещающиеся во вложении.",
+          " ",
+          "Комбинации знаков формируют лексемы.",
+          "Text Lexeme {",
+          "                        Text Type #Тип лексемы» ",
+          "                         Integer First     #Позиция начала лексемы» ",
+          "                         Integer Length #Длина лексемы» ",
+          "          ’ Во вложении значение лексемы",
+          "                              }",
+          "Типы лексем генерируемых лексическим разбором."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 10,
+            "runs": [
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Mark",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Один или более знаков",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 15,
+            "runs": [
+              {
+                "text": "[{Letter }",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": " {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{Numeral}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Mark",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "\"",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}]",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 20,
+            "runs": [
+              {
+                "text": "««» [ Mark",
+                "baseline": 0
+              },
+              {
+                "text": ", ",
+                "baseline": 0
+              },
+              {
+                "text": " Letter Numeral Official  Text]",
+                "baseline": 0
+              },
+              {
+                "text": " 15",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«»»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 25,
+            "runs": [
+              {
+                "text": "«#» [ Mark",
+                "baseline": 0
+              },
+              {
+                "text": ", ",
+                "baseline": 0
+              },
+              {
+                "text": " Letter Numeral Official]",
+                "baseline": 0
+              },
+              {
+                "text": " 15",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«»»",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 30,
+            "runs": [
+              {
+                "text": "{Numeral }",
+                "baseline": 0
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«.» ",
+                "baseline": 0
+              },
+              {
+                "text": "{Numeral ",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              }
+            ]
+          },
+          {
+            "paragraph": 40,
+            "runs": [
+              {
+                "text": "«’» {¶",
+                "baseline": 0
+              },
+              {
+                "text": "¬",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " 0",
+                "baseline": -25000
+              },
+              {
+                "text": "128",
+                "baseline": 30000
+              }
+            ]
+          }
+        ],
+        "notes": []
+      },
+      {
+        "number": 8,
+        "part": "ppt/slides/slide8.xml",
+        "xml_sha256": "88abc7ed6c81230d1a38d17056070effff7537f12efc6c498e6b1c707c041af2",
+        "paragraphs": [
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "0",
+          "Marks",
+          "Знаки",
+          "Concept",
+          "Концепты знак и лексема",
+          "1",
+          "Lexemes",
+          "Лексемы",
+          "@ Lexem P ",
+          "[ { «(» P { «,»P}015  «)»}  { «[»{ P}16«]»} { «[»{ P}16«]»}] ",
+          "2",
+          "Date",
+          "Дата",
+          "Служеб",
+          "",
+          "3",
+          "Time",
+          "Время",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "4",
+          "Paragraph",
+          "Раздел",
+          "Syntax",
+          "",
+          "Концепты порождаемые концептом Text.",
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "",
+          "",
+          "",
+          "Concept",
+          "Концепты знак и лексема",
+          "",
+          "Group",
+          "",
+          "@ Lexem P ",
+          "[ { «(» P { «,»P}015  «)»}  { «[»{ P}16«]»} { «[»{ P}16«]»}] ",
+          "",
+          "SE",
+          "",
+          "Служеб",
+          "[«+» «-»]0 Exp {[«+» «-» «*» «/»] Exp}016",
+          "",
+          "Exp",
+          "Выражение",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "",
+          "Concept",
+          "",
+          "Syntax",
+          "«@» Type}01 Express {Name Help {Атрибут}016 {?}016  {Реализация}01} 16",
+          "Синтаксис концептов форматирования и редактирования текста.",
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "0",
+          "Font",
+          "Фонт",
+          "Concept",
+          "Концепты знак и лексема",
+          "1",
+          "Note",
+          "Примечание",
+          "@ Lexem P ",
+          "[ { «(» P { «,»P}015  «)»}  { «[»{ P}16«]»} { «[»{ P}16«]»}] ",
+          "2",
+          "Comment",
+          "Комментарий",
+          "Служеб",
+          "",
+          "3",
+          "Review",
+          "Рецензия",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "4",
+          "Table",
+          "Таблица",
+          "Syntax",
+          "",
+          "Синтаксис концептов операторов порождаемых транслятором.",
+          "№",
+          "Name",
+          " Имя",
+          "Тип",
+          "Синтаксис",
+          "",
+          "For",
+          "",
+          "Concept",
+          "@ Integer  \" “ For  Integer To  < ¬ \" “ To  ?Exit",
+          "",
+          "Each",
+          "",
+          "Concept",
+          "@ Express “_“Each Group In",
+          "",
+          "Do",
+          "",
+          "Concept",
+          "Do Event{ While Until}",
+          "",
+          "",
+          "Выражение",
+          "Syntax",
+          "[{«(» SE «)»} {«[» SE «]»} {«{» SE «}»} Value] 16",
+          "",
+          "",
+          "",
+          "Syntax",
+          "«@» Type}01 Express {Name Help {Атрибут}016 {?}016  {Реализация}01} 16",
+          "Синтаксис концептов порождаемых транслятором."
+        ],
+        "styled_paragraphs": [
+          {
+            "paragraph": 15,
+            "runs": [
+              {
+                "text": "[ { ",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "P { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": ",",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": "  «)»",
+                "baseline": 0
+              },
+              {
+                "text": "}  { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}] ",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 25,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 46,
+            "runs": [
+              {
+                "text": "[ { ",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "P { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": ",",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": "  «)»",
+                "baseline": 0
+              },
+              {
+                "text": "}  { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}] ",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 51,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "«+» «-»",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": " Exp",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{[",
+                "baseline": 0
+              },
+              {
+                "text": "«+» «-» «*» «",
+                "baseline": 0
+              },
+              {
+                "text": "/",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "] Exp}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 56,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 61,
+            "runs": [
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "@",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " Type}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": " Express {Name",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Help",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "{?}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "6 ",
+                "baseline": 30000
+              },
+              {
+                "text": " {",
+                "baseline": 0
+              },
+              {
+                "text": "Реализация",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 77,
+            "runs": [
+              {
+                "text": "[ { ",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "P { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": ",",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "15",
+                "baseline": 30000
+              },
+              {
+                "text": "  «)»",
+                "baseline": 0
+              },
+              {
+                "text": "}  { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} { ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "P}",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "}] ",
+                "baseline": 0
+              }
+            ]
+          },
+          {
+            "paragraph": 87,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 118,
+            "runs": [
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "«(» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«)»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "[",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "]",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} {",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "» ",
+                "baseline": 0
+              },
+              {
+                "text": "SE ",
+                "baseline": 0
+              },
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": "} Value]",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": -25000
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          },
+          {
+            "paragraph": 123,
+            "runs": [
+              {
+                "text": "«",
+                "baseline": 0
+              },
+              {
+                "text": "@",
+                "baseline": 0
+              },
+              {
+                "text": "»",
+                "baseline": 0
+              },
+              {
+                "text": " Type}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": " Express {Name",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "Help",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "{",
+                "baseline": 0
+              },
+              {
+                "text": "Атрибут",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "16 ",
+                "baseline": 30000
+              },
+              {
+                "text": "{?}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "6 ",
+                "baseline": 30000
+              },
+              {
+                "text": " {",
+                "baseline": 0
+              },
+              {
+                "text": "Реализация",
+                "baseline": 0
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": "0",
+                "baseline": -25000
+              },
+              {
+                "text": "1",
+                "baseline": 30000
+              },
+              {
+                "text": "}",
+                "baseline": 0
+              },
+              {
+                "text": " ",
+                "baseline": 0
+              },
+              {
+                "text": "16",
+                "baseline": 30000
+              }
+            ]
+          }
+        ],
+        "notes": []
+      }
+    ],
+    "part_hashes": {
+      "_rels/.rels": "de622e8cab152f1aeadb721f969893fdc902a8611a211fce01616d02337e9f04",
+      "docProps/core.xml": "cee43fb25eed907a12a67a6cb2d8e66d9bd4450c300f17381ef87012314d46d0",
+      "docProps/app.xml": "2d20a6938a76943c5f1b98342189e123ec0543d6b4a29b8667f6de54ad3e5480",
+      "docProps/custom.xml": "11749d2792d56c86f3aebca8a62326cd9c92599e6f0b1ac37cbdd6f2c0cda461",
+      "ppt/slideMasters/_rels/slideMaster1.xml.rels": "1bcc0de2c635f5cb21f7a4d49092af472a70caa101633408ff28ded40c51e0d0",
+      "ppt/slideMasters/slideMaster1.xml": "de0a6ca47841899f6e3dc0c9d521225919cf3d66d6989c357a55056a1132591c",
+      "ppt/presProps.xml": "0496406a8e1cb4dbeb2e7543e85158d7b36ea551d19265ea59ae751322e05024",
+      "ppt/theme/theme1.xml": "622ec2873c5b18b7cc793e3f5e93b973e69acc514cb6b3110a8060f321b67c3d",
+      "ppt/theme/theme12.xml": "6b7012cfbcdac060eb08f88d9083d7dabda538f9cfc57bc7f0d3faf41bd49f30",
+      "ppt/slideLayouts/_rels/slideLayout8.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout7.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout11.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout3.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout10.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout2.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout6.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout5.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout9.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout4.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/_rels/slideLayout1.xml.rels": "8d75d283f8517cd39b37d68fe181d89df8dea64d846fd7fd7f9126a530b27f5b",
+      "ppt/slideLayouts/slideLayout1.xml": "2390f834ae4141396364b9b6396d65b6dae07263254be35bef84b8cdd137a4c5",
+      "ppt/slideLayouts/slideLayout2.xml": "9a2bb2051f7c245d8a021685ffac4be60846e2c8b30e0f7fb3742c2f13c9fc8d",
+      "ppt/slideLayouts/slideLayout3.xml": "29f4be01b4195c748137cea45f752ede87f892dc4126c8e4f9a6aaec6762ee3d",
+      "ppt/slideLayouts/slideLayout4.xml": "9fc5801d557387fc0d00091cb907f986f3d0ff60ee7320bbd2d2cf7e8b53c823",
+      "ppt/slideLayouts/slideLayout10.xml": "8b318351066a01022770fe0534584c6b2e4f96eb745ef9f0fc8cb853b0f75158",
+      "ppt/slideLayouts/slideLayout6.xml": "60560d63de22d9ea017c79a464c7841f1b6783794dbc3fc1126ef3dee44888b9",
+      "ppt/slideLayouts/slideLayout7.xml": "c691c84eee9860fcce9fa9cf69dda6a3fd1988782ef5d765493fe1720b5fd163",
+      "ppt/slideLayouts/slideLayout11.xml": "98e94273fc609184d0908e561cc48d8d90cc80597a47bbdc91791b620ef0c3a5",
+      "ppt/slideLayouts/slideLayout8.xml": "03827475d103bf6eeccfb27a2cb3188d455c12259cef0cd17a756d6976a52719",
+      "ppt/slideLayouts/slideLayout5.xml": "995427877e88699d2aca2894622edd309403c4d5d205c85de5e79588a5787fab",
+      "ppt/slideLayouts/slideLayout9.xml": "120c7cef44e1daf2fa54926dc05c986fcd3dd4f2254612d8588f2fdd4ecfa59f",
+      "ppt/_rels/presentation.xml.rels": "c4592fad14f8e17743371e24361eeb9393e47aa855ac810be982424814945b56",
+      "ppt/notesMasters/_rels/notesMaster1.xml.rels": "e85b28b8a43b8681ca43dd20e1bd5c3c291137e629b536c7d03eb20dbf78edc3",
+      "ppt/notesMasters/notesMaster1.xml": "252c198e00f7401658dc66900de0751cf786f893ac35470afff1b842e9843c05",
+      "ppt/comments/comment1.xml": "0666a22dc36afb72f6c44a7dccec87f75844883159aa0578646b871ec78b10b2",
+      "ppt/comments/comment4.xml": "999d370d5c8ac7356bbcb43792f6262c388200c16279b8465ef874acd2b21e6e",
+      "ppt/slides/slide1.xml": "9bbd668f5d4fa2846be06066eb9b2826f8c10299018cbf2fc6f4b0e5f5bcda0a",
+      "ppt/slides/slide2.xml": "4faebad4f3b46a30a7c849f4d4ebc47e8716119f0e7ad7e48a8ab5fc9b35c45c",
+      "ppt/slides/slide3.xml": "d5ffdcb36d6008f9ea3e1a902c4794cfa64988773da75f1aceac3fe5b5622fc1",
+      "ppt/slides/_rels/slide8.xml.rels": "96e267ae4fe951759f393ee98e4c4ce2dcae550e3382edfbdd9caab2965b979d",
+      "ppt/slides/_rels/slide7.xml.rels": "96e267ae4fe951759f393ee98e4c4ce2dcae550e3382edfbdd9caab2965b979d",
+      "ppt/slides/_rels/slide6.xml.rels": "96e267ae4fe951759f393ee98e4c4ce2dcae550e3382edfbdd9caab2965b979d",
+      "ppt/slides/_rels/slide5.xml.rels": "96e267ae4fe951759f393ee98e4c4ce2dcae550e3382edfbdd9caab2965b979d",
+      "ppt/slides/_rels/slide4.xml.rels": "2df66bcb8881a80da482c74b4eac61483d225d1296a8a6615f5ee7eec3a868df",
+      "ppt/slides/_rels/slide3.xml.rels": "2970a43ab55401922f715d8330f61d15d5c87a02d4dcfc0ba95481dcd3e6e141",
+      "ppt/slides/_rels/slide2.xml.rels": "96e267ae4fe951759f393ee98e4c4ce2dcae550e3382edfbdd9caab2965b979d",
+      "ppt/slides/_rels/slide1.xml.rels": "53ded5330a7adf5d7de7b3838b551f633b3abaf7f1577c79a6098be72da1775b",
+      "ppt/slides/slide4.xml": "0b540c8c546fdb2e2972973c229f5b1d1c2659e8651ff85464f3204cb2ef8fd9",
+      "ppt/slides/slide6.xml": "5dcd95b99d91c3a0827d6d239b9aa292e33be821834408880ee1c8940bc5899d",
+      "ppt/slides/slide5.xml": "a9dbe057097d3eb3b453a5839f4c76630fda6188270a85327df510bbc9ff1b11",
+      "ppt/slides/slide7.xml": "4f660a3c7ec28934034273ae0fa12e8aeab5b9e91e32fee894081fc01872b468",
+      "ppt/notesSlides/_rels/notesSlide3.xml.rels": "660b3c5e128358524c6e201f1c76933f6ea99065647859bda7fda9c0d054383f",
+      "ppt/notesSlides/notesSlide3.xml": "27fa676076d53366505c313df1b9030fc89d68d3fc3c6867351feb0a5cf6e954",
+      "ppt/presentation.xml": "389a1c6fcdfbbf168c4854f69aa1046e30fc21cdb979af0ac85d6741260dc35e",
+      "ppt/commentAuthors.xml": "4b8f70d5a435010db13f7e2dc12b409732754fe107f6ac9f47a0866d56477f29",
+      "[Content_Types].xml": "6cf10db84a1fb4a5607e277ef504f4f7d2eed186d4c2754ece80f94c7d7b86eb",
+      "ppt/slides/slide8.xml": "88abc7ed6c81230d1a38d17056070effff7537f12efc6c498e6b1c707c041af2"
+    },
+    "core_properties_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dcterms:created xsi:type=\"dcterms:W3CDTF\">2026-11-09T10:37:06Z</dcterms:created><dc:creator>Учетная запись Майкрософт</dc:creator><dc:description></dc:description><dc:language>en-US</dc:language><cp:lastModifiedBy></cp:lastModifiedBy><dcterms:modified xsi:type=\"dcterms:W3CDTF\">2026-11-13T13:47:50Z</dcterms:modified><cp:revision>52</cp:revision><dc:subject></dc:subject><dc:title>Презентация PowerPoint</dc:title></cp:coreProperties>",
+    "media_parts": [],
+    "omml_parts": []
+  },
+  "deltas": [
+    {
+      "slide": 1,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": false,
+      "notes_changed": false,
+      "paragraph_diff": []
+    },
+    {
+      "slide": 2,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": true,
+      "notes_changed": false,
+      "paragraph_diff": []
+    },
+    {
+      "slide": 3,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": false,
+      "notes_changed": true,
+      "paragraph_diff": []
+    },
+    {
+      "slide": 4,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": false,
+      "notes_changed": false,
+      "paragraph_diff": []
+    },
+    {
+      "slide": 5,
+      "xml_changed": true,
+      "text_changed": true,
+      "baseline_runs_changed": true,
+      "notes_changed": false,
+      "paragraph_diff": [
+        "--- old/slide-5",
+        "+++ new/slide-5",
+        "@@ -18,7 +18,8 @@",
+        " Т.е. Имя атрибута (берется из класса концепта) за которым следует значение этого атрибута. Исключением является атрибут с пустым именем, который обязан быть первым.",
+        " Define Подписки {\"Имя события\" { {«@» {Concept}015 }01 Операторы}115 } 015",
+        " Имя события за которым следуют, возможно, один или группа концептов являющихся формальными параметры определяемые знаком «@»  и операторы",
+        "-Define Static { Concept} 015",
+        "+Define Static {OpenBracket { Concept} 015 CloseBracket }",
+        "+Не пустые скобки формируют статический концепт, пустые-определяют группу",
+        " Define \"Имя класса“ Name",
+        " Define \"Имя концепта“ Name",
+        " "
+      ]
+    },
+    {
+      "slide": 6,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": false,
+      "notes_changed": false,
+      "paragraph_diff": []
+    },
+    {
+      "slide": 7,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": true,
+      "notes_changed": false,
+      "paragraph_diff": []
+    },
+    {
+      "slide": 8,
+      "xml_changed": true,
+      "text_changed": false,
+      "baseline_runs_changed": true,
+      "notes_changed": false,
+      "paragraph_diff": []
+    }
+  ],
+  "rendered_new": [
+    {
+      "slide": 1,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-1.png",
+      "sha256": "081e2a02e30e83a624431ed1e06faf56d935475c64c7cb12f87fd60cbde1c3a6"
+    },
+    {
+      "slide": 2,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-2.png",
+      "sha256": "9e38d71f9f877885c0abf2414512d89dbb0f81f33c425ecc8440fab09595067e"
+    },
+    {
+      "slide": 3,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-3.png",
+      "sha256": "67cb95778a8eb9e4bc05cf31600ee4eb037619edeca71459e2bfac71b2b7788d"
+    },
+    {
+      "slide": 4,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-4.png",
+      "sha256": "a9334941e1295d8f8f87fcbe484d0e8a4c05de009904a507ba7ff3680bd9593a"
+    },
+    {
+      "slide": 5,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-5.png",
+      "sha256": "c5fd6f2c32e9b95e365c8e73d7dadaa148bfff279b2630a2592948b7d461ba79"
+    },
+    {
+      "slide": 6,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-6.png",
+      "sha256": "ae693c8fd3d8a238ac550942dbd3abd3026fd46fa2ba31b63b261cd74eec5fbf"
+    },
+    {
+      "slide": 7,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-7.png",
+      "sha256": "c75ef136756e6eca3aad9aeb07717678b76cedd540cff94ec12a10c7c7ea483d"
+    },
+    {
+      "slide": 8,
+      "session_file": "/home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/kpol157-render/slide-8.png",
+      "sha256": "0a0d436baa2a37fdb30bb12c868588d375888b9097ab70564e660501b62bc2da"
+    }
+  ],
+  "package_delta": {
+    "added": [
+      "docProps/custom.xml",
+      "ppt/comments/comment4.xml",
+      "ppt/notesSlides/_rels/notesSlide3.xml.rels",
+      "ppt/notesSlides/notesSlide3.xml",
+      "ppt/theme/theme12.xml"
+    ],
+    "removed": [
+      "docProps/thumbnail.jpeg",
+      "ppt/comments/comment2.xml",
+      "ppt/notesSlides/_rels/notesSlide1.xml.rels",
+      "ppt/notesSlides/notesSlide1.xml",
+      "ppt/tableStyles.xml",
+      "ppt/theme/theme2.xml",
+      "ppt/viewProps.xml"
+    ],
+    "changed": [
+      "[Content_Types].xml",
+      "_rels/.rels",
+      "docProps/app.xml",
+      "docProps/core.xml",
+      "ppt/_rels/presentation.xml.rels",
+      "ppt/commentAuthors.xml",
+      "ppt/comments/comment1.xml",
+      "ppt/notesMasters/_rels/notesMaster1.xml.rels",
+      "ppt/notesMasters/notesMaster1.xml",
+      "ppt/presProps.xml",
+      "ppt/presentation.xml",
+      "ppt/slideLayouts/_rels/slideLayout1.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout10.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout11.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout2.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout3.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout4.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout5.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout6.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout7.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout8.xml.rels",
+      "ppt/slideLayouts/_rels/slideLayout9.xml.rels",
+      "ppt/slideLayouts/slideLayout1.xml",
+      "ppt/slideLayouts/slideLayout10.xml",
+      "ppt/slideLayouts/slideLayout11.xml",
+      "ppt/slideLayouts/slideLayout2.xml",
+      "ppt/slideLayouts/slideLayout3.xml",
+      "ppt/slideLayouts/slideLayout4.xml",
+      "ppt/slideLayouts/slideLayout5.xml",
+      "ppt/slideLayouts/slideLayout6.xml",
+      "ppt/slideLayouts/slideLayout7.xml",
+      "ppt/slideLayouts/slideLayout8.xml",
+      "ppt/slideLayouts/slideLayout9.xml",
+      "ppt/slideMasters/_rels/slideMaster1.xml.rels",
+      "ppt/slideMasters/slideMaster1.xml",
+      "ppt/slides/_rels/slide1.xml.rels",
+      "ppt/slides/_rels/slide2.xml.rels",
+      "ppt/slides/_rels/slide3.xml.rels",
+      "ppt/slides/_rels/slide4.xml.rels",
+      "ppt/slides/_rels/slide5.xml.rels",
+      "ppt/slides/_rels/slide6.xml.rels",
+      "ppt/slides/_rels/slide7.xml.rels",
+      "ppt/slides/_rels/slide8.xml.rels",
+      "ppt/slides/slide1.xml",
+      "ppt/slides/slide2.xml",
+      "ppt/slides/slide3.xml",
+      "ppt/slides/slide4.xml",
+      "ppt/slides/slide5.xml",
+      "ppt/slides/slide6.xml",
+      "ppt/slides/slide7.xml",
+      "ppt/slides/slide8.xml",
+      "ppt/theme/theme1.xml"
+    ]
+  }
+}

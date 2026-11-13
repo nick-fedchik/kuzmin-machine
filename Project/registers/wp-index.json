@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "date": "2026-11-13",
   "entries": [
     {
@@ -1881,6 +1881,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/sources/author/clarifications-2026-11-13.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
+    },
+    {
       "path": "Research/sources/author/dou/dou-35914.md",
       "direction": "Research",
       "wp_type": "Source",
@@ -1911,6 +1917,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/sources/author/introduction-revision-2026-11-13.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
+    },
+    {
       "path": "Research/sources/author/kuzmin-2024-example-for-AN.pdf",
       "direction": "Research",
       "wp_type": "Source",
@@ -1930,6 +1942,12 @@
     },
     {
       "path": "Research/sources/author/Введение. Понятия. Группы. Синтаксис.pptx",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/sources/author/Введение_1. Понятия. Группы. Синтаксис.pptx",
       "direction": "Research",
       "wp_type": "Source",
       "immutable_input": false
@@ -2001,6 +2019,42 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-157/forwarded-responses-01.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-157/full-tests-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-157/full-tests-02.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-157/package-supplement-01.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-157/source-delta-01.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-157/structure-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/author-semantics/formal-analysis.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
@@ -2008,6 +2062,12 @@
     },
     {
       "path": "Research/studies/author-semantics/kpol-syntax-155-report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/kpol-syntax-157-report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false
