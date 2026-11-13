@@ -2019,6 +2019,24 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/README.md",
+      "direction": "Research",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/plan.md",
+      "direction": "Research",
+      "wp_type": "Plan",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/protocol.md",
+      "direction": "Research",
+      "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/model.md",
       "direction": "Research",
       "wp_type": "Model",
