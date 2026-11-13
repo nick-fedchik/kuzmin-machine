@@ -1575,6 +1575,24 @@
       "immutable_input": false
     },
     {
+      "path": "Project/patents/README.md",
+      "direction": "Project",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/patents/patent-apparatus-heterogeneous-event-engine.md",
+      "direction": "Project",
+      "wp_type": "Specification / Patent Draft",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/patents/patent-method-hierarchical-event-control.md",
+      "direction": "Project",
+      "wp_type": "Specification / Patent Draft",
+      "immutable_input": false
+    },
+    {
       "path": "Project/plans/ng-transition.md",
       "direction": "Project",
       "wp_type": "Plan",
