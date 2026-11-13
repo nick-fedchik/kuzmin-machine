@@ -1995,6 +1995,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/author-semantics/data/kpol-syntax-155/structure-04.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/author-semantics/formal-analysis.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
