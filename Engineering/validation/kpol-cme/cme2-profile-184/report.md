@@ -1,10 +1,10 @@
 # Звіт #184: багатоконцептний профіль компіляції `KPOL-CME-2` та його побітова еквівалентність з AXI RTL на `CME-RAW-1`
 
-* **Версія:** 0.1.2
+* **Версія:** 0.1.3
 * **Дата:** 2026-11-14
 * **Тип WP:** Report / Analysis
-* **Issue:** [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `feat/184-kpol-cme2-profile` (оновлено в [#191](https://github.com/nick-fedchik/kuzmin-machine/issues/191)).
-* **Виконавець:** GitHub Copilot CLI — редакція `0.1.0`: `Gemini 4 Carbon` (`gemini-4-carbon`); редакція `0.1.1`: `Gemini 4 Hydrogen` (`gemini-4-hydrogen`); редакція `0.1.2` (#191): `Gemini 4 Hydrogen` (`gemini-4-hydrogen`). **Рецензент:** Claude Sonnet 5.5 (повторна рецензія PR #188 — «Прийнято із зауваженнями»).
+* **Issue:** [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `feat/184-kpol-cme2-profile` (оновлено в [#191](https://github.com/nick-fedchik/kuzmin-machine/issues/191) і [#197](https://github.com/nick-fedchik/kuzmin-machine/issues/197)).
+* **Виконавець:** GitHub Copilot CLI — редакція `0.1.0`: `Gemini 4 Carbon` (`gemini-4-carbon`); редакції `0.1.1`, `0.1.2` (#191): `Gemini 4 Hydrogen` (`gemini-4-hydrogen`); редакція `0.1.3` (#197): `Claude Sonnet 5.5` (`claude-sonnet-5.5`). **Рецензент:** Claude Sonnet 5.5 (повторна рецензія PR #188 — «Прийнято із зауваженнями»); рецензія редакції `0.1.3` не проведена (потрібна модель іншої родини, ніж Claude).
 * **Коміт бази (Шар 1 стеку, PR #187):** `33a9974d9006bea8eb6d261a903c210ceac50b9c`. **Хост / плата:** Linux x86_64 (`AORUS-5-SE`); фізична плата FPGA не залучалася. **Бітстрім (SHA-256):** не генерувався.
 * **Критерії успіху (зафіксовано до виконання):** критерії приймання в описі [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) та зауваження незалежної рецензії [PR #187](https://github.com/nick-fedchik/kuzmin-machine/pull/187#issuecomment-6881195250) (явне відхилення невідомих/неконстантних правих операндів і строгих меж `RANGE` на краях `int16`).
 
@@ -48,7 +48,7 @@
 
 | Критерій (`#184`) | Очікувано | Отримано | Висновок |
 | :--- | :--- | :--- | :--- |
-| Специфікація та реалізація `profile="KPOL-CME-2"` і `--profile KPOL-CME-2` без зміни `KPOL-CME-1` | Нова специфікація; старі тести `KPOL-CME-1` і типовий режим CLI проходять без змін | Створено `kpol-cme2-profile-0.1.0.md`; байт-ідентичність CLI у режимі за замовчуванням перевірена тестом (`exit_code=0`) | Виконано |
+| Специфікація та реалізація `profile="KPOL-CME-2"` і `--profile KPOL-CME-2` без зміни `KPOL-CME-1` | Нова специфікація; старі тести `KPOL-CME-1` і типовий режим CLI проходять без змін | Створено `kpol-cme2-profile-0.1.0.md`; CLI без `--profile` і з `--profile KPOL-CME-1` дають образ, байт-ідентичний golden-файлу [`cme1_single_ca9dbb3.bin`](../../../sw/kpol-ref/tests/fixtures/cme1_single_ca9dbb3.bin) (1024 Б, sha256 `da1d69c5be5f52482ab39b9e549b5a736db7789f319a035494aa422f0a1835bb`; знятий CLI бази `ca9dbb3` на модулі `cme1_valid` із тесту); зміна виходу `_compile_cme1_profile` або відображення предикатів CME-1 валить тест ([`raw/golden-mutation-01.log`](raw/golden-mutation-01.log)) | Виконано |
 | До 64 концептів і DAG-перевірка каскадів `on change(...)` | Прийняття 1..64 станів та ациклічних ланцюгів (включно з `CID 0`); відмова на циклах і `fan-out > 1` | Перевірено `MultiPipeline` (2-ходовий каскад у `CID 0`), `Full64` (`CID 63 -> CID 1`) та всі негативні тести `CME2-CASCADE` | Виконано |
 | Розширені предикати, дії та детектор колізії `operand_val` | Підтримка `>=`, `<=`, `int16` `RANGE`, `INC/DEC/ADD/SUB/ASSIGN`; явний `CME2-OPERAND-COLLISION` і `CME2-RANGE` на межах `int16` | Побітова збіжність у RTL і точні коди відмов на всіх негативних контролях | Виконано |
 | Еквівалентність `Interpreter` та RTL-симуляції (`iverilog`) | Співпадіння вектора 64 станів `W0` і незмінність `W1..W3` після багатоходової траси з каскадами та відмовами інваріанта | Усі 64 слоти `W0..W3` у `kpol_bram_pipeline_axi.sv` побітово збіглися з еталоном ([`raw/cme2-tests-02.log`](raw/cme2-tests-02.log)) | Виконано |
@@ -70,6 +70,7 @@ python3 Project/tools/check_wp_documents.py
 | 0.1.0 | 2026-11-14 | Перша редакція звіту реалізації та RTL-еквівалентності багатоконцептного профілю `KPOL-CME-2` ([#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184)). |
 | 0.1.1 | 2026-11-14 | Виправлення за рецензією PR #188 (B-1, B-2, N-1..N-3): приведено числа й сценарії до фактичних тестів, додано матрицю `охоронець × дія`, ланцюг довжини 3 та повне покриття 13 кодів `CME2-*`. |
 | 0.1.2 | 2026-11-14 | Уточнено виконавця редакцій `0.1.1`/`0.1.2` (`Gemini 4 Hydrogen`) та додано посилання на golden-файл `cme1_single_ca9dbb3.bin` ([#191](https://github.com/nick-fedchik/kuzmin-machine/issues/191)). |
+| 0.1.3 | 2026-11-14 | §4: фактичне посилання на golden-файл `cme1_single_ca9dbb3.bin` (sha256, походження) і на `raw/golden-mutation-01.log` (мутації виходу CME-1 валять тест); запис `0.1.2` стверджував посилання, якого в тілі звіту не було ([#197](https://github.com/nick-fedchik/kuzmin-machine/issues/197)). Прибрано тавтологічну перевірку з тесту, повідомлення парсера в підтестах звіряються регулярними виразами, додано кейс `supervisor`, межу `CME2-SHAPE`/`CME2-TYPE` закріплено двома підтестами (39 підтестів у `KpolCme2ProfileTests`, [`raw/cme2-tests-03.log`](raw/cme2-tests-03.log)). |
 
 ## Абревіатури та глосарій
 

@@ -1,0 +1,26 @@
+# command: PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q Engineering/sw/kpol-ref/tests/test_kpol_reference.py -k test_cme2_cli_preserves_cme1_default
+# timestamp_utc: 2026-11-14T19:46:24Z
+# base_commit: db6820da570035c8f1f62f4041c6d97a1faa677a (origin/main; робоче дерево з правками #197)
+# host: Linux 7.0.0-42-generic x86_64
+# мета: golden-тест (fixtures/cme1_single_ca9dbb3.bin) має падати при зміні виходу компілятора KPOL-CME-1
+# примітка: два попередні неопубліковані прогони мали артефакти процедури: (1) застарілий .pyc після мутації '>'->LT (розмір файла не змінюється; відновлення в ту саму секунду); (2) запуск базової лінії збігся в часі з правкою файла. Звідси PYTHONDONTWRITEBYTECODE=1 і суворо послідовні кроки.
+
+## CASE 0: baseline, без мутації
+1 passed, 69 deselected in 0.63s
+exit_code=0
+
+## CASE 1: M1 — _compile_cme1_profile повертає образ зі зміненим останнім байтом дескриптора (kpol_reference.py:1582)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+E           AssertionError: b'\x0[55 chars]00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[3988 chars]\x00' != 
+1 failed, 69 deselected in 0.29s
+exit_code=1
+
+## CASE 2: M2 — у відображенні предикатів CME-1 '>' -> CME_PRED_LT (kpol_reference.py:1529)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+E           AssertionError: b'\x0[27 chars]00\x04\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00[4016 chars]\x00' != 
+1 failed, 69 deselected in 0.30s
+exit_code=1
+
+## CASE 3: після відновлення kpol_reference.py (git checkout) — повторна базова лінія
+1 passed, 69 deselected in 0.60s
+exit_code=0
