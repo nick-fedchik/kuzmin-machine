@@ -1,10 +1,10 @@
 # Звіт #184: багатоконцептний профіль компіляції `KPOL-CME-2` та його побітова еквівалентність з AXI RTL на `CME-RAW-1`
 
-* **Версія:** 0.1.1
+* **Версія:** 0.1.2
 * **Дата:** 2026-11-14
 * **Тип WP:** Report / Analysis
-* **Issue:** [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `feat/184-kpol-cme2-profile`.
-* **Виконавець:** GitHub Copilot CLI (Gemini 4 Carbon, `gemini-4-carbon`). **Рецензент:** незалежна рецензія не проведена.
+* **Issue:** [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `feat/184-kpol-cme2-profile` (оновлено в [#191](https://github.com/nick-fedchik/kuzmin-machine/issues/191)).
+* **Виконавець:** GitHub Copilot CLI — редакція `0.1.0`: `Gemini 4 Carbon` (`gemini-4-carbon`); редакція `0.1.1`: `Gemini 4 Hydrogen` (`gemini-4-hydrogen`); редакція `0.1.2` (#191): `Gemini 4 Hydrogen` (`gemini-4-hydrogen`). **Рецензент:** Claude Sonnet 5.5 (повторна рецензія PR #188 — «Прийнято із зауваженнями»).
 * **Коміт бази (Шар 1 стеку, PR #187):** `33a9974d9006bea8eb6d261a903c210ceac50b9c`. **Хост / плата:** Linux x86_64 (`AORUS-5-SE`); фізична плата FPGA не залучалася. **Бітстрім (SHA-256):** не генерувався.
 * **Критерії успіху (зафіксовано до виконання):** критерії приймання в описі [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) та зауваження незалежної рецензії [PR #187](https://github.com/nick-fedchik/kuzmin-machine/pull/187#issuecomment-6881195250) (явне відхилення невідомих/неконстантних правих операндів і строгих меж `RANGE` на краях `int16`).
 
@@ -69,6 +69,7 @@ python3 Project/tools/check_wp_documents.py
 | :--- | :--- | :--- |
 | 0.1.0 | 2026-11-14 | Перша редакція звіту реалізації та RTL-еквівалентності багатоконцептного профілю `KPOL-CME-2` ([#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184)). |
 | 0.1.1 | 2026-11-14 | Виправлення за рецензією PR #188 (B-1, B-2, N-1..N-3): приведено числа й сценарії до фактичних тестів, додано матрицю `охоронець × дія`, ланцюг довжини 3 та повне покриття 13 кодів `CME2-*`. |
+| 0.1.2 | 2026-11-14 | Уточнено виконавця редакцій `0.1.1`/`0.1.2` (`Gemini 4 Hydrogen`) та додано посилання на golden-файл `cme1_single_ca9dbb3.bin` ([#191](https://github.com/nick-fedchik/kuzmin-machine/issues/191)). |
 
 ## Абревіатури та глосарій
 
