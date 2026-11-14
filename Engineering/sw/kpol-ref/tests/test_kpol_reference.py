@@ -2920,6 +2920,18 @@ class KpolCme2ProfileTests(unittest.TestCase):
                     profile="KPOL-CME-2",
                 )
 
+        # Непідтримувані секції та ключове слово owner відхиляються parse_module (у CLI -> CME2-SYNTAX)
+        for label, bad_syntax_prog in (
+            ("import", "import foo;\n" + make_single("true", "S + 1", "step E(p = 1); expect S == 11;")),
+            ("type", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S:", "type T = Int32;\nstate S:")),
+            ("unit", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S:", "unit mV;\nstate S:")),
+            ("channel", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S:", "channel c: Int32;\nstate S:")),
+            ("owner", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S: Int32 = 10;", "state S: Int32 = 10 owner x;")),
+        ):
+            with self.subTest(unsupported_syntax=label):
+                with self.assertRaises(KpolError):
+                    parse_module(bad_syntax_prog)
+
         # Початковий стан 'Unknown' -> CME2-SHAPE
         unknown_init = """
         Problem UnknownInit { Invariants { Inv: S >= 0; } }
@@ -3051,7 +3063,9 @@ class KpolCme2ProfileTests(unittest.TestCase):
             out = Path(tmpdir) / "out.bin"
             src.write_text(self.MULTICONCEPT_SOURCE, encoding="utf-8")
 
-            # Байт-ідентичність CLI за замовчуванням (без --profile vs --profile KPOL-CME-1)
+            # Байт-ідентичність CLI за замовчуванням із golden-файлом бази #187 (ca9dbb3)
+            golden_path = Path(__file__).resolve().parent / "fixtures" / "cme1_single_ca9dbb3.bin"
+            golden_bytes = golden_path.read_bytes()
             cme1_src = Path(tmpdir) / "cme1.kpol"
             cme1_def = Path(tmpdir) / "cme1_def.bin"
             cme1_exp = Path(tmpdir) / "cme1_exp.bin"
@@ -3060,7 +3074,13 @@ class KpolCme2ProfileTests(unittest.TestCase):
             r_exp = subprocess.run([sys.executable, str(cli), "--profile", "KPOL-CME-1", str(cme1_src), str(cme1_exp)], capture_output=True, text=True)
             self.assertEqual(r_def.returncode, 0, r_def.stderr)
             self.assertEqual(r_exp.returncode, 0, r_exp.stderr)
-            self.assertEqual(cme1_def.read_bytes(), cme1_exp.read_bytes())
+            self.assertEqual(cme1_def.read_bytes(), golden_bytes)
+            self.assertEqual(cme1_exp.read_bytes(), golden_bytes)
+
+            # Перевірка здатності golden-тесту падати при пошкодженні байта образу
+            tampered = bytearray(golden_bytes)
+            tampered[0] ^= 0x01
+            self.assertNotEqual(bytes(tampered), cme1_exp.read_bytes())
 
             # Спроба перезапису існуючого вихідного файла -> CME2-IO
             io_exist = subprocess.run(
