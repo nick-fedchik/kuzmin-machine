@@ -1,0 +1,99 @@
+date=2026-11-14T08:32:00+02:00
+host=AORUS-5-SE
+commit=1d8359ab351ddd041ad63598f157eefb8ff9dec4
+cmd=python3 -m pytest Engineering/sw/kpol-ref/tests/test_kpol_reference.py -k issue164 -v
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-164-secure-boot
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 58 items / 55 deselected / 3 selected
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_default_nonce_is_random_across_updates FAILED [ 33%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_module_payload_is_cme_raw_1 FAILED [ 66%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_pre_auth_nonce_poisoning_blocked FAILED [100%]
+
+=================================== FAILURES ===================================
+___ KpolReferenceTests.test_issue164_default_nonce_is_random_across_updates ____
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_issue164_default_nonce_is_random_across_updates>
+
+    def test_issue164_default_nonce_is_random_across_updates(self):
+        source_v1 = """
+        Problem OtaModule {}
+        Solution OtaModule {
+            state Threshold: Int32 = 10;
+        }
+        Proof OtaModule {}
+        """
+        source_v2 = """
+        Problem OtaModule {}
+        Solution OtaModule {
+            state Threshold: Int32 = 25;
+        }
+        Proof OtaModule {}
+        """
+        valid_key = b"0123456789abcdef0123456789abcdef"
+        img_v1 = compile_signed_bram_image(parse_module(source_v1), valid_key, key_id=1)
+        img_v2 = compile_signed_bram_image(parse_module(source_v2), valid_key, key_id=1)
+    
+>       self.assertNotEqual(img_v1[16:32], img_v2[16:32], "Default nonces must be fresh across updates")
+E       AssertionError: b'\xcdF\x7f\x86\xac\xa9\x91\x8d\xf7;\xdb>\xb0\x81\xeb\\' == b'\xcdF\x7f\x86\xac\xa9\x91\x8d\xf7;\xdb>\xb0\x81\xeb\\' : Default nonces must be fresh across updates
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1240: AssertionError
+_________ KpolReferenceTests.test_issue164_module_payload_is_cme_raw_1 _________
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_issue164_module_payload_is_cme_raw_1>
+
+    def test_issue164_module_payload_is_cme_raw_1(self):
+        source = """
+        Problem CmeSigned {}
+        Solution CmeSigned {
+            state Valve: Int32 = 77;
+        }
+        Proof CmeSigned {}
+        """
+        module = parse_module(source)
+        valid_key = b"0123456789abcdef0123456789abcdef"
+        signed_img = compile_signed_bram_image(module, valid_key, nonce=42)
+        expected_cme = compile_concept_microcode_bram_image(module)
+>       self.assertEqual(signed_img[64:], expected_cme)
+E       AssertionError: b'M\x[21 chars]0\x00@\x03\x00\x00\x12\x00\x00\x00\x00\x00\x00[4016 chars]\x00' != b'M\x[21 chars]0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\[4019 chars]\x00'
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1260: AssertionError
+______ KpolReferenceTests.test_issue164_pre_auth_nonce_poisoning_blocked _______
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_issue164_pre_auth_nonce_poisoning_blocked>
+
+    def test_issue164_pre_auth_nonce_poisoning_blocked(self):
+        source = """
+        Problem NoncePoisonTest {}
+        Solution NoncePoisonTest {
+            state Counter: Int32 = 5;
+        }
+        Proof NoncePoisonTest {}
+        """
+        module = parse_module(source)
+        valid_key = b"0123456789abcdef0123456789abcdef"
+        legit_img = compile_signed_bram_image(module, valid_key, nonce=2026)
+    
+        # Attacker intercepts legit_img and flips 1 bit in HMAC tag before submitting
+        forged_img = bytearray(legit_img)
+        forged_img[32] ^= 0x01
+    
+        seen_nonces = set()
+        ok_forged, msg_forged = verify_bram_signature(bytes(forged_img), valid_key, seen_nonces=seen_nonces)
+        self.assertFalse(ok_forged)
+        self.assertIn("tampering detected", msg_forged.lower())
+>       self.assertEqual(len(seen_nonces), 0, "Unauthenticated packet must not poison seen_nonces")
+E       AssertionError: 1 != 0 : Unauthenticated packet must not poison seen_nonces
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1214: AssertionError
+=========================== short test summary info ============================
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_default_nonce_is_random_across_updates
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_module_payload_is_cme_raw_1
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_pre_auth_nonce_poisoning_blocked
+======================= 3 failed, 55 deselected in 0.14s =======================
+exit_code=1
