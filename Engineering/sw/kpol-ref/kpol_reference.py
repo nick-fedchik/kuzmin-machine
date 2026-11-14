@@ -7,6 +7,7 @@ from decimal import Decimal, InvalidOperation
 import hashlib
 import hmac
 import math
+import secrets
 import struct
 from typing import Any, Iterable
 
@@ -1880,6 +1881,8 @@ def compile_signed_bram_image(
     key_id: int = 1,
     nonce: int | bytes | None = None,
     flags: int = (SEC_FLAG_HMAC_SHA256 | SEC_FLAG_LOCKOUT_ON_TAMPER | SEC_FLAG_ENFORCE_ACL),
+    *,
+    payload_format: str = "CME-RAW-1",
 ) -> bytes:
     """Compiles a 1088-byte cryptographically signed BRAM image (v0.6 Secure Boot).
 
@@ -1891,7 +1894,7 @@ def compile_signed_bram_image(
       +0x0C: KEY_ID (4 bytes)
       +0x10: NONCE (16 bytes)
       +0x20: AUTH_TAG (32 bytes HMAC-SHA256 digest of Header[0:32] + Payload[0:1024])
-      +0x40: PAYLOAD (1024 bytes BRAM binary)
+      +0x40: PAYLOAD (1024 bytes BRAM binary, CME-RAW-1 by default)
     """
     if not isinstance(secret_key, (bytes, bytearray)) or len(secret_key) < 16:
         raise KpolError("secret_key must be at least 16 bytes for HMAC-SHA256")
@@ -1900,16 +1903,19 @@ def compile_signed_bram_image(
 
     if isinstance(module, (bytes, bytearray)):
         payload = bytes(module)
-        mod_name = "RawBinary"
     else:
-        payload = compile_bram_image(module)
-        mod_name = module.name
+        if payload_format == "CME-RAW-1":
+            payload = compile_concept_microcode_bram_image(module)
+        elif payload_format == "legacy":
+            payload = compile_bram_image(module)
+        else:
+            raise KpolError(f"Unsupported payload_format: {payload_format!r}")
 
     if len(payload) != 1024:
         raise KpolError(f"Internal compiler error: invalid payload length {len(payload)}")
 
     if nonce is None:
-        nonce_bytes = hashlib.sha256(f"{mod_name}:{key_id}".encode("utf-8")).digest()[:16]
+        nonce_bytes = secrets.token_bytes(16)
     elif isinstance(nonce, int):
         nonce_bytes = struct.pack("<Q", nonce).ljust(16, b"\x00")
     elif isinstance(nonce, (bytes, bytearray)):
@@ -1955,18 +1961,18 @@ def verify_bram_signature(
     if not (flags & SEC_FLAG_HMAC_SHA256):
         return False, "Image flags missing SEC_FLAG_HMAC_SHA256"
 
-    nonce = header_prefix[16:32]
-    if seen_nonces is not None:
-        if nonce in seen_nonces:
-            return False, "Replay attack detected: Nonce has already been used"
-        seen_nonces.add(nonce)
-
     auth_tag = signed_image[32:64]
     payload = signed_image[64:1088]
 
     computed_tag = hmac.new(secret_key, header_prefix + payload, hashlib.sha256).digest()
     if not hmac.compare_digest(auth_tag, computed_tag):
         return False, "Signature verification failed: Cryptographic tag mismatch (tampering detected)"
+
+    nonce = header_prefix[16:32]
+    if seen_nonces is not None:
+        if nonce in seen_nonces:
+            return False, "Replay attack detected: Nonce has already been used"
+        seen_nonces.add(nonce)
 
     return True, "OK: Valid signature"
 
