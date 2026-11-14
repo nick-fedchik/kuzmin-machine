@@ -1,0 +1,25 @@
+{"started_at": "2026-11-14T09:52:25.374819+02:00", "host": "AORUS-5-SE", "python": "3.14.4", "base_commit": "4a6d6841e5f02c395e9b4b6e96d104d8c9c7500a", "wp_index_entries": 411}
+wp_index_parity_ok: 411 files
+command: ["python3", "Project/tools/check_links.py"]
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 16, пропущено 0
+
+exit_code=0
+command: ["python3", "Project/tools/check_wp_documents.py"]
+{
+  "documents_checked": 132,
+  "immutable_checked": 108,
+  "errors": []
+}
+
+exit_code=0
+command: ["git", "--no-pager", "diff", "--check", "HEAD"]
+
+exit_code=0
+command: ["python3", "-m", "pytest", "-q", "-p", "no:cacheprovider"]
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+.................................................................................................................................... [ 81%]
+...............................................................          [100%]
+339 passed, 300 subtests passed in 23.13s
+
+exit_code=0

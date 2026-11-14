@@ -1,6 +1,6 @@
 # Інженерні перевірки
 
-* **Версія:** 0.5.3
+* **Версія:** 0.5.4
 * **Дата:** 2026-11-14
 * **Тип WP:** Guide
 
@@ -21,6 +21,7 @@
 | [Secure Boot / #164](kpol-cme/secure-boot-164/report.md) | Усунення pre-auth nonce poisoning, свіжі 16-байтні `nonce` за замовчуванням і `CME-RAW-1` payload у `compile_signed_bram_image` / `verify_bram_signature`; програмна перевірка, не апаратний Secure Boot. |
 | [Семантика ядра CME / #167](kpol-cme/cme-semantics-167/report.md) | Каскад на `CID 0` (`guard_flags[4]`), по-концептний `state_changed_o`, знакове переповнення `INC/DEC/ADD/SUB`, знаковий `RANGE`, fail-closed відхилення невідомих `action_opcode > 0x04`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
 | [AXI B4 / W1C / PYNQ-Z1 top / #168](kpol-cme/axi-b4-pynq-168/report.md) | Закриття 1-тактової гонитви `Load vs Run` у `kpol_bram_pipeline_axi.sv`, W1C-очищення `0x02C` при `busy == 0`, 2-FF CDC `sw[1:0]`, антибрязкіт `btn[0]` (1 мс) і `param = 1` у `kpol_bram_pipeline_pynq_z1_top.v`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
+| [Синхронізація реєстрів і документації / #169](kpol-cme/docs-registers-169/report.md) | Синхронізація `open-work-items.md`, `formal-analysis.md` (RFC-008), `system-boundary-allocation-b1.md`, `s2-candidate-system.md`, `trl/report.md` (`CFG-R` 20 нс vs `CFG-P` 80 нс), `work-products.md`, `goals-needs-work-items.md` та індексу `wp-index.json`; структурна та посилальна перевірка. |
 
 ## Використання
 
@@ -62,6 +63,7 @@ python3 Engineering/validation/experiments/AV-11/scripts/analyze_av11.py --outpu
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.4 | 2026-11-14 | Додано звіт структурної та посилальної перевірки синхронізації реєстрів і документації (#169). |
 | 0.5.3 | 2026-11-14 | Додано пакет верифікації AXI B4 / W1C `0x02C` та модернізації `kpol_bram_pipeline_pynq_z1_top.v` (#168). |
 | 0.5.2 | 2026-11-14 | Додано пакет верифікації семантики ядра `km_concept_micro_engine.sv` (#167). |
 | 0.5.1 | 2026-11-14 | Додано програмну перевірку виправлень контейнера підпису Secure Boot (#164). |

@@ -1,7 +1,7 @@
 # Відкриті роботи та рішення власника
 
-* **Версія:** 0.2.0
-* **Дата:** 2026-11-12
+* **Версія:** 0.3.0
+* **Дата:** 2026-11-14
 * **Тип WP:** Register
 * **Власник рішень:** Микола Федчик.
 * **База:** [знімок GitHub після оновлення](../assessments/ng-migration/raw/owner-status-decisions-20261112.json).
@@ -9,21 +9,38 @@
 
 ## Межі та схема
 
-Початковий запис п'яти розглянутих Issues доповнено окремою міграцією
-[#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148); це не повторний аудит всього
-беклогу. GitHub Issue має стан Open/Closed; окреме поле Project має
-Todo/In progress/Postponed/Done. Відкладення не є виконанням чи закриттям.
+Початковий запис п'яти розглянутих Issues та окремої міграції
+[#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148) актуалізовано станом на
+`2026-11-14` за фактичними злиттями `PR #149–#161` і відкритим пакетом виправлень за аудитом
+(`#151`, `#162`, `#164–#169`); це не повторний аудит усього історичного беклогу.
+GitHub Issue має стан Open/Closed; окреме поле Project має
+Todo/In progress/Postponed/Done. Відкладення або закриття епіка в GitHub без окремого акту приймання не є автоматичним затвердженням усієї нормативної бази.
 
 ## Рішення та записи
 
+### Базові задачі першого зрізу (оновлено станом на 2026-11-14)
+
 | Issue | GitHub | Project | Рішення та залишок |
 |---|---|---|---|
-| [#20 — ліцензія й авторство](https://github.com/nick-fedchik/kuzmin-machine/issues/20) | Closed, completed | Done | Власник визначив пропрієтарний, не відкритий режим і доручив закриття. LICENSE/AUTHORS/NOTICE включені до гілки міграції; злиття ще попереду. |
-| [#5 — S2](https://github.com/nick-fedchik/kuzmin-machine/issues/5) | Open | Postponed | Відкладено власником, не завершено. Історію, критерії та завершені B1–B5 збережено. |
-| [#8 — компілятор](https://github.com/nick-fedchik/kuzmin-machine/issues/8) | Open | Todo | Погоджений KPOL-CME-1 не є доказом реалізації; lowering, відмови й перевірки залишаються роботою. |
-| [#120 — зручність KPOL](https://github.com/nick-fedchik/kuzmin-machine/issues/120) | Open | Todo | Потрібне погодження протоколу до дослідження. Залежність #19 закрита, але дослідження не виконане. |
-| [#115 — assert підпису](https://github.com/nick-fedchik/kuzmin-machine/issues/115) | Open | Todo | Відомий дефект тесту не виправляється цим статусним кроком. |
-| [#148 — структура Research/Engineering/Project](https://github.com/nick-fedchik/kuzmin-machine/issues/148) | Open | In progress | Виконання прямої команди власника у власному worktree; один PR, без злиття до main. |
+| [#20 — ліцензія й авторство](https://github.com/nick-fedchik/kuzmin-machine/issues/20) | Closed, completed | Done | Власник визначив пропрієтарний, не відкритий режим і доручив закриття. `LICENSE`, `AUTHORS.md`, `NOTICE` влиті до `main` у складі [PR #149](https://github.com/nick-fedchik/kuzmin-machine/pull/149). |
+| [#5 — S2](https://github.com/nick-fedchik/kuzmin-machine/issues/5) | Closed, completed (2026-11-13) | Postponed (рішення 2026-11-12) | За рішенням власника 2026-11-12 роботу відкладено (`Postponed`), а 2026-11-13 Issue закрито в GitHub; результати B1–B5 збережено, але повну нормативну базу MVP цим кроком автоматично не проголошено. |
+| [#8 — компілятор](https://github.com/nick-fedchik/kuzmin-machine/issues/8) | Open | Todo | Часткові кроки [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150) ([PR #152](https://github.com/nick-fedchik/kuzmin-machine/pull/152)), [#153](https://github.com/nick-fedchik/kuzmin-machine/issues/153) ([PR #154](https://github.com/nick-fedchik/kuzmin-machine/pull/154)), [#155](https://github.com/nick-fedchik/kuzmin-machine/issues/155) ([PR #156](https://github.com/nick-fedchik/kuzmin-machine/pull/156)), [#157](https://github.com/nick-fedchik/kuzmin-machine/issues/157) ([PR #158](https://github.com/nick-fedchik/kuzmin-machine/pull/158)) та [#159](https://github.com/nick-fedchik/kuzmin-machine/issues/159) ([PR #160](https://github.com/nick-fedchik/kuzmin-machine/pull/160)) влиті до `main`; повний lowering, native-фронтенд і приймальні критерії залишаються відкритою роботою. |
+| [#120 — зручність KPOL](https://github.com/nick-fedchik/kuzmin-machine/issues/120) | Open | Todo | Потрібне погодження протоколу до дослідження користувачів. Залежність [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19) закрита ([PR #142](https://github.com/nick-fedchik/kuzmin-machine/pull/142)), але дослідження не виконане. |
+| [#115 — assert підпису](https://github.com/nick-fedchik/kuzmin-machine/issues/115) | Closed, completed | Done | Перевірку булевого результату `verify_bram_signature` та вивід причини відмови виправлено і влито до `main` у [PR #161](https://github.com/nick-fedchik/kuzmin-machine/pull/161) ([звіт](../../Engineering/validation/kpol-cme/signature-115/report.md)). |
+| [#148 — структура Research/Engineering/Project](https://github.com/nick-fedchik/kuzmin-machine/issues/148) | Closed, completed | Done | Міграцію дерева `Research / Engineering / Project` влито до `main` у [PR #149](https://github.com/nick-fedchik/kuzmin-machine/pull/149). |
+
+### Пакет виправлень за науково-інженерним аудитом (2026-11-14)
+
+| Issue | GitHub | Стан виконання | Зміст і межа |
+|---|---|---|---|
+| [#151 — черга B5 без втрат і арбітраж каскаду](https://github.com/nick-fedchik/kuzmin-machine/issues/151) | Open | In review ([PR #163](https://github.com/nick-fedchik/kuzmin-machine/pull/163)) | Утримання без втрат за `valid && ready`, резервування слота каскадом і `sw_trigger`, буфер `cascade_pending_*_q` ([звіт](../../Engineering/validation/kpol-cme/queue-retention-151/report.md)). |
+| [#162 — метадані WP у `j501-hardware-interface.md`](https://github.com/nick-fedchik/kuzmin-machine/issues/162) | Open | In review ([PR #163](https://github.com/nick-fedchik/kuzmin-machine/pull/163)) | Усунення блокера `check_wp_documents.py` додаванням «Історії версій» і «Глосарію». |
+| [#164 — контейнер підпису Secure Boot у `kpol_reference.py`](https://github.com/nick-fedchik/kuzmin-machine/issues/164) | Open | In review ([PR #170](https://github.com/nick-fedchik/kuzmin-machine/pull/170)) | Свіжий `os.urandom(16)` nonce за замовчуванням, оновлення anti-replay лише після валідного HMAC, `CME-RAW-1` payload ([звіт](../../Engineering/validation/kpol-cme/secure-boot-164/report.md)). |
+| [#165 — узгодження `KM-PAT-01/02` та ADR `B6`](https://github.com/nick-fedchik/kuzmin-machine/issues/165) | Open | In review ([PR #171](https://github.com/nick-fedchik/kuzmin-machine/pull/171)) | Розмежування L2/DRAM vs L1/Shared Memory GPU, двопортовості BRAM/B4 та цільових гіпотез vs виміряних даних. |
+| [#166 — фізичні невідповідності протоколів `EXP-GPU-01/02`](https://github.com/nick-fedchik/kuzmin-machine/issues/166) | Open | In review ([PR #172](https://github.com/nick-fedchik/kuzmin-machine/pull/172)) | Тільки цифрові 3,3 В щупи `1x` на RP2040, реальна шина AXI GP0 у Zynq-7020 і явна роль Port B BRAM. |
+| [#167 — семантика ядра `km_concept_micro_engine.sv`](https://github.com/nick-fedchik/kuzmin-machine/issues/167) | Open | In review ([PR #173](https://github.com/nick-fedchik/kuzmin-machine/pull/173)) | Каскад на `CID 0` (`guard_flags[4]`), по-концептний `state_changed_o`, знакове переповнення, знаковий `RANGE` та fail-closed для невідомих `action_opcode` ([звіт](../../Engineering/validation/kpol-cme/cme-semantics-167/report.md)). |
+| [#168 — AXI B4 `Load vs Run`, W1C `0x02C` і `pynq_z1_top`](https://github.com/nick-fedchik/kuzmin-machine/issues/168) | Open | In review ([PR #174](https://github.com/nick-fedchik/kuzmin-machine/pull/174)) | Закриття 1-тактової гонитви `Load vs Run`, W1C-очищення `0x02C` при `busy == 0`, 2-FF CDC `sw[1:0]`, антибрязкіт `btn[0]` (1 мс) і `param = 1` ([звіт](../../Engineering/validation/kpol-cme/axi-b4-pynq-168/report.md)). |
+| [#169 — синхронізація реєстрів, формального аналізу, B1/S2 і TRL](https://github.com/nick-fedchik/kuzmin-machine/issues/169) | Open | In review (верхній шар стеку) | Узгодження `open-work-items.md`, `formal-analysis.md`, `system-boundary-allocation-b1.md`, `s2-candidate-system.md`, `trl/report.md` та реєстрів WP. |
 
 Джерела рішень:
 [пропрієтарний режим](https://github.com/nick-fedchik/kuzmin-machine/issues/20#issuecomment-6829699920),
@@ -41,6 +58,7 @@ Todo/In progress/Postponed/Done. Відкладення не є виконанн
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.3.0 | 2026-11-14 | #169: актуалізовано статуси закритих #148 (PR #149), #115 (PR #161), #5 (закрито в GitHub зі збереженням Postponed за рішенням 2026-11-12), часткових кроків #8 (PR #152–#160) та додано відкритий стек аудиту #151/#162/#164–#169. |
 | 0.1.0 | 2026-11-12 | Рішення власника про #20, Postponed для #5 та відкриті #8/#120/#115. |
 | 0.2.0 | 2026-11-12 | Окрема міграція #148 без поновлення S2 чи закриття compiler/usability/finding. |
 
