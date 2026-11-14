@@ -1,0 +1,10 @@
+# Command: KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py && python3 Project/tools/check_wp_documents.py && python3 Project/tools/inspect_math_formatting.py Research/sources/author/clarifications-2026-11-13.md Research/sources/README.md Engineering/requirements/kpol.md Engineering/design/software/compiler.md Engineering/specifications/kpol/kpol-consolidated-0.1.0.md Engineering/specifications/kpol/README.md Engineering/validation/README.md Engineering/validation/kpol-cme/verifier-lowering-183/report.md Project/registers/open-work-items.md Project/registers/work-products.md Project/registers/goals-needs-work-items.md && python3 -c 'import json,subprocess,pathlib; r=pathlib.Path("."); idx=json.loads((r/"Project/registers/wp-index.json").read_text()); paths={p for p in subprocess.check_output(["git","ls-files","-z"]).decode().split("\0") if p}|{p for p in subprocess.check_output(["git","ls-files","--others","--exclude-standard","-z"]).decode().split("\0") if p}; ents=[e["path"] for e in idx["entries"]]; assert len(ents)==len(set(ents)), "dup"; assert set(ents)==paths, (set(ents)-paths, paths-set(ents)); print("WP_INDEX_1_TO_1_OK", len(ents))' && git --no-pager diff --check -- ':!Engineering/validation/kpol-cme/verifier-lowering-183/raw/' && python3 -m pytest -q
+# Timestamp: 2026-11-14T16:42:25Z
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+{
+  "documents_checked": 136,
+  "immutable_checked": 108,
+  "errors": []
+}
+python3: can't open file '/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-183-kpol-language-fixes/Project/tools/inspect_math_formatting.py': [Errno 2] No such file or directory
+# Exit code: 2

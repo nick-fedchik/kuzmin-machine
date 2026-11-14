@@ -1,5 +1,5 @@
 {
-  "version": "0.10.0",
+  "version": "0.11.0",
   "date": "2026-11-14",
   "entries": [
     {
@@ -1468,6 +1468,72 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/signature-115/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/final-verification-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/final-verification-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/final-verification-03.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/final-verification-04.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/final-verification-05.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/negative-control-pre-fix-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/pytest-full-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/pytest-full-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/raw/structure-checks-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/verifier-lowering-183/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
       "immutable_input": false

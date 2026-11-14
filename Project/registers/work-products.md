@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.5.0
+* **Версія:** 0.5.1
 * **Дата:** 2026-11-14
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -48,7 +48,7 @@
 | Policy | [Розміщення](../policies/layout.md), [ліцензійний режим](../policies/licensing.md), [WP](../policies/work-products.md); [форма](../templates/work-products/policy.md) | Межі й повноваження визначає власник. |
 | Register | Цей запис, [цілі](goals-needs-work-items.md), [відкриті WI](open-work-items.md), [CI](configuration-items.md); [форма](../templates/work-products/register.md) | Нові актуальні карти, не копії історичних зрізів. |
 | Template | [Єдине місце](../templates/README.md), [покриття](../templates/work-products/README.md) | Усі 19 типів, 4 підтипи Report, SYS/HW/SW; placeholder дозволений у формі. |
-| Report / Analysis / Experiment | [Перевірки](../../Engineering/validation/README.md), [профіль #150](../../Engineering/validation/kpol-cme/profile-150/report.md), [підпис #115](../../Engineering/validation/kpol-cme/signature-115/report.md), [черга #151](../../Engineering/validation/kpol-cme/queue-retention-151/report.md), [Secure Boot #164](../../Engineering/validation/kpol-cme/secure-boot-164/report.md), [ядро CME #167](../../Engineering/validation/kpol-cme/cme-semantics-167/report.md), [AXI B4 / PYNQ-Z1 #168](../../Engineering/validation/kpol-cme/axi-b4-pynq-168/report.md), [реєстри #169](../../Engineering/validation/kpol-cme/docs-registers-169/report.md); [форма](../templates/report.md) | Пакети мають різні об'єкти; #115, #150, #151, #164, #167, #168 і #169 містять хостові/RTL/структурні перевірки, не HIL. |
+| Report / Analysis / Experiment | [Перевірки](../../Engineering/validation/README.md), [профіль #150](../../Engineering/validation/kpol-cme/profile-150/report.md), [підпис #115](../../Engineering/validation/kpol-cme/signature-115/report.md), [черга #151](../../Engineering/validation/kpol-cme/queue-retention-151/report.md), [Secure Boot #164](../../Engineering/validation/kpol-cme/secure-boot-164/report.md), [ядро CME #167](../../Engineering/validation/kpol-cme/cme-semantics-167/report.md), [AXI B4 / PYNQ-Z1 #168](../../Engineering/validation/kpol-cme/axi-b4-pynq-168/report.md), [реєстри #169](../../Engineering/validation/kpol-cme/docs-registers-169/report.md), [верифікатор і lowering #183](../../Engineering/validation/kpol-cme/verifier-lowering-183/report.md); [форма](../templates/report.md) | Пакети мають різні об'єкти; #115, #150, #151, #164, #167, #168, #169 і #183 містять хостові/RTL/структурні перевірки, не HIL. |
 | Report / Review | Рецензії біля об'єктів; [форма](../templates/review.md) | Успадковані рецензії оригіналів, не нове прийняття NG. |
 | Report / Assessment | [TRL](../assessments/trl/report.md); [форма](../templates/work-products/assessment-report.md) | Самооцінка, не сертифікація. |
 
@@ -73,6 +73,7 @@
 | 0.3.0 | 2026-11-12 | Додано реєстрацію B6 (ADR GPU симбіоз) та пакету експерименту EXP-GPU-01 (Protocol, Plan, Guide). |
 | 0.4.0 | 2026-11-13 | #151: оновлено стан B5 v2.1 та додано реєстрацію звіту верифікації черги `queue-retention-151/report.md`. |
 | 0.5.0 | 2026-11-14 | #169: зареєстровано звіти перевірок #115, #164, #167, #168, #169 та оновлено стан специфікацій B4/B5 v2.2.0 і `wp-index.json`. |
+| 0.5.1 | 2026-11-14 | #183: зареєстровано звіт перевірки верифікатора `Proof`, `change(...)` і базового CME-lowering (`verifier-lowering-183/report.md`) та оновлено `wp-index.json`. |
 
 ## Абревіатури та глосарій
 

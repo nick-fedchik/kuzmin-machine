@@ -1040,6 +1040,7 @@ class Interpreter:
         self.change_watches = list(dict.fromkeys(
             rule.watch for rule in module.rules if rule.event == "change"
         ))
+        self._initial_changes_pending = True
         self.state: dict[str, Any] = {}
         initial = initial or {}
         unknown_overrides = set(initial) - set(self.state_types)
@@ -1060,8 +1061,10 @@ class Interpreter:
     def run(self, events: Iterable[EventInput] = (), max_events: int = 10000) -> RunResult:
         result = RunResult(dict(self.state))
         queue: list[EventInput] = []
-        for watch in self.change_watches:
-            queue.append(EventInput("change", {"_watch": watch}))
+        if self._initial_changes_pending:
+            self._initial_changes_pending = False
+            for watch in self.change_watches:
+                queue.append(EventInput("change", {"_watch": watch}))
         queue.extend(events)
         while queue:
             if result.steps >= max_events:
@@ -1220,6 +1223,7 @@ def verify_module(module: Module, fail_closed_hazards: bool = True) -> Verificat
 
     asserts = [p for p in module.proofs if isinstance(p, AssertPropertyDecl)]
     scenarios = [p for p in module.proofs if isinstance(p, ScenarioDecl)]
+    activated_asserts: set[str] = set()
 
     for scenario in scenarios:
         interp = Interpreter(module, fail_closed_hazards=fail_closed_hazards)
@@ -1237,6 +1241,7 @@ def verify_module(module: Module, fail_closed_hazards: bool = True) -> Verificat
                         total_checks += 1
                         guard_val = _eval(prop.guard, pre_env)
                         if guard_val is True:
+                            activated_asserts.add(prop.name)
                             active_asserts.append(prop)
                         else:
                             passed_checks += 1
@@ -1268,6 +1273,23 @@ def verify_module(module: Module, fail_closed_hazards: bool = True) -> Verificat
                             f"Expectation failed at step {idx}: state={interp.state}",
                         )
                     )
+
+    for prop in asserts:
+        if prop.name not in activated_asserts:
+            failures.append(
+                VerificationFailure(
+                    prop.name,
+                    f"Vacuous assert {prop.name!r}: guard was never satisfied in any scenario",
+                )
+            )
+
+    if module.proofs and total_checks == 0 and not failures:
+        failures.append(
+            VerificationFailure(
+                module.name,
+                "Vacuous Proof: declared Proof items evaluated zero executable checks",
+            )
+        )
 
     return VerificationReport(
         total_checks=total_checks,
@@ -1640,42 +1662,110 @@ def compile_concept_microcode_bram_image(
                 action_opcode = CME_ACT_ASSIGN
 
             # Охоронець / Предикат
+            def _const_int_or_none(expr: Expr) -> int | None:
+                try:
+                    val = _eval(expr, {})
+                    if isinstance(val, bool):
+                        return None
+                    if isinstance(val, int):
+                        return val
+                    if isinstance(val, Decimal) and val == int(val):
+                        return int(val)
+                except Exception:
+                    pass
+                return None
+
+            def _parse_cme_range_bound(expr: Expr) -> tuple[str, str, int] | None:
+                if not isinstance(expr, Binary):
+                    return None
+                if isinstance(expr.left, Name):
+                    bound = _const_int_or_none(expr.right)
+                    if bound is not None:
+                        if expr.operator == ">=":
+                            return ("lo", expr.left.value, bound)
+                        if expr.operator == ">":
+                            return ("lo", expr.left.value, bound + 1)
+                        if expr.operator == "<=":
+                            return ("hi", expr.left.value, bound)
+                        if expr.operator == "<":
+                            return ("hi", expr.left.value, bound - 1)
+                if isinstance(expr.right, Name):
+                    bound = _const_int_or_none(expr.left)
+                    if bound is not None:
+                        if expr.operator == "<=":
+                            return ("lo", expr.right.value, bound)
+                        if expr.operator == "<":
+                            return ("lo", expr.right.value, bound + 1)
+                        if expr.operator == ">=":
+                            return ("hi", expr.right.value, bound)
+                        if expr.operator == ">":
+                            return ("hi", expr.right.value, bound - 1)
+                return None
+
             guard = rule.guard
             is_inverted = False
-            if isinstance(guard, Unary) and guard.operator in ("not", "!"):
-                is_inverted = True
+            while isinstance(guard, Unary) and guard.operator in ("not", "!"):
+                is_inverted = not is_inverted
                 guard = guard.operand
-            elif "•" in rule.name or "not" in rule.name.lower() or "negat" in rule.name.lower():
-                is_inverted = True
-
-            if is_inverted:
-                guard_flags |= CME_GUARD_INVERT_ASSUMPTION
 
             if isinstance(guard, Binary):
                 guard_flags |= CME_GUARD_ASSUMPTION_EN
                 op = guard.operator
-                rhs = _eval_int(guard.right)
-                if op == "==":
-                    pred_opcode = CME_PRED_EQ
-                    pred_operand = rhs
-                elif op == "!=":
-                    pred_opcode = CME_PRED_NEQ
-                    pred_operand = rhs
-                elif op == ">":
-                    pred_opcode = CME_PRED_GT
-                    pred_operand = rhs
-                elif op == "<":
-                    pred_opcode = CME_PRED_LT
-                    pred_operand = rhs
-                elif op == "&":
-                    pred_opcode = CME_PRED_BITMASK
-                    pred_operand = rhs
-                elif op in (">=", "<="):
+                if op == "and":
+                    b_left = _parse_cme_range_bound(guard.left)
+                    b_right = _parse_cme_range_bound(guard.right)
+                    if (
+                        b_left is None
+                        or b_right is None
+                        or b_left[1] != b_right[1]
+                        or {b_left[0], b_right[0]} != {"lo", "hi"}
+                    ):
+                        raise KpolError(
+                            "CME lowering supports 'and' guards only as a two-sided range on one parameter"
+                        )
+                    lo = b_left[2] if b_left[0] == "lo" else b_right[2]
+                    hi = b_left[2] if b_left[0] == "hi" else b_right[2]
+                    if lo > hi:
+                        raise KpolError(
+                            f"Invalid CME RANGE bounds: lower bound {lo} exceeds upper bound {hi}"
+                        )
+                    if not (-32768 <= lo <= 32767 and -32768 <= hi <= 32767):
+                        raise KpolError(
+                            f"CME RANGE bounds [{lo}, {hi}] exceed signed int16 [-32768, 32767]"
+                        )
                     pred_opcode = CME_PRED_RANGE
-                    pred_operand = rhs & 0xFFFF
+                    pred_operand = (lo & 0xFFFF) | ((hi & 0xFFFF) << 16)
+                else:
+                    rhs = _eval_int(guard.right)
+                    if op == "==":
+                        pred_opcode = CME_PRED_EQ
+                        pred_operand = rhs
+                    elif op == "!=":
+                        pred_opcode = CME_PRED_NEQ
+                        pred_operand = rhs
+                    elif op == ">":
+                        pred_opcode = CME_PRED_GT
+                        pred_operand = rhs
+                    elif op == "<":
+                        pred_opcode = CME_PRED_LT
+                        pred_operand = rhs
+                    elif op == "&":
+                        pred_opcode = CME_PRED_BITMASK
+                        pred_operand = rhs
+                    elif op == ">=":
+                        pred_opcode = CME_PRED_LT
+                        pred_operand = rhs
+                        is_inverted = not is_inverted
+                    elif op == "<=":
+                        pred_opcode = CME_PRED_GT
+                        pred_operand = rhs
+                        is_inverted = not is_inverted
             elif isinstance(guard, Literal):
                 guard_flags |= CME_GUARD_ASSUMPTION_EN
                 pred_opcode = CME_PRED_NOP
+
+            if is_inverted:
+                guard_flags |= CME_GUARD_INVERT_ASSUMPTION
 
             # Визначення спільного поля operand_val для 16-байтного дескриптора
             if action_opcode in (CME_ACT_ADD, CME_ACT_SUB):

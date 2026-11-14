@@ -1,6 +1,6 @@
 # Інженерні перевірки
 
-* **Версія:** 0.5.4
+* **Версія:** 0.5.5
 * **Дата:** 2026-11-14
 * **Тип WP:** Guide
 
@@ -22,6 +22,7 @@
 | [Семантика ядра CME / #167](kpol-cme/cme-semantics-167/report.md) | Каскад на `CID 0` (`guard_flags[4]`), по-концептний `state_changed_o`, знакове переповнення `INC/DEC/ADD/SUB`, знаковий `RANGE`, fail-closed відхилення невідомих `action_opcode > 0x04`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
 | [AXI B4 / W1C / PYNQ-Z1 top / #168](kpol-cme/axi-b4-pynq-168/report.md) | Закриття 1-тактової гонитви `Load vs Run` у `kpol_bram_pipeline_axi.sv`, W1C-очищення `0x02C` при `busy == 0`, 2-FF CDC `sw[1:0]`, антибрязкіт `btn[0]` (1 мс) і `param = 1` у `kpol_bram_pipeline_pynq_z1_top.v`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
 | [Синхронізація реєстрів і документації / #169](kpol-cme/docs-registers-169/report.md) | Синхронізація `open-work-items.md`, `formal-analysis.md` (RFC-008), `system-boundary-allocation-b1.md`, `s2-candidate-system.md`, `trl/report.md` (`CFG-R` 20 нс vs `CFG-P` 80 нс), `work-products.md`, `goals-needs-work-items.md` та індексу `wp-index.json`; структурна та посилальна перевірка. |
+| [Верифікатор `Proof`, `change(...)` і базове CME-lowering / #183](kpol-cme/verifier-lowering-183/report.md) | Одноразовий початковий `change(...)` в `Interpreter`, відхилення вакуумних `Proof`, усунення інверсії охоронця за іменем правила, точне перенесення `>=`/`<=`/знакового `int16` `RANGE` у `km_concept_micro_engine.sv` та синхронізація `RFC-010`; RTL-симуляція (`iverilog`), не HIL. |
 
 ## Використання
 
@@ -63,6 +64,7 @@ python3 Engineering/validation/experiments/AV-11/scripts/analyze_av11.py --outpu
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.5 | 2026-11-14 | Додано пакет верифікації виправлень інтерпретатора, `verify_module` та базового CME-lowering у референсі KPOL (#183). |
 | 0.5.4 | 2026-11-14 | Додано звіт структурної та посилальної перевірки синхронізації реєстрів і документації (#169). |
 | 0.5.3 | 2026-11-14 | Додано пакет верифікації AXI B4 / W1C `0x02C` та модернізації `kpol_bram_pipeline_pynq_z1_top.v` (#168). |
 | 0.5.2 | 2026-11-14 | Додано пакет верифікації семантики ядра `km_concept_micro_engine.sv` (#167). |

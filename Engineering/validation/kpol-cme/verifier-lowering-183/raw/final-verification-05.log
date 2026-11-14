@@ -1,0 +1,20 @@
+# Command: KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py && python3 Project/tools/check_wp_documents.py && python3 /home/mfedchyk/GitHub/nick-fedchik/drafts/scripts/inspect_math_formatting.py Research/sources/author/clarifications-2026-11-13.md Research/sources/README.md Engineering/requirements/kpol.md Engineering/design/software/compiler.md Engineering/specifications/kpol/kpol-consolidated-0.1.0.md Engineering/specifications/kpol/README.md Engineering/validation/README.md Engineering/validation/kpol-cme/verifier-lowering-183/report.md Project/registers/open-work-items.md Project/registers/work-products.md Project/registers/goals-needs-work-items.md && python3 -c 'import json,subprocess,pathlib; r=pathlib.Path("."); idx=json.loads((r/"Project/registers/wp-index.json").read_text()); tracked={p for p in subprocess.check_output(["git","ls-files","-z"]).decode().split("\0") if p}; untracked={p for p in subprocess.check_output(["git","ls-files","--others","--exclude-standard","-z"]).decode().split("\0") if p}; paths=tracked|untracked; ents=[e["path"] for e in idx["entries"]]; assert len(ents)==len(set(ents)), "dup"; assert set(ents).issubset(paths), set(ents)-paths; assert untracked.issubset(set(ents)), untracked-set(ents); print("WP_INDEX_NEW_AND_EXISTING_OK", len(ents), len(untracked))' && git --no-pager diff --check -- ':!Engineering/validation/kpol-cme/verifier-lowering-183/raw/' && python3 -m pytest -q
+# Timestamp: 2026-11-14T16:46:22Z
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+{
+  "documents_checked": 136,
+  "immutable_checked": 108,
+  "errors": []
+}
+=== Inspecting 11 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[OK] No violations of the checked math and advanced GFM formatting rules found.
+Target-renderer compatibility still requires a rendering check.
+WP_INDEX_NEW_AND_EXISTING_OK 422 11
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+.............................................................................................................................. [ 78%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+344 passed, 306 subtests passed in 22.88s
+# Exit code: 0

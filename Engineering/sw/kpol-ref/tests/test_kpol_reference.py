@@ -2092,5 +2092,267 @@ class KpolCmeProfileTests(unittest.TestCase):
             self.assertEqual(image.read_bytes(), b"existing image")
 
 
+class KpolIssue183LanguageAndLoweringTests(unittest.TestCase):
+    """Issue #183: регресійні перевірки інкрементного change(), вакуумного Proof і CME-lowering."""
+
+    def test_183_incremental_run_and_proof_do_not_refire_unchanged_watch(self):
+        source = """
+        Problem WatchersProof {}
+        Solution WatchersProof {
+            state A: Int32 = 0;
+            state C: Int32 = 0;
+            state Marker: Bool = false;
+            event Trigger();
+            rule update_a on Trigger { set A := A + 1; }
+            rule mark_on_c on change(C) when A > 0 { set Marker := true; }
+        }
+        Proof WatchersProof {
+            scenario TwoTriggersWithoutCChange {
+                step Trigger();
+                expect A == 1;
+                expect Marker == false;
+                step Trigger();
+                expect A == 2;
+                expect Marker == false;
+            }
+        }
+        """
+        module = parse_module(source)
+        interp = Interpreter(module)
+        res1 = interp.run([EventInput("Trigger")])
+        self.assertFalse(res1.state["Marker"])
+        res2 = interp.run([EventInput("Trigger")])
+        self.assertEqual(res2.state["A"], 2)
+        self.assertFalse(res2.state["Marker"])
+
+        report = verify_module(module)
+        self.assertTrue(report.passed, report.failures)
+
+    def test_183_verify_module_rejects_vacuous_proof_and_unactivated_assert(self):
+        no_scenario = parse_module("""
+        Problem VacuousA { Invariants { NonNeg: S >= 0; } }
+        Solution VacuousA {
+            state S: Int32 = 0;
+            event E(P: Int32);
+            rule Step on E { set S := S + 1; }
+        }
+        Proof VacuousA {
+            assert Impossible on E expect S == 999;
+        }
+        """)
+        rep_no_scenario = verify_module(no_scenario)
+        self.assertFalse(rep_no_scenario.passed)
+        self.assertGreater(len(rep_no_scenario.failures), 0)
+
+        unactivated_guard = parse_module("""
+        Problem VacuousB { Invariants { NonNeg: S >= 0; } }
+        Solution VacuousB {
+            state S: Int32 = 0;
+            event E(P: Int32);
+            rule Step on E { set S := S + 1; }
+        }
+        Proof VacuousB {
+            assert HighBranch on E {
+                when P > 100 expect S == 999;
+            }
+            scenario LowOnly {
+                step E(P = 5);
+                expect S == 1;
+            }
+        }
+        """)
+        rep_unactivated = verify_module(unactivated_guard)
+        self.assertFalse(rep_unactivated.passed)
+        self.assertTrue(
+            any(f.scenario_or_assert == "HighBranch" for f in rep_unactivated.failures),
+            rep_unactivated.failures,
+        )
+
+        scenario_without_checks = parse_module("""
+        Problem VacuousC { Invariants { NonNeg: S >= 0; } }
+        Solution VacuousC {
+            state S: Int32 = 0;
+            event E(P: Int32);
+            rule Step on E { set S := S + 1; }
+        }
+        Proof VacuousC {
+            scenario NoExpects {
+                step E(P = 5);
+            }
+        }
+        """)
+        rep_no_expects = verify_module(scenario_without_checks)
+        self.assertFalse(rep_no_expects.passed)
+        self.assertGreater(len(rep_no_expects.failures), 0)
+
+    def test_183_cme_lowering_does_not_invert_rule_names_containing_not_or_negat(self):
+        for rule_name in ("NotifyOperator", "AnnotateEvent", "NegativeSlopeStep"):
+            source = f"""
+            Problem NameCheck {{ Invariants {{ NonNeg: Counter >= 0; }} }}
+            Solution NameCheck {{
+                state Counter: Int32 = 10;
+                event Pulse(param: Int32);
+                rule {rule_name} on Pulse when param > 5 {{
+                    set Counter := Counter + 1;
+                }}
+            }}
+            """
+            bram_bytes = compile_concept_microcode_bram_image(parse_module(source))
+            desc = disassemble_concept_microcode(bram_bytes)[0]
+            with self.subTest(rule_name=rule_name):
+                self.assertEqual(desc.pred_opcode, CME_PRED_GT)
+                self.assertEqual(desc.operand_val, 5)
+                self.assertEqual(desc.guard_flags & CME_GUARD_INVERT_ASSUMPTION, 0)
+
+    def test_183_cme_lowering_ge_le_and_signed_range_match_rtl_cme_simulation(self):
+        source = """
+        Problem SignedGuards {
+            Invariants {
+                InvGe: GeCounter >= 0;
+                InvLe: LeCounter >= 0;
+                InvBand: BandCounter >= 0;
+                InvOutBand: OutBandCounter >= 0;
+            }
+        }
+        Solution SignedGuards {
+            state GeCounter: Int32 = 10;
+            state LeCounter: Int32 = 10;
+            state BandCounter: Int32 = 10;
+            state OutBandCounter: Int32 = 10;
+            event Pulse(param: Int32);
+
+            rule OnGe on Pulse when param >= 5 {
+                set GeCounter := GeCounter + 1;
+            }
+            rule OnLe on Pulse when param <= -3 {
+                set LeCounter := LeCounter + 1;
+            }
+            rule OnBand on Pulse when param >= -10 and param <= 20 {
+                set BandCounter := BandCounter + 1;
+            }
+            rule OnOutBand on Pulse when not (param >= -10 and param <= 20) {
+                set OutBandCounter := OutBandCounter + 1;
+            }
+        }
+        """
+        module = parse_module(source)
+        bram_bytes = compile_concept_microcode_bram_image(module)
+        test_params = [-2147483648, -11, -10, -4, -3, -2, 0, 4, 5, 6, 20, 21, 2147483647]
+        ref_result = Interpreter(module).run(
+            [EventInput("Pulse", {"param": p}) for p in test_params]
+        )
+
+        rtl_core = REPO_ROOT / "hw" / "rtl" / "core"
+        cme_sv = rtl_core / "km_concept_micro_engine.sv"
+        gate_sv = rtl_core / "kpol_txn_gate_v2.sv"
+
+        words_per_cid = [
+            struct.unpack("<IIII", bram_bytes[cid * 16:(cid + 1) * 16])
+            for cid in range(4)
+        ]
+
+        tb_lines = [
+            "`timescale 1ns/1ps",
+            "module tb_cme_183;",
+            "  logic clk = 0;",
+            "  always #5 clk = ~clk;",
+            "  logic rst_n = 0;",
+            "  logic event_valid = 0;",
+            "  logic [31:0] event_param = 0;",
+            "  logic [127:0] descriptor = 0;",
+            "  logic committed, rejected, hazard_obs, unk_haz, state_changed, trig_sub;",
+            "  logic [31:0] updated_state, sub_cid;",
+            "  km_concept_micro_engine dut (",
+            "    .clk(clk), .rst_n(rst_n),",
+            "    .event_valid_i(event_valid), .event_id_i(8'd1), .event_param_i(event_param),",
+            "    .descriptor_i(descriptor),",
+            "    .committed_o(committed), .rejected_o(rejected),",
+            "    .hazard_observed_o(hazard_obs), .unknown_hazard_o(unk_haz),",
+            "    .updated_state_o(updated_state), .state_changed_o(state_changed),",
+            "    .subscriber_cid_o(sub_cid), .trigger_subscriber_o(trig_sub)",
+            "  );",
+            "  logic [31:0] st [0:3];",
+            "  logic [31:0] w1 [0:3];",
+            "  logic [31:0] w2 [0:3];",
+            "  logic [31:0] w3 [0:3];",
+            "  task automatic run_cid(input int cid, input logic [31:0] p);",
+            "    begin",
+            "      @(negedge clk);",
+            "      descriptor = {w3[cid], w2[cid], w1[cid], st[cid]};",
+            "      event_param = p;",
+            "      event_valid = 1'b1;",
+            "      @(posedge clk);",
+            "      #1;",
+            "      if (committed) st[cid] = updated_state;",
+            "      @(negedge clk);",
+            "      event_valid = 1'b0;",
+            "    end",
+            "  endtask",
+            "  initial begin",
+        ]
+        for cid, (w0, w1, w2, w3) in enumerate(words_per_cid):
+            tb_lines.append(
+                f"    st[{cid}] = 32'h{w0:08x}; w1[{cid}] = 32'h{w1:08x}; "
+                f"w2[{cid}] = 32'h{w2:08x}; w3[{cid}] = 32'h{w3:08x};"
+            )
+        tb_lines.extend([
+            "    repeat (2) @(posedge clk);",
+            "    rst_n = 1'b1;",
+            "    @(posedge clk);",
+        ])
+        for p in test_params:
+            p_u32 = p & 0xFFFFFFFF
+            for cid in range(4):
+                tb_lines.append(f"    run_cid({cid}, 32'h{p_u32:08x});")
+        tb_lines.extend([
+            '    $display("FINAL %0d %0d %0d %0d", $signed(st[0]), $signed(st[1]), $signed(st[2]), $signed(st[3]));',
+            "    $finish;",
+            "  end",
+            "endmodule",
+        ])
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tb_path = Path(tmpdir) / "tb_cme_183.sv"
+            vvp_path = Path(tmpdir) / "tb_cme_183.vvp"
+            tb_path.write_text("\n".join(tb_lines) + "\n", encoding="utf-8")
+            comp = subprocess.run(
+                ["iverilog", "-g2012", "-o", str(vvp_path), str(gate_sv), str(cme_sv), str(tb_path)],
+                capture_output=True, text=True,
+            )
+            self.assertEqual(comp.returncode, 0, comp.stderr)
+            sim = subprocess.run(["vvp", str(vvp_path)], capture_output=True, text=True)
+            self.assertEqual(sim.returncode, 0, sim.stderr)
+            final_line = next(line for line in sim.stdout.splitlines() if line.startswith("FINAL "))
+            rtl_states = [int(tok) for tok in final_line.split()[1:]]
+
+        expected_states = [
+            ref_result.state["GeCounter"],
+            ref_result.state["LeCounter"],
+            ref_result.state["BandCounter"],
+            ref_result.state["OutBandCounter"],
+        ]
+        self.assertEqual(rtl_states, expected_states)
+
+    def test_183_cme_lowering_rejects_out_of_int16_or_inverted_range(self):
+        for cond in (
+            "param >= -40000 and param <= 10",
+            "param >= -10 and param <= 40000",
+            "param >= 20 and param <= 10",
+        ):
+            source = f"""
+            Problem BadRange {{ Invariants {{ NonNeg: Counter >= 0; }} }}
+            Solution BadRange {{
+                state Counter: Int32 = 10;
+                event Pulse(param: Int32);
+                rule OnBad on Pulse when {cond} {{
+                    set Counter := Counter + 1;
+                }}
+            }}
+            """
+            with self.subTest(cond=cond):
+                with self.assertRaises(KpolError):
+                    compile_concept_microcode_bram_image(parse_module(source))
+
+
 if __name__ == "__main__":
     unittest.main()
