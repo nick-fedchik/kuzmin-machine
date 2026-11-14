@@ -1,10 +1,10 @@
 # Вимоги KPOL: RFC та авторські поняття й синтаксис
 
-* **Версія:** 0.5.2
+* **Версія:** 0.5.3
 * **Дата:** 2026-11-14
 * **Тип WP:** Requirement / SYS / SW
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI, Auto.
-* **WI:** [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), [#151](https://github.com/nick-fedchik/kuzmin-machine/issues/151), [#155](https://github.com/nick-fedchik/kuzmin-machine/issues/155), [#157](https://github.com/nick-fedchik/kuzmin-machine/issues/157), [#159](https://github.com/nick-fedchik/kuzmin-machine/issues/159), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), частини [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
+* **WI:** [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), [#151](https://github.com/nick-fedchik/kuzmin-machine/issues/151), [#155](https://github.com/nick-fedchik/kuzmin-machine/issues/155), [#157](https://github.com/nick-fedchik/kuzmin-machine/issues/157), [#159](https://github.com/nick-fedchik/kuzmin-machine/issues/159), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), частини [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Потреба:** G1/N1 — визначені правила; G1/N2 — текст KPOL → виконуваний образ.
 * **Підстава:** команди власника 2026-11-12 щодо RFC та 2026-11-13 щодо нового авторського матеріалу й релевантних WP.
 * **Погодження:** профіль KPOL-CME-1 — Decision B3-01; ця деталізація на рецензію, не прийнята системна baseline.
@@ -114,6 +114,8 @@ Q-AUTH-02 також переведено до стану «частково у�
 `test_profile_per_event_in_simulated_pipeline` → [Report #153](../validation/kpol-cme/behavior-153/report.md).
 Виправлення верифікатора `Proof`, інкрементного `change(...)` і базового lowering `>=`/`<=`/знакового `RANGE` у референсі (#183):
 `kpol_reference.py` → `KpolIssue183LanguageAndLoweringTests` → [Report #183](../validation/kpol-cme/verifier-lowering-183/report.md).
+Багатоконцептний профіль `KPOL-CME-2` на `CME-RAW-1` (#184):
+[специфікація `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile-0.1.0.md) → `KpolCme2ProfileTests` → [Report #184](../validation/kpol-cme/cme2-profile-184/report.md).
 Зворотний шлях задається ID й назвами перевірок у таблицях вище.
 Історичні REQ-SW-001–003 є входами, не дубльованими PASS.
 Новий шлях G1/N1–N2, G3/N4 → Source/слайд →
@@ -129,6 +131,7 @@ Specification → Reports #155/#157/#159. Тестований нинішній 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.3 | 2026-11-14 | #184: додано трасування багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile-0.1.0.md` і `cme2-profile-184/report.md`) зі збереженням `KPOL-CME-1` без змін. |
 | 0.5.2 | 2026-11-14 | #183: інтегровано уточнення RFC-010 у KPOL-AUTH-01 / Q-AUTH-02 (безіменний атрибут розміру `Token`, 8-бітна маска `Def`) та додано трасування звіту виправлень верифікатора й lowering референсу. |
 | 0.5.1 | 2026-11-13 | #151: оновлено стан реалізації та трасування KPOL-SYS-04 на B5 v2.1 і Report #151 зі збереженням межі незупинного джерела та HIL. |
 | 0.5.0 | 2026-11-13 | #159: типізовані індекси AUTH-03, успіх вмісту/групи й часткове уточнення Q-AUTH-01; без нових AUTH-ID або змін профілю. |

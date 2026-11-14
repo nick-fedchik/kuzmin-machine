@@ -1,0 +1,18 @@
+# Command: full final verification (#184)
+# Timestamp: 2026-11-14T17:46:30Z
+# Base-SHA: 33a9974d9006bea8eb6d261a903c210ceac50b9c
+--- check_links.py ---
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+--- check_wp_documents.py ---
+{
+  "documents_checked": 138,
+  "immutable_checked": 108,
+  "errors": []
+}
+--- inspect_math_formatting.py ---
+=== Inspecting 6 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[FAIL] Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md (1 issues):
+  L  98 [ERR-MATH-09]: Unprotected inline math '$S_{src} \pm K \ne S_{src}$' contains Markdown conflicting chars ('_' or '*'). Use GitHub protected syntax $`S_{src} \pm K \ne S_{src}`$ to prevent italics/bold corruption.
+
+[ERROR] Found 1 formatting violation(s). Run with --fix or repair manually.

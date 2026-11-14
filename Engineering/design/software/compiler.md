@@ -1,6 +1,6 @@
 # Конструкція поточного KPOL → CME-тракту
 
-* **Версія:** 0.5.1
+* **Версія:** 0.6.0
 * **Дата:** 2026-11-14
 * **Тип WP:** Design
 * **Укладач:** GitHub Copilot CLI, Auto; незалежної рецензії NG немає.
@@ -10,7 +10,8 @@
 ## 1. Контекст і межа
 
 Поточне рішення визначають [B1](../system-boundary-allocation-b1.md),
-[профіль KPOL-CME-1](../../specifications/kpol/kpol-cme-subset-0.1.0.md)
+[профіль KPOL-CME-1](../../specifications/kpol/kpol-cme-subset-0.1.0.md),
+[профіль KPOL-CME-2](../../specifications/kpol/kpol-cme2-profile-0.1.0.md)
 та [loader-контракт B4](../../specifications/hw/kpol-image-loader-pipeline-contract.md).
 Старий ескіз ASDL/ASN.1, стекового асемблера, `.kmc`, O+SR і
 повного graph-splitting не є описом реалізованого NG-компілятора;
@@ -102,10 +103,16 @@ backend або однотактовий fan-out. [Report #157](../../../Research
 а в базовому CME-lowering реалізовано точне перенесення `>=` (`INVERT + LT`), `<=` (`INVERT + GT`) і двосторонніх знакових `int16`-інтервалів `CME_PRED_RANGE` із fail-closed відмовою поза `[-32768, 32767]` ([Report #183](../../validation/kpol-cme/verifier-lowering-183/report.md)).
 Структурні обмеження `CME-RAW-1` (одне поле `operand_val`, `ASSIGN` із `event_param`, відсутність `state-guard` і valid-bit `_`) залишаються предметом окремих задач `#184` і `#185`.
 
+### 3.5. Багатоконцептний профіль `KPOL-CME-2` на `CME-RAW-1` (#184)
+
+У межах [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) у [`kpol_reference.py`](../../sw/kpol-ref/kpol_reference.py) та CLI [`compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py) додано опціональний профіль `--profile KPOL-CME-2` ([специфікація](../../specifications/kpol/kpol-cme2-profile-0.1.0.md), [Report #184](../../validation/kpol-cme/cme2-profile-184/report.md)) без зміни `KPOL-CME-1` і без модифікації RTL `CFG-P`:
+до 64 станів `Int32`, 3-кольорова перевірка ациклічності та `fan-out <= 1` для каскадів `on change(...)` (включно з `guard_flags[4] = 0x10` для каскаду в `CID 0`), розширені предикати (`>=`, `<=`, знаковий `int16` `RANGE`), дії `INC/DEC/ADD/SUB/ASSIGN`, явний fail-closed детектор `CME2-OPERAND-COLLISION` і обов'язковий невакуумний гейт `Proof`. Межі `CME-RAW-2` (`_`, розділені операнди, константний `ASSIGN`, `Hazards`) винесені в `#185`.
+
 ## Історія версій
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-14 | #184: задокументовано багатоконцептний профіль `KPOL-CME-2` (`--profile KPOL-CME-2`) із DAG-перевіркою каскадів, `CME2-OPERAND-COLLISION` та RTL-еквівалентністю на `CME-RAW-1`. |
 | 0.5.1 | 2026-11-14 | #183: враховано уточнення RFC-010 (`Def` як 8-бітна маска присутності, безіменний атрибут `Token`) і задокументовано виправлення верифікатора `Proof`, інкрементного `change(...)` та базового CME-lowering. |
 | 0.5.0 | 2026-11-13 | #159: збереження типів індексів і розділення успіху вмісту/групи; Max=0 не декодується без контракту. |
 | 0.4.0 | 2026-11-13 | #157: виконувана роль дужок Static і межі майбутнього native дизайну; без вибору фази чи opcode. |

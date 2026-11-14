@@ -1,8 +1,8 @@
 # KPOL: консолідований робочий контракт фронтенду та CME-бекенду
 
-* **Версія:** 0.6.0 (версія документа; чернетка, не стандарт KPOL v1.0)
+* **Версія:** 0.6.1 (версія документа; чернетка, не стандарт KPOL v1.0)
 * **Дата:** 2026-11-14
-* **Issue:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), вхід для [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)
+* **Issue:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), вхід для [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)
 * **База реалізації:** `0ada974` у `nick-fedchik/kuzmin-machine`.
 * **Виконавець:** GitHub Copilot CLI, Auto. За повідомленням власника від 2026-11-12, поточною моделлю автора була ChatGPT 6.1 Sol; модель усіх попередніх кроків окремо не встановлено.
 * **Рецензент:** [Review Report](https://github.com/nick-fedchik/kuzmin-machine/pull/131#issuecomment-6824069657) для `a3715fc`; зміни за рецензією потребують повторної перевірки.
@@ -360,8 +360,7 @@ HMAC-обгортка з `compile_signed_bram_image` додає 64-байтни�
 бекенду до реалізації цих контрактів.
 
 Цей інкремент не закриває #8. Погодження B3-01 вже зафіксовано у
-профільному контракті; нова реалізація #150 ще потребує незалежної
-рецензії. Наявність вузького шляху не приховує прогалин ширшого API.
+профільному контракті; у [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) додано багатоконцептний профіль [`KPOL-CME-2`](kpol-cme2-profile-0.1.0.md) (до 64 концептів, ациклічні каскади, `ADD/SUB/ASSIGN`, `>=`/`<=`/`int16` `RANGE` і явна відмова `CME2-OPERAND-COLLISION`, [Report #184](../../validation/kpol-cme/cme2-profile-184/report.md)), який залишає `KPOL-CME-1` незмінним. Наявність профільних шляхів не приховує прогалин безпрофільного API.
 
 ## 8. Походження та історичні дельти
 
@@ -387,6 +386,7 @@ No-Go для v1.0 не скасовується автоматично.
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.1 | 2026-11-14 | #184: зафіксовано додавання багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile-0.1.0.md`) зі збереженням `KPOL-CME-1` без змін. |
 | 0.6.0 | 2026-11-14 | #183: синхронізовано §3 (`change(...)`, анти-вакуумність `verify_module`), §5 (`guard_flags[4]`, знаковий `RANGE`, fail-closed `action_opcode`, знакове переповнення за #167), §6 (#115, #164, RFC-010) та §7 (виправлення `NotifyStep` і `>=`/`<=`/`RANGE` у референсі зі збереженням структурних меж `CME-RAW-1`). |
 | 0.5.0 | 2026-11-13 | #159: межа підтримки типізованих індексів Collection/Array; current grammar/ABI незмінні. |
 | 0.4.0 | 2026-11-13 | #157: межа підтримки виконуваних дужок Static, оцінка уточнень; current grammar/ABI не змінено. |

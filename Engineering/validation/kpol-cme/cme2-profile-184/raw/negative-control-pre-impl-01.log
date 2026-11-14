@@ -1,0 +1,2123 @@
+=== PRE-IMPLEMENTATION NEGATIVE CONTROL (#184) ===
+date: 2026-11-14T19:28:10+02:00
+host: AORUS-5-SE (Linux 7.0.0-42-generic x86_64)
+base_commit: 33a9974d9006bea8eb6d261a903c210ceac50b9c
+cmd: python3 -m pytest Engineering/sw/kpol-ref/tests/test_kpol_reference.py -k KpolCme2ProfileTests -v
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-184-kpol-cme2
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 69 items / 64 deselected / 5 selected
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade FAILED [ 20%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2 FAILED [ 40%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence FAILED [ 60%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof 
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof FAILED [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades 
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades FAILED [100%]
+
+=================================== FAILURES ===================================
+_ KpolCme2ProfileTests.test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade _
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade>
+
+    def test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade(self):
+        invariants = "\n".join(f"I{i}: S{i} >= 0;" for i in range(64))
+        states = "\n".join(f"state S{i}: Int32 = {i};" for i in range(64))
+        events = "\n".join(f"event E{i}(p{i}: Int32);" for i in [0] + list(range(2, 64)))
+        rules = [
+            "rule R0 on E0 when p0 >= -32768 and p0 <= 32767 { set S0 := S0 + 1; }",
+            "rule R1 on change(S63) when S63 >= 70 { set S1 := S63; }",
+        ]
+        for i in range(2, 63):
+            rules.append(f"rule R{i} on E{i} when p{i} == {i} {{ set S{i} := S{i} + 1; }}")
+        rules.append("rule R63 on E63 when true { set S63 := S63 + 10; }")
+        source_64 = f"""
+        Problem Full64 {{ Invariants {{ {invariants} }} }}
+        Solution Full64 {{
+            {states}
+            {events}
+            {chr(10).join(rules)}
+        }}
+        Proof Full64 {{
+            scenario Boundary64 {{
+                step E0(p0 = -32768);
+                expect S0 == 1;
+                step E63(p63 = 0);
+                expect S63 == 73;
+                expect S1 == 73;
+            }}
+        }}
+        """
+        module_64 = parse_module(source_64)
+>       image_64 = compile_concept_microcode_bram_image(module_64, profile="KPOL-CME-2")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2692: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+module = Module(name='Full64', requirements=(Requirement(kind='Invariant', name='I0', event=None, target=None, expression=Binar...value='S1'), right=Literal(value=73))))),), problem_hash=None, solution_hash=None, proof_hash=None, proof_present=True)
+cascade_map = None, acl_table = None
+
+    def compile_concept_microcode_bram_image(
+        module: Module,
+        cascade_map: dict[str | int, str | int] | None = None,
+        acl_table: dict[str, int] | None = None,
+        *,
+        profile: str | None = None,
+    ) -> bytes:
+        """Compile a named CME profile, or use the experimental legacy lowering when unset."""
+        if profile is not None:
+            if profile != "KPOL-CME-1":
+>               raise KpolError(f"B3-PROFILE: unsupported profile {profile!r}")
+E               kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+Engineering/sw/kpol-ref/kpol_reference.py:1593: KpolError
+_ KpolCme2ProfileTests.test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2 _
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2>
+
+    def test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2(self):
+        cli = REPO_ROOT / "hw" / "scripts" / "compile_kpol_bram_image.py"
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src = Path(tmpdir) / "prog.kpol"
+            out = Path(tmpdir) / "out.bin"
+            src.write_text(self.MULTICONCEPT_SOURCE, encoding="utf-8")
+    
+            # За замовчуванням CLI залишається в режимі KPOL-CME-1 і відхиляє багатоконцептний модуль
+            default_res = subprocess.run(
+                [sys.executable, str(cli), str(src), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(default_res.returncode, 0)
+>           self.assertIn("B3-SHAPE", default_res.stderr)
+E           AssertionError: 'B3-SHAPE' not found in "B3-SYNTAX: /tmp/tmpj_agopsg/prog.kpol: 12:32: expected ':', got 'when'\n"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2919: AssertionError
+_ KpolCme2ProfileTests.test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence _
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence>
+
+    def test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence(self):
+>       module = parse_module(self.MULTICONCEPT_SOURCE)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2594: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+Engineering/sw/kpol-ref/kpol_reference.py:1302: in parse_module
+    module = Parser(source).parse()
+             ^^^^^^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-ref/kpol_reference.py:333: in parse
+    self.expect(":")
+Engineering/sw/kpol-ref/kpol_reference.py:294: in expect
+    self.fail(f"expected {value!r}, got {self.token.value!r}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kpol_reference.Parser object at 0x7c8d4c8ab750>
+message = "expected ':', got 'when'"
+
+    def fail(self, message: str) -> None:
+        token = self.token
+>       raise KpolError(f"{token.line}:{token.column}: {message}")
+E       kpol_reference.KpolError: 12:32: expected ':', got 'when'
+
+Engineering/sw/kpol-ref/kpol_reference.py:284: KpolError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (collision=('p >= 5', 'S + 5')) _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+>               with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-OPERAND-COLLISION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2843: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (collision=('p == 10', 'S - 2')) _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+>               with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-OPERAND-COLLISION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2843: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (collision=('p >= 0 and p <= 20', 'S + 3')) _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+>               with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-OPERAND-COLLISION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2843: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_range='p >= -32769 and p <= 10') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+>               with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-RANGE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2858: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_range='p >= -10 and p <= 32768') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+>               with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-RANGE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2858: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_range='p > 32767 and p <= 32767') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+>               with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-RANGE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2858: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_range='p >= -32768 and p < -32768') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+>               with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-RANGE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2858: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_range='p >= 20 and p <= 10') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+>               with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-RANGE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2858: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_guard='p == 1 or p == 2') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+>               with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-GUARD" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2872: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_guard='• (p == 1)') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+>               with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-GUARD" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2872: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_guard='S >= 5') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+>               with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-GUARD" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2872: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_guard='p > S') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+>               with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-GUARD" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2872: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_action='42') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+>               with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-ACTION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2881: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_action='S + 0') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+>               with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-ACTION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2881: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_action='S - 0') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+>               with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-ACTION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2881: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_action='S + -2') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+>               with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-ACTION" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2881: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_hazard='H on E when p > 0;') _
+kpol_reference.KpolError: 4:34: expected ':', got 'when'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+                with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single("true", bad_action, "step E(p = 1); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Некоректний поріг Hazard (0 та > 255 поза 8-бітним активним діапазоном 1..255)
+        for bad_haz in ("H on E when p > 0;", "H on E when p > 256;", "H on E when p < 50;"):
+            with self.subTest(bad_hazard=bad_haz):
+>               with self.assertRaisesRegex(KpolError, "CME2-HAZARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-HAZARD" does not match "4:34: expected ':', got 'when'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2890: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_hazard='H on E when p > 256;') _
+kpol_reference.KpolError: 4:34: expected ':', got 'when'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+                with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single("true", bad_action, "step E(p = 1); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Некоректний поріг Hazard (0 та > 255 поза 8-бітним активним діапазоном 1..255)
+        for bad_haz in ("H on E when p > 0;", "H on E when p > 256;", "H on E when p < 50;"):
+            with self.subTest(bad_hazard=bad_haz):
+>               with self.assertRaisesRegex(KpolError, "CME2-HAZARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-HAZARD" does not match "4:34: expected ':', got 'when'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2890: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof (bad_hazard='H on E when p < 50;') _
+kpol_reference.KpolError: 4:34: expected ':', got 'when'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+                with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single("true", bad_action, "step E(p = 1); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Некоректний поріг Hazard (0 та > 255 поза 8-бітним активним діапазоном 1..255)
+        for bad_haz in ("H on E when p > 0;", "H on E when p > 256;", "H on E when p < 50;"):
+            with self.subTest(bad_hazard=bad_haz):
+>               with self.assertRaisesRegex(KpolError, "CME2-HAZARD"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-HAZARD" does not match "4:34: expected ':', got 'when'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2890: AssertionError
+_ KpolCme2ProfileTests.test_cme2_negative_controls_collision_range_guards_actions_and_proof _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_negative_controls_collision_range_guards_actions_and_proof>
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+    
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+                with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single("true", bad_action, "step E(p = 1); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Некоректний поріг Hazard (0 та > 255 поза 8-бітним активним діапазоном 1..255)
+        for bad_haz in ("H on E when p > 0;", "H on E when p > 256;", "H on E when p < 50;"):
+            with self.subTest(bad_hazard=bad_haz):
+                with self.assertRaisesRegex(KpolError, "CME2-HAZARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single("true", "S + 1", "step E(p = 1); expect S == 11;", hazard=bad_haz)),
+                        profile="KPOL-CME-2",
+                    )
+    
+        # Відсутній, порожній або хибний Proof відхиляється з CME2-PROOF
+        no_proof = make_single("true", "S + 5").split("Proof Single")[0]
+        wrong_proof = make_single("true", "S + 5", "step E(p = 10); expect S == 999;")
+        for bad_proof_prog in (no_proof, wrong_proof):
+>           with self.assertRaisesRegex(KpolError, "CME2-PROOF"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: "CME2-PROOF" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2900: AssertionError
+----------------------------- Captured stdout call -----------------------------
+SUBFAILED(collision=('p >= 5', 'S + 5')) [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(collision=('p == 10', 'S - 2')) [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(collision=('p >= 0 and p <= 20', 'S + 3')) [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_range='p >= -32769 and p <= 10') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_range='p >= -10 and p <= 32768') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_range='p > 32767 and p <= 32767') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_range='p >= -32768 and p < -32768') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_range='p >= 20 and p <= 10') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_guard='p == 1 or p == 2') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_guard='• (p == 1)') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_guard='S >= 5') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_guard='p > S') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_action='42') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_action='S + 0') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_action='S - 0') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_action='S + -2') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_hazard='H on E when p > 0;') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_hazard='H on E when p > 256;') [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof SUBFAILED(bad_hazard='H on E when p < 50;') [ 80%]
+_ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades (case='self-cycle') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+>               with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-CASCADE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2808: AssertionError
+_ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades (case='two-cycle') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+>               with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-CASCADE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2808: AssertionError
+_ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades (case='three-cycle') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+>               with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-CASCADE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2808: AssertionError
+_ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades (case='fanout') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+>               with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-CASCADE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2808: AssertionError
+_ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades (case='startup-active') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+>               with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-CASCADE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2808: AssertionError
+_ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades (case='assign-publisher') _
+kpol_reference.KpolError: B3-PROFILE: unsupported profile 'KPOL-CME-2'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+>               with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: "CME2-CASCADE" does not match "B3-PROFILE: unsupported profile 'KPOL-CME-2'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2808: AssertionError
+___ KpolCme2ProfileTests.test_cme2_rejects_cycles_fanout_and_unsafe_cascades ___
+kpol_reference.KpolError: 12:32: expected ':', got 'when'
+
+During handling of the above exception, another exception occurred:
+
+self = <test_kpol_reference.KpolCme2ProfileTests testMethod=test_cme2_rejects_cycles_fanout_and_unsafe_cascades>
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+                with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                    compile_concept_microcode_bram_image(parse_module(prog), profile="KPOL-CME-2")
+    
+>       with self.assertRaisesRegex(KpolError, "CME2-SHAPE"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: "CME2-SHAPE" does not match "12:32: expected ':', got 'when'"
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:2811: AssertionError
+----------------------------- Captured stdout call -----------------------------
+SUBFAILED(case='self-cycle') [100%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades SUBFAILED(case='two-cycle') [100%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades SUBFAILED(case='three-cycle') [100%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades SUBFAILED(case='fanout') [100%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades SUBFAILED(case='startup-active') [100%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades SUBFAILED(case='assign-publisher') [100%]
+=========================== short test summary info ============================
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence
+SUBFAILED(collision=('p >= 5', 'S + 5')) Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(collision=('p == 10', 'S - 2')) Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(collision=('p >= 0 and p <= 20', 'S + 3')) Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_range='p >= -32769 and p <= 10') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_range='p >= -10 and p <= 32768') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_range='p > 32767 and p <= 32767') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_range='p >= -32768 and p < -32768') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_range='p >= 20 and p <= 10') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_guard='p == 1 or p == 2') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_guard='• (p == 1)') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_guard='S >= 5') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_guard='p > S') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_action='42') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_action='S + 0') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_action='S - 0') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_action='S + -2') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_hazard='H on E when p > 0;') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_hazard='H on E when p > 256;') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(bad_hazard='H on E when p < 50;') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+SUBFAILED(case='self-cycle') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+SUBFAILED(case='two-cycle') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+SUBFAILED(case='three-cycle') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+SUBFAILED(case='fanout') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+SUBFAILED(case='startup-active') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+SUBFAILED(case='assign-publisher') Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+====================== 30 failed, 64 deselected in 0.72s =======================
+exit_code=1

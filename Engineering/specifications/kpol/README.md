@@ -1,17 +1,18 @@
 # Контракти KPOL
 
-* **Версія:** 0.5.2
+* **Версія:** 0.6.0
 * **Дата:** 2026-11-14
 * **Тип WP:** Guide
 
 ## Призначення
 
-Два різні робочі входи, не послідовність дев'яти старих дельт:
+Актуальні робочі входи специфікації KPOL (не послідовність дев'яти старих дельт):
 
 | Документ | Призначення та стан |
 |---|---|
-| [KPOL-CME-1 / CME-RAW-1](kpol-cme-subset-0.1.0.md) | Цільовий початковий профіль B3; рішення власника збережено у джерельному проєкті. Не оголошує всіх сценаріїв реалізованими. |
-| [Консолідований контракт](kpol-consolidated-0.1.0.md) | Опис наявного ширшого фронтенду та інтерпретатора; містить відомі прогалини CME-lowering. |
+| [KPOL-CME-1 / CME-RAW-1](kpol-cme-subset-0.1.0.md) | Цільовий початковий профіль B3 (`Decision B3-01`); типовий профіль CLI (`--profile KPOL-CME-1`). |
+| [KPOL-CME-2 / CME-RAW-1](kpol-cme2-profile-0.1.0.md) | Багатоконцептний профіль (#184) на незмінному `CME-RAW-1`: до 64 станів, ациклічні каскади `on change(...)` (включно з `CID 0`), `ADD/SUB/ASSIGN`, `>=`/`<=`/`int16` `RANGE` та детектор `CME2-OPERAND-COLLISION`. |
+| [Консолідований контракт](kpol-consolidated-0.1.0.md) | Опис наявного ширшого фронтенду та інтерпретатора; містить відомі прогалини безпрофільного CME-lowering. |
 
 Референс — [kpol_reference.py](../../sw/kpol-ref/kpol_reference.py).
 Поточні тести — [tests](../../sw/kpol-ref/tests/).
@@ -39,12 +40,13 @@ Def/Class, Group, Name/Help та адресні групи не оголошую
 Перенесення не створює KPOL v1.0 або нової baseline. Успіх парсера
 не означає підтримки CME-бекендом. `compile_bram_image` і
 `compile_concept_microcode_bram_image` створюють різні формати.
-CLI тепер використовує явний `profile="KPOL-CME-1"`: whitelist,
-незалежність від імен і pre-emission Proof gate. Виклик API без
+CLI підтримує явні профілі `--profile KPOL-CME-1` (типовий) і `--profile KPOL-CME-2`
+([Report #184](../../validation/kpol-cme/cme2-profile-184/report.md)): строгий whitelist,
+незалежність від імен і обов'язковий pre-emission Proof gate. Виклик API без
 `profile` зберігає сумісне експериментальне lowering: у [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183)
 в ньому виправлено інверсію за іменем правила та трансляцію `>=`/`<=`/двостороннього `int16` `RANGE`
 ([Report #183](../../validation/kpol-cme/verifier-lowering-183/report.md)), але структурні межі
-спільного `operand_val`, константного `ASSIGN` і `state-guard` залишаються чинними.
+спільного `operand_val`, константного `ASSIGN` і `state-guard` залишаються чинними (деталізовано для `CME-RAW-2` у [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185)).
 У межах [#151](https://github.com/nick-fedchik/kuzmin-machine/issues/151)
 в RTL черги та AXI-обгортки реалізовано тактовий контракт очікування без втрат
 [B5 v2.1](../hw/event-queue-ingress-specification.md) для керованих джерел;
@@ -56,6 +58,7 @@ CLI тепер використовує явний `profile="KPOL-CME-1"`: white
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-14 | #184: додано навігацію до специфікації багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile-0.1.0.md`) і звіту перевірки `cme2-profile-184/report.md`. |
 | 0.5.2 | 2026-11-14 | #183: уточнено стан виправлень верифікатора та експериментального CME-lowering і збережені структурні межі `CME-RAW-1`. |
 | 0.5.1 | 2026-11-13 | #151: оновлено примітку про стан RTL черги за B5 v2.1 та межу незупинного джерела. |
 | 0.5.0 | 2026-11-13 | #159: типізовані межі груп, AUTH-03/Q-AUTH-01 та незмінність current контрактів. |
