@@ -1,5 +1,5 @@
 {
-  "version": "0.12.0",
+  "version": "0.13.0",
   "date": "2026-11-14",
   "entries": [
     {
@@ -82,6 +82,12 @@
     },
     {
       "path": "Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md",
+      "direction": "Engineering",
+      "wp_type": "Decision",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/decisions/cme-raw2-kpol-sys02.md",
       "direction": "Engineering",
       "wp_type": "Decision",
       "immutable_input": false
@@ -1324,6 +1330,36 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/cme2-profile-184/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/dual-bank-xc7-probe-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/final-verification-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/xc7-baseline-stat-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/xc7-baseline-stat-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
       "immutable_input": false

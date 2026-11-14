@@ -1,0 +1,29 @@
+# Command: yosys XC7 dual-bank (Even/Odd 512x32 TDP -> 64-bit Port B, 32-bit Port A) synthesis probe
+# Timestamp: 2026-11-14T17:57:06Z
+# Base-SHA: 103b5179166b5d94718f901e4efac327d4ab7fe2
+# Host: Linux 7.0.0-42-generic x86_64 (AORUS-5-SE)
+
+3. Printing statistics.
+
+=== cme_raw2_dual_bank_probe ===
+
+   Number of wires:                 68
+   Number of wire bits:            993
+   Number of public wires:          14
+   Number of public wire bits:     344
+   Number of ports:                  9
+   Number of port bits:            215
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                253
+     BUFG                            1
+     FDRE                            1
+     IBUF                          119
+     LUT2                            2
+     LUT3                           32
+     OBUF                           96
+     RAMB36E1                        2
+
+
+exit_code=0
