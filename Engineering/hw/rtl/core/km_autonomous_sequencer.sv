@@ -31,6 +31,7 @@ module km_autonomous_sequencer #(
     input  logic [DATA_WIDTH-1:0]  bram_b_rdata_i,
 
     // Статусні лічильники, телеметрія та сигнали черги
+    input  logic                   clear_overflow_i,
     output logic                   busy_o,
     output logic                   fifo_full_o,
     output logic                   fifo_overflow_o,
@@ -286,6 +287,12 @@ module km_autonomous_sequencer #(
                     // Кероване джерело коректно утримало подію до прийняття — 0 втрат
                     stalled_ext_q <= 1'b0;
                 end
+            end
+
+            if (clear_overflow_i && !busy_o) begin
+                overflow_latched_q <= 1'b0;
+                dropped_count_q    <= 32'd0;
+                stalled_ext_q      <= 1'b0;
             end
 
             // ================================================================

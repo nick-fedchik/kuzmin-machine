@@ -444,6 +444,7 @@ module cascade_cid0_tb;
         .hw_trigger_valid_i(trig_valid), .hw_trigger_cid_i(trig_cid), .hw_trigger_param_i(trig_param),
         .hw_trigger_ready_o(trig_ready),
         .bram_b_we_o(bram_b_we), .bram_b_wstrb_o(bram_b_wstrb), .bram_b_addr_o(bram_b_addr), .bram_b_wdata_o(bram_b_wdata), .bram_b_rdata_i(bram_b_rdata),
+        .clear_overflow_i(1'b0),
         .busy_o(busy), .fifo_full_o(fifo_full), .fifo_overflow_o(fifo_overflow),
         .events_dropped_count_o(dropped_events),
         .events_processed_count_o(total_events),
@@ -600,5 +601,236 @@ def test_cme_core_semantics_mutant_controls(
     out = result.stdout + result.stderr
     assert result.returncode != 0, f"Мутант {name} не впав:\n{out}"
     assert expected_marker in out, f"Мутант {name} впав не на {expected_marker}:\n{out}"
+
+
+def _compile_increase_hex(tmp_path: Path) -> Path:
+    source_path = HW / "tests" / "kpol_bram_pipeline_increase.kpol"
+    image_bin = tmp_path / "inc.bin"
+    subprocess.run(
+        [sys.executable, str(HW / "scripts/compile_kpol_bram_image.py"),
+         str(source_path), str(image_bin)],
+        check=True, capture_output=True, text=True,
+    )
+    words = struct.unpack("<256I", image_bin.read_bytes())
+    image_hex = tmp_path / "inc.hex"
+    image_hex.write_text("".join(f"{word:08x}\n" for word in words), encoding="utf-8")
+    return image_hex
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_axi_b4_load_vs_run_write_race(tmp_path):
+    """Issue #168: усунення 1-тактової гонитви B4 Load vs Run на межі запису BRAM."""
+    image_a_hex = _compile_increase_hex(tmp_path)
+    simulation = tmp_path / "axi_b4_race.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012",
+            "-s", "kpol_bram_pipeline_axi_tb",
+            "-o", str(simulation),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(HW / "rtl/core/km_concept_micro_engine.sv"),
+            str(HW / "rtl/core/km_concept_bram.sv"),
+            str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+            str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+            str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    result = subprocess.run(
+        ["vvp", "-n", str(simulation), "+b4_race_audit", f"+image_a={image_a_hex}"],
+        capture_output=True, text=True, timeout=30,
+    )
+    out = result.stdout + result.stderr
+    assert result.returncode == 0, out
+    assert "PASS: axi b4_race_audit" in out, out
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_axi_overflow_w1c_clear(tmp_path):
+    """Issue #168: W1C очищення sticky fifo_overflow та events_dropped через регістр 0x02C."""
+    image_a_hex = _compile_increase_hex(tmp_path)
+    simulation = tmp_path / "axi_w1c.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012",
+            "-s", "kpol_bram_pipeline_axi_tb",
+            "-o", str(simulation),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(HW / "rtl/core/km_concept_micro_engine.sv"),
+            str(HW / "rtl/core/km_concept_bram.sv"),
+            str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+            str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+            str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    result = subprocess.run(
+        ["vvp", "-n", str(simulation), "+w1c_clear_audit", f"+image_a={image_a_hex}"],
+        capture_output=True, text=True, timeout=30,
+    )
+    out = result.stdout + result.stderr
+    assert result.returncode == 0, out
+    assert "PASS: axi w1c_clear_audit" in out, out
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_pynq_z1_top_cdc_debounce_and_param1(tmp_path):
+    """Issue #168: PYNQ-Z1 top має 2-FF CDC для sw[1:0], антибрязкіт btn[0] та param=1."""
+    simulation = tmp_path / "pynq_top_sim.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012",
+            "-s", "kpol_bram_pipeline_pynq_z1_top_tb",
+            "-o", str(simulation),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(HW / "rtl/core/km_concept_micro_engine.sv"),
+            str(HW / "rtl/core/km_concept_bram.sv"),
+            str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+            str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+            str(HW / "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v"),
+            str(HW / "tests/kpol_bram_pipeline_pynq_z1_top_tb.sv"),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    result = subprocess.run(
+        ["vvp", "-n", str(simulation)],
+        capture_output=True, text=True, timeout=60,
+    )
+    out = result.stdout + result.stderr
+    assert result.returncode == 0, out
+    assert "PASS: pynq_z1_top cdc, debounce and param=1 verified" in out, out
+
+
+AXI_PYNQ_MUTANTS = [
+    pytest.param(
+        "axi_allow_b4_write_race",
+        "rtl/bus/kpol_bram_pipeline_axi.sv",
+        "wire ext_trigger_blocked = sw_trigger || bram_we || cfg_write_fire;",
+        "wire ext_trigger_blocked = sw_trigger;",
+        "axi_b4",
+        "[FAIL] B4 race: hw_trigger_ready_o remained 1",
+        id="axi-allow-b4-write-race",
+    ),
+    pytest.param(
+        "axi_unstoppable_leaks_into_seq",
+        "rtl/bus/kpol_bram_pipeline_axi.sv",
+        "wire seq_trigger_valid = sw_trigger || (!ext_trigger_blocked && ext_hw_trigger_valid_i);",
+        "wire seq_trigger_valid = sw_trigger || ext_hw_trigger_valid_i;",
+        "axi_b4",
+        "[FAIL] B4 race: Port A bram_we=1 overlapped with PHASE_RUN busy=1",
+        id="axi-unstoppable-leaks-into-seq",
+    ),
+    pytest.param(
+        "axi_w1c_ignore_bit16",
+        "rtl/bus/kpol_bram_pipeline_axi.sv",
+        "(write_addr == 13'h02c) && write_data[16];",
+        "(write_addr == 13'h02c) && 1'b0;",
+        "axi_w1c",
+        "[FAIL] W1C write 0x0001_0000 did not clear outputs",
+        id="axi-w1c-ignore-bit16",
+    ),
+    pytest.param(
+        "pynq_top_param0",
+        "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v",
+        ".ext_hw_trigger_param_i(32'd1)",
+        ".ext_hw_trigger_param_i(32'd0)",
+        "pynq_top",
+        "[FAIL] PYNQ top param=1 check failed",
+        id="pynq-top-param0",
+    ),
+    pytest.param(
+        "pynq_top_bypass_sw_cdc",
+        "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v",
+        "wire [5:0] target_cid  = {4'd0, sw_cdc_1_q};",
+        "wire [5:0] target_cid  = {4'd0, sw[1:0]};",
+        "pynq_top",
+        "[FAIL] PYNQ top CDC violation",
+        id="pynq-top-bypass-sw-cdc",
+    ),
+    pytest.param(
+        "pynq_top_bypass_btn_debounce",
+        "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v",
+        "wire btn0_trig_pulse = btn0_stable_q & ~btn0_stable_d_q;",
+        "wire btn0_trig_pulse = btn0_cdc_q[1] & ~btn0_stable_d_q;",
+        "pynq_top",
+        "[FAIL] PYNQ top button bounce leaked spurious triggers",
+        id="pynq-top-bypass-btn-debounce",
+    ),
+]
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+@pytest.mark.parametrize(
+    "name,rel_file,target,replacement,runner,expected_marker", AXI_PYNQ_MUTANTS
+)
+def test_axi_b4_and_pynq_top_mutant_controls(
+    tmp_path, name, rel_file, target, replacement, runner, expected_marker
+):
+    orig_path = HW / rel_file
+    rtl_text = orig_path.read_text(encoding="utf-8")
+    assert target in rtl_text, f"Не знайдено цільовий рядок для мутанта {name}"
+    mutated_path = tmp_path / f"mut_{name}_{orig_path.name}"
+    mutated_path.write_text(rtl_text.replace(target, replacement), encoding="utf-8")
+
+    axi_src = str(mutated_path) if rel_file.endswith(".sv") else str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv")
+    top_src = str(mutated_path) if rel_file.endswith(".v") else str(HW / "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v")
+
+    sim = tmp_path / f"mut_{name}.vvp"
+    if runner in ("axi_b4", "axi_w1c"):
+        image_a_hex = _compile_increase_hex(tmp_path)
+        subprocess.run(
+            [
+                "iverilog", "-g2012",
+                "-s", "kpol_bram_pipeline_axi_tb",
+                "-o", str(sim),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                axi_src,
+                str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        plusarg = "+b4_race_audit" if runner == "axi_b4" else "+w1c_clear_audit"
+        res = subprocess.run(
+            ["vvp", "-n", str(sim), plusarg, f"+image_a={image_a_hex}"],
+            capture_output=True, text=True, timeout=30,
+        )
+    else:
+        subprocess.run(
+            [
+                "iverilog", "-g2012",
+                "-s", "kpol_bram_pipeline_pynq_z1_top_tb",
+                "-o", str(sim),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                axi_src,
+                top_src,
+                str(HW / "tests/kpol_bram_pipeline_pynq_z1_top_tb.sv"),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        res = subprocess.run(["vvp", "-n", str(sim)], capture_output=True, text=True, timeout=60)
+
+    out = res.stdout + res.stderr
+    assert res.returncode != 0, f"Мутант {name} не впав:\n{out}"
+    assert expected_marker in out, f"Мутант {name} впав не на {expected_marker}:\n{out}"
+
+
 
 

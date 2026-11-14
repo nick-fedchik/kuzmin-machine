@@ -1,0 +1,140 @@
+=== Pre-fix HEAD ===
+0d0ff47379efe9e1480d1d5db05535c979ff9431
+=== Running 3 pre-fix negative control tests for Issue #168 ===
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 158 items / 155 deselected / 3 selected
+
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_axi_b4_load_vs_run_write_race FAILED [ 33%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_axi_overflow_w1c_clear FAILED [ 66%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_pynq_z1_top_cdc_debounce_and_param1 FAILED [100%]
+
+=================================== FAILURES ===================================
+______________________ test_axi_b4_load_vs_run_write_race ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-279/test_axi_b4_load_vs_run_write_0')
+
+    @pytest.mark.skipif(
+        shutil.which("iverilog") is None or shutil.which("vvp") is None,
+        reason="Потрібні iverilog і vvp",
+    )
+    def test_axi_b4_load_vs_run_write_race(tmp_path):
+        """Issue #168: усунення 1-тактової гонитви B4 Load vs Run на межі запису BRAM."""
+        image_a_hex = _compile_increase_hex(tmp_path)
+        simulation = tmp_path / "axi_b4_race.vvp"
+        subprocess.run(
+            [
+                "iverilog", "-g2012",
+                "-s", "kpol_bram_pipeline_axi_tb",
+                "-o", str(simulation),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+                str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        result = subprocess.run(
+            ["vvp", "-n", str(simulation), "+b4_race_audit", f"+image_a={image_a_hex}"],
+            capture_output=True, text=True, timeout=30,
+        )
+        out = result.stdout + result.stderr
+>       assert result.returncode == 0, out
+E       AssertionError: FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:192: [FAIL] B4 race: hw_trigger_ready_o remained 1 during write_fire(0x008)
+E                Time: 15501000  Scope: kpol_bram_pipeline_axi_tb.run
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-279/test_axi_b4_load_vs_run_write_0/axi_b4_race.vvp', '+b4_race_audit', '+image_a=/tmp/pytest-of-mfedchyk/pytest-279/test_axi_b4_load_vs_run_write_0/inc.hex'], returncode=1, stdout='FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:192: [FAIL] B4 race: hw_trigger_ready_o remained 1 during write_fire(0x008)\n       Time: 15501000  Scope: kpol_bram_pipeline_axi_tb.run\n', stderr='').returncode
+
+Engineering/hw/tests/test_kpol_bram_pipeline.py:646: AssertionError
+_________________________ test_axi_overflow_w1c_clear __________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-279/test_axi_overflow_w1c_clear0')
+
+    @pytest.mark.skipif(
+        shutil.which("iverilog") is None or shutil.which("vvp") is None,
+        reason="Потрібні iverilog і vvp",
+    )
+    def test_axi_overflow_w1c_clear(tmp_path):
+        """Issue #168: W1C очищення sticky fifo_overflow та events_dropped через регістр 0x02C."""
+        image_a_hex = _compile_increase_hex(tmp_path)
+        simulation = tmp_path / "axi_w1c.vvp"
+        subprocess.run(
+            [
+                "iverilog", "-g2012",
+                "-s", "kpol_bram_pipeline_axi_tb",
+                "-o", str(simulation),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+                str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        result = subprocess.run(
+            ["vvp", "-n", str(simulation), "+w1c_clear_audit", f"+image_a={image_a_hex}"],
+            capture_output=True, text=True, timeout=30,
+        )
+        out = result.stdout + result.stderr
+>       assert result.returncode == 0, out
+E       AssertionError: FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:64: write 002c response 3 expected 2
+E                Time: 15680000  Scope: kpol_bram_pipeline_axi_tb.write_reg
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-279/test_axi_overflow_w1c_clear0/axi_w1c.vvp', '+w1c_clear_audit', '+image_a=/tmp/pytest-of-mfedchyk/pytest-279/test_axi_overflow_w1c_clear0/inc.hex'], returncode=1, stdout='FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq/Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv:64: write 002c response 3 expected 2\n       Time: 15680000  Scope: kpol_bram_pipeline_axi_tb.write_reg\n', stderr='').returncode
+
+Engineering/hw/tests/test_kpol_bram_pipeline.py:677: AssertionError
+___________________ test_pynq_z1_top_cdc_debounce_and_param1 ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-279/test_pynq_z1_top_cdc_debounce_0')
+
+    @pytest.mark.skipif(
+        shutil.which("iverilog") is None or shutil.which("vvp") is None,
+        reason="Потрібні iverilog і vvp",
+    )
+    def test_pynq_z1_top_cdc_debounce_and_param1(tmp_path):
+        """Issue #168: PYNQ-Z1 top має 2-FF CDC для sw[1:0], антибрязкіт btn[0] та param=1."""
+        simulation = tmp_path / "pynq_top_sim.vvp"
+        subprocess.run(
+            [
+                "iverilog", "-g2012",
+                "-s", "kpol_bram_pipeline_pynq_z1_top_tb",
+                "-o", str(simulation),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+                str(HW / "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v"),
+                str(HW / "tests/kpol_bram_pipeline_pynq_z1_top_tb.sv"),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        result = subprocess.run(
+            ["vvp", "-n", str(simulation)],
+            capture_output=True, text=True, timeout=60,
+        )
+        out = result.stdout + result.stderr
+>       assert result.returncode == 0, out
+E       AssertionError: FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq/Engineering/hw/tests/kpol_bram_pipeline_pynq_z1_top_tb.sv:171: [FAIL] PYNQ top param=1 check failed: cid0_state=10 (exp 11), commits=0 (exp 1)
+E                Time: 16340000  Scope: kpol_bram_pipeline_pynq_z1_top_tb.$unm_blk_90
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-279/test_pynq_z1_top_cdc_debounce_0/pynq_top_sim.vvp'], returncode=1, stdout='FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-168-axi-pynq/Engineering/hw/tests/kpol_bram_pipeline_pynq_z1_top_tb.sv:171: [FAIL] PYNQ top param=1 check failed: cid0_state=10 (exp 11), commits=0 (exp 1)\n       Time: 16340000  Scope: kpol_bram_pipeline_pynq_z1_top_tb.$unm_blk_90\n', stderr='').returncode
+
+Engineering/hw/tests/test_kpol_bram_pipeline.py:708: AssertionError
+=========================== short test summary info ============================
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_axi_b4_load_vs_run_write_race
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_axi_overflow_w1c_clear
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_pynq_z1_top_cdc_debounce_and_param1
+====================== 3 failed, 155 deselected in 0.31s =======================
+pytest_exit_code=1

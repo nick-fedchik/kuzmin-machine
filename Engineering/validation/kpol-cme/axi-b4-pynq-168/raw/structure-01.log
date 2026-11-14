@@ -1,0 +1,9 @@
+=== Code commit SHA ===
+4a3d471961afd316af3e25e2107df1c00b94351e
+Увага: KM_DRAFTS_REPO не задано або це не git-репозиторій — посилання на drafts не перевіряються (пропущено 16).
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 0, пропущено 16
+{
+  "documents_checked": 131,
+  "immutable_checked": 108,
+  "errors": []
+}

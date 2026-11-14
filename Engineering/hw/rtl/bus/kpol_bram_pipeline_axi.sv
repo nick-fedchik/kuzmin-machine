@@ -82,12 +82,20 @@ module kpol_bram_pipeline_axi (
     assign busy = seq_busy || sw_trigger || b_we;
     assign hw_pipeline_busy_o = busy;
 
-    // Арбітраж ініціації події: під час однотактового sw_trigger зовнішній вхід
-    // отримує hw_trigger_ready_o == 0, щоб кероване джерело утримало подію без втрати.
-    wire seq_trigger_valid = sw_trigger || ext_hw_trigger_valid_i;
+    // Захист межі фаз B4 (PHASE_LOAD vs PHASE_RUN) та арбітраж подій (#168):
+    // під час однотактового sw_trigger або активного запису Port A (write_fire на конфігураційні
+    // регістри чи такт bram_we == 1) зовнішній вхід отримує hw_trigger_ready_o == 0 і блокується
+    // від запуску секвенсера до повного завершення запису BRAM.
+    wire cfg_write_fire = write_fire && (write_strb == 4'hf) && !busy &&
+                          ((write_addr == 13'h004) || (write_addr == 13'h008) ||
+                           (write_addr == 13'h00c) || (write_addr == 13'h02c));
+    wire w1c_clear_overflow = write_fire && (write_strb == 4'hf) && !busy &&
+                              (write_addr == 13'h02c) && write_data[16];
+    wire ext_trigger_blocked = sw_trigger || bram_we || cfg_write_fire;
+    wire seq_trigger_valid = sw_trigger || (!ext_trigger_blocked && ext_hw_trigger_valid_i);
     wire [5:0] seq_trigger_cid = sw_trigger ? 6'd0 : ext_hw_trigger_cid_i;
     wire [31:0] seq_trigger_param = sw_trigger ? event_param : ext_hw_trigger_param_i;
-    assign hw_trigger_ready_o = seq_trigger_ready && !sw_trigger;
+    assign hw_trigger_ready_o = seq_trigger_ready && !ext_trigger_blocked;
     assign fifo_overflow_o = seq_fifo_overflow || axi_sw_overflow_q;
     assign events_dropped_count_o = seq_dropped_count + axi_sw_dropped_q;
 
@@ -124,6 +132,7 @@ module kpol_bram_pipeline_axi (
         .bram_b_wstrb_o(b_wstrb),
         .bram_b_we_o(b_we),
         .bram_b_rdata_i(b_rdata),
+        .clear_overflow_i(w1c_clear_overflow),
         .busy_o(seq_busy),
         .fifo_full_o(),
         .fifo_overflow_o(seq_fifo_overflow),
@@ -163,19 +172,38 @@ module kpol_bram_pipeline_axi (
         end else begin
             bram_we <= 0;
             sw_trigger <= 0;
-            if (!ext_sw_stalled_q) begin
-                if (sw_trigger && ext_hw_trigger_valid_i) begin
+            if (w1c_clear_overflow) begin
+                axi_sw_overflow_q <= 1'b0;
+                axi_sw_dropped_q  <= 32'd0;
+                if (ext_hw_trigger_valid_i) begin
+                    ext_sw_stalled_q <= 1'b1;
+                    ext_sw_cid_q     <= ext_hw_trigger_cid_i;
+                    ext_sw_param_q   <= ext_hw_trigger_param_i;
+                end else begin
+                    ext_sw_stalled_q <= 1'b0;
+                end
+            end else if (!ext_sw_stalled_q) begin
+                if (ext_trigger_blocked && seq_trigger_ready && ext_hw_trigger_valid_i) begin
                     ext_sw_stalled_q <= 1'b1;
                     ext_sw_cid_q <= ext_hw_trigger_cid_i;
                     ext_sw_param_q <= ext_hw_trigger_param_i;
                 end
             end else begin
-                if (!ext_hw_trigger_valid_i ||
-                    (ext_hw_trigger_cid_i != ext_sw_cid_q) ||
-                    (ext_hw_trigger_param_i != ext_sw_param_q)) begin
+                if (!ext_hw_trigger_valid_i) begin
                     axi_sw_overflow_q <= 1'b1;
                     axi_sw_dropped_q <= axi_sw_dropped_q + 32'd1;
                     ext_sw_stalled_q <= 1'b0;
+                end else if ((ext_hw_trigger_cid_i != ext_sw_cid_q) ||
+                             (ext_hw_trigger_param_i != ext_sw_param_q)) begin
+                    axi_sw_overflow_q <= 1'b1;
+                    axi_sw_dropped_q <= axi_sw_dropped_q + 32'd1;
+                    if (hw_trigger_ready_o) begin
+                        ext_sw_stalled_q <= 1'b0;
+                    end else begin
+                        ext_sw_stalled_q <= 1'b1;
+                        ext_sw_cid_q <= ext_hw_trigger_cid_i;
+                        ext_sw_param_q <= ext_hw_trigger_param_i;
+                    end
                 end else if (hw_trigger_ready_o) begin
                     ext_sw_stalled_q <= 1'b0;
                 end
@@ -210,8 +238,9 @@ module kpol_bram_pipeline_axi (
                                   end
                         13'h00c: if (busy) bresp <= SLVERR;
                                   else event_param <= write_data;
-                        13'h010: if (busy || write_data != 1) bresp <= SLVERR;
+                        13'h010: if (busy || bram_we || write_data != 1) bresp <= SLVERR;
                                   else sw_trigger <= 1;
+                        13'h02c: if (busy) bresp <= SLVERR;
                         default: bresp <= DECERR;
                     endcase
                 end
