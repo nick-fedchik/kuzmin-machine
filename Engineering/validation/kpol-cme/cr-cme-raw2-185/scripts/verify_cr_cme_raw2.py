@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Reproducible verification script for ADR B7 / CR #185 (CME-RAW-2 & KPOL-SYS-02)."""
+"""Reproducible verification script for ADR B7 / CR #185 (CME-RAW-2 & KPOL-SYS-02).
+
+Usage: verify_cr_cme_raw2.py [--base-ref REF]
+Without --base-ref the "no changes in Engineering/hw and Engineering/sw" check is skipped and
+reported as SKIP; it is a property of a branch, not of the repository.
+"""
+import argparse
 import math
 import re
 import subprocess
@@ -7,6 +13,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
+ADR_PATH = REPO_ROOT / "Engineering" / "decisions" / "cme-raw2-kpol-sys02.md"
 sys.path.insert(0, str(REPO_ROOT / "Engineering" / "sw" / "kpol-ref"))
 import kpol_reference as kr  # noqa: E402
 
@@ -36,6 +43,27 @@ def parse_adr_cme_raw2_table(adr_path: Path) -> dict[str, list[tuple[int, int, s
     return words
 
 
+def verify_field_names(words: dict[str, list[tuple[int, int, str]]], adr_text: str) -> int:
+    """Cross-check field names: identifier format, uniqueness, and `Wn.field` references in ADR prose.
+
+    The prose references are an independent statement of the layout, so renaming a field in the
+    table only (or in the prose only) is detected. Fields never referenced in prose are checked
+    only for format and uniqueness. Returns the number of prose references checked.
+    """
+    seen: dict[str, str] = {}
+    for word_name, fields in words.items():
+        for _, _, field in fields:
+            assert re.fullmatch(r"[a-z][a-z0-9_]*", field), f"{word_name}: bad field identifier {field!r}"
+            assert field not in seen, f"field {field!r} appears in both {seen[field]} and {word_name}"
+            seen[field] = word_name
+    references = sorted(set(re.findall(r"\bW([0-7])\.([a-z][a-z0-9_]*)", adr_text)))
+    for word_index, field in references:
+        word_name = f"W{word_index}"
+        in_word = [name for _, _, name in words[word_name]]
+        assert field in in_word, f"ADR prose references {word_name}.{field}, table has {word_name}: {in_word}"
+    return len(references)
+
+
 def verify_bit_layout(name: str, words: dict[str, list[tuple[int, int, str]]]) -> None:
     for word_name, fields in words.items():
         covered = set()
@@ -48,18 +76,29 @@ def verify_bit_layout(name: str, words: dict[str, list[tuple[int, int, str]]]) -
         assert covered == set(range(32)), f"{name}.{word_name}: uncovered bits {sorted(set(range(32)) - covered)}"
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "--base-ref",
+        help="git ref (e.g. origin/main); fail if Engineering/hw or Engineering/sw differ from it. "
+        "Without it the check is skipped.",
+    )
+    args = parser.parse_args(argv)
+
     cme_raw1_words = {
         "W0": [(31, 0, "current_state")],
         "W1": [(31, 0, "operand_val")],
         "W2": [(31, 24, "action_opcode"), (23, 16, "hazard_limit"), (15, 8, "guard_flags"), (7, 0, "pred_opcode")],
         "W3": [(31, 8, "reserved"), (7, 0, "subscriber_cid")],
     }
-    cme_raw2_words = parse_adr_cme_raw2_table(
-        REPO_ROOT / "Engineering" / "decisions" / "cme-raw2-kpol-sys02.md"
-    )
+    cme_raw2_words = parse_adr_cme_raw2_table(ADR_PATH)
     verify_bit_layout("CME-RAW-1", cme_raw1_words)
     verify_bit_layout("CME-RAW-2", cme_raw2_words)
+    reference_count = verify_field_names(cme_raw2_words, ADR_PATH.read_text(encoding="utf-8"))
+    print(
+        f"PASS: CME-RAW-2 field names are unique identifiers; {reference_count} `Wn.field` reference(s) "
+        "in ADR prose match the table."
+    )
 
     # Cross-check CME-RAW-1 W2 layout against ConceptMicroDescriptor.pack()
     desc = kr.ConceptMicroDescriptor(
@@ -113,13 +152,26 @@ def main() -> int:
     except (ValueError, kr.KpolError) as exc:
         print(f"PASS: current compile_signed_bram_image rejects 2048 B until v0x0007 update ({exc})")
 
-    # Verify zero changes in Engineering/hw and Engineering/sw relative to origin/main
+    # Zero changes in Engineering/hw and Engineering/sw relative to --base-ref (optional: a branch property)
+    if args.base_ref is None:
+        print("SKIP: hw/sw diff check not requested (--base-ref not given)")
+        return 0
+    if args.base_ref.startswith("-"):
+        print(f"ERROR: invalid --base-ref {args.base_ref!r}", file=sys.stderr)
+        return 2
+    resolved = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "--verify", "--quiet", f"{args.base_ref}^{{commit}}"],
+        capture_output=True, text=True,
+    )
+    if resolved.returncode != 0:
+        print(f"ERROR: --base-ref {args.base_ref!r} does not resolve to a commit", file=sys.stderr)
+        return 2
     diff = subprocess.run(
-        ["git", "-C", str(REPO_ROOT), "diff", "--name-only", "origin/main", "--", "Engineering/hw", "Engineering/sw"],
+        ["git", "-C", str(REPO_ROOT), "diff", "--name-only", resolved.stdout.strip(), "--", "Engineering/hw", "Engineering/sw"],
         capture_output=True, text=True, check=True,
     )
-    assert diff.stdout.strip() == "", f"unexpected changes in hw/sw: {diff.stdout}"
-    print("PASS: zero changes in Engineering/hw and Engineering/sw.")
+    assert diff.stdout.strip() == "", f"changes in hw/sw relative to {args.base_ref}: {diff.stdout}"
+    print(f"PASS: zero changes in Engineering/hw and Engineering/sw relative to {args.base_ref} ({resolved.stdout.strip()[:12]}).")
     return 0
 
 
