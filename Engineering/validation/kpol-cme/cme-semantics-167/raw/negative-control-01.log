@@ -1,0 +1,291 @@
+=== Pre-fix negative control for Issue #167 (km_concept_micro_engine.sv & kpol_reference.py) ===
+Base commit: 6a0ad75e9e5431e4c2a65cc966fc167c1c63c008
+Date (UTC): 2026-11-14T07:07:10Z
+--- [1] Unit testbench km_concept_micro_engine_tb.sv ---
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-167-cme
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 6 items / 5 deselected / 1 selected
+
+Engineering/hw/tests/test_testbenches.py::test_testbench[km_concept_micro_engine_tb.sv] FAILED [100%]
+
+=================================== FAILURES ===================================
+________________ test_testbench[km_concept_micro_engine_tb.sv] _________________
+
+tb = 'km_concept_micro_engine_tb.sv'
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-270/test_testbench_km_concept_micr0')
+
+    @needs_iverilog
+    @pytest.mark.parametrize("tb", _params())
+    def test_testbench(tb, tmp_path):
+        deps, success = TESTBENCHES[tb]
+        sim = tmp_path / "sim.vvp"
+        comp = subprocess.run(
+            ["iverilog", "-g2012", "-o", str(sim), *[str(HW / d) for d in deps], str(HW / "tb" / tb)],
+            capture_output=True, text=True)
+        assert comp.returncode == 0, comp.stderr
+        run = subprocess.run(["vvp", "-n", str(sim)], capture_output=True, text=True, timeout=120)
+        out = run.stdout + run.stderr
+>       assert run.returncode == 0, out[-3000:]
+E       AssertionError: [CME-TB] Сценарій 1: Пороговий охоронець (EQ=100, вхід=100)
+E         [PASS] Сценарій 1 успішний: транзакція committed, стан = 100
+E         [CME-TB] Сценарій 2: Невідповідний вхід (EQ=100, вхід=50)
+E         [PASS] Сценарій 2 успішний: транзакція відхилена (fail-closed)
+E         [CME-TB] Сценарій 3: Монотонний лічильник (LT < 50, action=INC, sub=42)
+E         [PASS] Сценарій 3 успішний: стан = 11 (10+1), каскад активовано для CID=42
+E         [CME-TB] Сценарій 4: Блокування небезпеки Hazard (Limit=120, вхід=150)
+E         [PASS] Сценарій 4 успішний: hazard виявлено, транзакцію апаратно заблоковано!
+E         [CME-TB] Сценарій 5: Велика точка Кузьміна • = ¬ (Інверсія припущення)
+E         [PASS] Сценарій 5 успішний: Велика точка • = ¬ успішно відхилила транзакцію!
+E         [CME-TB] Сценарій 6: Каскадна підписка на CID=0 (flags=0x13) та межа CID < 64
+E         FATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-167-cme/Engineering/hw/tb/km_concept_micro_engine_tb.sv:180: [FAIL] Сценарій 6A провалено: каскад на CID=0 заблоковано! commit=1, state=11, trig=0, sub=0
+E                Time: 201000  Scope: km_concept_micro_engine_tb
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-270/test_testbench_km_concept_micr0/sim.vvp'], returncode=1, stdout='[CME-TB] Сценарій 1: Пороговий охоронець (EQ=100, вхід=100)\n[PASS] Сценарій 1 успішний: транзакція committed, стан = 100\n[CME-TB] Сценарій 2: Невідповідний вхід (EQ=100, вхід=50)\n[PASS] Сценарій 2 успішний: транзакція відхилена (fail-closed)\n[CME-TB] Сценарій 3: Монотонний лічильник (LT < 50, action=INC, sub=42)\n[PASS] Сценарій 3 успішний: стан = 11 (10+1), каскад активовано для CID=42\n[CME-TB] Сценарій 4: Блокування небезпеки Hazard (Limit=120, вхід=150)\n[PASS] Сценарій 4 успішний: hazard виявлено, транзакцію апаратно заблоковано!\n[CME-TB] Сценарій 5: Велика точка Кузьміна • = ¬ (Інверсія припущення)\n[PASS] Сценарій 5 успішний: Велика точка • = ¬ успішно відхилила транзакцію!\n[CME-TB] Сценарій 6: Каскадна підписка на CID=0 (flags=0x13) та межа CID < 64\nFATAL: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-167-cme/Engineering/hw/tb/km_concept_micro_engine_tb.sv:180: [FAIL] Сценарій 6A провалено: каскад на CID=0 заблоковано! commit=1, state=11, trig=0, sub=0\n       Time: 201000  Scope: km_concept_micro_engine_tb\n', stderr='').returncode
+
+Engineering/hw/tests/test_testbenches.py:66: AssertionError
+=========================== short test summary info ============================
+FAILED Engineering/hw/tests/test_testbenches.py::test_testbench[km_concept_micro_engine_tb.sv]
+======================= 1 failed, 5 deselected in 0.09s ========================
+--- [2] End-to-end sequencer cascade CID 1 -> CID 0 ---
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-167-cme
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 149 items / 148 deselected / 1 selected
+
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_cme_cascade_to_cid0_end_to_end_in_sequencer FAILED [100%]
+
+=================================== FAILURES ===================================
+_______________ test_cme_cascade_to_cid0_end_to_end_in_sequencer _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-271/test_cme_cascade_to_cid0_end_t0')
+
+    @pytest.mark.skipif(
+        shutil.which("iverilog") is None or shutil.which("vvp") is None,
+        reason="Потрібні iverilog і vvp",
+    )
+    def test_cme_cascade_to_cid0_end_to_end_in_sequencer(tmp_path):
+        """Issue #167: наскрізна перевірка каскаду CID 1 -> CID 0 через компілятор і автономний секвенсер."""
+        from kpol_reference import compile_concept_microcode_bram_image
+    
+        source = """
+        Problem CascadeZeroHW {
+            Invariants {
+                InvRoot: RootState >= 0;
+                InvNode: TriggerNode >= 0;
+            }
+        }
+        Solution CascadeZeroHW {
+            state RootState: Int32 = 10;
+            state TriggerNode: Int32 = 20;
+    
+            event Pulse(param: Int32);
+    
+            rule StepRoot on Pulse when param > 0 {
+                set RootState := RootState + 1;
+            }
+            rule StepTrigger on Pulse when param == 7 {
+                set TriggerNode := TriggerNode + 1;
+            }
+        }
+        """
+        image = compile_concept_microcode_bram_image(
+            parse_module(source), cascade_map={"TriggerNode": "RootState"}
+        )
+        words = struct.unpack("<256I", image)
+        image_hex = tmp_path / "cascade_cid0.hex"
+        image_hex.write_text("".join(f"{word:08x}\n" for word in words), encoding="utf-8")
+    
+        tb_sv = tmp_path / "cascade_cid0_tb.sv"
+        tb_sv.write_text(
+            """`timescale 1ns / 1ps
+    module cascade_cid0_tb;
+        logic clk = 0;
+        logic rst_n = 0;
+        always #5 clk = ~clk;
+    
+        logic        bram_a_we = 0;
+        logic [7:0]  bram_a_addr = 0;
+        logic [31:0] bram_a_wdata = 0;
+        wire  [31:0] bram_a_rdata;
+    
+        wire         bram_b_we;
+        wire  [3:0]  bram_b_wstrb;
+        wire  [7:0]  bram_b_addr;
+        wire  [31:0] bram_b_wdata;
+        wire  [31:0] bram_b_rdata;
+    
+        logic        trig_valid = 0;
+        logic [5:0]  trig_cid = 0;
+        logic [31:0] trig_param = 0;
+        wire         trig_ready;
+        wire         busy, fifo_full, fifo_overflow;
+        wire  [31:0] total_events, total_committed, total_rejected, last_state, dropped_events;
+        wire         commit_pulse, reject_pulse;
+    
+        reg [31:0] img [0:255];
+        integer i;
+    
+        km_concept_bram bram_inst (
+            .clk(clk), .rst_n(rst_n),
+            .a_we_i(bram_a_we), .a_wstrb_i(4'hF), .a_addr_i(bram_a_addr), .a_wdata_i(bram_a_wdata), .a_rdata_o(bram_a_rdata),
+            .b_we_i(bram_b_we), .b_wstrb_i(bram_b_wstrb), .b_addr_i(bram_b_addr), .b_wdata_i(bram_b_wdata), .b_rdata_o(bram_b_rdata)
+        );
+    
+        km_autonomous_sequencer dut (
+            .clk(clk), .rst_n(rst_n),
+            .hw_trigger_valid_i(trig_valid), .hw_trigger_cid_i(trig_cid), .hw_trigger_param_i(trig_param),
+            .hw_trigger_ready_o(trig_ready),
+            .bram_b_we_o(bram_b_we), .bram_b_wstrb_o(bram_b_wstrb), .bram_b_addr_o(bram_b_addr), .bram_b_wdata_o(bram_b_wdata), .bram_b_rdata_i(bram_b_rdata),
+            .busy_o(busy), .fifo_full_o(fifo_full), .fifo_overflow_o(fifo_overflow),
+            .events_dropped_count_o(dropped_events),
+            .events_processed_count_o(total_events),
+            .committed_count_o(total_committed),
+            .rejected_count_o(total_rejected),
+            .last_committed_state_o(last_state),
+            .commit_pulse_o(commit_pulse),
+            .reject_pulse_o(reject_pulse)
+        );
+    
+        initial begin
+            $readmemh("IMAGE_HEX_PATH", img);
+            #20 rst_n = 1;
+            for (i = 0; i < 256; i = i + 1) begin
+                @(posedge clk);
+                bram_a_we    <= 1'b1;
+                bram_a_addr  <= i[7:0];
+                bram_a_wdata <= img[i];
+            end
+            @(posedge clk);
+            bram_a_we <= 1'b0;
+            @(posedge clk);
+    
+            // Подаємо подію на CID=1 (TriggerNode) з param=7:
+            // CID=1 переходить 20 -> 21 і каскадно викликає CID=0 (RootState: 10 -> 11)
+            trig_cid   <= 6'd1;
+            trig_param <= 32'd7;
+            trig_valid <= 1'b1;
+            @(posedge clk);
+            while (!trig_ready) @(posedge clk);
+            trig_valid <= 1'b0;
+    
+            repeat (4) @(posedge clk);
+            while (busy) @(posedge clk);
+            repeat (2) @(posedge clk);
+    
+            // Зчитуємо фінальний стан CID=0 (Word 0 за адресою 0) через Port A
+            bram_a_addr <= 8'd0;
+            @(posedge clk);
+            @(posedge clk);
+            #1;
+            if (total_committed !== 32'd2 || bram_a_rdata !== 32'd11 || last_state !== 32'd11) begin
+                $fatal(1, "[FAIL] Каскад CID 1 -> CID 0 не виконався: committed=%0d (exp 2), cid0_state=%0d (exp 11), last_state=%0d",
+                       total_committed, bram_a_rdata, last_state);
+            end
+            $display("PASS: cascade CID 1 -> CID 0 committed=2 cid0_state=11");
+            $finish;
+        end
+    endmodule
+    """.replace("IMAGE_HEX_PATH", str(image_hex)),
+            encoding="utf-8",
+        )
+    
+        sim = tmp_path / "cascade_cid0.vvp"
+        subprocess.run(
+            [
+                "iverilog", "-g2012", "-s", "cascade_cid0_tb", "-o", str(sim),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                str(tb_sv),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        run = subprocess.run(["vvp", "-n", str(sim)], capture_output=True, text=True, timeout=30)
+        out = run.stdout + run.stderr
+>       assert run.returncode == 0, out
+E       AssertionError: FATAL: /tmp/pytest-of-mfedchyk/pytest-271/test_cme_cascade_to_cid0_end_t0/cascade_cid0_tb.sv:82: [FAIL] Каскад CID 1 -> CID 0 не виконався: committed=1 (exp 2), cid0_state=10 (exp 11), last_state=21
+E                Time: 2736000  Scope: cascade_cid0_tb
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['vvp', '-n', '/tmp/pytest-of-mfedchyk/pytest-271/test_cme_cascade_to_cid0_end_t0/cascade_cid0.vvp'], returncode=1, stdout='FATAL: /tmp/pytest-of-mfedchyk/pytest-271/test_cme_cascade_to_cid0_end_t0/cascade_cid0_tb.sv:82: [FAIL] Каскад CID 1 -> CID 0 не виконався: committed=1 (exp 2), cid0_state=10 (exp 11), last_state=21\n       Time: 2736000  Scope: cascade_cid0_tb\n', stderr='').returncode
+
+Engineering/hw/tests/test_kpol_bram_pipeline.py:514: AssertionError
+=========================== short test summary info ============================
+FAILED Engineering/hw/tests/test_kpol_bram_pipeline.py::test_cme_cascade_to_cid0_end_to_end_in_sequencer
+====================== 1 failed, 148 deselected in 0.12s =======================
+--- [3] KPOL compiler cascade_map to CID 0 ---
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-167-cme
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 59 items / 58 deselected / 1 selected
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag FAILED [100%]
+
+=================================== FAILURES ===================================
+_ KpolReferenceTests.test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag _
+
+self = <test_kpol_reference.KpolReferenceTests testMethod=test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag>
+
+    def test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag(self):
+        """Issue #167: Каскад на CID 0 виставляє біт дозволу підписника guard_flags[4] (0x10)."""
+        import kpol_reference as kr
+    
+        source = """
+        Problem CascadeZero {
+            Invariants {
+                InvRoot: Root >= 0;
+                InvLeaf: Leaf >= 0;
+            }
+        }
+        Solution CascadeZero {
+            state Root: Int32 = 10;
+            state Leaf: Int32 = 20;
+    
+            event Trigger(param: Int32);
+    
+            rule OnRoot on Trigger when param > 0 {
+                set Root := Root + 1;
+            }
+            rule OnLeaf on Trigger when param == 7 {
+                set Leaf := Leaf + 1;
+            }
+        }
+        """
+        module = parse_module(source)
+        bram_bytes = compile_concept_microcode_bram_image(
+            module, cascade_map={"Leaf": "Root"}
+        )
+        descriptors = disassemble_concept_microcode(bram_bytes)
+    
+        sub_en_flag = getattr(kr, "CME_GUARD_SUBSCRIBER_EN", 0x10)
+        self.assertEqual(sub_en_flag, 0x10)
+    
+        # CID 0 (Root) не має вихідного каскаду -> bit 4 вимкнений
+        self.assertEqual(descriptors[0].subscriber_cid, 0)
+        self.assertEqual(descriptors[0].guard_flags & sub_en_flag, 0)
+    
+        # CID 1 (Leaf) каскадує в CID 0 (Root) -> subscriber_cid == 0 І bit 4 увімкнений!
+        self.assertEqual(descriptors[1].subscriber_cid, 0)
+>       self.assertNotEqual(descriptors[1].guard_flags & sub_en_flag, 0)
+E       AssertionError: 0 == 0
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py:1949: AssertionError
+=========================== short test summary info ============================
+FAILED Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag
+======================= 1 failed, 58 deselected in 0.10s =======================
+exit_codes: tb=1 e2e=1 kpol_ref=1

@@ -1906,6 +1906,55 @@ endmodule
         valid, msg = verify_bram_signature(signed_image, secret_key=secret)
         self.assertTrue(valid, msg)
 
+    def test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag(self):
+        """Issue #167: Каскад на CID 0 виставляє біт дозволу підписника guard_flags[4] (0x10)."""
+        import kpol_reference as kr
+
+        source = """
+        Problem CascadeZero {
+            Invariants {
+                InvRoot: Root >= 0;
+                InvLeaf: Leaf >= 0;
+            }
+        }
+        Solution CascadeZero {
+            state Root: Int32 = 10;
+            state Leaf: Int32 = 20;
+
+            event Trigger(param: Int32);
+
+            rule OnRoot on Trigger when param > 0 {
+                set Root := Root + 1;
+            }
+            rule OnLeaf on Trigger when param == 7 {
+                set Leaf := Leaf + 1;
+            }
+        }
+        """
+        module = parse_module(source)
+        bram_bytes = compile_concept_microcode_bram_image(
+            module, cascade_map={"Leaf": "Root"}
+        )
+        descriptors = disassemble_concept_microcode(bram_bytes)
+
+        sub_en_flag = getattr(kr, "CME_GUARD_SUBSCRIBER_EN", 0x10)
+        self.assertEqual(sub_en_flag, 0x10)
+
+        # CID 0 (Root) не має вихідного каскаду -> bit 4 вимкнений
+        self.assertEqual(descriptors[0].subscriber_cid, 0)
+        self.assertEqual(descriptors[0].guard_flags & sub_en_flag, 0)
+
+        # CID 1 (Leaf) каскадує в CID 0 (Root) -> subscriber_cid == 0 І bit 4 увімкнений!
+        self.assertEqual(descriptors[1].subscriber_cid, 0)
+        self.assertNotEqual(descriptors[1].guard_flags & sub_en_flag, 0)
+        self.assertTrue(hasattr(kr, "CME_GUARD_SUBSCRIBER_EN"))
+
+        # Невідомі або позамежні цілі каскаду відхиляються компілятором (fail-closed)
+        with self.assertRaises(KpolError):
+            compile_concept_microcode_bram_image(module, cascade_map={"Leaf": "MissingState"})
+        with self.assertRaises(KpolError):
+            compile_concept_microcode_bram_image(module, cascade_map={"Leaf": 64})
+
 
 class KpolCmeProfileTests(unittest.TestCase):
     @staticmethod
