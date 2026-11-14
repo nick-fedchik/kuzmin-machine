@@ -28,14 +28,19 @@ module kpol_bram_pipeline_axi_tb;
     wire hw_pipeline_busy_o;
     wire fifo_overflow_o;
     wire [31:0] events_dropped_count_o;
+    logic b4_audit_mode = 0;
 
     always #5 clk = ~clk;
     always @(posedge clk) begin
         if (!rst_n) trace_writes = 0;
-        else if (trace_mode && dut.b_we) begin
-            if (dut.b_addr !== 0 || dut.b_wstrb !== 4'hf)
-                $fatal(1, "trace: write outside W0 or partial write");
-            trace_writes = trace_writes + 1;
+        else begin
+            if (b4_audit_mode && dut.bram_we && dut.busy)
+                $fatal(1, "[FAIL] B4 race: Port A bram_we=1 overlapped with PHASE_RUN busy=1");
+            if (trace_mode && dut.b_we) begin
+                if (dut.b_addr !== 0 || dut.b_wstrb !== 4'hf)
+                    $fatal(1, "trace: write outside W0 or partial write");
+                trace_writes = trace_writes + 1;
+            end
         end
     end
 
@@ -159,6 +164,153 @@ module kpol_bram_pipeline_axi_tb;
         reg [31:0] value;
         integer expected_commits;
         trace_mode = $value$plusargs("trace=%s", trace_file);
+        if ($test$plusargs("b4_race_audit")) begin
+            b4_audit_mode = 1'b1;
+            if (!$value$plusargs("image_a=%s", image_a))
+                $fatal(1, "b4_race_audit requires image_a");
+            repeat (3) @(negedge clk);
+            rst_n = 1;
+            load_image(image_a);
+            check_state(10, "b4 initial");
+
+            // A. 1-тактова колізія B4 Load vs Run з керованим зовнішнім джерелом:
+            // на такті write_fire(0x008) та наступному такті bram_we=1 сигнал hw_trigger_ready_o
+            // зобов'язаний опуститися в 0, щоб кероване джерело утримало подію до завершення запису Port A.
+            write_reg('h004, 0, 4'hf, 0);
+            @(negedge clk);
+            awaddr  = 'h008;
+            wdata   = 32'd50;
+            wstrb   = 4'hf;
+            awvalid = 1'b1;
+            wvalid  = 1'b1;
+            bready  = 1'b1;
+            ext_hw_trigger_cid_i   = 6'd0;
+            ext_hw_trigger_param_i = 32'd5;
+            ext_hw_trigger_valid_i = 1'b1;
+            #1;
+            if (hw_trigger_ready_o !== 1'b0)
+                $fatal(1, "[FAIL] B4 race: hw_trigger_ready_o remained 1 during write_fire(0x008)");
+            do @(posedge clk); while (!awready || !wready);
+            #1;
+            awvalid = 1'b0;
+            wvalid  = 1'b0;
+            if (dut.bram_we !== 1'b1 || hw_trigger_ready_o !== 1'b0)
+                $fatal(1, "[FAIL] B4 race: expected bram_we=1 and hw_trigger_ready_o=0, got we=%b ready=%b",
+                       dut.bram_we, hw_trigger_ready_o);
+            while (hw_trigger_ready_o !== 1'b1) begin
+                @(posedge clk);
+                #1;
+                if (bvalid) bready = 1'b0;
+            end
+            @(posedge clk); // Прийняття утриманої події строго після запису 50 у BRAM
+            #1;
+            ext_hw_trigger_valid_i = 1'b0;
+            bready = 1'b0;
+            wait_idle();
+            check_state(51, "b4 managed after write");
+            if (fifo_overflow_o !== 1'b0 || events_dropped_count_o !== 32'd0)
+                $fatal(1, "[FAIL] B4 managed stall caused unexpected drop=%0d ovf=%b",
+                       events_dropped_count_o, fifo_overflow_o);
+
+            // B. Незупинний 1-тактовий імпульс у такт write_fire(0x008) блокується від запуску PHASE_RUN
+            // та обліковується за B5 (overflow=1, dropped=1).
+            write_reg('h004, 0, 4'hf, 0);
+            @(negedge clk);
+            awaddr  = 'h008;
+            wdata   = 32'd70;
+            wstrb   = 4'hf;
+            awvalid = 1'b1;
+            wvalid  = 1'b1;
+            bready  = 1'b1;
+            ext_hw_trigger_cid_i   = 6'd0;
+            ext_hw_trigger_param_i = 32'd5;
+            ext_hw_trigger_valid_i = 1'b1;
+            do @(posedge clk); while (!awready || !wready);
+            @(negedge clk);
+            awvalid = 1'b0;
+            wvalid  = 1'b0;
+            ext_hw_trigger_valid_i = 1'b0; // Зняття до появи ready=1 -> B5 drop
+            while (!bvalid) @(negedge clk);
+            @(negedge clk);
+            bready = 1'b0;
+            wait_idle();
+            check_state(70, "b4 unstoppable blocked during write");
+            if (fifo_overflow_o !== 1'b1 || events_dropped_count_o !== 32'd1)
+                $fatal(1, "[FAIL] B4 unstoppable pulse not accounted: ovf=%b dropped=%0d",
+                       fifo_overflow_o, events_dropped_count_o);
+
+            $display("PASS: axi b4_race_audit");
+            $finish;
+        end
+        if ($test$plusargs("w1c_clear_audit")) begin
+            if (!$value$plusargs("image_a=%s", image_a))
+                $fatal(1, "w1c_clear_audit requires image_a");
+            repeat (3) @(negedge clk);
+            rst_n = 1;
+            load_image(image_a);
+
+            // Генеруємо одночасно втрату на AXI-рівні (під sw_trigger) та в секвенсері (переповнення FIFO)
+            write_reg('h00c, 5, 4'hf, 0);
+            @(negedge clk);
+            awaddr  = 'h010;
+            wdata   = 1;
+            wstrb   = 4'hf;
+            awvalid = 1'b1;
+            wvalid  = 1'b1;
+            bready  = 1'b1;
+            do @(posedge clk); while (!awready || !wready);
+            @(negedge clk);
+            awvalid = 1'b0;
+            wvalid  = 1'b0;
+            // Однотактовий імпульс під час sw_trigger -> axi_sw_overflow_q=1, axi_sw_dropped_q=1
+            ext_hw_trigger_cid_i   = 6'd0;
+            ext_hw_trigger_param_i = 32'd5;
+            ext_hw_trigger_valid_i = 1'b1;
+            @(negedge clk);
+            ext_hw_trigger_valid_i = 1'b0;
+            bready = 1'b0;
+
+            // Додатково подаємо 20 незупинних подій поспіль -> переповнення FIFO секвенсера
+            for (int k = 0; k < 20; k++) begin
+                @(negedge clk);
+                ext_hw_trigger_cid_i   = 6'd0;
+                ext_hw_trigger_param_i = 32'd25 + k;
+                ext_hw_trigger_valid_i = 1'b1;
+            end
+            @(negedge clk);
+            ext_hw_trigger_valid_i = 1'b0;
+
+            // Поки секвенсер ще активно розвантажує чергу (busy == 1), W1C-запис у 0x02C має отримати SLVERR
+            if (!busy) $fatal(1, "[FAIL] expected busy==1 during 16-event queue drain");
+            write_reg('h02c, 32'h0001_0000, 4'hf, 2'd2);
+            wait_idle();
+
+            read_reg('h028, value);
+            if (value < 32'd2 || !fifo_overflow_o)
+                $fatal(1, "[FAIL] expected sticky overflow & drops >= 2 before W1C, got ovf=%b drops=%0d",
+                       fifo_overflow_o, value);
+
+            // Запис 0 у W1C-регістр 0x02C є no-op (OKAY, прапорець лишається зведеним)
+            write_reg('h02c, 32'h0000_0000, 4'hf, 2'd0);
+            read_reg('h02c, value);
+            if (value[16] !== 1'b1)
+                $fatal(1, "[FAIL] W1C write of 0 unexpectedly cleared overflow: 0x02c=%h", value);
+
+            // Запис 1 у біт 16 (0x0001_0000) при busy==0 очищує і 0x02C[16], і лічильник 0x028
+            write_reg('h02c, 32'h0001_0000, 4'hf, 2'd0);
+            if (fifo_overflow_o !== 1'b0 || events_dropped_count_o !== 32'd0)
+                $fatal(1, "[FAIL] W1C write 0x0001_0000 did not clear outputs: ovf=%b dropped=%0d",
+                       fifo_overflow_o, events_dropped_count_o);
+            read_reg('h02c, value);
+            if (value[16] !== 1'b0 || value[7] !== 1'b1)
+                $fatal(1, "[FAIL] expected 0x02c[16]=0 and [7]=1 after W1C, got %h", value);
+            read_reg('h028, value);
+            if (value !== 32'd0)
+                $fatal(1, "[FAIL] expected 0x028 == 0 after W1C, got %0d", value);
+
+            $display("PASS: axi w1c_clear_audit");
+            $finish;
+        end
         if ($test$plusargs("hw_burst")) begin
             integer saw_stall;
             saw_stall = 0;
