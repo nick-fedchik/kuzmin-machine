@@ -1,6 +1,6 @@
 # Інженерні перевірки
 
-* **Версія:** 0.5.1
+* **Версія:** 0.5.2
 * **Дата:** 2026-11-14
 * **Тип WP:** Guide
 
@@ -19,6 +19,7 @@
 | [KPOL-CME-1 / B3-REQ-06 / #153](kpol-cme/behavior-153/report.md) | Стан після кожної події, signed guards, Int32 межі, W1–W3 і нульовий payload через direct/AXI; RTL-симуляція, не HIL. |
 | [B5 v2.1 / черга подій / #151](kpol-cme/queue-retention-151/report.md) | Очікування без втрат для керованих джерел (`valid && ready`), резервування слота каскадом і `sw_trigger`, `cascade_pending_*_q`, глибини `4..32`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
 | [Secure Boot / #164](kpol-cme/secure-boot-164/report.md) | Усунення pre-auth nonce poisoning, свіжі 16-байтні `nonce` за замовчуванням і `CME-RAW-1` payload у `compile_signed_bram_image` / `verify_bram_signature`; програмна перевірка, не апаратний Secure Boot. |
+| [Семантика ядра CME / #167](kpol-cme/cme-semantics-167/report.md) | Каскад на `CID 0` (`guard_flags[4]`), по-концептний `state_changed_o`, знакове переповнення `INC/DEC/ADD/SUB`, знаковий `RANGE`, fail-closed відхилення невідомих `action_opcode > 0x04`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
 
 ## Використання
 
@@ -60,6 +61,7 @@ python3 Engineering/validation/experiments/AV-11/scripts/analyze_av11.py --outpu
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.2 | 2026-11-14 | Додано пакет верифікації семантики ядра `km_concept_micro_engine.sv` (#167). |
 | 0.5.1 | 2026-11-14 | Додано програмну перевірку виправлень контейнера підпису Secure Boot (#164). |
 | 0.5.0 | 2026-11-13 | Додано пакет верифікації черги подій та арбітражу каскаду B5 v2.1 (#151). |
 | 0.4.0 | 2026-11-13 | Додано поведінкову матрицю профілю #153 і межі її висновків. |
