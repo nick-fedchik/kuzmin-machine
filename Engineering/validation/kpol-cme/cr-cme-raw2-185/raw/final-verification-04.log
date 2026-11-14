@@ -1,0 +1,28 @@
+# command: PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py --base-ref origin/main; check_links.py; check_wp_documents.py; run_open_flow.sh; pytest -q; git diff --check
+# timestamp_utc: 2026-11-14T19:52:23Z
+# base_commit: 103c64b9377024b987a759c0137855eaf427d1f6 (origin/main db6820d; робоче дерево з правками #198, звіт 0.1.3 ще не закомічено)
+# host: Linux 7.0.0-42-generic x86_64
+=== 1. verify_cr_cme_raw2.py --base-ref origin/main ===
+PASS: CME-RAW-2 field names are unique identifiers; 2 `Wn.field` reference(s) in ADR prose match the table.
+PASS: CME-RAW-1 (128 bits, verified vs ConceptMicroDescriptor.pack) and CME-RAW-2 W0..W7 (256 bits) complete.
+CALC: N=64 concepts -> 2048 B -> single-bank 1xRAMB36E1 (0.71%), dual-bank 2xRAMB36E1 (1.43%)
+CALC: N=128 concepts -> 4096 B -> single-bank 1xRAMB36E1 (0.71%), dual-bank 2xRAMB36E1 (1.43%)
+CALC: N=256 concepts -> 8192 B -> single-bank 2xRAMB36E1 (1.43%), dual-bank 2xRAMB36E1 (1.43%)
+PASS: verify_bram_signature rejects version 0x0007 on current code (Unsupported version: 0x0007 (expected 0x0006))
+PASS: current compile_signed_bram_image rejects 2048 B until v0x0007 update (Internal compiler error: invalid payload length 2048)
+PASS: zero changes in Engineering/hw and Engineering/sw relative to origin/main (db6820da5700).
+exit_code=0
+=== 2. check_links.py ===
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+=== 3. check_wp_documents.py ===
+  "documents_checked": 141,
+  "immutable_checked": 108,
+  "errors": []
+=== 4. run_open_flow.sh ===
+170 passed in 14.54s
+NG RTL simulation, lint and XC7 logic synthesis completed; no P&R, bitstream or HIL performed.
+=== 5. pytest -q ===
+350 passed, 342 subtests passed in 23.15s
+=== 6. git diff --check ===
+clean
+exit_code=0

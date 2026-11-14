@@ -1,0 +1,22 @@
+# command: PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py — негативні контролі: тимчасове пошкодження таблиці ADR (§2.2); після кожного випадку ADR відновлюється git checkout (правки #198 закомічено заздалегідь)
+# timestamp_utc: 2026-11-14T19:50:57Z
+# base_commit: 103c64b9377024b987a759c0137855eaf427d1f6 (origin/main db6820d)
+# host: Linux 7.0.0-42-generic x86_64
+
+## T1: W1 [7:2] -> [7:1] у рядку runtime_flags_rsvd (перекриття з fault_latched на біті 1)
+-| `W1 (+0x04)` | `[7:2]` | `runtime_flags_rsvd` | Зарезервовано (`0`; майбутні ознаки зайнятості пі
++| `W1 (+0x04)` | `[7:1]` | `runtime_flags_rsvd` | Зарезервовано (`0`; майбутні ознаки зайнятості пі
+AssertionError: CME-RAW-2.W1.runtime_flags_rsvd: overlap on bits [1]
+exit_code=1
+
+## T2: перейменування state_valid -> state_validX лише в таблиці §2.2 (проза ADR посилається на W1.state_valid); до #198 цей випадок давав exit 0
+-| **`W1 (+0x04)`** | `[0]` | `state_valid` | **Біт ініціалізації `KPOL-SYS-02`:** `0` — стан `_` (н
++| **`W1 (+0x04)`** | `[0]` | `state_validX` | **Біт ініціалізації `KPOL-SYS-02`:** `0` — стан `_` (
+AssertionError: W1: bad field identifier 'state_validX'
+exit_code=1
+
+## T3: перейменування state_valid -> state_ok лише в таблиці §2.2 (коректний ідентифікатор; T2 спрацював на перевірці формату, T3 — на перехресній перевірці з прозою ADR, що посилається на W1.state_valid)
+-| **`W1 (+0x04)`** | `[0]` | `state_valid` | **Біт ініціалізації `KPOL-SYS-02`:** `0` — стан `_` (н
++| **`W1 (+0x04)`** | `[0]` | `state_ok` | **Біт ініціалізації `KPOL-SYS-02`:** `0` — стан `_` (не в
+AssertionError: ADR prose references W1.state_valid, table has W1: ['state_ok', 'fault_latched', 'runtime_flags_rsvd', 'last_reject_code', 'commit_seq_u16']
+exit_code=1
