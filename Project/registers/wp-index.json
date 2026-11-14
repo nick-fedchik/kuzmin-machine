@@ -1,5 +1,5 @@
 {
-  "version": "0.13.0",
+  "version": "0.14.0",
   "date": "2026-11-14",
   "entries": [
     {
@@ -2446,6 +2446,12 @@
     },
     {
       "path": "Research/studies/author-semantics/kpol-syntax-159-report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false
