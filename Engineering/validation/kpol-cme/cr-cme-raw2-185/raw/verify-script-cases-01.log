@@ -1,0 +1,39 @@
+# command: PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py [--base-ref REF] — серія випадків (без правок ADR); показано ключові рядки виводу
+# timestamp_utc: 2026-11-14T19:50:21Z
+# base_commit: db6820da570035c8f1f62f4041c6d97a1faa677a (origin/main db6820d; робоче дерево з правками #198)
+# host: Linux 7.0.0-42-generic x86_64
+
+## C1: без --base-ref -> hw/sw перевірка пропускається (SKIP)
+$ PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py 
+PASS: CME-RAW-2 field names are unique identifiers; 2 `Wn.field` reference(s) in ADR prose match the table.
+SKIP: hw/sw diff check not requested (--base-ref not given)
+traceback_lines=0
+exit_code=0
+
+## C2: --base-ref origin/main -> PASS (hw/sw не змінено відносно бази)
+$ PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py --base-ref origin/main
+PASS: CME-RAW-2 field names are unique identifiers; 2 `Wn.field` reference(s) in ADR prose match the table.
+PASS: zero changes in Engineering/hw and Engineering/sw relative to origin/main (db6820da5700).
+traceback_lines=0
+exit_code=0
+
+## C3: --base-ref неіснуючий -> exit 2, без traceback
+$ PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py --base-ref no-such-ref
+ERROR: --base-ref 'no-such-ref' does not resolve to a commit
+PASS: CME-RAW-2 field names are unique identifiers; 2 `Wn.field` reference(s) in ADR prose match the table.
+traceback_lines=0
+exit_code=2
+
+## C4: --base-ref 134f109 (коміт до #187; sw відрізняється) -> exit 1
+$ PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py --base-ref 134f109
+PASS: CME-RAW-2 field names are unique identifiers; 2 `Wn.field` reference(s) in ADR prose match the table.
+AssertionError: changes in hw/sw relative to 134f109: Engineering/hw/scripts/compile_kpol_bram_image.py
+traceback_lines=1
+exit_code=1
+
+## C5: --base-ref=-x (ref, що починається з '-') -> exit 2
+$ PYTHONDONTWRITEBYTECODE=1 python3 Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py --base-ref=-x
+ERROR: invalid --base-ref '-x'
+PASS: CME-RAW-2 field names are unique identifiers; 2 `Wn.field` reference(s) in ADR prose match the table.
+traceback_lines=0
+exit_code=2
