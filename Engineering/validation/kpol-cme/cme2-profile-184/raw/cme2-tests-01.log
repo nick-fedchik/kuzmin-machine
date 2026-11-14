@@ -1,0 +1,22 @@
+# Command: python3 -m pytest Engineering/sw/kpol-ref/tests/test_kpol_reference.py -k KpolCme2ProfileTests -v
+# Timestamp: 2026-11-14T17:44:33Z
+# Base-SHA: 33a9974d9006bea8eb6d261a903c210ceac50b9c
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-184-kpol-cme2
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 69 items / 64 deselected / 5 selected
+
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade PASSED [ 20%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2 PASSED [ 40%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence PASSED [ 60%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof 
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof PASSED [ 80%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades 
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades PASSED [100%]
+
+============= 5 passed, 64 deselected, 22 subtests passed in 0.37s =============
+exit_code=0

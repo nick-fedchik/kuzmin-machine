@@ -1,0 +1,30 @@
+# Command: full final verification (#184)
+# Timestamp: 2026-11-14T17:47:03Z
+# Base-SHA: 33a9974d9006bea8eb6d261a903c210ceac50b9c
+--- check_links.py ---
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+--- check_wp_documents.py ---
+{
+  "documents_checked": 138,
+  "immutable_checked": 108,
+  "errors": []
+}
+--- inspect_math_formatting.py ---
+=== Inspecting 6 Markdown files for GitHub MathJax & Advanced Formatting ===
+
+[FAIL] Engineering/validation/kpol-cme/cme2-profile-184/report.md (2 issues):
+  L  42 [ERR-MATH-01]: Code-wrapped math ``$S_{src} \pm K \ne S_{src}$`` disables MathJax! Use GitHub `$`...`$` or `$...$`.
+  L  42 [ERR-MATH-09]: Unprotected inline math '$S_{src} \pm K \ne S_{src}$' contains Markdown conflicting chars ('_' or '*'). Use GitHub protected syntax $`S_{src} \pm K \ne S_{src}`$ to prevent italics/bold corruption.
+
+[ERROR] Found 2 formatting violation(s). Run with --fix or repair manually.
+--- wp-index.json check ---
+All 429 indexed files exist.
+--- git diff --check ---
+--- pytest -q ---
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+........................................................................................................ [ 71%]
+........................................................................ [ 91%]
+.............................                                            [100%]
+349 passed, 328 subtests passed in 22.41s
+exit_code=0

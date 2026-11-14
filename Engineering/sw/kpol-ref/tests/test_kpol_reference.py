@@ -1,4 +1,5 @@
 import math
+import shutil
 import struct
 from decimal import Decimal
 from pathlib import Path
@@ -11,6 +12,7 @@ import json
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
+import kpol_reference as kr
 from kpol_reference import (
     EventInput,
     Interpreter,
@@ -2352,6 +2354,762 @@ class KpolIssue183LanguageAndLoweringTests(unittest.TestCase):
             with self.subTest(cond=cond):
                 with self.assertRaises(KpolError):
                     compile_concept_microcode_bram_image(parse_module(source))
+
+
+class KpolCme2ProfileTests(unittest.TestCase):
+    """Issue #184: профіль KPOL-CME-2 (до 64 концептів, ациклічні каскади, RTL-еквівалентність)."""
+
+    MULTICONCEPT_SOURCE = """
+    Problem MultiPipeline {
+        Invariants {
+            Inv0: AlertDigest >= 0;
+            Inv1: StageMid >= 0;
+            Inv2: Ingest >= 0;
+            Inv3: SubBudget >= 0;
+            Inv4: OutOfBandCount >= 0;
+            Inv5: MirrorParam >= 0;
+        }
+    }
+    Solution MultiPipeline {
+        state AlertDigest: Int32 = 0;
+        state StageMid: Int32 = 14;
+        state Ingest: Int32 = 0;
+        state SubBudget: Int32 = 40;
+        state OutOfBandCount: Int32 = 3;
+        state MirrorParam: Int32 = 0;
+
+        event PushIngest(val: Int32);
+        event Spend(amt: Int32);
+        event Probe(x: Int32);
+        event Mirror(v: Int32);
+
+        rule R0_Digest on change(StageMid) when StageMid >= 15 {
+            set AlertDigest := StageMid;
+        }
+        rule R1_Mid on change(Ingest) when Ingest >= 10 and Ingest <= 100 {
+            set StageMid := StageMid + 1;
+        }
+        rule R2_Ingest on PushIngest when true {
+            set Ingest := Ingest + 5;
+        }
+        rule R3_Budget on Spend when true {
+            set SubBudget := SubBudget - 25;
+        }
+        rule R4_Probe on Probe when not (x >= -10 and x <= 20) {
+            set OutOfBandCount := OutOfBandCount + 1;
+        }
+        rule R5_Mirror on Mirror when v <= 1000 {
+            set MirrorParam := v;
+        }
+    }
+    Proof MultiPipeline {
+        assert NonNegDigest on PushIngest when Ingest >= 10 expect AlertDigest >= 0;
+        scenario EndToEndCascadeAndGuards {
+            step PushIngest(val = 1);
+            expect Ingest == 5;
+            expect StageMid == 14;
+            expect AlertDigest == 0;
+
+            step PushIngest(val = 1);
+            expect Ingest == 10;
+            expect StageMid == 15;
+            expect AlertDigest == 15;
+
+            step PushIngest(val = 1);
+            expect Ingest == 15;
+            expect StageMid == 16;
+            expect AlertDigest == 16;
+
+            step Spend(amt = 20);
+            expect SubBudget == 15;
+            step Spend(amt = 20);
+            expect SubBudget == 15;
+
+            step Probe(x = -10);
+            expect OutOfBandCount == 3;
+            step Probe(x = -2147483648);
+            expect OutOfBandCount == 4;
+            step Probe(x = 2147483647);
+            expect OutOfBandCount == 5;
+
+            step Mirror(v = 420);
+            expect MirrorParam == 420;
+            step Mirror(v = -5);
+            expect MirrorParam == 420;
+            step Mirror(v = 1001);
+            expect MirrorParam == 420;
+        }
+    }
+    """
+
+    def _simulate_axi_pipeline(
+        self,
+        image_bytes: bytes,
+        triggers: list[tuple[int, int, str]],
+    ) -> list[tuple[int, int, int, int]]:
+        """Симулює реальний kpol_bram_pipeline_axi.sv (iverilog) і зчитує всі 64 слоти BRAM."""
+        if shutil.which("iverilog") is None or shutil.which("vvp") is None:
+            self.skipTest("iverilog/vvp unavailable")
+
+        hw_dir = REPO_ROOT / "hw"
+        rtl_files = [
+            hw_dir / "rtl/core/kpol_txn_gate_v2.sv",
+            hw_dir / "rtl/core/km_concept_micro_engine.sv",
+            hw_dir / "rtl/core/km_concept_bram.sv",
+            hw_dir / "rtl/core/km_autonomous_sequencer.sv",
+            hw_dir / "rtl/bus/kpol_bram_pipeline_axi.sv",
+        ]
+        words = struct.unpack("<256I", image_bytes)
+
+        tb_lines = [
+            "`timescale 1ns/1ps",
+            "module tb_cme2_axi;",
+            "  logic clk = 0, rst_n = 0;",
+            "  logic [12:0] awaddr = 0, araddr = 0;",
+            "  logic awvalid = 0, wvalid = 0, bready = 0, arvalid = 0, rready = 0;",
+            "  logic [31:0] wdata = 0;",
+            "  logic [3:0] wstrb = 4'hf;",
+            "  wire awready, wready, bvalid, arready, rvalid, busy;",
+            "  wire [1:0] bresp, rresp;",
+            "  wire [31:0] rdata;",
+            "  logic ext_hw_trigger_valid_i = 0;",
+            "  logic [5:0] ext_hw_trigger_cid_i = 0;",
+            "  logic [31:0] ext_hw_trigger_param_i = 0;",
+            "  wire hw_trigger_ready_o, hw_commit_pulse_o, hw_reject_pulse_o;",
+            "  wire hw_pipeline_busy_o, fifo_overflow_o;",
+            "  wire [31:0] events_dropped_count_o;",
+            "  logic [31:0] init_words [0:255];",
+            "  logic [31:0] read_word;",
+            "  always #5 clk = ~clk;",
+            "  kpol_bram_pipeline_axi dut (.*);",
+            "  task automatic write_reg(input [12:0] addr, input [31:0] data);",
+            "    begin",
+            "      @(negedge clk);",
+            "      awaddr = addr; wdata = data; wstrb = 4'hf;",
+            "      awvalid = 1; wvalid = 1; bready = 1;",
+            "      do @(posedge clk); while (!awready || !wready);",
+            "      @(negedge clk); awvalid = 0; wvalid = 0;",
+            "      while (!bvalid) @(negedge clk);",
+            "      if (bresp !== 2'b00) $fatal(1, \"AXI write error on %h\", addr);",
+            "      @(negedge clk); bready = 0;",
+            "    end",
+            "  endtask",
+            "  task automatic read_reg(input [12:0] addr, output [31:0] data);",
+            "    begin",
+            "      @(negedge clk);",
+            "      araddr = addr; arvalid = 1; rready = 1;",
+            "      do @(posedge clk); while (!arready);",
+            "      @(negedge clk); arvalid = 0;",
+            "      while (!rvalid) @(negedge clk);",
+            "      if (rresp !== 2'b00) $fatal(1, \"AXI read error on %h\", addr);",
+            "      data = rdata;",
+            "      @(negedge clk); rready = 0;",
+            "    end",
+            "  endtask",
+            "  task automatic wait_idle;",
+            "    reg [31:0] st;",
+            "    begin",
+            "      st = 1;",
+            "      while (st[0]) read_reg(13'h014, st);",
+            "    end",
+            "  endtask",
+            "  task automatic send_mmio_cid0(input [31:0] val);",
+            "    begin",
+            "      write_reg(13'h00c, val);",
+            "      write_reg(13'h010, 32'd1);",
+            "      wait_idle();",
+            "    end",
+            "  endtask",
+            "  task automatic send_hw(input [5:0] cid, input [31:0] val);",
+            "    begin",
+            "      @(negedge clk);",
+            "      while (!hw_trigger_ready_o) @(negedge clk);",
+            "      ext_hw_trigger_cid_i = cid;",
+            "      ext_hw_trigger_param_i = val;",
+            "      ext_hw_trigger_valid_i = 1'b1;",
+            "      @(negedge clk);",
+            "      ext_hw_trigger_valid_i = 1'b0;",
+            "      wait_idle();",
+            "    end",
+            "  endtask",
+            "  initial begin",
+        ]
+        for idx, w in enumerate(words):
+            tb_lines.append(f"    init_words[{idx}] = 32'h{w:08x};")
+        tb_lines.extend([
+            "    repeat (4) @(posedge clk);",
+            "    rst_n = 1'b1;",
+            "    repeat (2) @(posedge clk);",
+            "    for (int i = 0; i < 256; i++) begin",
+            "      write_reg(13'h004, i);",
+            "      write_reg(13'h008, init_words[i]);",
+            "    end",
+        ])
+        for cid, param, mode in triggers:
+            p_u32 = param & 0xFFFFFFFF
+            if mode == "mmio":
+                self.assertEqual(cid, 0)
+                tb_lines.append(f"    send_mmio_cid0(32'h{p_u32:08x});")
+            else:
+                tb_lines.append(f"    send_hw(6'd{cid}, 32'h{p_u32:08x});")
+        tb_lines.extend([
+            "    if (fifo_overflow_o || events_dropped_count_o != 0)",
+            "      $fatal(1, \"unexpected overflow/drop\");",
+            "    for (int c = 0; c < 64; c++) begin",
+            "      logic [31:0] rw0, rw1, rw2, rw3;",
+            "      write_reg(13'h004, c * 4 + 0); read_reg(13'h008, rw0);",
+            "      write_reg(13'h004, c * 4 + 1); read_reg(13'h008, rw1);",
+            "      write_reg(13'h004, c * 4 + 2); read_reg(13'h008, rw2);",
+            "      write_reg(13'h004, c * 4 + 3); read_reg(13'h008, rw3);",
+            '      $display("SLOT %0d %08x %08x %08x %08x", c, rw0, rw1, rw2, rw3);',
+            "    end",
+            "    $finish;",
+            "  end",
+            "endmodule",
+        ])
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tb_path = Path(tmpdir) / "tb_cme2_axi.sv"
+            vvp_path = Path(tmpdir) / "tb_cme2_axi.vvp"
+            tb_path.write_text("\n".join(tb_lines) + "\n", encoding="utf-8")
+            comp = subprocess.run(
+                ["iverilog", "-g2012", "-s", "tb_cme2_axi", "-o", str(vvp_path),
+                 *map(str, rtl_files), str(tb_path)],
+                capture_output=True, text=True,
+            )
+            self.assertEqual(comp.returncode, 0, comp.stderr)
+            sim = subprocess.run(["vvp", "-n", str(vvp_path)], capture_output=True, text=True, timeout=30)
+            self.assertEqual(sim.returncode, 0, sim.stdout + sim.stderr)
+
+        slots: list[tuple[int, int, int, int]] = []
+        for line in sim.stdout.splitlines():
+            if line.startswith("SLOT "):
+                parts = line.split()
+                slots.append((
+                    int(parts[2], 16),
+                    int(parts[3], 16),
+                    int(parts[4], 16),
+                    int(parts[5], 16),
+                ))
+        self.assertEqual(len(slots), 64)
+        return slots
+
+    def test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence(self):
+        module = parse_module(self.MULTICONCEPT_SOURCE)
+        image = compile_concept_microcode_bram_image(module, profile="KPOL-CME-2")
+        self.assertEqual(len(image), 1024)
+
+        cli = REPO_ROOT / "hw" / "scripts" / "compile_kpol_bram_image.py"
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_path = Path(tmpdir) / "multi.kpol"
+            out_path = Path(tmpdir) / "multi.bin"
+            src_path.write_text(self.MULTICONCEPT_SOURCE, encoding="utf-8")
+            proc = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(src_path), str(out_path)],
+                capture_output=True, text=True,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertEqual(out_path.read_bytes(), image)
+
+        descriptors = disassemble_concept_microcode(image)
+        # StageMid (CID 1) зобов'язаний мати підписника CID 0 із увімкненим прапорцем 0x10
+        self.assertEqual(descriptors[1].subscriber_cid, 0)
+        self.assertNotEqual(descriptors[1].guard_flags & kr.CME_GUARD_SUBSCRIBER_EN, 0)
+        # Неактивні слоти 6..63 нульові (fail-closed)
+        for unused_cid in range(6, 64):
+            self.assertEqual(descriptors[unused_cid].guard_flags, 0)
+
+        event_trace = [
+            (2, EventInput("PushIngest", {"val": 1})),
+            (2, EventInput("PushIngest", {"val": 1})),
+            (3, EventInput("Spend", {"amt": 60})),
+            (3, EventInput("Spend", {"amt": 20})),
+            (4, EventInput("Probe", {"x": -10})),
+            (4, EventInput("Probe", {"x": -2147483648})),
+            (4, EventInput("Probe", {"x": 2147483647})),
+            (5, EventInput("Mirror", {"v": 420})),
+            (5, EventInput("Mirror", {"v": 420})),
+            (5, EventInput("Mirror", {"v": -5})),
+            (5, EventInput("Mirror", {"v": 1001})),
+            (2, EventInput("PushIngest", {"val": 1})),
+        ]
+
+        interp = Interpreter(module)
+        for _, ev in event_trace:
+            res = interp.run([ev])
+            self.assertTrue(all(d.startswith("InvariantViolation:") for d in res.diagnostics))
+
+        init_words = struct.unpack("<256I", image)
+        hw_triggers = [
+            (cid, next(iter(ev.payload.values())), "hw")
+            for cid, ev in event_trace
+        ]
+        # Додатково подамо подію на неактивний слот CID 63 — має бути відхилена без змін
+        hw_triggers.append((63, 777, "hw"))
+        slots = self._simulate_axi_pipeline(image, hw_triggers)
+
+        state_names = [st.name for st in module.states]
+        for cid in range(64):
+            w0, w1, w2, w3 = slots[cid]
+            signed_w0 = w0 - 0x100000000 if (w0 & 0x80000000) else w0
+            expected_w0 = interp.state[state_names[cid]] if cid < len(state_names) else 0
+            self.assertEqual(signed_w0, expected_w0, f"CID {cid} state mismatch")
+            # Перевірка незмінності дескрипторних слів W1..W3 у BRAM
+            self.assertEqual((w1, w2, w3), tuple(init_words[cid * 4 + 1 : cid * 4 + 4]))
+
+        self.assertEqual(interp.state["AlertDigest"], 16)
+        self.assertEqual(interp.state["StageMid"], 16)
+        self.assertEqual(interp.state["Ingest"], 15)
+        self.assertEqual(interp.state["SubBudget"], 15)
+        self.assertEqual(interp.state["OutOfBandCount"], 5)
+        self.assertEqual(interp.state["MirrorParam"], 420)
+
+        # Негативний контроль RTL: пропуск одного тригера PushIngest змінює стан CID 0/1/2
+        short_slots = self._simulate_axi_pipeline(image, hw_triggers[:-2])
+        self.assertNotEqual(short_slots[0][0], slots[0][0])
+
+    def test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade(self):
+        invariants = "\n".join(f"I{i}: S{i} >= 0;" for i in range(64))
+        states = "\n".join(f"state S{i}: Int32 = {i};" for i in range(64))
+        events = "\n".join(f"event E{i}(p{i}: Int32);" for i in [0] + list(range(2, 64)))
+        rules = [
+            "rule R0 on E0 when p0 >= -32768 and p0 <= 32767 { set S0 := S0 + 1; }",
+            "rule R1 on change(S63) when S63 >= 70 { set S1 := S63; }",
+        ]
+        for i in range(2, 63):
+            rules.append(f"rule R{i} on E{i} when p{i} == {i} {{ set S{i} := S{i} + 1; }}")
+        rules.append("rule R63 on E63 when true { set S63 := S63 + 10; }")
+        source_64 = f"""
+        Problem Full64 {{ Invariants {{ {invariants} }} }}
+        Solution Full64 {{
+            {states}
+            {events}
+            {chr(10).join(rules)}
+        }}
+        Proof Full64 {{
+            scenario Boundary64 {{
+                step E0(p0 = -32768);
+                expect S0 == 1;
+                step E63(p63 = 0);
+                expect S63 == 73;
+                expect S1 == 73;
+            }}
+        }}
+        """
+        module_64 = parse_module(source_64)
+        image_64 = compile_concept_microcode_bram_image(module_64, profile="KPOL-CME-2")
+        interp = Interpreter(module_64)
+        for ev in (
+            EventInput("E0", {"p0": -32768}),
+            EventInput("E0", {"p0": 40000}),
+            EventInput("E63", {"p63": 0}),
+        ):
+            interp.run([ev])
+
+        slots = self._simulate_axi_pipeline(
+            image_64,
+            [(0, -32768, "mmio"), (0, 40000, "mmio"), (63, 0, "hw")],
+        )
+        for cid in range(64):
+            w0 = slots[cid][0]
+            self.assertEqual(w0, interp.state[f"S{cid}"], f"CID {cid} mismatch")
+        self.assertEqual(slots[0][0], 1)
+        self.assertEqual(slots[1][0], 73)
+        self.assertEqual(slots[63][0], 73)
+
+        # 65 концептів виходять за ліміт 64 слотів CME-RAW-1
+        source_65 = source_64.replace(
+            "I63: S63 >= 0;", "I63: S63 >= 0; I64: S64 >= 0;"
+        ).replace(
+            "state S63: Int32 = 63;", "state S63: Int32 = 63; state S64: Int32 = 0;"
+        ).replace(
+            "event E63(p63: Int32);", "event E63(p63: Int32); event E64(p64: Int32);"
+        ).replace(
+            "rule R63 on E63 when true { set S63 := S63 + 10; }",
+            "rule R63 on E63 when true { set S63 := S63 + 10; }\n"
+            "rule R64 on E64 when true { set S64 := S64 + 1; }",
+        )
+        with self.assertRaisesRegex(KpolError, "CME2-SHAPE"):
+            compile_concept_microcode_bram_image(parse_module(source_65), profile="KPOL-CME-2")
+
+    def test_cme2_rejects_cycles_fanout_and_unsafe_cascades(self):
+        # 1. Самопідписка A -> A
+        self_cycle = """
+        Problem SelfCycle { Invariants { I0: A >= 0; } }
+        Solution SelfCycle {
+            state A: Int32 = 0;
+            rule R0 on change(A) when A > 0 { set A := A + 1; }
+        }
+        Proof SelfCycle { scenario S { expect A == 0; } }
+        """
+        # 2. Цикл довжини 2: A -> B -> A
+        two_cycle = """
+        Problem TwoCycle { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution TwoCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            rule RA on change(B) when B > 0 { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof TwoCycle { scenario S { expect A == 0; } }
+        """
+        # 3. Цикл довжини 3: A -> B -> C -> A
+        three_cycle = """
+        Problem ThreeCycle { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution ThreeCycle {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(B) when B > 0 { set C := C + 1; }
+            rule RA on change(C) when C > 0 { set A := A + 1; }
+        }
+        Proof ThreeCycle { scenario S { expect A == 0; } }
+        """
+        # 4. Fan-out > 1: один видавець A має двох підписників B і C (обмеження cascade_pending)
+        fanout = """
+        Problem Fanout { Invariants { IA: A >= 0; IB: B >= 0; IC: C >= 0; } }
+        Solution Fanout {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            state C: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+            rule RC on change(A) when A > 0 { set C := C + 1; }
+        }
+        Proof Fanout { scenario S { step EA(p = 1); expect B == 1; expect C == 1; } }
+        """
+        # 5. Початково активний change-guard (на старті A = 0, guard 'true' розходиться з RTL)
+        startup_active = """
+        Problem StartupFire { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution StartupFire {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when true { set A := A + 1; }
+            rule RB on change(A) when true { set B := B + 1; }
+        }
+        Proof StartupFire { scenario S { step EA(p = 1); expect B == 2; } }
+        """
+        # 6. Видавець каскаду з ASSIGN може не змінити стан при повторному P == A
+        assign_publisher = """
+        Problem AssignPub { Invariants { IA: A >= 0; IB: B >= 0; } }
+        Solution AssignPub {
+            state A: Int32 = 0;
+            state B: Int32 = 0;
+            event EA(p: Int32);
+            rule RA on EA when p >= 0 { set A := p; }
+            rule RB on change(A) when A > 0 { set B := B + 1; }
+        }
+        Proof AssignPub { scenario S { step EA(p = 5); expect B == 1; } }
+        """
+        for label, prog in (
+            ("self-cycle", self_cycle),
+            ("two-cycle", two_cycle),
+            ("three-cycle", three_cycle),
+            ("fanout", fanout),
+            ("startup-active", startup_active),
+            ("assign-publisher", assign_publisher),
+        ):
+            with self.subTest(case=label):
+                with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+                    compile_concept_microcode_bram_image(parse_module(prog), profile="KPOL-CME-2")
+
+        with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
+            compile_concept_microcode_bram_image(
+                parse_module(self.MULTICONCEPT_SOURCE),
+                cascade_map={"Ingest": "StageMid"},
+                profile="KPOL-CME-2",
+            )
+
+    def test_cme2_negative_controls_collision_range_guards_actions_and_proof(self):
+        def make_single(guard: str, action: str, proof_body: str = "step E(p = 10); expect S == 15;", hazard: str = "") -> str:
+            haz_block = f"Hazards {{ {hazard} }}" if hazard else ""
+            return f"""
+            Problem Single {{
+                Invariants {{ Inv: S >= 0; }}
+                {haz_block}
+            }}
+            Solution Single {{
+                state S: Int32 = 10;
+                event E(p: Int32);
+                rule R on E when {guard} {{ set S := {action}; }}
+            }}
+            Proof Single {{
+                scenario Check {{ {proof_body} }}
+            }}
+            """
+
+        # Колізія operand_val: одночасний літерал у guard та ADD/SUB != 1
+        for guard, action in (
+            ("p >= 5", "S + 5"),
+            ("p == 10", "S - 2"),
+            ("p >= 0 and p <= 20", "S + 3"),
+        ):
+            with self.subTest(collision=(guard, action)):
+                with self.assertRaisesRegex(KpolError, "CME2-OPERAND-COLLISION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(guard, action)),
+                        profile="KPOL-CME-2",
+                    )
+
+        # Межі RANGE поза int16 (зокрема строгі > 32767 та < -32768) і перевернутий інтервал
+        for bad_range in (
+            "p >= -32769 and p <= 10",
+            "p >= -10 and p <= 32768",
+            "p > 32767 and p <= 32767",
+            "p >= -32768 and p < -32768",
+            "p >= 20 and p <= 10",
+        ):
+            with self.subTest(bad_range=bad_range):
+                with self.assertRaisesRegex(KpolError, "CME2-RANGE"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_range, "S + 1", "step E(p = 0); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+
+        # Непідтримувані оператори guard (зокрема 'or', '•', власний стан S у guard)
+        for bad_guard in (
+            "p == 1 or p == 2",
+            "• (p == 1)",
+            "S >= 5",
+            "p > S",
+        ):
+            with self.subTest(bad_guard=bad_guard):
+                with self.assertRaisesRegex(KpolError, "CME2-GUARD"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single(bad_guard, "S + 1", "step E(p = 1); expect S == 11;")),
+                        profile="KPOL-CME-2",
+                    )
+
+        # Непідтримувані дії (константний ASSIGN — це CR #185, нульовий або від'ємний крок)
+        for bad_action in ("42", "S + 0", "S - 0", "S + -2"):
+            with self.subTest(bad_action=bad_action):
+                with self.assertRaisesRegex(KpolError, "CME2-ACTION"):
+                    compile_concept_microcode_bram_image(
+                        parse_module(make_single("true", bad_action, "step E(p = 1); expect S == 10;")),
+                        profile="KPOL-CME-2",
+                    )
+
+        # Hazard із Bool-ціллю (on reject) не записується назад у BRAM в CME-RAW-1 -> CME2-HAZARD
+        hazard_prog = """
+        Problem WithHazard {
+            Invariants { Inv: S >= 0; }
+            Hazards { H on E to Flag: p > 50; }
+        }
+        Solution WithHazard {
+            state S: Int32 = 10;
+            state Flag: Bool = false;
+            event E(p: Int32);
+            rule R on E when true { set S := S + 1; }
+            rule RH on reject E when p > 50 covers H { set Flag := true; }
+        }
+        Proof WithHazard { scenario Check { step E(p = 1); expect S == 11; } }
+        """
+        with self.assertRaisesRegex(KpolError, "CME2-HAZARD"):
+            compile_concept_microcode_bram_image(parse_module(hazard_prog), profile="KPOL-CME-2")
+
+        # Відсутній, порожній або хибний Proof відхиляється з CME2-PROOF
+        no_proof = make_single("true", "S + 5").split("Proof Single")[0]
+        wrong_proof = make_single("true", "S + 5", "step E(p = 10); expect S == 999;")
+        for bad_proof_prog in (no_proof, wrong_proof):
+            with self.assertRaisesRegex(KpolError, "CME2-PROOF"):
+                compile_concept_microcode_bram_image(
+                    parse_module(bad_proof_prog),
+                    profile="KPOL-CME-2",
+                )
+
+        # Початковий стан 'Unknown' -> CME2-SHAPE
+        unknown_init = """
+        Problem UnknownInit { Invariants { Inv: S >= 0; } }
+        Solution UnknownInit {
+            state S: Int32 = Unknown;
+            event E(p: Int32);
+            rule R on E when true { set S := S + 1; }
+        }
+        Proof UnknownInit { scenario Check { expect S == 0; } }
+        """
+        with self.assertRaisesRegex(KpolError, "CME2-SHAPE"):
+            compile_concept_microcode_bram_image(parse_module(unknown_init), profile="KPOL-CME-2")
+
+        # Негативний Init < 0, відсутній інваріант та секція Goals -> CME2-INVARIANT
+        neg_init = make_single("true", "S + 1", "step E(p = 1); expect S == 0;").replace("S: Int32 = 10;", "S: Int32 = -5;")
+        missing_inv = make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("Inv: S >= 0;", "")
+        with_goals = make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace(
+            "Invariants { Inv: S >= 0; }",
+            "Invariants { Inv: S >= 0; } Goals { G: S >= 0; }",
+        )
+        for label, bad_inv_prog in (("neg-init", neg_init), ("missing-inv", missing_inv), ("goals", with_goals)):
+            with self.subTest(invariant_case=label):
+                with self.assertRaisesRegex(KpolError, "CME2-INVARIANT"):
+                    compile_concept_microcode_bram_image(parse_module(bad_inv_prog), profile="KPOL-CME-2")
+
+        # Несумісний тип стану або параметра (Bool замість Int32) -> CME2-TYPE
+        bad_type = """
+        Problem BadType { Invariants { Inv: S >= 0; } }
+        Solution BadType {
+            state S: Int32 = 0;
+            event E(p: Bool);
+            rule R on E when true { set S := S + 1; }
+        }
+        Proof BadType { scenario Check { step E(p = true); expect S == 1; } }
+        """
+        with self.assertRaisesRegex(KpolError, "CME2-TYPE"):
+            compile_concept_microcode_bram_image(parse_module(bad_type), profile="KPOL-CME-2")
+
+        # Порушення ACL (запис у стан S без CAP_WRITE) -> CME2-ACL
+        acl_prog = make_single("true", "S + 1", "step E(p = 1); expect S == 11;")
+        with self.assertRaisesRegex(KpolError, "CME2-ACL"):
+            compile_concept_microcode_bram_image(
+                parse_module(acl_prog),
+                acl_table={"S": 0},
+                profile="KPOL-CME-2",
+            )
+
+    def test_cme2_guard_action_matrix_and_chain3_rtl_equivalence(self):
+        # Табличний тест 'охоронець x дія' для покриття ==, !=, <, >, >=, <= та INC/DEC/ASSIGN
+        cases = [
+            ("p == 5", "S + 1", [4, 5, 6], 11),
+            ("p != 5", "S - 1", [5, 4, 6], 8),
+            ("p < 5", "S + 1", [5, 4, -1], 12),
+            ("p > 5", "S - 1", [5, 6, 100], 8),
+            ("p >= 5", "S - 1", [4, 5, 10], 8),
+            ("p <= 5", "p", [6, 5, 3], 3),
+        ]
+        for guard, action, inputs, expected_final in cases:
+            with self.subTest(guard=guard, action=action):
+                prog = f"""
+                Problem Matrix {{ Invariants {{ Inv: S >= 0; }} }}
+                Solution Matrix {{
+                    state S: Int32 = 10;
+                    event E(p: Int32);
+                    rule R on E when {guard} {{ set S := {action}; }}
+                }}
+                Proof Matrix {{
+                    scenario Check {{
+                        step E(p = {inputs[0]});
+                        step E(p = {inputs[1]});
+                        step E(p = {inputs[2]});
+                        expect S == {expected_final};
+                    }}
+                }}
+                """
+                module = parse_module(prog)
+                image = compile_concept_microcode_bram_image(module, profile="KPOL-CME-2")
+                interp = Interpreter(module)
+                for val in inputs:
+                    interp.run([EventInput("E", {"p": val})])
+                self.assertEqual(interp.state["S"], expected_final)
+                slots = self._simulate_axi_pipeline(image, [(0, val, "hw") for val in inputs])
+                self.assertEqual(slots[0][0], expected_final)
+
+        # Ланцюг каскаду довжини 3 із ціллю CID 0: S3 -> S2 -> S1 -> S0
+        chain3_prog = """
+        Problem Chain3 {
+            Invariants { I0: S0 >= 0; I1: S1 >= 0; I2: S2 >= 0; I3: S3 >= 0; }
+        }
+        Solution Chain3 {
+            state S0: Int32 = 0;
+            state S1: Int32 = 0;
+            state S2: Int32 = 1;
+            state S3: Int32 = 0;
+            event Drive(v: Int32);
+            rule R0 on change(S1) when S1 >= 1 { set S0 := S1; }
+            rule R1 on change(S2) when S2 >= 2 { set S1 := S1 + 1; }
+            rule R2 on change(S3) when S3 >= 3 { set S2 := S2 + 1; }
+            rule R3 on Drive when true { set S3 := S3 + 3; }
+        }
+        Proof Chain3 {
+            scenario Fire3 {
+                step Drive(v = 0);
+                expect S3 == 3;
+                expect S2 == 2;
+                expect S1 == 1;
+                expect S0 == 1;
+            }
+        }
+        """
+        m3 = parse_module(chain3_prog)
+        img3 = compile_concept_microcode_bram_image(m3, profile="KPOL-CME-2")
+        slots3 = self._simulate_axi_pipeline(img3, [(3, 0, "hw")])
+        self.assertEqual([slots3[i][0] for i in range(4)], [1, 1, 2, 3])
+
+    def test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2(self):
+        cli = REPO_ROOT / "hw" / "scripts" / "compile_kpol_bram_image.py"
+        cme1_valid = """
+        Problem SingleCme1 { Invariants { Inv: S >= 0; } }
+        Solution SingleCme1 {
+            state S: Int32 = 1;
+            event E(p: Int32);
+            rule R on E when p > 0 { set S := S + 1; }
+        }
+        Proof SingleCme1 { scenario Check { step E(p = 5); expect S == 2; } }
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src = Path(tmpdir) / "prog.kpol"
+            out = Path(tmpdir) / "out.bin"
+            src.write_text(self.MULTICONCEPT_SOURCE, encoding="utf-8")
+
+            # Байт-ідентичність CLI за замовчуванням (без --profile vs --profile KPOL-CME-1)
+            cme1_src = Path(tmpdir) / "cme1.kpol"
+            cme1_def = Path(tmpdir) / "cme1_def.bin"
+            cme1_exp = Path(tmpdir) / "cme1_exp.bin"
+            cme1_src.write_text(cme1_valid, encoding="utf-8")
+            r_def = subprocess.run([sys.executable, str(cli), str(cme1_src), str(cme1_def)], capture_output=True, text=True)
+            r_exp = subprocess.run([sys.executable, str(cli), "--profile", "KPOL-CME-1", str(cme1_src), str(cme1_exp)], capture_output=True, text=True)
+            self.assertEqual(r_def.returncode, 0, r_def.stderr)
+            self.assertEqual(r_exp.returncode, 0, r_exp.stderr)
+            self.assertEqual(cme1_def.read_bytes(), cme1_exp.read_bytes())
+
+            # Спроба перезапису існуючого вихідного файла -> CME2-IO
+            io_exist = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(cme1_src), str(cme1_def)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(io_exist.returncode, 0)
+            self.assertIn("CME2-IO", io_exist.stderr)
+
+            # Відсутній вхідний файл -> CME2-IO
+            io_missing = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(Path(tmpdir) / "missing.kpol"), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(io_missing.returncode, 0)
+            self.assertIn("CME2-IO", io_missing.stderr)
+
+            # Синтаксична помилка -> CME2-SYNTAX
+            syn_src = Path(tmpdir) / "bad_syntax.kpol"
+            syn_src.write_text("Problem Broken { !!! }", encoding="utf-8")
+            syn_res = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(syn_src), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(syn_res.returncode, 0)
+            self.assertIn("CME2-SYNTAX", syn_res.stderr)
+
+            # За замовчуванням CLI залишається в режимі KPOL-CME-1 і відхиляє багатоконцептний модуль
+            default_res = subprocess.run(
+                [sys.executable, str(cli), str(src), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(default_res.returncode, 0)
+            self.assertIn("B3-SHAPE", default_res.stderr)
+            self.assertFalse(out.exists())
+
+            # У режимі --profile KPOL-CME-2 хибний Proof блокує запис вихідного файла
+            bad_src = Path(tmpdir) / "bad.kpol"
+            bad_src.write_text(
+                self.MULTICONCEPT_SOURCE.replace("expect AlertDigest == 15;", "expect AlertDigest == 99;"),
+                encoding="utf-8",
+            )
+            bad_res = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(bad_src), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(bad_res.returncode, 0)
+            self.assertIn("CME2-PROOF", bad_res.stderr)
+            self.assertFalse(out.exists())
 
 
 if __name__ == "__main__":

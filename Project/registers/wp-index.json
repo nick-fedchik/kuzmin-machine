@@ -1,5 +1,5 @@
 {
-  "version": "0.11.0",
+  "version": "0.12.0",
   "date": "2026-11-14",
   "entries": [
     {
@@ -454,6 +454,12 @@
     },
     {
       "path": "Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md",
       "direction": "Engineering",
       "wp_type": "Specification",
       "immutable_input": false
@@ -1276,6 +1282,48 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/cme-semantics-167/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/cme2-tests-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/final-verification-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/final-verification-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/final-verification-03.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/negative-control-pre-impl-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
       "immutable_input": false

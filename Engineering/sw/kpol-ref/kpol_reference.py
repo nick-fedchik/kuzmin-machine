@@ -241,6 +241,7 @@ class Module:
     solution_hash: str | None = None
     proof_hash: str | None = None
     proof_present: bool = False
+    phase_aliases_used: bool = False
 
 
 @dataclass
@@ -380,6 +381,7 @@ class Parser:
             tuple(rules),
             tuple(proofs),
             proof_present=proof_present,
+            phase_aliases_used=any(tok.kind == "ALIAS_PHASE" for tok in self.tokens),
         )
 
     def assert_decl(self) -> AssertPropertyDecl:
@@ -1580,6 +1582,367 @@ def _compile_cme1_profile(
     return descriptor.pack() + bytes(63 * 16)
 
 
+def _compile_cme2_profile(
+    module: Module,
+    cascade_map: dict[str | int, str | int] | None,
+    acl_table: dict[str, int] | None,
+) -> bytes:
+    try:
+        check_module(module)
+    except KpolError as error:
+        raise KpolError(f"CME2-TYPE: module {module.name}: {error}") from error
+
+    def fail(code: str, message: str) -> None:
+        raise KpolError(f"{code}: module {module.name}: {message}")
+
+    def integer_raw(expr: Expr, code: str, location: str) -> int:
+        if isinstance(expr, Literal) and type(expr.value) is int:
+            return expr.value
+        if (
+            isinstance(expr, Unary) and expr.operator == "-"
+            and isinstance(expr.operand, Literal) and type(expr.operand.value) is int
+        ):
+            return -expr.operand.value
+        fail(code, f"{location}: expected an integer literal")
+        raise AssertionError("unreachable")
+
+    def integer(
+        expr: Expr,
+        code: str,
+        location: str,
+        minimum: int = -2147483648,
+        maximum: int = 2147483647,
+    ) -> int:
+        value = integer_raw(expr, code, location)
+        if not minimum <= value <= maximum:
+            fail(code, f"{location}: literal {value} outside [{minimum}, {maximum}]")
+        return value
+
+    if cascade_map is not None:
+        fail("CME2-CASCADE", "cascade_map is outside KPOL-CME-2; declare cascades via 'on change(State)'")
+    if module.phase_aliases_used:
+        fail("CME2-GUARD", "phase/dot alias ('•' or '(*)') is outside KPOL-CME-2 (#186); use 'not'")
+    for req in module.requirements:
+        if req.kind == "Hazard":
+            fail(
+                "CME2-HAZARD",
+                f"hazard {req.name}: KPOL Hazards latch a Bool target state via 'on reject', "
+                "which CME-RAW-1 does not write back to BRAM; express input bounds in rule 'when' guards",
+            )
+        if req.kind == "Assumption":
+            fail("CME2-GUARD", f"assumption {req.name}: declare preconditions in rule 'when' guards")
+        if req.kind != "Invariant":
+            fail("CME2-INVARIANT", f"requirement {req.name} ({req.kind}) is outside KPOL-CME-2")
+    if not 1 <= len(module.states) <= 64:
+        fail("CME2-SHAPE", f"expected 1..64 states, got {len(module.states)}")
+
+    state_index: dict[str, int] = {}
+    initial_env: dict[str, int] = {}
+    for cid, state in enumerate(module.states):
+        if state.type_ref != TypeRef("Int32"):
+            fail("CME2-TYPE", f"state {state.name}: expected Int32")
+        init_val = integer(state.initial, "CME2-SHAPE", f"state {state.name} initial")
+        if init_val < 0:
+            fail("CME2-INVARIANT", f"state {state.name}: initial value {init_val} violates invariant {state.name} >= 0")
+        state_index[state.name] = cid
+        initial_env[state.name] = init_val
+
+    event_param_map: dict[str, str] = {}
+    for event in module.events:
+        if len(event.parameters) != 1:
+            fail("CME2-SHAPE", f"event {event.name}: expected exactly one Int32 parameter")
+        param_name, param_type = event.parameters[0]
+        if param_type != TypeRef("Int32"):
+            fail("CME2-TYPE", f"event {event.name}: parameter {param_name} must be Int32")
+        if param_name in state_index:
+            fail("CME2-SHAPE", f"event {event.name}: parameter {param_name} shadows a state name")
+        event_param_map[event.name] = param_name
+
+    rules_by_target: dict[str, RuleDecl] = {}
+    used_events: set[str] = set()
+    for rule in module.rules:
+        if rule.reject or rule.covers is not None:
+            fail("CME2-SHAPE", f"rule {rule.name}: 'on reject' and 'covers' are outside KPOL-CME-2")
+        if len(rule.actions) != 1 or not isinstance(rule.actions[0], SetAction):
+            fail("CME2-SHAPE", f"rule {rule.name}: expected exactly one set action")
+        target_name = rule.actions[0].name
+        if target_name not in state_index:
+            fail("CME2-SHAPE", f"rule {rule.name}: unknown target state {target_name}")
+        if target_name in rules_by_target:
+            fail("CME2-SHAPE", f"state {target_name}: expected exactly one rule per state")
+        rules_by_target[target_name] = rule
+
+        if rule.event == "change":
+            if not rule.watch or len(rule.watch) != 1:
+                fail("CME2-SHAPE", f"rule {rule.name}: expected single-state on change(State)")
+            if rule.watch[0] not in state_index:
+                fail("CME2-SHAPE", f"rule {rule.name}: unknown watched state {rule.watch[0]}")
+        else:
+            if rule.watch:
+                fail("CME2-SHAPE", f"rule {rule.name}: unexpected watch list on external event")
+            if rule.event not in event_param_map:
+                fail("CME2-SHAPE", f"rule {rule.name}: unknown event {rule.event}")
+            if rule.event in used_events:
+                fail("CME2-SHAPE", f"event {rule.event}: bound to multiple rules; CME-RAW-1 dispatches one CID per event")
+            used_events.add(rule.event)
+
+    if len(rules_by_target) != len(module.states):
+        missing = [st.name for st in module.states if st.name not in rules_by_target]
+        fail("CME2-SHAPE", f"states without rules: {', '.join(missing)}")
+    if used_events != set(event_param_map):
+        unused = sorted(set(event_param_map) - used_events)
+        fail("CME2-SHAPE", f"unused event declarations: {', '.join(unused)}")
+
+    invariant_states: set[str] = set()
+    for req in module.requirements:
+        if req.event is not None or req.target is not None:
+            fail("CME2-INVARIANT", f"invariant {req.name}: unexpected event or target")
+        expr = req.expression
+        matched_state: str | None = None
+        if (
+            isinstance(expr, Binary) and expr.operator == ">="
+            and isinstance(expr.left, Name) and expr.left.value in state_index
+            and isinstance(expr.right, Literal) and type(expr.right.value) is int and expr.right.value == 0
+        ):
+            matched_state = expr.left.value
+        elif (
+            isinstance(expr, Binary) and expr.operator == "<="
+            and isinstance(expr.left, Literal) and type(expr.left.value) is int and expr.left.value == 0
+            and isinstance(expr.right, Name) and expr.right.value in state_index
+        ):
+            matched_state = expr.right.value
+        if matched_state is None or matched_state in invariant_states:
+            fail("CME2-INVARIANT", f"invariant {req.name}: expected unique 'State >= 0' per declared state")
+        invariant_states.add(matched_state)
+
+    if invariant_states != set(state_index):
+        missing_inv = [st.name for st in module.states if st.name not in invariant_states]
+        fail("CME2-INVARIANT", f"missing 'State >= 0' invariant for: {', '.join(missing_inv)}")
+
+    subscriber_of: dict[str, str] = {}
+    for dst_name, rule in rules_by_target.items():
+        if rule.event == "change":
+            src_name = rule.watch[0]
+            if src_name == dst_name:
+                fail("CME2-CASCADE", f"rule {rule.name}: self-subscription on {src_name} is forbidden")
+            if src_name in subscriber_of:
+                fail(
+                    "CME2-CASCADE",
+                    f"state {src_name}: cascade fan-out > 1 ({subscriber_of[src_name]}, {dst_name}) "
+                    "exceeds single-slot cascade_pending in CME-RAW-1",
+                )
+            subscriber_of[src_name] = dst_name
+
+    visit_state: dict[str, int] = {st.name: 0 for st in module.states}
+    for st in module.states:
+        if visit_state[st.name] != 0:
+            continue
+        cur: str | None = st.name
+        trail: list[str] = []
+        while cur is not None and visit_state[cur] == 0:
+            visit_state[cur] = 1
+            trail.append(cur)
+            cur = subscriber_of.get(cur)
+        if cur is not None and visit_state[cur] == 1:
+            fail("CME2-CASCADE", f"cyclic cascade detected involving {cur}")
+        for node in trail:
+            visit_state[node] = 2
+
+    flip_cmp = {"<": ">", ">": "<", "<=": ">=", ">=": "<=", "==": "==", "!=": "!="}
+
+    def canonical_cmp(
+        node: Expr,
+        input_var: str,
+        rule_name: str,
+        lit_code: str = "CME2-GUARD",
+        allow_wide_int: bool = False,
+    ) -> tuple[str, int]:
+        if not isinstance(node, Binary) or node.operator not in flip_cmp:
+            fail("CME2-GUARD", f"rule {rule_name}: expected comparison on {input_var}")
+        if node.left == Name(input_var):
+            op = node.operator
+            rhs_expr = node.right
+        elif node.right == Name(input_var):
+            op = flip_cmp[node.operator]
+            rhs_expr = node.left
+        else:
+            fail("CME2-GUARD", f"rule {rule_name}: guard must compare input {input_var} with an integer literal")
+            raise AssertionError("unreachable")
+        val = (
+            integer_raw(rhs_expr, lit_code, f"rule {rule_name} guard")
+            if allow_wide_int
+            else integer(rhs_expr, lit_code, f"rule {rule_name} guard")
+        )
+        return op, val
+
+    descriptors_bytes: list[bytes] = []
+    for cid, state in enumerate(module.states):
+        rule = rules_by_target[state.name]
+        input_var = rule.watch[0] if rule.event == "change" else event_param_map[rule.event]
+
+        g_expr = rule.guard
+        invert = False
+        while isinstance(g_expr, Unary):
+            if g_expr.operator in {"not", "!"}:
+                invert = not invert
+                g_expr = g_expr.operand
+            elif g_expr.operator == "•":
+                fail("CME2-GUARD", f"rule {rule.name}: operator '•' is outside KPOL-CME-2 (#186); use 'not'")
+            else:
+                break
+
+        guard_uses_operand = False
+        guard_operand_u32 = 0
+        if isinstance(g_expr, Literal) and type(g_expr.value) is bool:
+            pred_opcode = CME_PRED_NOP
+            if g_expr.value is False:
+                invert = not invert
+        elif isinstance(g_expr, Binary) and g_expr.operator == "and":
+            op_l, val_l = canonical_cmp(g_expr.left, input_var, rule.name, allow_wide_int=True)
+            op_r, val_r = canonical_cmp(g_expr.right, input_var, rule.name, allow_wide_int=True)
+            lo_val: int | None = None
+            hi_val: int | None = None
+            for op_c, v_c in ((op_l, val_l), (op_r, val_r)):
+                if op_c == ">=":
+                    lo_val = v_c if lo_val is None else fail("CME2-RANGE", f"rule {rule.name}: duplicate lower bound")  # type: ignore[assignment]
+                elif op_c == ">":
+                    lo_val = (v_c + 1) if lo_val is None else fail("CME2-RANGE", f"rule {rule.name}: duplicate lower bound")  # type: ignore[assignment]
+                elif op_c == "<=":
+                    hi_val = v_c if hi_val is None else fail("CME2-RANGE", f"rule {rule.name}: duplicate upper bound")  # type: ignore[assignment]
+                elif op_c == "<":
+                    hi_val = (v_c - 1) if hi_val is None else fail("CME2-RANGE", f"rule {rule.name}: duplicate upper bound")  # type: ignore[assignment]
+                else:
+                    fail("CME2-RANGE", f"rule {rule.name}: range requires lower (>, >=) and upper (<, <=) bounds")
+            if lo_val is None or hi_val is None:
+                fail("CME2-RANGE", f"rule {rule.name}: incomplete two-sided range")
+                raise AssertionError("unreachable")
+            if not (-32768 <= lo_val <= 32767 and -32768 <= hi_val <= 32767 and lo_val <= hi_val):
+                fail(
+                    "CME2-RANGE",
+                    f"rule {rule.name}: range [{lo_val}, {hi_val}] outside int16 [-32768, 32767] or inverted",
+                )
+            pred_opcode = CME_PRED_RANGE
+            guard_uses_operand = True
+            guard_operand_u32 = ((hi_val & 0xFFFF) << 16) | (lo_val & 0xFFFF)
+        elif isinstance(g_expr, Binary) and g_expr.operator in flip_cmp:
+            op_c, val_c = canonical_cmp(g_expr, input_var, rule.name)
+            guard_uses_operand = True
+            guard_operand_u32 = val_c & 0xFFFFFFFF
+            if op_c == "==":
+                pred_opcode = CME_PRED_EQ
+            elif op_c == "!=":
+                pred_opcode = CME_PRED_NEQ
+            elif op_c == "<":
+                pred_opcode = CME_PRED_LT
+            elif op_c == ">":
+                pred_opcode = CME_PRED_GT
+            elif op_c == ">=":
+                pred_opcode = CME_PRED_LT
+                invert = not invert
+            elif op_c == "<=":
+                pred_opcode = CME_PRED_GT
+                invert = not invert
+            else:
+                fail("CME2-GUARD", f"rule {rule.name}: unsupported comparison {op_c}")
+                raise AssertionError("unreachable")
+        else:
+            fail("CME2-GUARD", f"rule {rule.name}: unsupported guard expression in KPOL-CME-2")
+            raise AssertionError("unreachable")
+
+        if rule.event == "change":
+            init_guard = _eval(rule.guard, initial_env)
+            if init_guard is not False:
+                fail(
+                    "CME2-CASCADE",
+                    f"rule {rule.name}: on change({input_var}) guard is active on initial state "
+                    f"({initial_env[input_var]}); CME-RAW-1 does not trigger cascades at load time",
+                )
+
+        act_expr = rule.actions[0].expression
+        action_uses_operand = False
+        action_operand_u32 = 0
+        if act_expr == Name(input_var):
+            action_opcode = CME_ACT_ASSIGN
+        elif isinstance(act_expr, Binary) and act_expr.operator in {"+", "-"}:
+            if act_expr.left == Name(state.name):
+                step_expr = act_expr.right
+            elif act_expr.operator == "+" and act_expr.right == Name(state.name):
+                step_expr = act_expr.left
+            else:
+                fail("CME2-ACTION", f"rule {rule.name}: arithmetic action must update {state.name}")
+                raise AssertionError("unreachable")
+            step_val = integer(step_expr, "CME2-ACTION", f"rule {rule.name} action", minimum=1)
+            if step_val == 1:
+                action_opcode = CME_ACT_INC if act_expr.operator == "+" else CME_ACT_DEC
+            else:
+                action_opcode = CME_ACT_ADD if act_expr.operator == "+" else CME_ACT_SUB
+                action_uses_operand = True
+                action_operand_u32 = step_val & 0xFFFFFFFF
+        else:
+            fail(
+                "CME2-ACTION",
+                f"rule {rule.name}: expected '{input_var}' or '{state.name} +/- <1..2147483647>' "
+                "(constant literal assignment requires CME-RAW-2, #185)",
+            )
+            raise AssertionError("unreachable")
+
+        if state.name in subscriber_of and action_opcode not in {
+            CME_ACT_INC, CME_ACT_DEC, CME_ACT_ADD, CME_ACT_SUB,
+        }:
+            fail(
+                "CME2-CASCADE",
+                f"state {state.name}: cascade publisher must use a non-zero step action (+/- k) "
+                "so CME-RAW-1 commit coincides with KPOL change()",
+            )
+
+        if guard_uses_operand and action_uses_operand:
+            fail(
+                "CME2-OPERAND-COLLISION",
+                f"rule {rule.name}: CME-RAW-1 shares one 32-bit operand_val between guard literal "
+                "and ADD/SUB != 1 (#185)",
+            )
+
+        operand_u32 = guard_operand_u32 if guard_uses_operand else action_operand_u32
+        guard_flags = CME_GUARD_ASSUMPTION_EN | CME_GUARD_INVARIANT_EN
+        if invert:
+            guard_flags |= CME_GUARD_INVERT_ASSUMPTION
+        subscriber_cid = 0
+        if state.name in subscriber_of:
+            subscriber_cid = state_index[subscriber_of[state.name]]
+            guard_flags |= CME_GUARD_SUBSCRIBER_EN
+
+        desc = ConceptMicroDescriptor(
+            cid=cid,
+            name=state.name,
+            current_state=initial_env[state.name],
+            operand_val=operand_u32,
+            pred_opcode=pred_opcode,
+            guard_flags=guard_flags,
+            hazard_limit=0,
+            action_opcode=action_opcode,
+            subscriber_cid=subscriber_cid,
+        )
+        descriptors_bytes.append(desc.pack())
+
+    if not module.proof_present or not module.proofs:
+        fail("CME2-PROOF", "KPOL-CME-2 requires a non-empty Proof block")
+    try:
+        report = verify_module(module)
+    except KpolError as error:
+        fail("CME2-PROOF", f"reference execution failed: {error}")
+        raise AssertionError("unreachable")
+    if not report.passed or not report.total_checks or report.passed_checks != report.total_checks or report.failures:
+        reasons = "; ".join(f"{f.scenario_or_assert}: {f.message}" for f in report.failures)
+        fail("CME2-PROOF", f"Proof failed: {reasons}")
+
+    violations = check_module_security_acl(module, acl_table)
+    if violations:
+        fail("CME2-ACL", "; ".join(violations))
+
+    padding = bytes((64 - len(module.states)) * 16)
+    return b"".join(descriptors_bytes) + padding
+
+
 def compile_concept_microcode_bram_image(
     module: Module,
     cascade_map: dict[str | int, str | int] | None = None,
@@ -1589,9 +1952,11 @@ def compile_concept_microcode_bram_image(
 ) -> bytes:
     """Compile a named CME profile, or use the experimental legacy lowering when unset."""
     if profile is not None:
-        if profile != "KPOL-CME-1":
-            raise KpolError(f"B3-PROFILE: unsupported profile {profile!r}")
-        return _compile_cme1_profile(module, cascade_map, acl_table)
+        if profile == "KPOL-CME-1":
+            return _compile_cme1_profile(module, cascade_map, acl_table)
+        if profile == "KPOL-CME-2":
+            return _compile_cme2_profile(module, cascade_map, acl_table)
+        raise KpolError(f"B3-PROFILE: unsupported profile {profile!r}")
     _reject_unsupported_u32_codegen(module)
     violations = check_module_security_acl(module, acl_table)
     if violations:
