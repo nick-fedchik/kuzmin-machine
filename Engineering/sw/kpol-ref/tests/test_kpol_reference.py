@@ -1191,6 +1191,79 @@ endmodule
         self.assertFalse(ok_replay)
         self.assertIn("replay attack detected", msg_replay.lower())
 
+    def test_issue164_pre_auth_nonce_poisoning_blocked(self):
+        source = """
+        Problem NoncePoisonTest {}
+        Solution NoncePoisonTest {
+            state Counter: Int32 = 5;
+        }
+        Proof NoncePoisonTest {}
+        """
+        module = parse_module(source)
+        valid_key = b"0123456789abcdef0123456789abcdef"
+        legit_img = compile_signed_bram_image(module, valid_key, nonce=2026)
+
+        # Attacker intercepts legit_img and flips 1 bit in HMAC tag before submitting
+        forged_img = bytearray(legit_img)
+        forged_img[32] ^= 0x01
+
+        seen_nonces = set()
+        ok_forged, msg_forged = verify_bram_signature(bytes(forged_img), valid_key, seen_nonces=seen_nonces)
+        self.assertFalse(ok_forged)
+        self.assertIn("tampering detected", msg_forged.lower())
+        self.assertEqual(len(seen_nonces), 0, "Unauthenticated packet must not poison seen_nonces")
+
+        # Legitimate image arriving afterwards must still pass
+        ok_legit, msg_legit = verify_bram_signature(legit_img, valid_key, seen_nonces=seen_nonces)
+        self.assertTrue(ok_legit, msg_legit)
+        self.assertEqual(len(seen_nonces), 1)
+
+    def test_issue164_default_nonce_is_random_across_updates(self):
+        source_v1 = """
+        Problem OtaModule {}
+        Solution OtaModule {
+            state Threshold: Int32 = 10;
+        }
+        Proof OtaModule {}
+        """
+        source_v2 = """
+        Problem OtaModule {}
+        Solution OtaModule {
+            state Threshold: Int32 = 25;
+        }
+        Proof OtaModule {}
+        """
+        valid_key = b"0123456789abcdef0123456789abcdef"
+        img_v1 = compile_signed_bram_image(parse_module(source_v1), valid_key, key_id=1)
+        img_v2 = compile_signed_bram_image(parse_module(source_v2), valid_key, key_id=1)
+
+        self.assertNotEqual(img_v1[16:32], img_v2[16:32], "Default nonces must be fresh across updates")
+
+        seen_nonces = set()
+        ok1, msg1 = verify_bram_signature(img_v1, valid_key, seen_nonces=seen_nonces)
+        self.assertTrue(ok1, msg1)
+        ok2, msg2 = verify_bram_signature(img_v2, valid_key, seen_nonces=seen_nonces)
+        self.assertTrue(ok2, msg2)
+
+    def test_issue164_module_payload_is_cme_raw_1(self):
+        source = """
+        Problem CmeSigned {}
+        Solution CmeSigned {
+            state Valve: Int32 = 77;
+        }
+        Proof CmeSigned {}
+        """
+        module = parse_module(source)
+        valid_key = b"0123456789abcdef0123456789abcdef"
+        signed_img = compile_signed_bram_image(module, valid_key, nonce=42)
+        expected_cme = compile_concept_microcode_bram_image(module)
+        self.assertEqual(signed_img[64:], expected_cme)
+        descriptors = disassemble_concept_microcode(signed_img[64:])
+        self.assertEqual(descriptors[0].current_state, 77)
+        # Explicit legacy format remains opt-in
+        legacy_img = compile_signed_bram_image(module, valid_key, nonce=42, payload_format="legacy")
+        self.assertEqual(legacy_img[64:], compile_bram_image(module))
+
     def test_v06_security_acl_blocks_unauthorized_pin_compilation(self):
         source = """
         Problem PinSecurity {}

@@ -1,7 +1,7 @@
 # Інженерні перевірки
 
-* **Версія:** 0.5.0
-* **Дата:** 2026-11-13
+* **Версія:** 0.5.1
+* **Дата:** 2026-11-14
 * **Тип WP:** Guide
 
 ## Призначення та навігація
@@ -18,6 +18,7 @@
 | [KPOL-CME-1 / #150](kpol-cme/profile-150/report.md) | Явний профільний compiler, негативний контроль і CLI/RTL-симуляційні регресії; не HIL. |
 | [KPOL-CME-1 / B3-REQ-06 / #153](kpol-cme/behavior-153/report.md) | Стан після кожної події, signed guards, Int32 межі, W1–W3 і нульовий payload через direct/AXI; RTL-симуляція, не HIL. |
 | [B5 v2.1 / черга подій / #151](kpol-cme/queue-retention-151/report.md) | Очікування без втрат для керованих джерел (`valid && ready`), резервування слота каскадом і `sw_trigger`, `cascade_pending_*_q`, глибини `4..32`, 6 мутантів і синтез XC7; RTL-симуляція, не HIL. |
+| [Secure Boot / #164](kpol-cme/secure-boot-164/report.md) | Усунення pre-auth nonce poisoning, свіжі 16-байтні `nonce` за замовчуванням і `CME-RAW-1` payload у `compile_signed_bram_image` / `verify_bram_signature`; програмна перевірка, не апаратний Secure Boot. |
 
 ## Використання
 
@@ -59,6 +60,7 @@ python3 Engineering/validation/experiments/AV-11/scripts/analyze_av11.py --outpu
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.5.1 | 2026-11-14 | Додано програмну перевірку виправлень контейнера підпису Secure Boot (#164). |
 | 0.5.0 | 2026-11-13 | Додано пакет верифікації черги подій та арбітражу каскаду B5 v2.1 (#151). |
 | 0.4.0 | 2026-11-13 | Додано поведінкову матрицю профілю #153 і межі її висновків. |
 | 0.3.1 | 2026-11-12 | Дослідницький HIL-пакет EXP-GPU-01 винесено до Research/studies/fpga-gpu-symbiosis/. |
