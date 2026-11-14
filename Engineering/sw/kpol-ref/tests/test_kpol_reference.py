@@ -2921,15 +2921,17 @@ class KpolCme2ProfileTests(unittest.TestCase):
                 )
 
         # Непідтримувані секції та ключове слово owner відхиляються parse_module (у CLI -> CME2-SYNTAX)
-        for label, bad_syntax_prog in (
-            ("import", "import foo;\n" + make_single("true", "S + 1", "step E(p = 1); expect S == 11;")),
-            ("type", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S:", "type T = Int32;\nstate S:")),
-            ("unit", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S:", "unit mV;\nstate S:")),
-            ("channel", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S:", "channel c: Int32;\nstate S:")),
-            ("owner", make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("state S: Int32 = 10;", "state S: Int32 = 10 owner x;")),
+        ok_body = "step E(p = 1); expect S == 11;"
+        for label, bad_syntax_prog, message in (
+            ("import", "import foo;\n" + make_single("true", "S + 1", ok_body), r"1:1: expected 'Problem', got 'import'"),
+            ("type", make_single("true", "S + 1", ok_body).replace("state S:", "type T = Int32;\nstate S:"), r"expected event, state, or rule declaration"),
+            ("unit", make_single("true", "S + 1", ok_body).replace("state S:", "unit mV;\nstate S:"), r"expected event, state, or rule declaration"),
+            ("channel", make_single("true", "S + 1", ok_body).replace("state S:", "channel c: Int32;\nstate S:"), r"expected event, state, or rule declaration"),
+            ("supervisor", make_single("true", "S + 1", ok_body).replace("state S:", "supervisor s;\nstate S:"), r"expected event, state, or rule declaration"),
+            ("owner", make_single("true", "S + 1", ok_body).replace("state S: Int32 = 10;", "state S: Int32 = 10 owner x;"), r"expected ';', got 'owner'"),
         ):
             with self.subTest(unsupported_syntax=label):
-                with self.assertRaises(KpolError):
+                with self.assertRaisesRegex(KpolError, message):
                     parse_module(bad_syntax_prog)
 
         # Початковий стан 'Unknown' -> CME2-SHAPE
@@ -2969,6 +2971,23 @@ class KpolCme2ProfileTests(unittest.TestCase):
         """
         with self.assertRaisesRegex(KpolError, "CME2-TYPE"):
             compile_concept_microcode_bram_image(parse_module(bad_type), profile="KPOL-CME-2")
+
+        # Межа CME2-TYPE / CME2-SHAPE: тип стану ≠ Int32 -> TYPE; число параметрів події ≠ 1 -> SHAPE
+        bad_state_type = bad_type.replace("event E(p: Bool);", "event E(p: Int32);").replace(
+            "state S: Int32 = 0;", "state S: Bool = false;"
+        ).replace("Inv: S >= 0;", "Inv: S == false;").replace(
+            "set S := S + 1;", "set S := true;"
+        ).replace("step E(p = true); expect S == 1;", "step E(p = 1); expect S == true;")
+        two_params = bad_type.replace("event E(p: Bool);", "event E(p: Int32, q: Int32);").replace(
+            "step E(p = true);", "step E(p = 1, q = 1);"
+        )
+        for label, boundary_prog, message in (
+            ("state-bool", bad_state_type, r"CME2-TYPE: module BadType: state S: expected Int32"),
+            ("two-params", two_params, r"CME2-SHAPE: module BadType: event E: expected exactly one Int32 parameter"),
+        ):
+            with self.subTest(type_shape_boundary=label):
+                with self.assertRaisesRegex(KpolError, message):
+                    compile_concept_microcode_bram_image(parse_module(boundary_prog), profile="KPOL-CME-2")
 
         # Порушення ACL (запис у стан S без CAP_WRITE) -> CME2-ACL
         acl_prog = make_single("true", "S + 1", "step E(p = 1); expect S == 11;")
@@ -3076,11 +3095,6 @@ class KpolCme2ProfileTests(unittest.TestCase):
             self.assertEqual(r_exp.returncode, 0, r_exp.stderr)
             self.assertEqual(cme1_def.read_bytes(), golden_bytes)
             self.assertEqual(cme1_exp.read_bytes(), golden_bytes)
-
-            # Перевірка здатності golden-тесту падати при пошкодженні байта образу
-            tampered = bytearray(golden_bytes)
-            tampered[0] ^= 0x01
-            self.assertNotEqual(bytes(tampered), cme1_exp.read_bytes())
 
             # Спроба перезапису існуючого вихідного файла -> CME2-IO
             io_exist = subprocess.run(

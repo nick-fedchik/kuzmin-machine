@@ -1,0 +1,13 @@
+# command: PYTHONDONTWRITEBYTECODE=1 python3 -m pytest Engineering/sw/kpol-ref/tests/test_kpol_reference.py -k KpolCme2ProfileTests -v
+# timestamp_utc: 2026-11-14T19:47:25Z
+# base_commit: db6820da570035c8f1f62f4041c6d97a1faa677a (origin/main; робоче дерево з правками #197)
+# host: Linux 7.0.0-42-generic x86_64
+
+KpolCme2ProfileTests::test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade PASSED [ 16%]
+KpolCme2ProfileTests::test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2 PASSED [ 33%]
+KpolCme2ProfileTests::test_cme2_guard_action_matrix_and_chain3_rtl_equivalence PASSED [ 50%]
+KpolCme2ProfileTests::test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence PASSED [ 66%]
+KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof PASSED [ 83%]
+KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades PASSED [100%]
+============= 6 passed, 64 deselected, 39 subtests passed in 1.10s =============
+exit_code=0
