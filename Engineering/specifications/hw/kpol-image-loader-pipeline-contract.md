@@ -1,8 +1,8 @@
 # Специфікація контракту життєвого циклу образу та інтерфейсу loader ↔ PL (kpol_loader_pipeline_contract)
 
 * **Тип Work Product:** `Specification` (з інтегрованими `Decision`, `Requirement`, `Protocol`, `Register`)
-* **Версія:** 2.0.1 (виправлення опису ABI; на прийняття власником у #19)
-* **Дата:** 2026-11-12
+* **Версія:** 2.1.0 (розширення опису `guard_flags[4]` для каскаду на CID 0 за Issue #167; на прийняття власником у #19)
+* **Дата:** 2026-11-14
 * **Статус:** Запропоновано на затвердження власником (Proposed)
 * **ASPICE 4.0 процеси:** `SYS.3` (System Architectural Design), `HWE.1` (Hardware Requirements Analysis), `SWE.1` (Software Requirements Analysis)
 * **Батьківська Work Item:** #5 (віха S2), задача [#133](https://github.com/nick-fedchik/kuzmin-machine/issues/133) (рішення B4)
@@ -111,7 +111,7 @@ stateDiagram-v2
    - `Слово 1 (+0x4)`: `operand` — 32-бітний операнд предикату або дії (int32);
    - `Слово 2 (+0x8)`: `opcodes/guards` — паковані бітові поля:
      - `[7:0]`: `pred_opcode` (00 NOP, 01 EQ, 02 NEQ, 03 GT, 04 LT, 05 RANGE, 06 BITMASK);
-     - `[15:8]`: `guard_flags`: bit 0 — assumption known, bit 1 — invariant known, bit 2 — hazard enabled, bit 3 — інверсія предиката; решта 0;
+     - `[15:8]`: `guard_flags`: bit 0 — assumption known, bit 1 — invariant known, bit 2 — hazard enabled, bit 3 — інверсія предиката, bit 4 — явний дозвіл каскадної підписки `CME_GUARD_SUBSCRIBER_EN` (зокрема на `subscriber_cid = 0`; для зворотної сумісності з legacy-дескрипторами `subscriber_cid` у діапазоні `1..63` також активує каскад, а в профілі `KPOL-CME-1` bit 4 дорівнює `0` і `subscriber_cid = 0`); решта бітів `[7:5]` = `0`;
      - `[23:16]`: `hazard_limit`, 8-бітна межа, **не тип події**;
      - `[31:24]`: `action_opcode` (00 ASSIGN, 01 INC, 02 DEC, 03 ADD, 04 SUB), **не прапорці захисту**;
    - `Слово 3 (+0xC)`: `subscriber_cid` — 32-бітний ідентифікатор цільового підписника для каскаду.
@@ -188,6 +188,7 @@ stateDiagram-v2
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 2.1.0 | 2026-11-14 | Уточнено біт 4 поля `guard_flags` (`CME_GUARD_SUBSCRIBER_EN = 0x10`) для каскаду на `CID 0` зі збереженням сумісності `KPOL-CME-1` (#167). |
 | 2.0.1 | 2026-11-12 | Редакція NG: структура, навігація та оформлення WP; нових результатів не заявлено. |
 
 ## Абревіатури та глосарій

@@ -56,6 +56,8 @@ module km_concept_micro_engine #(
 
     wire [15:0] range_lo_w = operand_val_w[15:0];
     wire [15:0] range_hi_w = operand_val_w[31:16];
+    wire signed [DATA_WIDTH-1:0] range_lo_sext_w = {{(DATA_WIDTH-16){range_lo_w[15]}}, range_lo_w};
+    wire signed [DATA_WIDTH-1:0] range_hi_sext_w = {{(DATA_WIDTH-16){range_hi_w[15]}}, range_hi_w};
 
     // ========================================================================
     // 2. ДЕКОДУВАННЯ ПРЕДИКАТУ (Predicate Micro-Opcode)
@@ -69,8 +71,8 @@ module km_concept_micro_engine #(
             8'h02: pred_raw_res = (event_param_i != operand_val_w); // NEQ
             8'h03: pred_raw_res = ($signed(event_param_i) > $signed(operand_val_w)); // GT
             8'h04: pred_raw_res = ($signed(event_param_i) < $signed(operand_val_w)); // LT
-            8'h05: pred_raw_res = (event_param_i >= range_lo_w) &&
-                                  (event_param_i <= range_hi_w); // RANGE
+            8'h05: pred_raw_res = ($signed(event_param_i) >= range_lo_sext_w) &&
+                                  ($signed(event_param_i) <= range_hi_sext_w); // RANGE (signed int16 bounds)
             8'h06: pred_raw_res = ((event_param_i & operand_val_w) != 32'd0); // BITMASK
             default: pred_raw_res = 1'b0;
         endcase
@@ -80,15 +82,38 @@ module km_concept_micro_engine #(
     // 3. ФОРМУВАННЯ КАНДИДАТА НА НОВИЙ СТАН (Action Micro-Opcode)
     // ========================================================================
     logic [DATA_WIDTH-1:0] candidate_state_w;
+    logic                  action_valid_w;
+    logic                  arith_overflow_w;
 
     always_comb begin
+        action_valid_w   = 1'b1;
+        arith_overflow_w = 1'b0;
         case (action_opcode_w)
-            8'h00: candidate_state_w = event_param_i;                  // ASSIGN
-            8'h01: candidate_state_w = current_state_w + 32'd1;        // INC
-            8'h02: candidate_state_w = current_state_w - 32'd1;        // DEC
-            8'h03: candidate_state_w = current_state_w + operand_val_w; // ADD
-            8'h04: candidate_state_w = current_state_w - operand_val_w; // SUB
-            default: candidate_state_w = current_state_w;
+            8'h00: begin // ASSIGN
+                candidate_state_w = event_param_i;
+            end
+            8'h01: begin // INC
+                candidate_state_w = current_state_w + {{(DATA_WIDTH-1){1'b0}}, 1'b1};
+                arith_overflow_w  = (current_state_w == {1'b0, {(DATA_WIDTH-1){1'b1}}});
+            end
+            8'h02: begin // DEC
+                candidate_state_w = current_state_w - {{(DATA_WIDTH-1){1'b0}}, 1'b1};
+                arith_overflow_w  = (current_state_w == {1'b1, {(DATA_WIDTH-1){1'b0}}});
+            end
+            8'h03: begin // ADD
+                candidate_state_w = current_state_w + operand_val_w;
+                arith_overflow_w  = (current_state_w[DATA_WIDTH-1] == operand_val_w[DATA_WIDTH-1]) &&
+                                    (candidate_state_w[DATA_WIDTH-1] != current_state_w[DATA_WIDTH-1]);
+            end
+            8'h04: begin // SUB
+                candidate_state_w = current_state_w - operand_val_w;
+                arith_overflow_w  = (current_state_w[DATA_WIDTH-1] != operand_val_w[DATA_WIDTH-1]) &&
+                                    (candidate_state_w[DATA_WIDTH-1] != current_state_w[DATA_WIDTH-1]);
+            end
+            default: begin // Невідомий action_opcode -> Fail-Closed відхилення транзакції
+                candidate_state_w = current_state_w;
+                action_valid_w    = 1'b0;
+            end
         endcase
     end
 
@@ -106,9 +131,9 @@ module km_concept_micro_engine #(
     assign assumption_known_w = guard_flags_w[0];
     assign assumption_true_w  = guard_flags_w[3] ? ~pred_raw_res : pred_raw_res;
 
-    // bit 1: Enable Invariant; захист від знакового переповнення або від'ємного стану
+    // bit 1: Enable Invariant; захист від знакового переповнення/underflow або від'ємного стану
     assign invariant_known_w  = guard_flags_w[1];
-    assign invariant_true_w   = ($signed(candidate_state_w) >= 0);
+    assign invariant_true_w   = !arith_overflow_w && ($signed(candidate_state_w) >= 0);
 
     // bit 2: Enable Hazard; порогова детекція небезпечного значення
     // Статус небезпеки відомий (known = 1'b1); істинний лише коли прапорець активний і ліміт перевищено
@@ -116,13 +141,23 @@ module km_concept_micro_engine #(
     assign hazard_true_w      = guard_flags_w[2] && (hazard_limit_w != 8'd0) &&
                                 ($signed(event_param_i) > $signed({24'd0, hazard_limit_w}));
 
+    // Фіксація вихідного стану поточного концепту на такті event_valid_i для точного state_changed_o
+    logic [DATA_WIDTH-1:0] sampled_state_q;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            sampled_state_q <= '0;
+        end else if (event_valid_i) begin
+            sampled_state_q <= current_state_w;
+        end
+    end
+
     // ========================================================================
     // 5. ТРАНЗАКЦІЙНИЙ ШЛЮЗ KPOL v2 (Строгий Fail-Closed режим для Hazards)
     // ========================================================================
     logic [DATA_WIDTH-1:0] gate_state_out;
     logic                  gate_committed;
     logic                  gate_rejected;
-    logic                  gate_changed;
     logic                  gate_hazard_obs;
     logic                  gate_unknown_haz;
 
@@ -135,7 +170,7 @@ module km_concept_micro_engine #(
         .rst_ni(rst_n),
         .event_valid_i(event_valid_i),
         .candidate_value_i(candidate_state_w),
-        .candidate_known_i(1'b1),
+        .candidate_known_i(action_valid_w),
         .assumption_known_i(assumption_known_w),
         .assumption_true_i(assumption_true_w),
         .invariant_known_i(invariant_known_w),
@@ -150,7 +185,7 @@ module km_concept_micro_engine #(
         .rejected_input_o(),
         .rejected_invariant_o(),
         .rejected_hazard_o(),
-        .changed_o(gate_changed),
+        .changed_o(),
         .hazard_observed_o(gate_hazard_obs),
         .hazard_blocked_o(),
         .unknown_hazard_o(gate_unknown_haz),
@@ -166,9 +201,11 @@ module km_concept_micro_engine #(
     assign unknown_hazard_o     = gate_unknown_haz;
 
     assign updated_state_o      = gate_committed ? gate_state_out : current_state_w;
-    assign state_changed_o      = gate_changed;
+    assign state_changed_o      = gate_committed && (gate_state_out != sampled_state_q);
 
+    wire subscriber_target_valid_w = (subscriber_cid_w < 32'd64);
     assign subscriber_cid_o     = subscriber_cid_w;
-    assign trigger_subscriber_o = gate_committed && (subscriber_cid_w != 32'd0);
+    assign trigger_subscriber_o = gate_committed && subscriber_target_valid_w &&
+                                  (guard_flags_w[4] || (subscriber_cid_w != 32'd0));
 
 endmodule

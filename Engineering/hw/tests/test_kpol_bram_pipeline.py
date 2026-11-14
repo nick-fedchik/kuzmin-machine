@@ -367,3 +367,238 @@ def test_sequencer_queue_retention_mutant_controls(
     assert expected_marker in out, f"Мутант {name} впав не на {expected_marker}:\n{out}"
 
 
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_cme_cascade_to_cid0_end_to_end_in_sequencer(tmp_path):
+    """Issue #167: наскрізна перевірка каскаду CID 1 -> CID 0 через компілятор і автономний секвенсер."""
+    from kpol_reference import compile_concept_microcode_bram_image
+
+    source = """
+    Problem CascadeZeroHW {
+        Invariants {
+            InvRoot: RootState >= 0;
+            InvNode: TriggerNode >= 0;
+        }
+    }
+    Solution CascadeZeroHW {
+        state RootState: Int32 = 10;
+        state TriggerNode: Int32 = 20;
+
+        event Pulse(param: Int32);
+
+        rule StepRoot on Pulse when param > 0 {
+            set RootState := RootState + 1;
+        }
+        rule StepTrigger on Pulse when param == 7 {
+            set TriggerNode := TriggerNode + 1;
+        }
+    }
+    """
+    image = compile_concept_microcode_bram_image(
+        parse_module(source), cascade_map={"TriggerNode": "RootState"}
+    )
+    words = struct.unpack("<256I", image)
+    image_hex = tmp_path / "cascade_cid0.hex"
+    image_hex.write_text("".join(f"{word:08x}\n" for word in words), encoding="utf-8")
+
+    tb_sv = tmp_path / "cascade_cid0_tb.sv"
+    tb_sv.write_text(
+        """`timescale 1ns / 1ps
+module cascade_cid0_tb;
+    logic clk = 0;
+    logic rst_n = 0;
+    always #5 clk = ~clk;
+
+    logic        bram_a_we = 0;
+    logic [7:0]  bram_a_addr = 0;
+    logic [31:0] bram_a_wdata = 0;
+    wire  [31:0] bram_a_rdata;
+
+    wire         bram_b_we;
+    wire  [3:0]  bram_b_wstrb;
+    wire  [7:0]  bram_b_addr;
+    wire  [31:0] bram_b_wdata;
+    wire  [31:0] bram_b_rdata;
+
+    logic        trig_valid = 0;
+    logic [5:0]  trig_cid = 0;
+    logic [31:0] trig_param = 0;
+    wire         trig_ready;
+    wire         busy, fifo_full, fifo_overflow;
+    wire  [31:0] total_events, total_committed, total_rejected, last_state, dropped_events;
+    wire         commit_pulse, reject_pulse;
+
+    reg [31:0] img [0:255];
+    integer i;
+
+    km_concept_bram bram_inst (
+        .clk(clk), .rst_n(rst_n),
+        .a_we_i(bram_a_we), .a_wstrb_i(4'hF), .a_addr_i(bram_a_addr), .a_wdata_i(bram_a_wdata), .a_rdata_o(bram_a_rdata),
+        .b_we_i(bram_b_we), .b_wstrb_i(bram_b_wstrb), .b_addr_i(bram_b_addr), .b_wdata_i(bram_b_wdata), .b_rdata_o(bram_b_rdata)
+    );
+
+    km_autonomous_sequencer dut (
+        .clk(clk), .rst_n(rst_n),
+        .hw_trigger_valid_i(trig_valid), .hw_trigger_cid_i(trig_cid), .hw_trigger_param_i(trig_param),
+        .hw_trigger_ready_o(trig_ready),
+        .bram_b_we_o(bram_b_we), .bram_b_wstrb_o(bram_b_wstrb), .bram_b_addr_o(bram_b_addr), .bram_b_wdata_o(bram_b_wdata), .bram_b_rdata_i(bram_b_rdata),
+        .busy_o(busy), .fifo_full_o(fifo_full), .fifo_overflow_o(fifo_overflow),
+        .events_dropped_count_o(dropped_events),
+        .events_processed_count_o(total_events),
+        .committed_count_o(total_committed),
+        .rejected_count_o(total_rejected),
+        .last_committed_state_o(last_state),
+        .commit_pulse_o(commit_pulse),
+        .reject_pulse_o(reject_pulse)
+    );
+
+    initial begin
+        $readmemh("IMAGE_HEX_PATH", img);
+        #20 rst_n = 1;
+        for (i = 0; i < 256; i = i + 1) begin
+            @(posedge clk);
+            bram_a_we    <= 1'b1;
+            bram_a_addr  <= i[7:0];
+            bram_a_wdata <= img[i];
+        end
+        @(posedge clk);
+        bram_a_we <= 1'b0;
+        @(posedge clk);
+
+        // Подаємо подію на CID=1 (TriggerNode) з param=7:
+        // CID=1 переходить 20 -> 21 і каскадно викликає CID=0 (RootState: 10 -> 11)
+        trig_cid   <= 6'd1;
+        trig_param <= 32'd7;
+        trig_valid <= 1'b1;
+        @(posedge clk);
+        while (!trig_ready) @(posedge clk);
+        trig_valid <= 1'b0;
+
+        repeat (4) @(posedge clk);
+        while (busy) @(posedge clk);
+        repeat (2) @(posedge clk);
+
+        // Зчитуємо фінальний стан CID=0 (Word 0 за адресою 0) через Port A
+        bram_a_addr <= 8'd0;
+        @(posedge clk);
+        @(posedge clk);
+        #1;
+        if (total_committed !== 32'd2 || bram_a_rdata !== 32'd11 || last_state !== 32'd11) begin
+            $fatal(1, "[FAIL] Каскад CID 1 -> CID 0 не виконався: committed=%0d (exp 2), cid0_state=%0d (exp 11), last_state=%0d",
+                   total_committed, bram_a_rdata, last_state);
+        end
+        $display("PASS: cascade CID 1 -> CID 0 committed=2 cid0_state=11");
+        $finish;
+    end
+endmodule
+""".replace("IMAGE_HEX_PATH", str(image_hex)),
+        encoding="utf-8",
+    )
+
+    sim = tmp_path / "cascade_cid0.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012", "-s", "cascade_cid0_tb", "-o", str(sim),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(HW / "rtl/core/km_concept_micro_engine.sv"),
+            str(HW / "rtl/core/km_concept_bram.sv"),
+            str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+            str(tb_sv),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    run = subprocess.run(["vvp", "-n", str(sim)], capture_output=True, text=True, timeout=30)
+    out = run.stdout + run.stderr
+    assert run.returncode == 0, out
+    assert "PASS: cascade CID 1 -> CID 0 committed=2 cid0_state=11" in out, out
+
+
+CME_MUTANTS = [
+    pytest.param(
+        "block_cid0_cascade",
+        "(guard_flags_w[4] || (subscriber_cid_w != 32'd0))",
+        "(subscriber_cid_w != 32'd0)",
+        "[FAIL] Сценарій 6A",
+        id="block-cid0-cascade",
+    ),
+    pytest.param(
+        "allow_out_of_range_cid64_cascade",
+        "wire subscriber_target_valid_w = (subscriber_cid_w < 32'd64);",
+        "wire subscriber_target_valid_w = 1'b1;",
+        "[FAIL] Сценарій 6C",
+        id="allow-cid64-cascade",
+    ),
+    pytest.param(
+        "cross_concept_gate_changed",
+        "    logic                  gate_rejected;\n    logic                  gate_hazard_obs;",
+        "    logic                  gate_rejected;\n    logic                  gate_changed;\n    logic                  gate_hazard_obs;",
+        "[FAIL] Сценарій 7A",
+        id="cross-concept-gate-changed",
+    ),
+    pytest.param(
+        "ignore_arith_overflow",
+        "assign invariant_true_w   = !arith_overflow_w && ($signed(candidate_state_w) >= 0);",
+        "assign invariant_true_w   = ($signed(candidate_state_w) >= 0);",
+        "[FAIL] Сценарій 8A",
+        id="ignore-arith-overflow",
+    ),
+    pytest.param(
+        "unsigned_range_bounds",
+        "8'h05: pred_raw_res = ($signed(event_param_i) >= range_lo_sext_w) &&\n                                  ($signed(event_param_i) <= range_hi_sext_w); // RANGE (signed int16 bounds)",
+        "8'h05: pred_raw_res = (event_param_i >= range_lo_w) &&\n                                  (event_param_i <= range_hi_w);",
+        "[FAIL] Сценарій 9A",
+        id="unsigned-range-bounds",
+    ),
+    pytest.param(
+        "silent_unknown_action_commit",
+        ".candidate_known_i(action_valid_w),",
+        ".candidate_known_i(1'b1),",
+        "[FAIL] Сценарій 10",
+        id="silent-unknown-action-commit",
+    ),
+]
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+@pytest.mark.parametrize("name,target,replacement,expected_marker", CME_MUTANTS)
+def test_cme_core_semantics_mutant_controls(
+    tmp_path, name, target, replacement, expected_marker,
+):
+    rtl_text = (HW / "rtl/core/km_concept_micro_engine.sv").read_text(encoding="utf-8")
+    assert target in rtl_text, f"Не знайдено фрагмент для мутанта {name}"
+    patched = rtl_text.replace(target, replacement)
+    if name == "cross_concept_gate_changed":
+        patched = patched.replace(".changed_o(),", ".changed_o(gate_changed),")
+        patched = patched.replace(
+            "assign state_changed_o      = gate_committed && (gate_state_out != sampled_state_q);",
+            "assign state_changed_o      = gate_changed;",
+        )
+    mutated_rtl = tmp_path / f"km_concept_micro_engine_{name}.sv"
+    mutated_rtl.write_text(patched, encoding="utf-8")
+
+    simulation = tmp_path / f"cme_mutant_{name}.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012",
+            "-s", "km_concept_micro_engine_tb",
+            "-o", str(simulation),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(mutated_rtl),
+            str(HW / "tb/km_concept_micro_engine_tb.sv"),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    result = subprocess.run(
+        ["vvp", "-n", str(simulation)],
+        capture_output=True, text=True, timeout=30,
+    )
+    out = result.stdout + result.stderr
+    assert result.returncode != 0, f"Мутант {name} не впав:\n{out}"
+    assert expected_marker in out, f"Мутант {name} впав не на {expected_marker}:\n{out}"
+
+

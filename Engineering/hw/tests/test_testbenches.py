@@ -21,7 +21,7 @@ TESTBENCHES = {
     "km_concept_bram_tb.sv": ([f"{CORE}/km_concept_bram.sv"], None),
     "km_concept_micro_engine_tb.sv": (
         [f"{CORE}/kpol_txn_gate_v2.sv", f"{CORE}/km_concept_micro_engine.sv"],
-        "УСІ 5 ТЕСТОВИХ СЦЕНАРІЇВ УНІВЕРСАЛЬНОГО ЯДРА CME УСПІШНО ПРОЙДЕНО"),
+        "УСІ 10 ТЕСТОВИХ СЦЕНАРІЇВ УНІВЕРСАЛЬНОГО ЯДРА CME УСПІШНО ПРОЙДЕНО"),
     "km_autonomous_sequencer_tb.sv": (
         [f"{CORE}/kpol_txn_gate_v2.sv", f"{CORE}/km_concept_micro_engine.sv",
          f"{CORE}/km_concept_bram.sv", f"{CORE}/km_autonomous_sequencer.sv"],
