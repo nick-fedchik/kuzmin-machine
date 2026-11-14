@@ -9,7 +9,9 @@
 // схемі HWE.2 та вимірювальному стенду HWE.3/HWE.4.
 // ============================================================================
 
-module kpol_bram_pipeline_pynq_z1_top (
+module kpol_bram_pipeline_pynq_z1_top #(
+    parameter [31:0] BTN_DEBOUNCE_CYCLES = 32'd100000 // 1.0 ms @ 100 MHz
+) (
     // PMOD JA Header (HIL Interface, 3.3V LVCMOS)
     input  wire       ja1,       // Pin 1 (Y18): External trigger stimulus in
     output wire       ja2,       // Pin 2 (Y19): Commit pulse out (stretched 100 ns)
@@ -55,24 +57,73 @@ module kpol_bram_pipeline_pynq_z1_top (
         (araddr >= 32'h40000000 && araddr < 32'h40002000) ? araddr[12:0] : 13'h1fff;
 
     // ------------------------------------------------------------------------
-    // CDC Synchronizer & Edge Detector for External Hardware Trigger (REQ-HW-011)
+    // CDC Synchronizers, Mechanical Button Debouncer & Edge Detectors (REQ-HW-011)
     // ------------------------------------------------------------------------
-    wire raw_stim = ja1 | btn[0];
-    reg [1:0] stim_cdc_q;
-    reg stim_d_q;
+    localparam [31:0] BTN_DB_LIMIT = (BTN_DEBOUNCE_CYCLES > 32'd1)
+                                   ? (BTN_DEBOUNCE_CYCLES - 32'd1)
+                                   : 32'd0;
+
+    // 1. PMOD JA1 fast digital stimulus: dedicated 2-FF CDC + rising-edge detector
+    (* ASYNC_REG = "TRUE" *) reg [1:0] ja1_cdc_q;
+    reg ja1_d_q;
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            stim_cdc_q <= 2'b00;
-            stim_d_q   <= 1'b0;
+            ja1_cdc_q <= 2'b00;
+            ja1_d_q   <= 1'b0;
         end else begin
-            stim_cdc_q <= {stim_cdc_q[0], raw_stim};
-            stim_d_q   <= stim_cdc_q[1];
+            ja1_cdc_q <= {ja1_cdc_q[0], ja1};
+            ja1_d_q   <= ja1_cdc_q[1];
         end
     end
 
-    wire ext_hw_trig_pulse = stim_cdc_q[1] & ~stim_d_q; // 1-clock-cycle pulse
-    wire [5:0] target_cid  = {4'd0, sw[1:0]};            // Select CID 0..3 via switches
+    wire ja1_trig_pulse = ja1_cdc_q[1] & ~ja1_d_q;
+
+    // 2. Manual pushbutton btn[0]: 2-FF CDC + 1.0 ms debounce filter + rising-edge detector
+    (* ASYNC_REG = "TRUE" *) reg [1:0] btn0_cdc_q;
+    reg [31:0] btn0_db_cnt_q;
+    reg        btn0_stable_q;
+    reg        btn0_stable_d_q;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            btn0_cdc_q      <= 2'b00;
+            btn0_db_cnt_q   <= 32'd0;
+            btn0_stable_q   <= 1'b0;
+            btn0_stable_d_q <= 1'b0;
+        end else begin
+            btn0_cdc_q      <= {btn0_cdc_q[0], btn[0]};
+            btn0_stable_d_q <= btn0_stable_q;
+
+            if (btn0_cdc_q[1] == btn0_stable_q) begin
+                btn0_db_cnt_q <= 32'd0;
+            end else if (btn0_db_cnt_q >= BTN_DB_LIMIT) begin
+                btn0_stable_q <= btn0_cdc_q[1];
+                btn0_db_cnt_q <= 32'd0;
+            end else begin
+                btn0_db_cnt_q <= btn0_db_cnt_q + 32'd1;
+            end
+        end
+    end
+
+    wire btn0_trig_pulse = btn0_stable_q & ~btn0_stable_d_q;
+
+    // 3. Slide switches sw[1:0]: dedicated 2-FF CDC synchronizer into clk domain
+    (* ASYNC_REG = "TRUE" *) reg [1:0] sw_cdc_0_q;
+    (* ASYNC_REG = "TRUE" *) reg [1:0] sw_cdc_1_q;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            sw_cdc_0_q <= 2'b00;
+            sw_cdc_1_q <= 2'b00;
+        end else begin
+            sw_cdc_0_q <= sw;
+            sw_cdc_1_q <= sw_cdc_0_q;
+        end
+    end
+
+    wire ext_hw_trig_pulse = ja1_trig_pulse | btn0_trig_pulse;
+    wire [5:0] target_cid  = {4'd0, sw_cdc_1_q};
 
     // ------------------------------------------------------------------------
     // Pipeline Instance
@@ -103,7 +154,7 @@ module kpol_bram_pipeline_pynq_z1_top (
         .rready(rready),
         .ext_hw_trigger_valid_i(ext_hw_trig_pulse),
         .ext_hw_trigger_cid_i(target_cid),
-        .ext_hw_trigger_param_i(32'd0), // Use configured event_param or default 1
+        .ext_hw_trigger_param_i(32'd1), // Fixed hardware trigger parameter = 1 for standalone PMOD/button events
         .hw_trigger_ready_o(hw_ready),
         .hw_commit_pulse_o(hw_commit),
         .hw_reject_pulse_o(hw_reject),

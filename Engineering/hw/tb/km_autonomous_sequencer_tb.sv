@@ -87,6 +87,7 @@ module km_autonomous_sequencer_tb #(
         .bram_b_wstrb_o(bram_b_wstrb),
         .bram_b_we_o(bram_b_we),
         .bram_b_rdata_i(bram_b_rdata),
+        .clear_overflow_i(1'b0),
         .busy_o(busy),
         .fifo_full_o(fifo_full),
         .fifo_overflow_o(fifo_overflow),

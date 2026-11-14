@@ -46,6 +46,7 @@ module kpol_bram_pipeline_tb;
         .hw_trigger_cid_i(6'd0), .hw_trigger_param_i(param),
         .bram_b_addr_o(b_addr), .bram_b_wdata_o(b_wdata),
         .bram_b_wstrb_o(b_wstrb), .bram_b_we_o(b_we), .bram_b_rdata_i(b_rdata),
+        .clear_overflow_i(1'b0),
         .busy_o(busy), .events_processed_count_o(events_count),
         .committed_count_o(committed_count), .rejected_count_o(rejected_count),
         .last_committed_state_o(last_state)
