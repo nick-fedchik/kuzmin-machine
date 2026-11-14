@@ -159,6 +159,92 @@ module kpol_bram_pipeline_axi_tb;
         reg [31:0] value;
         integer expected_commits;
         trace_mode = $value$plusargs("trace=%s", trace_file);
+        if ($test$plusargs("hw_burst")) begin
+            integer saw_stall;
+            saw_stall = 0;
+            if (!$value$plusargs("image_a=%s", image_a))
+                $fatal(1, "hw_burst requires image_a");
+            repeat (3) @(negedge clk);
+            rst_n = 1;
+            load_image(image_a);
+            check_state(10, "burst initial");
+
+            // 1. Одночасна колізія sw_trigger (MMIO 0x010) та зовнішнього керованого тригера:
+            // під час імпульсу sw_trigger апаратний порт має опустити hw_trigger_ready_o у 0,
+            // щоб керований зовнішній продюсер утримав подію ще 1 такт без тихої втрати на мультиплексорі.
+            write_reg('h00c, 5, 4'hf, 0);
+            @(negedge clk);
+            awaddr  = 'h010;
+            wdata   = 1;
+            wstrb   = 4'hf;
+            awvalid = 1;
+            wvalid  = 1;
+            bready  = 1;
+            do @(posedge clk); while (!awready || !wready);
+            // На цьому фронті sw_trigger зареєстровано у 1; подаємо зовнішню подію з param = 5
+            #1;
+            awvalid                = 0;
+            wvalid                 = 0;
+            if (!bvalid || bresp !== 0)
+                $fatal(1, "hw_burst: write 0x010 failed bvalid=%b bresp=%h", bvalid, bresp);
+            ext_hw_trigger_cid_i   = 6'd0;
+            ext_hw_trigger_param_i = 32'd5;
+            ext_hw_trigger_valid_i = 1'b1;
+            #1;
+            if (hw_trigger_ready_o !== 1'b0) begin
+                $fatal(1, "hw_burst: expected hw_trigger_ready_o=0 during sw_trigger collision");
+            end
+            while (hw_trigger_ready_o !== 1'b1) begin
+                @(posedge clk);
+                #1;
+                bready = 0;
+            end
+            @(posedge clk); // Прийняття утриманого ext_hw_trigger після sw_trigger
+            #1;
+            ext_hw_trigger_valid_i = 1'b0;
+            bready                 = 0;
+            wait_idle();
+            // Обидві події (sw_trigger + ext_hw_trigger) мали виконатися рівно по одному разу: 10 + 2 = 12
+            check_state(12, "after sw+hw collision");
+
+            // 2. Керована пачка з 24 зовнішніх подій під зворотним тиском черги (20 commit, 4 reject)
+            @(posedge clk);
+            #1;
+            for (int i = 0; i < 24; i++) begin
+                ext_hw_trigger_cid_i   = 6'd0;
+                ext_hw_trigger_param_i = ((i % 6) == 5) ? 32'd25 : 32'd3;
+                ext_hw_trigger_valid_i = 1'b1;
+                #1;
+                while (hw_trigger_ready_o !== 1'b1) begin
+                    saw_stall = saw_stall + 1;
+                    if (saw_stall > 512) $fatal(1, "hw_burst: deadlock under backpressure");
+                    @(posedge clk);
+                    #1;
+                end
+                @(posedge clk);
+                #1;
+            end
+            ext_hw_trigger_valid_i = 1'b0;
+            if (saw_stall == 0)
+                $fatal(1, "hw_burst: burst did not exercisehw_trigger_ready_o=0 backpressure");
+
+            wait_idle();
+            check_state(32, "after managed hw burst");
+            read_reg('h018, value);
+            if (value !== 26) $fatal(1, "hw_burst: expected 26 events, got %0d", value);
+            read_reg('h01c, value);
+            if (value !== 22) $fatal(1, "hw_burst: expected 22 commits, got %0d", value);
+            read_reg('h020, value);
+            if (value !== 4) $fatal(1, "hw_burst: expected 4 rejects, got %0d", value);
+            read_reg('h028, value);
+            if (value !== 0 || fifo_overflow_o || events_dropped_count_o !== 0)
+                $fatal(1, "hw_burst: unexpected drop=%0d ovf=%b", value, fifo_overflow_o);
+            read_reg('h02c, value);
+            if (value[6] !== 1'b0 || value[7] !== 1'b1)
+                $fatal(1, "hw_burst: unexpected queue flags reg 0x02c=%h", value);
+            $display("PASS: axi hw_burst lossless (stall_cycles=%0d)", saw_stall);
+            $finish;
+        end
         if (trace_mode) begin
             if (!$value$plusargs("image_a=%s", image_a) ||
                 !$value$plusargs("events=%d", trace_length) ||

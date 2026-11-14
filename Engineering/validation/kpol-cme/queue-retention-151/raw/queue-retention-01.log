@@ -1,0 +1,26 @@
+{"started_at": "2026-11-13T23:46:14.890024+02:00", "host": "AORUS-5-SE", "commit": "d7ae62af96073777373ad46cbca602f0fb0c4fc7", "worktree_status": ["?? Engineering/validation/kpol-cme/queue-retention-151/"], "command": ["python3", "-m", "pytest", "-v", "-p", "no:cacheprovider", "Engineering/hw/tests/test_testbenches.py", "Engineering/hw/tests/test_kpol_bram_pipeline.py", "-k", "autonomous_sequencer or queue_retention or axi_hw_trigger", "-rP"], "source_sha256": {"Engineering/hw/rtl/core/km_autonomous_sequencer.sv": "6911173ffc7ea4570112f66916ade54b21bdfb3645560d5eb242ae6777debad9", "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv": "308b6b9bbeda40c7078328f4ee12886f82290b0b07b8c4e24bbbed148b7e2ef5", "Engineering/hw/rtl/core/km_concept_micro_engine.sv": "5db242da39af98e0e73b998a7d65b7d97ac4b8626ed03b356b58b6f0927228e4", "Engineering/hw/rtl/core/km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297", "Engineering/hw/rtl/core/kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6", "Engineering/hw/tb/km_autonomous_sequencer_tb.sv": "fabe1a00e116c1af02ae866bb5cbadb45eb7285838152ea0805d14bc77c51932", "Engineering/hw/tests/kpol_bram_pipeline_axi_tb.sv": "1ffbf2ffde8170b12e4fe918d652f1979f9c4e80b7819dd4193aa73cce2dacec", "Engineering/hw/tests/test_kpol_bram_pipeline.py": "d080e5822275c76bc2c3ba0e06f46c09051e999894aadbcbcd8bb52a40f80fcf", "Engineering/hw/tests/test_testbenches.py": "c01ca6608cef747ccf5154cb760651bc567866abbe24c7ca06361e0271ba9eb4"}}
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-151-queue-retention
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 154 items / 142 deselected / 12 selected
+
+Engineering/hw/tests/test_testbenches.py::test_testbench[km_autonomous_sequencer_tb.sv] PASSED [  8%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[4] PASSED [ 16%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[8] PASSED [ 25%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[16] PASSED [ 33%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_parameterized_depths[32] PASSED [ 41%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_axi_hw_trigger_managed_burst_and_sw_collision PASSED [ 50%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_mutant_controls[ready-occupancy-only] PASSED [ 58%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_mutant_controls[drop-full-cascade] PASSED [ 66%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_mutant_controls[double-eval-full-cascade] PASSED [ 75%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_mutant_controls[duplicate-bram-write-pending] PASSED [ 83%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_mutant_controls[stall-counts-as-drop] PASSED [ 91%]
+Engineering/hw/tests/test_kpol_bram_pipeline.py::test_sequencer_queue_retention_mutant_controls[silent-violation-drop] PASSED [100%]
+
+==================================== PASSES ====================================
+====================== 12 passed, 142 deselected in 0.58s ======================
+
+exit_code=0

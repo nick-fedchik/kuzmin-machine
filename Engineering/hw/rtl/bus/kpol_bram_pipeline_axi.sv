@@ -71,18 +71,25 @@ module kpol_bram_pipeline_axi (
     wire [31:0] bram_rdata, b_wdata, b_rdata;
     wire [7:0] b_addr;
     wire [3:0] b_wstrb;
-    wire b_we, seq_busy;
-    wire [31:0] events, commits, rejects, last_state;
+    wire b_we, seq_busy, seq_trigger_ready, seq_fifo_overflow;
+    wire [31:0] events, commits, rejects, last_state, seq_dropped_count;
     logic read_pending;
     logic [12:0] read_addr;
+    logic ext_sw_stalled_q, axi_sw_overflow_q;
+    logic [5:0] ext_sw_cid_q;
+    logic [31:0] ext_sw_param_q, axi_sw_dropped_q;
 
     assign busy = seq_busy || sw_trigger || b_we;
     assign hw_pipeline_busy_o = busy;
 
-    // Арбітраж ініціації події: програмний тригер MMIO або фізичний зовнішній пін
+    // Арбітраж ініціації події: під час однотактового sw_trigger зовнішній вхід
+    // отримує hw_trigger_ready_o == 0, щоб кероване джерело утримало подію без втрати.
     wire seq_trigger_valid = sw_trigger || ext_hw_trigger_valid_i;
     wire [5:0] seq_trigger_cid = sw_trigger ? 6'd0 : ext_hw_trigger_cid_i;
     wire [31:0] seq_trigger_param = sw_trigger ? event_param : ext_hw_trigger_param_i;
+    assign hw_trigger_ready_o = seq_trigger_ready && !sw_trigger;
+    assign fifo_overflow_o = seq_fifo_overflow || axi_sw_overflow_q;
+    assign events_dropped_count_o = seq_dropped_count + axi_sw_dropped_q;
 
     km_concept_bram bram (
         .clk(clk),
@@ -111,7 +118,7 @@ module kpol_bram_pipeline_axi (
         .hw_trigger_valid_i(seq_trigger_valid),
         .hw_trigger_cid_i(seq_trigger_cid),
         .hw_trigger_param_i(seq_trigger_param),
-        .hw_trigger_ready_o(hw_trigger_ready_o),
+        .hw_trigger_ready_o(seq_trigger_ready),
         .bram_b_addr_o(b_addr),
         .bram_b_wdata_o(b_wdata),
         .bram_b_wstrb_o(b_wstrb),
@@ -119,8 +126,8 @@ module kpol_bram_pipeline_axi (
         .bram_b_rdata_i(b_rdata),
         .busy_o(seq_busy),
         .fifo_full_o(),
-        .fifo_overflow_o(fifo_overflow_o),
-        .events_dropped_count_o(events_dropped_count_o),
+        .fifo_overflow_o(seq_fifo_overflow),
+        .events_dropped_count_o(seq_dropped_count),
         .events_processed_count_o(events),
         .committed_count_o(commits),
         .rejected_count_o(rejects),
@@ -148,9 +155,31 @@ module kpol_bram_pipeline_axi (
             bram_we <= 0;
             event_param <= 0;
             sw_trigger <= 0;
+            ext_sw_stalled_q <= 0;
+            ext_sw_cid_q <= 0;
+            ext_sw_param_q <= 0;
+            axi_sw_overflow_q <= 0;
+            axi_sw_dropped_q <= 0;
         end else begin
             bram_we <= 0;
             sw_trigger <= 0;
+            if (!ext_sw_stalled_q) begin
+                if (sw_trigger && ext_hw_trigger_valid_i) begin
+                    ext_sw_stalled_q <= 1'b1;
+                    ext_sw_cid_q <= ext_hw_trigger_cid_i;
+                    ext_sw_param_q <= ext_hw_trigger_param_i;
+                end
+            end else begin
+                if (!ext_hw_trigger_valid_i ||
+                    (ext_hw_trigger_cid_i != ext_sw_cid_q) ||
+                    (ext_hw_trigger_param_i != ext_sw_param_q)) begin
+                    axi_sw_overflow_q <= 1'b1;
+                    axi_sw_dropped_q <= axi_sw_dropped_q + 32'd1;
+                    ext_sw_stalled_q <= 1'b0;
+                end else if (hw_trigger_ready_o) begin
+                    ext_sw_stalled_q <= 1'b0;
+                end
+            end
             if (bvalid && bready) bvalid <= 0;
             if (rvalid && rready) rvalid <= 0;
 

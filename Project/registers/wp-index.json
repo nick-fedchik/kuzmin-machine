@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "date": "2026-11-13",
   "entries": [
     {
@@ -1263,6 +1263,66 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/baseline-queue-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/baseline-queue-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/full-tests-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/full-tests-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/full-tests-03.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/queue-retention-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/raw/structure-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/queue-retention-151/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/raw/run-20261112-01/checks.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2208,6 +2268,12 @@
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/README.md",
       "direction": "Research",
       "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/j501-hardware-interface.md",
+      "direction": "Research",
+      "wp_type": "Specification / Hardware Interface Guide",
       "immutable_input": false
     },
     {
