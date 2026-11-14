@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.5.3
+* **Версія:** 0.5.4
 * **Дата:** 2026-11-14
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -22,7 +22,7 @@
 | Problem | [Q01–Q21](../../Research/studies/concept-assessment/problem.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/problem.md); [форма](../templates/work-products/problem.md) | Додано постановку проблеми Callback Bottleneck. |
 | Model | [Формальний розбір](../../Research/studies/author-semantics/formal-analysis.md), модель у [#77](../../Research/studies/turing-construction/report.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/model.md), [epistemology](../../Research/studies/fpga-gpu-symbiosis/epistemology-and-learning.md); [форма](../templates/work-products/model.md) | Додано дворівневу модель детермінізму FPGA-GPU та аналіз онтології навчання. |
 | Protocol | [Опозиція](../../Research/studies/concept-assessment/protocol.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/protocol.md), [EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md), [EXP-GPU-02](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/protocol.md); [форма](../templates/work-products/protocol.md) | Додано методику дослідження симбіозу та протоколи HIL EXP-GPU-01 й EXP-GPU-02. |
-| Report | [Шість досліджень](../../Research/README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/report.md), [Analysis](../templates/work-products/analysis-report.md) | Додано звіт дослідження симбіозу з GPU. |
+| Report | [Шість досліджень](../../Research/README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/report.md), [вплив RFC і Q3 #201/#203](../../Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md), [Analysis](../templates/work-products/analysis-report.md) | Додано звіт дослідження симбіозу з GPU та аналіз впливу відкритих RFC / чернетки Q3. |
 | Data | [Проходи опозиції](../../Research/studies/concept-assessment/data/opposition-passes/), двокоміркова траса у [#77](../../Research/studies/turing-construction/report.md) | Сирі тексти не переформатовано; хеші в маніфесті. Окремого файла для формальної траси немає. |
 
 ## 3. Engineering
@@ -73,6 +73,7 @@
 | 0.3.0 | 2026-11-12 | Додано реєстрацію B6 (ADR GPU симбіоз) та пакету експерименту EXP-GPU-01 (Protocol, Plan, Guide). |
 | 0.4.0 | 2026-11-13 | #151: оновлено стан B5 v2.1 та додано реєстрацію звіту верифікації черги `queue-retention-151/report.md`. |
 | 0.5.0 | 2026-11-14 | #169: зареєстровано звіти перевірок #115, #164, #167, #168, #169 та оновлено стан специфікацій B4/B5 v2.2.0 і `wp-index.json`. |
+| 0.5.4 | 2026-11-14 | #203: зареєстровано звіт `Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md` у `work-products.md` та `wp-index.json` (`0.14.0`). |
 | 0.5.3 | 2026-11-14 | #185: зареєстровано архітектурне рішення B7 (`cme-raw2-kpol-sys02.md`), звіт перевірки `cr-cme-raw2-185/report.md` та оновлено `wp-index.json`. |
 | 0.5.2 | 2026-11-14 | #184: зареєстровано специфікацію багатоконцептного профілю `kpol-cme2-profile-0.1.0.md`, звіт перевірки `cme2-profile-184/report.md` та оновлено `wp-index.json`. |
 | 0.5.1 | 2026-11-14 | #183: зареєстровано звіт перевірки верифікатора `Proof`, `change(...)` і базового CME-lowering (`verifier-lowering-183/report.md`) та оновлено `wp-index.json`. |
