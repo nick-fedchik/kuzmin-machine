@@ -1,6 +1,6 @@
 # Відкриті роботи та рішення власника
 
-* **Версія:** 0.4.2
+* **Версія:** 0.4.3
 * **Дата:** 2026-11-14
 * **Тип WP:** Register
 * **Власник рішень:** Микола Федчик.
@@ -12,7 +12,7 @@
 Початковий запис п'яти розглянутих Issues та окремої міграції
 [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148) актуалізовано станом на
 `2026-11-14` за фактичними злиттями `PR #149–#161`, стеку аудиту `#176` (`PR #163`, `#170–#175`),
-правок за рецензіями (`PR #180–#182`) та новою декомпозицією розвитку KPOL (`#183–#186`); це не повторний аудит усього історичного беклогу.
+правок за рецензіями (`PR #180–#182`), стеку розвитку KPOL `#190` (`PR #187–#189`) та новою декомпозицією (`#183–#186`, `#191–#192`); це не повторний аудит усього історичного беклогу.
 GitHub Issue має стан Open/Closed; окреме поле Project має
 Todo/In progress/Postponed/Done. Відкладення або закриття епіка в GitHub без окремого акту приймання не є автоматичним затвердженням усієї нормативної бази.
 
@@ -49,10 +49,12 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 
 | Issue | GitHub | Стан виконання | Зміст і межа |
 |---|---|---|---|
-| [#183 — дефекти верифікатора й CME-lowering у `kpol_reference.py` та синхронізація `RFC-010`](https://github.com/nick-fedchik/kuzmin-machine/issues/183) | Open | In review ([PR #187](https://github.com/nick-fedchik/kuzmin-machine/pull/187), sub-issue `#8`) | Одноразовий початковий `change(...)`, відхилення вакуумних `Proof`, усунення евристики імені правила, точне lowering `>=`/`<=`/`int16` `RANGE` та фіксація `RFC-010` ([звіт](../../Engineering/validation/kpol-cme/verifier-lowering-183/report.md)); рецензія `claude-sonnet-5.5` — `APPROVE`. |
-| [#184 — профіль `KPOL-CME-2` на `CME-RAW-1`](https://github.com/nick-fedchik/kuzmin-machine/issues/184) | Open | In review ([PR #188](https://github.com/nick-fedchik/kuzmin-machine/pull/188), sub-issue `#8`) | Багатоконцептна компіляція до 64 станів, ациклічні каскади (включно з `CID 0`), `ADD/SUB/ASSIGN`, розширені предикати, детектор `CME2-OPERAND-COLLISION` і AXI RTL-еквівалентність ([специфікація](../../Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md), [звіт](../../Engineering/validation/kpol-cme/cme2-profile-184/report.md)). |
-| [#185 — CR `KPOL-SYS-02` і дескриптор `CME-RAW-2`](https://github.com/nick-fedchik/kuzmin-machine/issues/185) | Open | In review (sub-issue `#8`) | Проєкт рішення [ADR B7](../../Engineering/decisions/cme-raw2-kpol-sys02.md) (Proposed): 32-байтний слот `W0..W7`, `W1.state_valid` для `_`, розділені 32-бітні операнди охоронця й дії, двобанкова пам'ять `2 × RAMB36E1` (8 тактів) і сумісність із `Secure Boot` ([звіт](../../Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md)). |
+| [#183 — дефекти верифікатора й CME-lowering у `kpol_reference.py` та синхронізація `RFC-010`](https://github.com/nick-fedchik/kuzmin-machine/issues/183) | Closed, completed | Done ([PR #187](https://github.com/nick-fedchik/kuzmin-machine/pull/187), стек [#190](https://github.com/nick-fedchik/kuzmin-machine/issues/190), sub-issue `#8`) | Одноразовий початковий `change(...)`, відхилення вакуумних `Proof`, усунення евристики імені правила, точне lowering `>=`/`<=`/`int16` `RANGE` та фіксація `RFC-010` ([звіт](../../Engineering/validation/kpol-cme/verifier-lowering-183/report.md)); рецензія `claude-sonnet-5.5` — `APPROVE`. |
+| [#184 — профіль `KPOL-CME-2` на `CME-RAW-1`](https://github.com/nick-fedchik/kuzmin-machine/issues/184) | Closed, completed | Done ([PR #188](https://github.com/nick-fedchik/kuzmin-machine/pull/188), sub-issue `#8`) | Багатоконцептна компіляція до 64 станів, ациклічні каскади (включно з `CID 0`), `ADD/SUB/ASSIGN`, розширені предикати, детектор `CME2-OPERAND-COLLISION` і AXI RTL-еквівалентність ([специфікація](../../Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md), [звіт](../../Engineering/validation/kpol-cme/cme2-profile-184/report.md)); повторна рецензія `claude-sonnet-5.5` — «Прийнято із зауваженнями» (залишок — [#191](https://github.com/nick-fedchik/kuzmin-machine/issues/191)). |
+| [#185 — CR `KPOL-SYS-02` і дескриптор `CME-RAW-2`](https://github.com/nick-fedchik/kuzmin-machine/issues/185) | Closed, completed | Done ([PR #189](https://github.com/nick-fedchik/kuzmin-machine/pull/189), sub-issue `#8`; ADR у статусі `Proposed`, рішення власника щодо варіантів А/Б/В очікується) | Проєкт рішення [ADR B7](../../Engineering/decisions/cme-raw2-kpol-sys02.md) (Proposed): 32-байтний слот `W0..W7`, `W1.state_valid` для `_`, розділені 32-бітні операнди охоронця й дії, двобанкова пам'ять `2 × RAMB36E1` (8 тактів) і сумісність із `Secure Boot` ([звіт](../../Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md)); повторна рецензія `claude-sonnet-5.5` — «Прийнято із зауваженнями» (залишок — [#192](https://github.com/nick-fedchik/kuzmin-machine/issues/192)). |
 | [#186 — Native-діалект `KPOL-AUTH` після відповідей на `RFC-009`, `015–017`](https://github.com/nick-fedchik/kuzmin-machine/issues/186) | Open | Blocked | Очікує відповідей Автора Машини у `drafts` (`PR #4`: оновлений `RFC-009` і нові `RFC-015..017`). |
+| [#191 — специфікація й тести `KPOL-CME-2` проти коду (знахідки рецензії PR #188)](https://github.com/nick-fedchik/kuzmin-machine/issues/191) | Open | Ready (sub-issue `#8`) | Розбіжність §2.1 специфікації з поведінкою парсера, golden-файл `KPOL-CME-1`, авторство редакції звіту. |
+| [#192 — недоведені твердження про `CME-RAW-2` у похідних документах (знахідки рецензії PR #189)](https://github.com/nick-fedchik/kuzmin-machine/issues/192) | Open | Ready (sub-issue `#8`) | «8 тактів» без позначки «ціль / не перевірено» у README і реєстрах, скрипт `verify_cr_cme_raw2.py`, джерело латентності, статус критерію Secure Boot. |
 
 Джерела рішень:
 [пропрієтарний режим](https://github.com/nick-fedchik/kuzmin-machine/issues/20#issuecomment-6829699920),
@@ -70,6 +72,7 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.4.3 | 2026-11-14 | #193: зафіксовано злиття стеку #190 (`PR #187–#189`, `#183–#185` закрито), нові знахідки рецензій #191 і #192. |
 | 0.4.2 | 2026-11-14 | #185: зафіксовано публікацію PR #188 (`#184`) та підготовку проєкту рішення ADR B7 (`KPOL-SYS-02` і дескриптор `CME-RAW-2`, `#185`). |
 | 0.4.1 | 2026-11-14 | #184: зафіксовано рецензію PR #187 (`#183`) та реалізацію багатоконцептного профілю `KPOL-CME-2` (`#184`). |
 | 0.4.0 | 2026-11-14 | #183: зафіксовано закриття злитого стеку #176 (`PR #163`, `#170–#175`) та правок за рецензіями (`#177–#179` у `PR #180–#182`), а також додано підзадачі розвитку мови KPOL `#183–#186`. |
