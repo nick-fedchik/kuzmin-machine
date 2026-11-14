@@ -1,18 +1,18 @@
 # Звіт #201: аналіз впливу відкритих RFC-009, 015–018 на `KPOL-AUTH` і ADR B7 та актуалізація чернетки Q3 (`#120`)
 
-* **Версія:** 0.1.4
+* **Версія:** 0.1.5
 * **Дата:** 2026-11-15
 * **Тип WP:** Report / Analysis
-* **Issue:** [#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201), [#203](https://github.com/nick-fedchik/kuzmin-machine/issues/203), [#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207), [#211](https://github.com/nick-fedchik/kuzmin-machine/issues/211) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `docs/211-drafts4-conflict-sync` (попередні: `#202`, `#206`, `#208`).
-* **Виконавець:** GitHub Copilot CLI (`Gemini 4 Hydrogen`, `gemini-4-hydrogen`). **Рецензент:** Claude Sonnet 5.5 (рецензії `0.1.0` у PR #202, `0.1.0` у PR #206, `0.2.0` у PR #208 — «Прийнято із зауваженнями»); редакція `0.1.4` очікує рецензії.
-* **Коміт, на якому виконано:** `26ab37326e2a77beb6cbdd2c37bf6774010dd248` (`main`, попередні `db6820d`, `4f468c5`; синхронізація реєстрів — `603a87f`); чернетка RFC — `drafts` PR #4 (`docs/kpol-rfc-015-017`, `ce1c5ab`). **Хост / плата:** Linux x86_64; фізична плата не залучалася.
+* **Issue:** [#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201), [#203](https://github.com/nick-fedchik/kuzmin-machine/issues/203), [#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207), [#211](https://github.com/nick-fedchik/kuzmin-machine/issues/211), [#213](https://github.com/nick-fedchik/kuzmin-machine/issues/213) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `docs/213-post-merge-sync` (попередні: `#202`, `#206`, `#208`, `#212`).
+* **Виконавець:** GitHub Copilot CLI (`Gemini 4 Hydrogen`, `gemini-4-hydrogen`). **Рецензент:** Claude Sonnet 5.5 (рецензії `0.1.0` у PR #202, `0.1.0` у PR #206, `0.2.0` у PR #208, `0.1.0` у PR #212 — «Прийнято із зауваженнями»); редакція `0.1.5` очікує рецензії.
+* **Коміт, на якому виконано:** `26ab37326e2a77beb6cbdd2c37bf6774010dd248` (`main`, попередні `db6820d`, `4f468c5`; синхронізація реєстрів — `4d50943`); фінальний зріз RFC — `drafts/main` `7575b31` (merge PR #4; історичні SHA гілки до злиття: `e4c3047`, `0018de2`, `f84d7b4`, `ce1c5ab`). **Хост / плата:** Linux x86_64; фізична плата не залучалася.
 * **Критерії успіху (зафіксовано до виконання):** критерії [#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201) (повне розмежування первинних джерел і припущень, таблиця впливу `RFC-009, 015–018 → CST/IR & ADR B7`, актуалізація чернетки `Q3` без запуску експерименту).
 
 ---
 
 ## 1. Що не вдалося і обмеження
 
-* Відповіді М. Ю. Кузьміна на відкриті запити `RFC-009`, `RFC-015`, `RFC-016`, `RFC-017` і новостворений `RFC-018` (`nick-fedchik/drafts` PR #4, `docs/kpol-rfc-015-017`, `ce1c5ab`) **ще не отримано**; тому всі варіанти А/Б у цьому звіті є похідними інженерними гіпотезами, а не твердженнями Автора.
+* Відповіді М. Ю. Кузьміна на відкриті запити `RFC-009`, `RFC-015`, `RFC-016`, `RFC-017` і новостворений `RFC-018` (`nick-fedchik/drafts` `main` `7575b31`, merge PR #4; історичні SHA гілки до злиття: `e4c3047`, `0018de2`, `f84d7b4`, `ce1c5ab`) **ще не отримано**; тому всі варіанти А/Б у цьому звіті є похідними інженерними гіпотезами, а не твердженнями Автора.
 * Задачу [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186) (`KPOL-AUTH`) не розблоковано, код фронтенду, `Engineering/hw/` та `Engineering/sw/` не змінювалися.
 * Експеримент `Q3` ([#120](https://github.com/nick-fedchik/kuzmin-machine/issues/120)) **не запускався**: оновлено лише чернетку протоколу на погодження власнику.
 
@@ -20,7 +20,7 @@
 
 1. Прочитано первинні картки джерел у [`Research/sources/author/`](../../sources/README.md): [`rfc-2026-11-12.md`](../../sources/author/rfc-2026-11-12.md) (`RFC-005–008`), [`clarifications-2026-11-13.md`](../../sources/author/clarifications-2026-11-13.md) (`RFC-008`, `010–014` та повідомлення про виконувані дужки), [`group-execution-2026-11-13.md`](../../sources/author/group-execution-2026-11-13.md) та [`introduction-revision-2026-11-13.md`](../../sources/author/introduction-revision-2026-11-13.md).
 2. Прочитано відкриті чернетки `RFC-009`, `RFC-015–017` у `nick-fedchik/drafts#4` і архітектурне рішення [`cme-raw2-kpol-sys02.md`](../../../Engineering/decisions/cme-raw2-kpol-sys02.md) (`ADR B7`, статус `Proposed`).
-3. За виявленою межею `RFC-010` у `clarifications-2026-11-13.md` (невизначений порядок 8 бітів `Def` і різниця `Def[i]=0` vs `Def[i]=1` зі значенням `_`) створено `RFC-018` і додано приклади до `RFC-015`/`RFC-017` у `drafts@e4c3047` (пізніше переписано простою мовою, узгоджено з короткими формами в `drafts@0018de2` за [#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207), уточнено за рецензією PR #208 у `drafts@f84d7b4` та злито з `drafts/main@53a2016` у `drafts@ce1c5ab` за [#211](https://github.com/nick-fedchik/kuzmin-machine/issues/211)).
+3. За виявленою межею `RFC-010` у `clarifications-2026-11-13.md` (невизначений порядок 8 бітів `Def` і різниця `Def[i]=0` vs `Def[i]=1` зі значенням `_`) створено `RFC-018` і додано приклади до `RFC-015`/`RFC-017` у `drafts@e4c3047` (історичні SHA гілки до злиття: `0018de2` за [#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207), `f84d7b4` за рецензією PR #208, `ce1c5ab` за [#211](https://github.com/nick-fedchik/kuzmin-machine/issues/211); злито в `drafts/main` у `7575b31`).
 4. Побудовано матрицю наслідків для кожного варіанта відповіді з явною розміткою походження (**[П]** — первинне джерело, **[В]** — похідне/припущення) та оновлено чернетку протоколу `Q3` під поточну структуру `main` (`26ab373`).
 
 ## 3. Результати
@@ -41,7 +41,7 @@
   * `_` кодується окремим валідним бітом; читання — із комірки в стек і назад; `@` — синтаксичний маркер параметрів транслятора; при переповненні черги — очікування ([`rfc-2026-11-12.md`](../../sources/author/rfc-2026-11-12.md): `RFC-005..007`).
   * `Size` замінено на порожнє ім'я; одиниця — `Token`; `Def` — 8-бітна маска присутності ([`clarifications-2026-11-13.md`](../../sources/author/clarifications-2026-11-13.md): `RFC-010`); на слайді 2 презентації ([`source-delta-01.json`](data/kpol-syntax-157/source-delta-01.json), слайд 2) уже задано нумерацію 8 елементів: `Def 0: Name`, `Def 1: Help`, `Def 2: Subscribe`, `Def 3: Организация`, `Def 4: Attributes/Property`, `Def 5: Event`, `Def 6: Method`, `Def 7: Child`.
   * Пара знаків звільняє `#`; закривальна дужка того ж типу; коми в `(...)`; циклів немає (`RFC-011`, `RFC-012`).
-  * Підписка за `•` виконується після адресації (`RFC-013`); `OpenBracket` і `CloseBracked` виконувані (`clarifications-2026-11-13.md` §3).
+  * Підписка за `•` виконується після адресації (`RFC-013`); `OpenBracket` і `CloseBracked` виконувані (`clarifications-2026-11-13.md` §3). Дослівна цитата про `RFC-001` («не занято выполнением этого события (завершение по метасобытию большая точка)») зафіксована у секції «Відповідь Автора (Михайло Кузьмін, 2026-11-11)» у [`RFC-001-event-semantics.md`](https://github.com/nick-fedchik/drafts/blob/538b81da2da63f6bbbbebd30a3872e9299c6c368/KuzminMachine/RFC/RFC-001-event-semantics.md) (`drafts@538b81d`, збережено у `7575b31`); окремого первинного протоколу в `Research/sources/author/` для відповіді 2026-11-11 не збережено (передує картці `rfc-2026-11-12.md`).
   * `Collection` (І), `Array` (`Min`/`Max`, АБО), `Token`-індекси, default `Min=1, Max=0` ([`group-execution-2026-11-13.md`](../../sources/author/group-execution-2026-11-13.md)).
 * **Похідне / припущення (М. Федчик, агенти):**
   * Варіанти **А/Б** у `RFC-009`, `015–017` (`drafts#4`).
@@ -105,6 +105,7 @@ python3 Project/tools/check_wp_documents.py
 | 0.1.2 | 2026-11-14 | Актуалізація SHA (`drafts#4@0018de2`, `main@26ab373`) після узгодження докладних і коротких форм RFC-009, 015–018 без жаргону ([#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207)). |
 | 0.1.3 | 2026-11-14 | Актуалізація SHA `drafts#4` до `f84d7b4` після виправлення зауважень рецензії PR #208 (`N-1…N-3`: прибрано коди `Q-AUTH-NN` у коротких формах, уточнено первинну цитату в `details/RFC-015`, замінено `>=`/`<=` словами в `details/RFC-009`). |
 | 0.1.4 | 2026-11-15 | Актуалізація SHA `drafts#4` до `ce1c5ab` після розв'язання конфлікту з `drafts/main@53a2016` і звірки дослівних цитат Автора у закритих RFC ([#211](https://github.com/nick-fedchik/kuzmin-machine/issues/211)). |
+| 0.1.5 | 2026-11-15 | Зафіксовано SHA `drafts/main` `7575b31` після злиття `drafts#4` (гілочні `e4c3047`, `0018de2`, `f84d7b4`, `ce1c5ab` позначено як історичні до злиття) та локатор цитати `RFC-001` (`drafts@538b81d`) із межею щодо `Research/sources/author/` ([#213](https://github.com/nick-fedchik/kuzmin-machine/issues/213)). |
 
 ## Абревіатури та глосарій
 
