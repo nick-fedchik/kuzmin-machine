@@ -1377,6 +1377,7 @@ CME_GUARD_ASSUMPTION_EN = 0x01
 CME_GUARD_INVARIANT_EN = 0x02
 CME_GUARD_HAZARD_EN = 0x04
 CME_GUARD_INVERT_ASSUMPTION = 0x08  # Big Dot: • = ¬
+CME_GUARD_SUBSCRIBER_EN = 0x10      # Явний дозвіл каскаду (зокрема на CID 0)
 
 
 @dataclass
@@ -1706,10 +1707,16 @@ def compile_concept_microcode_bram_image(
         if cascade_map:
             tgt = cascade_map.get(st.name, cascade_map.get(cid, None))
             if tgt is not None:
-                if isinstance(tgt, int):
+                if isinstance(tgt, int) and not isinstance(tgt, bool):
+                    if not (0 <= tgt < 64):
+                        raise KpolError(f"Cascade target CID {tgt} for '{st.name}' out of range 0..63")
                     subscriber_cid = tgt
+                    guard_flags |= CME_GUARD_SUBSCRIBER_EN
                 elif isinstance(tgt, str) and tgt in state_index:
                     subscriber_cid = state_index[tgt]
+                    guard_flags |= CME_GUARD_SUBSCRIBER_EN
+                else:
+                    raise KpolError(f"Unknown cascade target '{tgt}' for '{st.name}'")
 
         desc = ConceptMicroDescriptor(
             cid=cid,

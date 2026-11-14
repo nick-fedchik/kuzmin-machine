@@ -515,3 +515,90 @@ endmodule
     assert "PASS: cascade CID 1 -> CID 0 committed=2 cid0_state=11" in out, out
 
 
+CME_MUTANTS = [
+    pytest.param(
+        "block_cid0_cascade",
+        "(guard_flags_w[4] || (subscriber_cid_w != 32'd0))",
+        "(subscriber_cid_w != 32'd0)",
+        "[FAIL] Сценарій 6A",
+        id="block-cid0-cascade",
+    ),
+    pytest.param(
+        "allow_out_of_range_cid64_cascade",
+        "wire subscriber_target_valid_w = (subscriber_cid_w < 32'd64);",
+        "wire subscriber_target_valid_w = 1'b1;",
+        "[FAIL] Сценарій 6C",
+        id="allow-cid64-cascade",
+    ),
+    pytest.param(
+        "cross_concept_gate_changed",
+        "    logic                  gate_rejected;\n    logic                  gate_hazard_obs;",
+        "    logic                  gate_rejected;\n    logic                  gate_changed;\n    logic                  gate_hazard_obs;",
+        "[FAIL] Сценарій 7A",
+        id="cross-concept-gate-changed",
+    ),
+    pytest.param(
+        "ignore_arith_overflow",
+        "assign invariant_true_w   = !arith_overflow_w && ($signed(candidate_state_w) >= 0);",
+        "assign invariant_true_w   = ($signed(candidate_state_w) >= 0);",
+        "[FAIL] Сценарій 8A",
+        id="ignore-arith-overflow",
+    ),
+    pytest.param(
+        "unsigned_range_bounds",
+        "8'h05: pred_raw_res = ($signed(event_param_i) >= range_lo_sext_w) &&\n                                  ($signed(event_param_i) <= range_hi_sext_w); // RANGE (signed int16 bounds)",
+        "8'h05: pred_raw_res = (event_param_i >= range_lo_w) &&\n                                  (event_param_i <= range_hi_w);",
+        "[FAIL] Сценарій 9A",
+        id="unsigned-range-bounds",
+    ),
+    pytest.param(
+        "silent_unknown_action_commit",
+        ".candidate_known_i(action_valid_w),",
+        ".candidate_known_i(1'b1),",
+        "[FAIL] Сценарій 10",
+        id="silent-unknown-action-commit",
+    ),
+]
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+@pytest.mark.parametrize("name,target,replacement,expected_marker", CME_MUTANTS)
+def test_cme_core_semantics_mutant_controls(
+    tmp_path, name, target, replacement, expected_marker,
+):
+    rtl_text = (HW / "rtl/core/km_concept_micro_engine.sv").read_text(encoding="utf-8")
+    assert target in rtl_text, f"Не знайдено фрагмент для мутанта {name}"
+    patched = rtl_text.replace(target, replacement)
+    if name == "cross_concept_gate_changed":
+        patched = patched.replace(".changed_o(),", ".changed_o(gate_changed),")
+        patched = patched.replace(
+            "assign state_changed_o      = gate_committed && (gate_state_out != sampled_state_q);",
+            "assign state_changed_o      = gate_changed;",
+        )
+    mutated_rtl = tmp_path / f"km_concept_micro_engine_{name}.sv"
+    mutated_rtl.write_text(patched, encoding="utf-8")
+
+    simulation = tmp_path / f"cme_mutant_{name}.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012",
+            "-s", "km_concept_micro_engine_tb",
+            "-o", str(simulation),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(mutated_rtl),
+            str(HW / "tb/km_concept_micro_engine_tb.sv"),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    result = subprocess.run(
+        ["vvp", "-n", str(simulation)],
+        capture_output=True, text=True, timeout=30,
+    )
+    out = result.stdout + result.stderr
+    assert result.returncode != 0, f"Мутант {name} не впав:\n{out}"
+    assert expected_marker in out, f"Мутант {name} впав не на {expected_marker}:\n{out}"
+
+
