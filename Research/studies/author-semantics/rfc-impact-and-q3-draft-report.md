@@ -1,18 +1,18 @@
 # Звіт #201: аналіз впливу відкритих RFC-009, 015–018 на `KPOL-AUTH` і ADR B7 та актуалізація чернетки Q3 (`#120`)
 
-* **Версія:** 0.1.1
+* **Версія:** 0.1.3
 * **Дата:** 2026-11-14
 * **Тип WP:** Report / Analysis
-* **Issue:** [#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201), [#203](https://github.com/nick-fedchik/kuzmin-machine/issues/203) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `docs/203-rfc-impact-and-def-fixes`.
-* **Виконавець:** GitHub Copilot CLI (`Gemini 4 Hydrogen`, `gemini-4-hydrogen`). **Рецензент:** Claude Sonnet 5.5 (рецензія `0.1.0` у PR #202 — «Прийнято із зауваженнями»); редакція `0.1.1` очікує рецензії.
-* **Коміт, на якому виконано:** `db6820da570035c8f1f62f4041c6d97a1faa677a` (`main`, попередній `4f468c5`); чернетка RFC — `drafts` PR #4 (`docs/kpol-rfc-015-017`). **Хост / плата:** Linux x86_64; фізична плата не залучалася.
+* **Issue:** [#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201), [#203](https://github.com/nick-fedchik/kuzmin-machine/issues/203), [#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). **PR:** у гілці `docs/207-drafts4-details` (`#208`; попередні: `#202`, `#206`).
+* **Виконавець:** GitHub Copilot CLI (`Gemini 4 Hydrogen`, `gemini-4-hydrogen`). **Рецензент:** Claude Sonnet 5.5 (рецензія `0.1.0` у PR #202, `0.1.0` у PR #206, `0.1.0` у PR #208 — «Прийнято із зауваженнями»); редакція `0.1.3` очікує рецензії.
+* **Коміт, на якому виконано:** `26ab37326e2a77beb6cbdd2c37bf6774010dd248` (`main`, попередні `db6820d`, `4f468c5`); чернетка RFC — `drafts` PR #4 (`docs/kpol-rfc-015-017`, `f84d7b4`). **Хост / плата:** Linux x86_64; фізична плата не залучалася.
 * **Критерії успіху (зафіксовано до виконання):** критерії [#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201) (повне розмежування первинних джерел і припущень, таблиця впливу `RFC-009, 015–018 → CST/IR & ADR B7`, актуалізація чернетки `Q3` без запуску експерименту).
 
 ---
 
 ## 1. Що не вдалося і обмеження
 
-* Відповіді М. Ю. Кузьміна на відкриті запити `RFC-009`, `RFC-015`, `RFC-016`, `RFC-017` і новостворений `RFC-018` (`nick-fedchik/drafts` PR #4, `docs/kpol-rfc-015-017`, `e4c3047`) **ще не отримано**; тому всі варіанти А/Б у цьому звіті є похідними інженерними гіпотезами, а не твердженнями Автора.
+* Відповіді М. Ю. Кузьміна на відкриті запити `RFC-009`, `RFC-015`, `RFC-016`, `RFC-017` і новостворений `RFC-018` (`nick-fedchik/drafts` PR #4, `docs/kpol-rfc-015-017`, `f84d7b4`) **ще не отримано**; тому всі варіанти А/Б у цьому звіті є похідними інженерними гіпотезами, а не твердженнями Автора.
 * Задачу [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186) (`KPOL-AUTH`) не розблоковано, код фронтенду, `Engineering/hw/` та `Engineering/sw/` не змінювалися.
 * Експеримент `Q3` ([#120](https://github.com/nick-fedchik/kuzmin-machine/issues/120)) **не запускався**: оновлено лише чернетку протоколу на погодження власнику.
 
@@ -20,8 +20,8 @@
 
 1. Прочитано первинні картки джерел у [`Research/sources/author/`](../../sources/README.md): [`rfc-2026-11-12.md`](../../sources/author/rfc-2026-11-12.md) (`RFC-005–008`), [`clarifications-2026-11-13.md`](../../sources/author/clarifications-2026-11-13.md) (`RFC-008`, `010–014` та повідомлення про виконувані дужки), [`group-execution-2026-11-13.md`](../../sources/author/group-execution-2026-11-13.md) та [`introduction-revision-2026-11-13.md`](../../sources/author/introduction-revision-2026-11-13.md).
 2. Прочитано відкриті чернетки `RFC-009`, `RFC-015–017` у `nick-fedchik/drafts#4` і архітектурне рішення [`cme-raw2-kpol-sys02.md`](../../../Engineering/decisions/cme-raw2-kpol-sys02.md) (`ADR B7`, статус `Proposed`).
-3. За виявленою межею `RFC-010` у `clarifications-2026-11-13.md` (невизначений порядок 8 бітів `Def` і різниця `Def[i]=0` vs `Def[i]=1` зі значенням `_`) створено `RFC-018` і додано приклади до `RFC-015`/`RFC-017` у `drafts@e4c3047`.
-4. Побудовано матрицю наслідків для кожного варіанта відповіді з явною розміткою походження (**[П]** — первинне джерело, **[В]** — похідне/припущення) та оновлено чернетку протоколу `Q3` під поточну структуру `main` (`4f468c5`).
+3. За виявленою межею `RFC-010` у `clarifications-2026-11-13.md` (невизначений порядок 8 бітів `Def` і різниця `Def[i]=0` vs `Def[i]=1` зі значенням `_`) створено `RFC-018` і додано приклади до `RFC-015`/`RFC-017` у `drafts@e4c3047` (пізніше переписано простою мовою, узгоджено з короткими формами в `drafts@0018de2` за [#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207) та уточнено за рецензією PR #208 у `drafts@f84d7b4`).
+4. Побудовано матрицю наслідків для кожного варіанта відповіді з явною розміткою походження (**[П]** — первинне джерело, **[В]** — похідне/припущення) та оновлено чернетку протоколу `Q3` під поточну структуру `main` (`26ab373`).
 
 ## 3. Результати
 
@@ -65,7 +65,7 @@
 
 ### 3.4. Оновлена чернетка протоколу Q3 для Issue `#120` (не запускати без погодження власника)
 
-* **Об'єкт дослідження (актуалізовано до `main` `db6820da570035c8f1f62f4041c6d97a1faa677a`):** інженерні профілі `KPOL-CME-1` і `KPOL-CME-2` у [`kpol_reference.py`](../../../Engineering/sw/kpol-ref/kpol_reference.py) (CLI [`compile_kpol_bram_image.py`](../../../Engineering/hw/scripts/compile_kpol_bram_image.py)). Попередня залежність `#19` закрита.
+* **Об'єкт дослідження (актуалізовано до `main` `26ab37326e2a77beb6cbdd2c37bf6774010dd248`):** інженерні профілі `KPOL-CME-1` і `KPOL-CME-2` у [`kpol_reference.py`](../../../Engineering/sw/kpol-ref/kpol_reference.py) (CLI [`compile_kpol_bram_image.py`](../../../Engineering/hw/scripts/compile_kpol_bram_image.py)). Попередня залежність `#19` закрита.
 * **Матеріали учасника:** лише [`Engineering/specifications/kpol/`](../../../Engineering/specifications/kpol/README.md) (`kpol-cme-subset-0.1.0.md`, `kpol-cme2-profile-0.1.0.md`, `kpol-consolidated-0.1.0.md`).
 * **Учасники:** основна група — ≥ 3 програмісти-люди без досвіду МК; допоміжний пілот на LLM-агентах — **виключно для пошуку дефектів документації** (не дає висновку про зручність для людей).
 * **3 задачі зі зростанням складності (приймальні тести та `Proof` фіксуються до запуску):**
@@ -102,6 +102,8 @@ python3 Project/tools/check_wp_documents.py
 | :--- | :--- | :--- |
 | 0.1.0 | 2026-11-14 | Перша редакція звіту аналізу впливу відкритих RFC-009, 015–018 на `KPOL-AUTH` і `ADR B7` та актуалізації чернетки Q3 ([#201](https://github.com/nick-fedchik/kuzmin-machine/issues/201)). |
 | 0.1.1 | 2026-11-14 | Виправлення за рецензією PR #202 (N-1..N-5): додано локатор слайда 2 для `Def 0..7`, явно зазначено нейтральність відкритих RFC щодо полярності `valid`, повернуто розділ «Межі» та необов'язкову базу порівняння до чернетки `Q3`, пом'якшено формулювання `RFC-009`/`RFC-012`, зареєстровано звіт у `wp-index.json` і `work-products.md` ([#203](https://github.com/nick-fedchik/kuzmin-machine/issues/203)). |
+| 0.1.2 | 2026-11-14 | Актуалізація SHA (`drafts#4@0018de2`, `main@26ab373`) після узгодження докладних і коротких форм RFC-009, 015–018 без жаргону ([#207](https://github.com/nick-fedchik/kuzmin-machine/issues/207)). |
+| 0.1.3 | 2026-11-14 | Актуалізація SHA `drafts#4` до `f84d7b4` після виправлення зауважень рецензії PR #208 (`N-1…N-3`: прибрано коди `Q-AUTH-NN` у коротких формах, уточнено первинну цитату в `details/RFC-015`, замінено `>=`/`<=` словами в `details/RFC-009`). |
 
 ## Абревіатури та глосарій
 
