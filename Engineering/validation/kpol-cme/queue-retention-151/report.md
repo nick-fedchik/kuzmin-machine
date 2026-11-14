@@ -1,6 +1,6 @@
 # Звіт #151: очікування без втрат і арбітраж ready/cascade черги B5
 
-* **Версія:** 0.1.0
+* **Версія:** 0.1.1
 * **Дата:** 2026-11-13
 * **Тип WP:** Report / Analysis
 * **Issue:** [#151](https://github.com/nick-fedchik/kuzmin-machine/issues/151) (реалізація B5 v2 після [#135](https://github.com/nick-fedchik/kuzmin-machine/issues/135) та [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150)); PR — пов'язана публікація в цій Issue.
@@ -50,7 +50,7 @@
 | Цільові тести черги, AXI burst і 6 мутантів (`d7ae62a`) | 12 passed, `exit_code=0`; [`queue-retention-01.log`](raw/queue-retention-01.log). | Охоплює `QUEUE_DEPTH=4,8,16,32`, AXI `+hw_burst` і падіння всіх 6 мутантів RTL. |
 | Проміжні повні `pytest` до появи всіх raw-файлів | 1 failed (`test_check_links.py`), 318 passed; [`full-tests-01.log`](raw/full-tests-01.log), [`full-tests-02.log`](raw/full-tests-02.log). | Збережено без змін: фіксують перевірку посилань до запису всіх цільових файлів на диск. |
 | Фінальний повний `pytest` | 319 passed, 300 subtests passed, `exit_code=0`; [`full-tests-03.log`](raw/full-tests-03.log). | Регресії всього репозиторію (SW + HW + інструменти NG), не HIL. |
-| Open EDA flow (`iverilog`, `verilator -Wall`, `yosys synth_xilinx`) | 154 passed + чистий Verilator lint + успішний синтез XC7, `exit_code=0`; [`open-flow-01.log`](raw/open-flow-01.log). | Синтезовано `kpol_bram_pipeline_axi`: 629 FDCE, 956 LUT, `check` — 0 помилок; без Vivado P&R і плати. |
+| Open EDA flow (`iverilog`, `verilator -Wall`, `yosys synth_xilinx`) | 154 passed; Verilator lint завершився **без помилок** (`exit_code=0`), але **з непослідовними попередженнями** (`PINCONNECTEMPTY`, `UNUSEDPARAM`, `UNUSEDSIGNAL`) та Yosys resize/replace warnings — «чистий» стосується відсутності помилок і провалів, не відсутності попереджень; успішний синтез XC7; [`open-flow-01.log`](raw/open-flow-01.log). | Синтезовано `kpol_bram_pipeline_axi`: 629 FDCE, 956 LUT, `check` — 0 помилок; без Vivado P&R і плати. |
 | Перевірка посилань, WP-документів та індексу | До виправлення #162: [`structure-01.log`](raw/structure-01.log) (`exit_code=1` на `j501-hardware-interface.md`); після: `exit_code=0`, 0 битих посилань, 0 помилок `check_wp_documents.py` у [`structure-02.log`](raw/structure-02.log). | Структурна валідність і незмінність імпортованих джерел, не незалежна рецензія. |
 
 ## 4. Перевірка критеріїв
@@ -81,6 +81,7 @@ python3 Project/tools/check_wp_documents.py
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.1.1 | 2026-11-14 | #179 (рецензія PR #163 F1): уточнено формулювання «чистий Verilator lint» — розмежовано «без помилок» (`exit_code=0`) і «з неблокуючими попередженнями» (`PINCONNECTEMPTY`/`UNUSEDPARAM`/`UNUSEDSIGNAL`, Yosys resize/replace), дані `raw/open-flow-01.log` без змін. |
 | 0.1.0 | 2026-11-13 | Первинний звіт верифікації B5 v2.1 (#151): очікування без втрат, арбітраж `ready/cascade`, `cascade_pending_*_q`, AXI `+hw_burst`, 6 мутантів та відкритий EDA-потік. |
 
 ## Абревіатури та глосарій

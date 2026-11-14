@@ -141,7 +141,11 @@ module km_concept_micro_engine #(
     assign hazard_true_w      = guard_flags_w[2] && (hazard_limit_w != 8'd0) &&
                                 ($signed(event_param_i) > $signed({24'd0, hazard_limit_w}));
 
-    // Фіксація вихідного стану поточного концепту на такті event_valid_i для точного state_changed_o
+    // Фіксація вихідного стану поточного концепту на такті event_valid_i для точного state_changed_o.
+    // Архітектурний інваріант (#179): sampled_state_q — скалярний регістр одного CME, розрахований
+    // на серійне однопотокове виконання (один event_valid_i за такт у межах цього CME); між
+    // фіксацією на такті N і зчитуванням gate_state_out на такті N+1 не відбувається
+    // міжтактового інтерлівінгу кількох концептів у цьому ж екземплярі CME.
     logic [DATA_WIDTH-1:0] sampled_state_q;
 
     always_ff @(posedge clk or negedge rst_n) begin
