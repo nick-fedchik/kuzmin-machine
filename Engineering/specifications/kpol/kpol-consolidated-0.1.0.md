@@ -1,8 +1,8 @@
 # KPOL: консолідований робочий контракт фронтенду та CME-бекенду
 
-* **Версія:** 0.5.0 (версія документа; чернетка, не стандарт KPOL v1.0)
-* **Дата:** 2026-11-13
-* **Issue:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19), вхід для [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)
+* **Версія:** 0.6.0 (версія документа; чернетка, не стандарт KPOL v1.0)
+* **Дата:** 2026-11-14
+* **Issue:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), вхід для [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)
 * **База реалізації:** `0ada974` у `nick-fedchik/kuzmin-machine`.
 * **Виконавець:** GitHub Copilot CLI, Auto. За повідомленням власника від 2026-11-12, поточною моделлю автора була ChatGPT 6.1 Sol; модель усіх попередніх кроків окремо не встановлено.
 * **Рецензент:** [Review Report](https://github.com/nick-fedchik/kuzmin-machine/pull/131#issuecomment-6824069657) для `a3715fc`; зміни за рецензією потребують повторної перевірки.
@@ -177,12 +177,17 @@ Pin приймає 0/1 або Bool. Float виконується через Pyth
    Hazard може встановити свій Bool-прапорець. Це не коміт звичайної
    прикладної транзакції.
 6. `change(...)` — внутрішні події: по одній для кожного набору
-   спостереження на початку `run`, потім при зміні спостережуваного
-   стану. Це не паралельні потоки, CSP або гарантія fairness.
+   спостереження один раз на старті інстансу `Interpreter` (перший виклик `run`),
+   а далі лише при фактичній зміні спостережуваного стану (повторні інкрементні
+   виклики `run` не перезапускають незмінені підписки). Це не паралельні потоки, CSP або гарантія fairness.
 7. Goals перевіряються наприкінці `run`. У Proof сценарій виконує
    конкретні `step` та `expect`; `assert` застосовується до подій,
-   які дійсно з'являються в сценаріях. Це скінченна перевірка трас,
-   не SMT-доказ або доказ усіх можливих виконань.
+   які дійсно з'являються в сценаріях. `verify_module` відхиляє вакуумні
+   елементи `Proof`: оголошений `assert`, чия умова `when` жодного разу
+   не стала істинною в сценаріях, а також оголошений `scenario` без жодної
+   виконаної перевірки (явно порожній `Proof {}` має `total_checks == 0`,
+   тому відсікається мутаційним гейтом і профільним компілятором).
+   Це скінченна перевірка трас, не SMT-доказ або доказ усіх можливих виконань.
 
 `and/or/not` працюють із Unknown; `false and Unknown = false`,
 `true or Unknown = true`, `not Unknown = Unknown`. Рівність має окреме
@@ -248,15 +253,17 @@ python3 -m pytest -q Engineering/hw/tests/test_kpol_bram_pipeline.py
 |---|---|---|
 | 0–3 | `current_state` | 32-бітний стан |
 | 4–7 | `operand_val` | Одне поле, спільне для предиката та ADD/SUB |
-| 8 | `pred_opcode` | 00 NOP; 01 EQ; 02 NEQ; 03 GT; 04 LT; 05 RANGE; 06 BITMASK |
-| 9 | `guard_flags` | bit 0 — assumption known; bit 1 — invariant known; bit 2 — hazard enabled; bit 3 — інверсія предиката |
+| 8 | `pred_opcode` | 00 NOP; 01 EQ; 02 NEQ; 03 GT; 04 LT; 05 RANGE; 06 BITMASK; інші коди дають `0` |
+| 9 | `guard_flags` | bit 0 — assumption known; bit 1 — invariant known; bit 2 — hazard enabled; bit 3 — інверсія предиката; bit 4 — explicit subscriber enable (дозволяє каскад зокрема на `CID 0`) |
 | 10 | `hazard_limit` | 8-бітна межа; RTL перевіряє активований ненульовий поріг `event_param > limit` |
-| 11 | `action_opcode` | 00 ASSIGN **з event_param**; 01 INC; 02 DEC; 03 ADD operand; 04 SUB operand |
-| 12–15 | `subscriber_cid` | Індекс підписника; 0 у поточному RTL означає відсутність каскаду |
+| 11 | `action_opcode` | 00 ASSIGN **з event_param**; 01 INC; 02 DEC; 03 ADD operand; 04 SUB operand; `> 04` — fail-closed відхилення (`action_valid_w = 0`) |
+| 12–15 | `subscriber_cid` | Індекс підписника; при `guard_flags[4] == 1` дозволено будь-який `CID 0..63`, при `guard_flags[4] == 0` діє legacy-правило `subscriber_cid != 0` |
 
 GT/LT порівнюють знакові 32-бітні значення. RANGE використовує дві
-16-бітні беззнакові межі зі спільного операнда. Апаратний invariant —
-`signed(candidate_state) >= 0`, а не довільний вираз Invariants.
+знакові 16-бітні межі зі спільного операнда (`int16` зі знаковим розширенням `[lo, hi]`).
+Апаратний invariant після [#167](https://github.com/nick-fedchik/kuzmin-machine/issues/167) перевіряє
+`signed(candidate_state) >= 0` та відсутність знакового дводоповняльного переповнення `arith_overflow_w`,
+а не довільний вираз Invariants.
 Для валідної події нуль у bit 0 або bit 1 означає невідому відповідну
 умову, а не вимкнену перевірку: gate v2 відхиляє транзакцію. Поточний
 lowering встановлює bit 1, лише якщо його евристика пов'язала Invariant
@@ -285,7 +292,7 @@ HMAC-обгортка з `compile_signed_bram_image` додає 64-байтни�
 
 | Конструкція / можливість | Стан фронтенду / референсу | CME та інші межі / тест |
 |---|---|---|
-| Native Concept/Define/Group, типізовані Min/Max, виконувані дужки Static, Name/Help, адресні групи Source | Не реалізовано як native frontend; `•` має розбіжну семантику NOT | KPOL-AUTH/Q-AUTH і Reports #155/#157/#159; дефекти/прогалини не змінюють CME-RAW-1 |
+| Native Concept/Define/Group (`Def` як 8-бітна маска присутності й безіменний атрибут `Token` за RFC-010), типізовані Min/Max, виконувані дужки Static, Name/Help, адресні групи Source | Не реалізовано як native frontend; `•` має розбіжну семантику NOT | KPOL-AUTH/Q-AUTH і Reports #155/#157/#159 + [уточнення RFC-010](../../../Research/sources/author/clarifications-2026-11-13.md#2-витяги-та-локатори); дефекти/прогалини не змінюють CME-RAW-1 |
 | Problem/Solution, event/state/rule/set | Реалізовано парсером і перевіркою типів | Наскрізно перевірено лише обмежені сценарії §4; `test_all_documented_examples_parse_and_typecheck` — приклади історичного v0.1, `test_consolidated_example_proof_and_cme_pipeline` — приклад §4 та його зв'язок з образом increase |
 | Assumptions, Invariants, Hazards, Alerts, Goals | Реалізовано в Interpreter | Не всі вирази переносяться в CME; `test_v02_alert_observation_and_fail_closed_hazard`, `test_invariant_failure_rolls_back_whole_transaction` |
 | `on reject`, `covers` | Реалізовано в референсі з перевіркою hazard-цілі | Не доказ довільних reject-дій у CME; `test_rejected_unknown_sensor_data_latches_fault` |
@@ -302,7 +309,7 @@ HMAC-обгортка з `compile_signed_bram_image` додає 64-байтни�
 | Образ метаданих v0.5 | Реалізовано `compile_bram_image`, ліміт 16 правил | Не кодує виконувані охоронці/дії; `test_v05_compiler_bram_binary_generation` |
 | CME-образ | Реалізовано пакування, часткове lowering | `test_v10_concept_microcode_bram_generation` перевіряє поля, а не повну семантику; наскрізний тест — §4 |
 | C header / runtime, Verilog interconnect, AXI generator | Часткові окремі API, не синтаксис мови | Не оголошені еквівалентними CME; існують GCC/Icarus-тести вибраних сценаріїв |
-| HMAC/ACL/anti-replay | Часткові програмні API та тести | Не апаратний Secure Boot; відомий дефект тесту #115 зберігається |
+| HMAC/ACL/anti-replay | Програмні API та тести після виправлень [#115](https://github.com/nick-fedchik/kuzmin-machine/issues/115) і [#164](https://github.com/nick-fedchik/kuzmin-machine/issues/164) (свіжий 16-байтний `nonce`, захист від pre-auth nonce poisoning, `CME-RAW-1` payload за замовчуванням) | Програмна перевірка, не апаратний Secure Boot ([Report #115](../../validation/kpol-cme/signature-115/report.md), [Report #164](../../validation/kpol-cme/secure-boot-164/report.md)) |
 | Мутанти та гейт Поппера | Реалізовано як бібліотечні функції | Не обов'язковий релізний gate; не bounded SMT-generator |
 | `.kproblem/.ksolution/.kproof` | `parse_triad_files` вимагає три непорожні джерела та Proof-item | Хеші не доводять незалежність авторів; `test_v09_triad_cryptographic_independence_enforcement` |
 | `namespace/import` | У звичайному Parser не реалізовано; тріадний API видаляє такі рядки | Це не резолюція просторів імен |
@@ -328,20 +335,19 @@ HMAC-обгортка з `compile_signed_bram_image` додає 64-байтни�
 контрприклади наведено в [Review Report](https://github.com/nick-fedchik/kuzmin-machine/pull/131#issuecomment-6824069657)
 на `a3715fc`. Це симуляція, не HIL.
 
-Перелік розривів не вичерпний. Додаткові конкретні випадки зі згаданої
-симуляції, також на основі прикладу §4:
+Перелік розривів не вичерпний. Додаткові історичні випадки зі згаданої
+симуляції на коміті `a3715fc`, також на основі прикладу §4, та їхній поточний стан після [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183):
 
-| Зміна | Параметр | Референс | Спостережений розрив у direct RTL |
+| Зміна | Параметр | Референс | Історичний стан на `a3715fc` та поточний статус |
 |---|---|---|---|
-| Назвати правило `NotifyStep` | 5 | Counter=11 | Евристика імені встановлює інверсію через `not`; подію відхилено, Counter=10 |
-| Охоронець `param >= 5` | 5 | Counter=11 | Емітовано RANGE з межами `[5, 0]`; подію відхилено, Counter=10 |
-| Прибрати Invariants, зберегти Goal `Counter >= 0` | 5 | Counter=11 | `invariant known=0`; подію відхилено, Counter=10 |
-| Охоронець `Counter < 20` | 25 | Counter=11 | RTL порівнює параметр події, а не стан; подію відхилено, Counter=10 |
+| Назвати правило `NotifyStep` | 5 | Counter=11 | На `a3715fc`: евристика імені встановлювала інверсію через підрядок `not` (Counter=10). **Виправлено в #183**: ім'я правила не інвертує охоронець ([Report #183](../../validation/kpol-cme/verifier-lowering-183/report.md)). |
+| Охоронець `param >= 5` (або `<=`, або двосторонній `int16` інтервал) | 5 | Counter=11 | На `a3715fc`: емітувався `RANGE` з межами `[5, 0]` (Counter=10). **Виправлено в #183**: `>=` та `<=` транслюються через `INVERT + LT/GT` на всьому `Int32`, двосторонній `int16`-інтервал — у знаковий `RANGE` із fail-closed `KpolError` поза `[-32768, 32767]`; перевірено в RTL-симуляції `km_concept_micro_engine.sv`. |
+| Прибрати Invariants, зберегти Goal `Counter >= 0` | 5 | Counter=11 | **Зберігається в безпрофільному шляху**: `invariant known=0`, подію відхилено (Counter=10); у `KPOL-CME-1` відхиляється компілятором до емісії. |
+| Охоронець `Counter < 20` | 25 | Counter=11 | **Структурна межа `CME-RAW-1`**: RTL порівнює параметр події, а не стан (Counter=10); у `KPOL-CME-1` відхиляється до емісії (виділено в [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185)). |
 
-У коді гілки `>=` та `<=` обидві емітують RANGE, але наведений
-результат симуляції стосується саме `>= 5`. Також із читання
-компілятора: `_eval_int` повертає 0, якщо правий операнд неможливо
-обчислити без оточення; це не перевірено окремою RTL-симуляцією.
+Також із читання безпрофільного компілятора: поза двостороннім `RANGE` допоміжний `_eval_int`
+повертає 0, якщо правий операнд неможливо обчислити без оточення, а одночасна потреба в операнді
+предиката та `ADD/SUB` впирається у спільне поле `operand_val` (структурні межі виділено в [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) і [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185)).
 
 Перший інкремент #8 реалізовано в #150 для **явного KPOL-CME-1**:
 підтримуваність перевіряється до емісії. Константний ASSIGN, false-guard,
@@ -381,6 +387,7 @@ No-Go для v1.0 не скасовується автоматично.
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-14 | #183: синхронізовано §3 (`change(...)`, анти-вакуумність `verify_module`), §5 (`guard_flags[4]`, знаковий `RANGE`, fail-closed `action_opcode`, знакове переповнення за #167), §6 (#115, #164, RFC-010) та §7 (виправлення `NotifyStep` і `>=`/`<=`/`RANGE` у референсі зі збереженням структурних меж `CME-RAW-1`). |
 | 0.5.0 | 2026-11-13 | #159: межа підтримки типізованих індексів Collection/Array; current grammar/ABI незмінні. |
 | 0.4.0 | 2026-11-13 | #157: межа підтримки виконуваних дужок Static, оцінка уточнень; current grammar/ABI не змінено. |
 | 0.3.0 | 2026-11-13 | #155: явна межа native авторського синтаксису й current DSL; `•`, Name/Help та адреси, без змін реалізації. |

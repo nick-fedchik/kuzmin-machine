@@ -1,0 +1,5 @@
+# Command: KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py && python3 Project/tools/check_wp_documents.py && python3 -c 'import json,subprocess,pathlib; r=pathlib.Path("."); idx=json.loads((r/"Project/registers/wp-index.json").read_text()); paths={p for p in subprocess.check_output(["git","ls-files","-z"]).decode().split("\0") if p}|{p for p in subprocess.check_output(["git","ls-files","--others","--exclude-standard","-z"]).decode().split("\0") if p}; ents=[e["path"] for e in idx["entries"]]; assert len(ents)==len(set(ents)), "dup"; assert set(ents)==paths, (set(ents)-paths, paths-set(ents)); print("WP_INDEX_1_TO_1_OK", len(ents))' && git --no-pager diff --check -- ':!Engineering/validation/kpol-cme/verifier-lowering-183/raw/'
+# Timestamp: 2026-11-14T16:40:55Z
+Research/sources/author/clarifications-2026-11-13.md:32: https://github.com/nick-fedchik/drafts/blob/c92001c69f7417ca35f743c0e3c6942783eb29a7/KuzminMachine/RFC/details/RFC-010-concept-binary-layout-and-def.md
+Битих посилань: 1; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+# Exit code: 1

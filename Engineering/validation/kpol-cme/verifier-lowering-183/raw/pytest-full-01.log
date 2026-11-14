@@ -1,0 +1,30 @@
+# Command: python3 -m pytest -q
+# Timestamp: 2026-11-14T16:38:18Z
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+.............................................................................................................................. [ 78%]
+..........................F............................................. [ 99%]
+..                                                                       [100%]
+=================================== FAILURES ===================================
+____________________ test_cli_uses_same_root_from_other_cwd ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mfedchyk/pytest-305/test_cli_uses_same_root_from_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a19615e2660>
+
+    def test_cli_uses_same_root_from_other_cwd(tmp_path, monkeypatch):
+        monkeypatch.delenv("KM_DRAFTS_REPO", raising=False)
+        results = [
+            subprocess.run(
+                [sys.executable, str(TOOL)], cwd=cwd, capture_output=True, text=True
+            )
+            for cwd in (TOOL.parents[1], tmp_path)
+        ]
+>       assert results[0].returncode == results[1].returncode == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/bin/python3', '/home/mfedchyk/GitHub/nick-fedchik/km-wt-copilot-183-kpol-language-fixes/P...ся (пропущено 17).\nБитих посилань: 8; посилань file:: 0; посилань на drafts: перевірено 0, пропущено 17\n', stderr='').returncode
+
+Project/tools/tests/test_check_links.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED Project/tools/tests/test_check_links.py::test_cli_uses_same_root_from_other_cwd
+1 failed, 343 passed, 306 subtests passed in 23.13s
+# Exit code: 1
