@@ -2816,7 +2816,7 @@ class KpolCme2ProfileTests(unittest.TestCase):
                 with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
                     compile_concept_microcode_bram_image(parse_module(prog), profile="KPOL-CME-2")
 
-        with self.assertRaisesRegex(KpolError, "CME2-SHAPE"):
+        with self.assertRaisesRegex(KpolError, "CME2-CASCADE"):
             compile_concept_microcode_bram_image(
                 parse_module(self.MULTICONCEPT_SOURCE),
                 cascade_map={"Ingest": "StageMid"},
@@ -2920,12 +2920,173 @@ class KpolCme2ProfileTests(unittest.TestCase):
                     profile="KPOL-CME-2",
                 )
 
+        # Початковий стан 'Unknown' -> CME2-SHAPE
+        unknown_init = """
+        Problem UnknownInit { Invariants { Inv: S >= 0; } }
+        Solution UnknownInit {
+            state S: Int32 = Unknown;
+            event E(p: Int32);
+            rule R on E when true { set S := S + 1; }
+        }
+        Proof UnknownInit { scenario Check { expect S == 0; } }
+        """
+        with self.assertRaisesRegex(KpolError, "CME2-SHAPE"):
+            compile_concept_microcode_bram_image(parse_module(unknown_init), profile="KPOL-CME-2")
+
+        # Негативний Init < 0, відсутній інваріант та секція Goals -> CME2-INVARIANT
+        neg_init = make_single("true", "S + 1", "step E(p = 1); expect S == 0;").replace("S: Int32 = 10;", "S: Int32 = -5;")
+        missing_inv = make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace("Inv: S >= 0;", "")
+        with_goals = make_single("true", "S + 1", "step E(p = 1); expect S == 11;").replace(
+            "Invariants { Inv: S >= 0; }",
+            "Invariants { Inv: S >= 0; } Goals { G: S >= 0; }",
+        )
+        for label, bad_inv_prog in (("neg-init", neg_init), ("missing-inv", missing_inv), ("goals", with_goals)):
+            with self.subTest(invariant_case=label):
+                with self.assertRaisesRegex(KpolError, "CME2-INVARIANT"):
+                    compile_concept_microcode_bram_image(parse_module(bad_inv_prog), profile="KPOL-CME-2")
+
+        # Несумісний тип стану або параметра (Bool замість Int32) -> CME2-TYPE
+        bad_type = """
+        Problem BadType { Invariants { Inv: S >= 0; } }
+        Solution BadType {
+            state S: Int32 = 0;
+            event E(p: Bool);
+            rule R on E when true { set S := S + 1; }
+        }
+        Proof BadType { scenario Check { step E(p = true); expect S == 1; } }
+        """
+        with self.assertRaisesRegex(KpolError, "CME2-TYPE"):
+            compile_concept_microcode_bram_image(parse_module(bad_type), profile="KPOL-CME-2")
+
+        # Порушення ACL (запис у стан S без CAP_WRITE) -> CME2-ACL
+        acl_prog = make_single("true", "S + 1", "step E(p = 1); expect S == 11;")
+        with self.assertRaisesRegex(KpolError, "CME2-ACL"):
+            compile_concept_microcode_bram_image(
+                parse_module(acl_prog),
+                acl_table={"S": 0},
+                profile="KPOL-CME-2",
+            )
+
+    def test_cme2_guard_action_matrix_and_chain3_rtl_equivalence(self):
+        # Табличний тест 'охоронець x дія' для покриття ==, !=, <, >, >=, <= та INC/DEC/ASSIGN
+        cases = [
+            ("p == 5", "S + 1", [4, 5, 6], 11),
+            ("p != 5", "S - 1", [5, 4, 6], 8),
+            ("p < 5", "S + 1", [5, 4, -1], 12),
+            ("p > 5", "S - 1", [5, 6, 100], 8),
+            ("p >= 5", "S - 1", [4, 5, 10], 8),
+            ("p <= 5", "p", [6, 5, 3], 3),
+        ]
+        for guard, action, inputs, expected_final in cases:
+            with self.subTest(guard=guard, action=action):
+                prog = f"""
+                Problem Matrix {{ Invariants {{ Inv: S >= 0; }} }}
+                Solution Matrix {{
+                    state S: Int32 = 10;
+                    event E(p: Int32);
+                    rule R on E when {guard} {{ set S := {action}; }}
+                }}
+                Proof Matrix {{
+                    scenario Check {{
+                        step E(p = {inputs[0]});
+                        step E(p = {inputs[1]});
+                        step E(p = {inputs[2]});
+                        expect S == {expected_final};
+                    }}
+                }}
+                """
+                module = parse_module(prog)
+                image = compile_concept_microcode_bram_image(module, profile="KPOL-CME-2")
+                interp = Interpreter(module)
+                for val in inputs:
+                    interp.run([EventInput("E", {"p": val})])
+                self.assertEqual(interp.state["S"], expected_final)
+                slots = self._simulate_axi_pipeline(image, [(0, val, "hw") for val in inputs])
+                self.assertEqual(slots[0][0], expected_final)
+
+        # Ланцюг каскаду довжини 3 із ціллю CID 0: S3 -> S2 -> S1 -> S0
+        chain3_prog = """
+        Problem Chain3 {
+            Invariants { I0: S0 >= 0; I1: S1 >= 0; I2: S2 >= 0; I3: S3 >= 0; }
+        }
+        Solution Chain3 {
+            state S0: Int32 = 0;
+            state S1: Int32 = 0;
+            state S2: Int32 = 1;
+            state S3: Int32 = 0;
+            event Drive(v: Int32);
+            rule R0 on change(S1) when S1 >= 1 { set S0 := S1; }
+            rule R1 on change(S2) when S2 >= 2 { set S1 := S1 + 1; }
+            rule R2 on change(S3) when S3 >= 3 { set S2 := S2 + 1; }
+            rule R3 on Drive when true { set S3 := S3 + 3; }
+        }
+        Proof Chain3 {
+            scenario Fire3 {
+                step Drive(v = 0);
+                expect S3 == 3;
+                expect S2 == 2;
+                expect S1 == 1;
+                expect S0 == 1;
+            }
+        }
+        """
+        m3 = parse_module(chain3_prog)
+        img3 = compile_concept_microcode_bram_image(m3, profile="KPOL-CME-2")
+        slots3 = self._simulate_axi_pipeline(img3, [(3, 0, "hw")])
+        self.assertEqual([slots3[i][0] for i in range(4)], [1, 1, 2, 3])
+
     def test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2(self):
         cli = REPO_ROOT / "hw" / "scripts" / "compile_kpol_bram_image.py"
+        cme1_valid = """
+        Problem SingleCme1 { Invariants { Inv: S >= 0; } }
+        Solution SingleCme1 {
+            state S: Int32 = 1;
+            event E(p: Int32);
+            rule R on E when p > 0 { set S := S + 1; }
+        }
+        Proof SingleCme1 { scenario Check { step E(p = 5); expect S == 2; } }
+        """
         with tempfile.TemporaryDirectory() as tmpdir:
             src = Path(tmpdir) / "prog.kpol"
             out = Path(tmpdir) / "out.bin"
             src.write_text(self.MULTICONCEPT_SOURCE, encoding="utf-8")
+
+            # Байт-ідентичність CLI за замовчуванням (без --profile vs --profile KPOL-CME-1)
+            cme1_src = Path(tmpdir) / "cme1.kpol"
+            cme1_def = Path(tmpdir) / "cme1_def.bin"
+            cme1_exp = Path(tmpdir) / "cme1_exp.bin"
+            cme1_src.write_text(cme1_valid, encoding="utf-8")
+            r_def = subprocess.run([sys.executable, str(cli), str(cme1_src), str(cme1_def)], capture_output=True, text=True)
+            r_exp = subprocess.run([sys.executable, str(cli), "--profile", "KPOL-CME-1", str(cme1_src), str(cme1_exp)], capture_output=True, text=True)
+            self.assertEqual(r_def.returncode, 0, r_def.stderr)
+            self.assertEqual(r_exp.returncode, 0, r_exp.stderr)
+            self.assertEqual(cme1_def.read_bytes(), cme1_exp.read_bytes())
+
+            # Спроба перезапису існуючого вихідного файла -> CME2-IO
+            io_exist = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(cme1_src), str(cme1_def)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(io_exist.returncode, 0)
+            self.assertIn("CME2-IO", io_exist.stderr)
+
+            # Відсутній вхідний файл -> CME2-IO
+            io_missing = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(Path(tmpdir) / "missing.kpol"), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(io_missing.returncode, 0)
+            self.assertIn("CME2-IO", io_missing.stderr)
+
+            # Синтаксична помилка -> CME2-SYNTAX
+            syn_src = Path(tmpdir) / "bad_syntax.kpol"
+            syn_src.write_text("Problem Broken { !!! }", encoding="utf-8")
+            syn_res = subprocess.run(
+                [sys.executable, str(cli), "--profile", "KPOL-CME-2", str(syn_src), str(out)],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(syn_res.returncode, 0)
+            self.assertIn("CME2-SYNTAX", syn_res.stderr)
 
             # За замовчуванням CLI залишається в режимі KPOL-CME-1 і відхиляє багатоконцептний модуль
             default_res = subprocess.run(

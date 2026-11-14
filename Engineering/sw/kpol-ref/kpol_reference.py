@@ -1619,7 +1619,7 @@ def _compile_cme2_profile(
         return value
 
     if cascade_map is not None:
-        fail("CME2-SHAPE", "cascade_map is outside KPOL-CME-2; declare cascades via 'on change(State)'")
+        fail("CME2-CASCADE", "cascade_map is outside KPOL-CME-2; declare cascades via 'on change(State)'")
     if module.phase_aliases_used:
         fail("CME2-GUARD", "phase/dot alias ('•' or '(*)') is outside KPOL-CME-2 (#186); use 'not'")
     for req in module.requirements:
@@ -1641,7 +1641,9 @@ def _compile_cme2_profile(
     for cid, state in enumerate(module.states):
         if state.type_ref != TypeRef("Int32"):
             fail("CME2-TYPE", f"state {state.name}: expected Int32")
-        init_val = integer(state.initial, "CME2-SHAPE", f"state {state.name} initial", minimum=0)
+        init_val = integer(state.initial, "CME2-SHAPE", f"state {state.name} initial")
+        if init_val < 0:
+            fail("CME2-INVARIANT", f"state {state.name}: initial value {init_val} violates invariant {state.name} >= 0")
         state_index[state.name] = cid
         initial_env[state.name] = init_val
 
