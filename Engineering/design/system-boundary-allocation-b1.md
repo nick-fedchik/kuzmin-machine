@@ -1,8 +1,8 @@
 # Системна межа та розподіл вимог HW/SW (S2 / B1)
 
 * **Тип Work Product:** `Specification` / `Design` (підтип `Architecture Decision Record & Allocation`)
-* **Версія:** 1.0.1
-* **Дата:** 2026-11-12
+* **Версія:** 1.0.2
+* **Дата:** 2026-11-14
 * **Автор:** Antigravity (agy)
 * **Статус:** Нормативно зафіксовано (Approved Baseline)
 * **ASPICE 4.0 процеси:** `SYS.2` (System Requirements Analysis), `SYS.3` (System Architecture Design), `HWE.1`, `SWE.1`
@@ -86,11 +86,11 @@
 1. **KPOL Compiler (SW):** Модуль [`Engineering/sw/kpol-ref/kpol_reference.py`](../sw/kpol-ref/kpol_reference.py) та утиліти компіляції ([`Engineering/hw/scripts/compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py)). Відповідає за синтаксичний аналіз підмножини KPOL 0.1.0 ([`Engineering/specifications/kpol/kpol-consolidated-0.1.0.md`](../specifications/kpol/kpol-consolidated-0.1.0.md)), видобування предикатів і дій, детерміновану емісію 1024-байтного образу (64 концепти по 16 байтів).
 2. **KPOL Image Loader & Driver (FW / SW):** Рантайм хоста на базі Python/C ([`Engineering/sw/runtime/pynq/`](../sw/runtime/pynq)). Відповідає за переведення ядра у фазу `PHASE_LOAD`, запис 256 слів дескрипторів через AXI4-Lite у BRAM, ініціацію фази `PHASE_RUN`, а також зчитування телеметрії без порушення детермінізму конвеєра.
 3. **PL Pipeline Execution Engine (HW):** Програмована логіка ПЛІС у конфігурації `CFG-P` ([`Engineering/hw/boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v`](../hw/boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v) та [`Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv`](../hw/rtl/bus/kpol_bram_pipeline_axi.sv)):
-   - AXI4-Lite Slave інтерфейс із захистом від запису при `busy == 1` ([`Engineering/specifications/hw/kpol-image-loader-pipeline-contract.md`](../specifications/hw/kpol-image-loader-pipeline-contract.md)).
+   - AXI4-Lite Slave інтерфейс із захистом від запису при `busy == 1` та блокуванням зовнішнього прийому на тактах конфігураційного запису B4 `Load vs Run` ([`Engineering/specifications/hw/kpol-image-loader-pipeline-contract.md`](../specifications/hw/kpol-image-loader-pipeline-contract.md), v2.2.0).
    - Dual-Port BRAM пам'ять дескрипторів і стану концептів.
-   - Вхідна черга FIFO 16 з гібридним арбітражем (підписник над зовнішнім стимулом) та прапорцем переповнення ([`Engineering/specifications/hw/event-queue-ingress-specification.md`](../specifications/hw/event-queue-ingress-specification.md)).
-   - Concept Micro-Engine (CME) та Transaction Gate v2 з доведеною властивістю fail-closed ([PR #130](https://github.com/nick-fedchik/kuzmin-machine/pull/130)).
-   - Модулі CDC 2-FF та Pulse Stretcher для зв'язку з фізичними виводами кристала ([`Engineering/design/bram-pipeline-event-integration.md`](bram-pipeline-event-integration.md)).
+   - Вхідна черга FIFO 16 із пріоритетом каскаду підписника над зовнішнім стимулом, резервуванням слота під каскад і буфером `cascade_pending_*_q`: керовані джерела утримують подію за рукостисканням `valid && ready` без втрат, а діагностичний облік втрат (`fifo_overflow_o`, `events_dropped_count_o` із програмним W1C-очищенням у `0x02C` при `busy == 0`) фіксує лише порушення протоколу утримання фізично незупинним джерелом ([`Engineering/specifications/hw/event-queue-ingress-specification.md`](../specifications/hw/event-queue-ingress-specification.md), v2.2.0).
+   - Concept Micro-Engine (CME) та Transaction Gate v2 з доведеною властивістю fail-closed ([PR #130](https://github.com/nick-fedchik/kuzmin-machine/pull/130)) і повною семантикою знакових меж та `guard_flags[4]` ([#167](https://github.com/nick-fedchik/kuzmin-machine/issues/167)).
+   - Модулі 2-FF CDC (`ja1`, `btn[0]`, `sw[1:0]`), фільтр антибрязкоту `btn[0]` (1,0 мс @ 100 МГц) та Pulse Stretcher для зв'язку з фізичними виводами кристала ([`Engineering/design/bram-pipeline-event-integration.md`](bram-pipeline-event-integration.md), [#168](https://github.com/nick-fedchik/kuzmin-machine/issues/168)).
 
 ### 3.2. Зовнішні ролі (External Actors)
 1. **Програміст / Оператор:** Подає вихідні тексти правил KPOL. Знаходиться поза межами цільової системи.
@@ -99,9 +99,9 @@
 4. **Засоби синтезу (EDA Tools):** Vivado Design Suite. Використовуються для створення статичного бітстріму FPGA; динамічне виконання не потребує їхнього повторного виклику.
 
 ### 3.3. Фазовий життєвий цикл
-* **Фаза підготовки (`PHASE_LOAD`):** Виконується за участю хоста (PS). BRAM відкрита для запису через AXI. Конвеєр перебуває в режимі очікування (`busy = 0`). Будь-яка зовнішня подія ігнорується або блокується через backpressure `hw_trigger_ready_o = 0`.
-* **Фаза автономного виконання (`PHASE_RUN`):** Хост переводить модуль у робочий режим. Дозволяється прийом подій чергою FIFO. При обробці події (`busy = 1`) спроби запису в BRAM відхиляються з кодом `AXI_RESP_SLVERR`. Обчислення виконуються суто апаратно за фіксовані 8 тактів ($80\text{ нс}$).
-* **Фаза неінвазивної телеметрії:** Дозволяє хосту зчитувати регістри циклів, лічильники оброблених/відхилених подій та статус затримки без жодного впливу на хід конвеєра.
+* **Фаза підготовки (`PHASE_LOAD`):** Виконується за участю хоста (PS). BRAM відкрита для запису через AXI при `busy == 0`. Під час запису дескрипторів та на тактах конфігураційного запису сигнал зворотного тиску `hw_trigger_ready_o = 0` утримує керовані зовнішні джерела в очікуванні без втрат, унеможливлюючи 1-тактову гонитву `Load vs Run`.
+* **Фаза автономного виконання (`PHASE_RUN`):** Хост переводить модуль у робочий режим. Дозволяється прийом подій чергою FIFO за рукостисканням `valid && ready`. При обробці події (`busy == 1`) спроби запису в BRAM та конфігураційні регістри відхиляються з кодом `AXI_RESP_SLVERR`. Обчислення однієї витягнутої з FIFO події виконуються суто апаратно за фіксовані 8 тактів ($80\text{ нс}$ @ 100 МГц без урахування очікування в черзі).
+* **Фаза неінвазивної телеметрії:** Дозволяє хосту зчитувати регістри циклів, лічильники оброблених/відхилених подій, статус переповнення незупинного входу та затримки без впливу на хід конвеєра (скидання sticky-ознаки переповнення W1C у `0x02C` дозволене лише при `busy == 0`).
 
 ---
 
@@ -158,7 +158,7 @@
 ## 7. Межі та застереження
 
 1. **Відокремлення конфігурацій `CFG-P` та `CFG-R`:** Ця системна межа визначає конфігурацію конвеєрного обчислювача `CFG-P` на базі BRAM. Реактивний фізичний шлюз `CFG-R` залишається окремим прийнятим результатом етапу S6 (AV-10/AV-11). Результат затримки $p_{99} \le 60\text{ нс}$ із `CFG-R` **не переноситься** на `CFG-P`, оскільки конвеєр BRAM має власну детерміновану латентність 8 тактів ($80\text{ нс}$).
-2. **Статус криптографічного Secure Boot та ACL:** Відповідно до рішень щодо #67/#68, апаратна криптографія HMAC-SHA256 та anti-rollback залишаються поза межами поточного скоупу MVP (TRL 4). Дефект програмного тесту [#115](https://github.com/nick-fedchik/kuzmin-machine/issues/115) розглядається окремо як знахідка SUP.9 і не впливає на апаратне виконання конвеєра.
+2. **Статус криптографічного Secure Boot та ACL:** Відповідно до рішень щодо #67/#68, апаратна криптографія HMAC-SHA256 та anti-rollback у RTL залишаються поза межами поточного скоупу MVP (TRL 4). Дефект програмного тесту [#115](https://github.com/nick-fedchik/kuzmin-machine/issues/115) закрито в [PR #161](https://github.com/nick-fedchik/kuzmin-machine/pull/161), а програмний контейнер підпису `CME-RAW-1` у `kpol_reference.py` оновлено за [#164](https://github.com/nick-fedchik/kuzmin-machine/issues/164) ([PR #170](https://github.com/nick-fedchik/kuzmin-machine/pull/170)); ці програмні механізми не замінюють апаратної перевірки образу всередині ПЛІС.
 
 ---
 
@@ -166,6 +166,7 @@
 
 | Версія | Дата | Автор | Зміни |
 | :--- | :--- | :--- | :--- |
+| 1.0.2 | 2026-11-14 | GitHub Copilot CLI | #169: узгоджено опис черги B5 v2.2.0 (очікування без втрат за `valid && ready`, резервування слота каскадом, W1C скидання `0x02C`), B4 v2.2.0 (`Load vs Run`), CDC/debounce `pynq_z1_top` (#168) та актуалізовано статус #115/#164. |
 | 1.0.1 | 2026-11-12 | Редакція NG: структура, навігація та оформлення WP; нових результатів не заявлено. |
 | 1.0.0 | 2026-11-12 | Antigravity (agy) | Первинна нормативна фіксація системної межі та розподілу HW/SW (Рішення B1, Issue #136). |
 

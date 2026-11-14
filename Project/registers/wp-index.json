@@ -1,6 +1,6 @@
 {
-  "version": "0.9.0",
-  "date": "2026-11-13",
+  "version": "0.10.0",
+  "date": "2026-11-14",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -336,6 +336,12 @@
       "path": "Engineering/hw/tests/kpol_bram_pipeline_increase.kpol",
       "direction": "Engineering",
       "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_pynq_z1_top_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
@@ -1173,6 +1179,42 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/axi-b4-pynq-168/raw/full-pytest-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/axi-b4-pynq-168/raw/negative-control-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/axi-b4-pynq-168/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/axi-b4-pynq-168/raw/pynq-top-synth-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/axi-b4-pynq-168/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/axi-b4-pynq-168/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/behavior-153/raw/baseline-matrix-01.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -1204,6 +1246,48 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/behavior-153/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme-semantics-167/raw/full-pytest-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme-semantics-167/raw/negative-control-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme-semantics-167/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme-semantics-167/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme-semantics-167/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/docs-registers-169/raw/checks-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/docs-registers-169/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
       "immutable_input": false
@@ -1333,6 +1417,30 @@
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/secure-boot-164/raw/full-pytest-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/secure-boot-164/raw/negative-control-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/secure-boot-164/raw/structure-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/secure-boot-164/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
     },
     {
       "path": "Engineering/validation/kpol-cme/signature-115/raw/checks-01.log",
