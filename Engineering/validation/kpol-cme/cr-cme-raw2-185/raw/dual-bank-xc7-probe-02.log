@@ -1,0 +1,26 @@
+# Command: yosys -p 'read_verilog -sv Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/cme_raw2_dual_bank_probe.sv; synth_xilinx -family xc7 -top cme_raw2_dual_bank_probe; stat'
+# Base-SHA: 70fe8ccf802998b28757f123b295f17739f33e00
+
+3. Printing statistics.
+
+=== cme_raw2_dual_bank_probe ===
+
+   Number of wires:                 66
+   Number of wire bits:            927
+   Number of public wires:          12
+   Number of public wire bits:     279
+   Number of ports:                  9
+   Number of port bits:            214
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                252
+     BUFG                            1
+     FDRE                            1
+     IBUF                          118
+     LUT2                            2
+     LUT3                           32
+     OBUF                           96
+     RAMB36E1                        2
+
+exit_code=0
