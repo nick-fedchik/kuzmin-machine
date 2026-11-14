@@ -1,6 +1,6 @@
 # Відкриті роботи та рішення власника
 
-* **Версія:** 0.4.1
+* **Версія:** 0.4.2
 * **Дата:** 2026-11-14
 * **Тип WP:** Register
 * **Власник рішень:** Микола Федчик.
@@ -50,8 +50,8 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 | Issue | GitHub | Стан виконання | Зміст і межа |
 |---|---|---|---|
 | [#183 — дефекти верифікатора й CME-lowering у `kpol_reference.py` та синхронізація `RFC-010`](https://github.com/nick-fedchik/kuzmin-machine/issues/183) | Open | In review ([PR #187](https://github.com/nick-fedchik/kuzmin-machine/pull/187), sub-issue `#8`) | Одноразовий початковий `change(...)`, відхилення вакуумних `Proof`, усунення евристики імені правила, точне lowering `>=`/`<=`/`int16` `RANGE` та фіксація `RFC-010` ([звіт](../../Engineering/validation/kpol-cme/verifier-lowering-183/report.md)); рецензія `claude-sonnet-5.5` — `APPROVE`. |
-| [#184 — профіль `KPOL-CME-2` на `CME-RAW-1`](https://github.com/nick-fedchik/kuzmin-machine/issues/184) | Open | In review (sub-issue `#8`) | Багатоконцептна компіляція до 64 станів, ациклічні каскади (включно з `CID 0`), `ADD/SUB/ASSIGN`, розширені предикати, детектор `CME2-OPERAND-COLLISION` і AXI RTL-еквівалентність ([специфікація](../../Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md), [звіт](../../Engineering/validation/kpol-cme/cme2-profile-184/report.md)). |
-| [#185 — CR `KPOL-SYS-02` і дескриптор `CME-RAW-2`](https://github.com/nick-fedchik/kuzmin-machine/issues/185) | Open | Todo (sub-issue `#8`) | Проєкт системного контракту valid-bit стану `_` (неініціалізовано vs `0`), розділених операндів guard/action і константного `ASSIGN`. |
+| [#184 — профіль `KPOL-CME-2` на `CME-RAW-1`](https://github.com/nick-fedchik/kuzmin-machine/issues/184) | Open | In review ([PR #188](https://github.com/nick-fedchik/kuzmin-machine/pull/188), sub-issue `#8`) | Багатоконцептна компіляція до 64 станів, ациклічні каскади (включно з `CID 0`), `ADD/SUB/ASSIGN`, розширені предикати, детектор `CME2-OPERAND-COLLISION` і AXI RTL-еквівалентність ([специфікація](../../Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md), [звіт](../../Engineering/validation/kpol-cme/cme2-profile-184/report.md)). |
+| [#185 — CR `KPOL-SYS-02` і дескриптор `CME-RAW-2`](https://github.com/nick-fedchik/kuzmin-machine/issues/185) | Open | In review (sub-issue `#8`) | Проєкт рішення [ADR B7](../../Engineering/decisions/cme-raw2-kpol-sys02.md) (Proposed): 32-байтний слот `W0..W7`, `W1.state_valid` для `_`, розділені 32-бітні операнди охоронця й дії, двобанкова пам'ять `2 × RAMB36E1` (8 тактів) і сумісність із `Secure Boot` ([звіт](../../Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md)). |
 | [#186 — Native-діалект `KPOL-AUTH` після відповідей на `RFC-009`, `015–017`](https://github.com/nick-fedchik/kuzmin-machine/issues/186) | Open | Blocked | Очікує відповідей Автора Машини у `drafts` (`PR #4`: оновлений `RFC-009` і нові `RFC-015..017`). |
 
 Джерела рішень:
@@ -70,6 +70,7 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.4.2 | 2026-11-14 | #185: зафіксовано публікацію PR #188 (`#184`) та підготовку проєкту рішення ADR B7 (`KPOL-SYS-02` і дескриптор `CME-RAW-2`, `#185`). |
 | 0.4.1 | 2026-11-14 | #184: зафіксовано рецензію PR #187 (`#183`) та реалізацію багатоконцептного профілю `KPOL-CME-2` (`#184`). |
 | 0.4.0 | 2026-11-14 | #183: зафіксовано закриття злитого стеку #176 (`PR #163`, `#170–#175`) та правок за рецензіями (`#177–#179` у `PR #180–#182`), а також додано підзадачі розвитку мови KPOL `#183–#186`. |
 | 0.3.0 | 2026-11-14 | #169: актуалізовано статуси закритих #148 (PR #149), #115 (PR #161), #5 (закрито в GitHub зі збереженням Postponed за рішенням 2026-11-12), часткових кроків #8 (PR #152–#160) та додано відкритий стек аудиту #151/#162/#164–#169. |

@@ -1,0 +1,154 @@
+
+7. Printing statistics.
+
+=== $paramod$2b1c2d56e1b58d1e1997cc5c41492a9eab282b12\kpol_txn_gate_v2 ===
+
+   Number of wires:                 85
+   Number of wire bits:            175
+   Number of public wires:          24
+   Number of public wire bits:      86
+   Number of ports:                 24
+   Number of port bits:             86
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                126
+     FDCE                           41
+     INV                            41
+     LUT2                           22
+     LUT3                            5
+     LUT4                            7
+     LUT6                            7
+     MUXF7                           2
+     MUXF8                           1
+
+=== $paramod$c025ebd37e506c9326b3dad929bb466f81310039\km_autonomous_sequencer ===
+
+   Number of wires:                788
+   Number of wire bits:           3942
+   Number of public wires:          91
+   Number of public wire bits:    1523
+   Number of ports:                 22
+   Number of port bits:            285
+   Number of memories:               0exit_code=0
+f memory bits:            0
+   Number of processes:              0
+   Number of cells:               2580
+     $paramod\km_concept_micro_engine\DATA_WIDTH=s32'00000000000000000000000000100000      1
+     CARRY4                         45
+     FDCE                          433
+     FDRE                          608
+     INV                           443
+     LUT2                           95
+     LUT3                           64
+     LUT4                           34
+     LUT5                           16
+     LUT6                          825
+     MUXF7                          11
+     MUXF8                           5
+
+=== $paramod\km_concept_micro_engine\DATA_WIDTH=s32'00000000000000000000000000100000 ===
+
+   Number of wires:                179
+   Number of wire bits:           1584
+   Number of public wires:          40
+   Number of public wire bits:     573
+   Number of ports:                 14
+   Number of port bits:            241
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                490
+     $paramod$2b1c2d56e1b58d1e1997cc5c41492a9eab282b12\kpol_txn_gate_v2      1
+     CARRY4                         50
+     FDCE                           32
+     INV                            99
+     LUT2                           64
+     LUT3                           46
+     LUT4                           24
+     LUT5                           41
+     LUT6                          130
+     MUXF7                           2
+     MUXF8                           1
+
+=== km_concept_bram ===
+
+   Number of wires:                 34
+   Number of wire bits:            638
+   Number of public wires:          17
+   Number of public wire bits:     254
+   Number of ports:                 13
+   Number of port bits:            157
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 18
+     FDCE                            1
+     INV                             1
+     LUT2                           10
+     LUT4                            2
+     LUT6                            3
+     RAMB36E1                        1
+
+=== kpol_bram_pipeline_axi ===
+
+   Number of wires:                610
+   Number of wire bits:           2098
+   Number of public wires:          68
+   Number of public wire bits:     745
+   Number of ports:                 29
+   Number of port bits:            187
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               1062
+     $paramod$c025ebd37e506c9326b3dad929bb466f81310039\km_autonomous_sequencer      1
+     BUFG                            1
+     CARRY4                         16
+     FDCE                          248
+     IBUF                          108
+     INV                           250
+     LUT2                           70
+     LUT3                           92
+     LUT4                           15
+     LUT5                           56
+     LUT6                          115
+     MUXF7                           9
+     MUXF8                           1
+     OBUF                           79
+     km_concept_bram                 1
+
+=== design hierarchy ===
+
+   kpol_bram_pipeline_axi            1
+     $paramod$c025ebd37e506c9326b3dad929bb466f81310039\km_autonomous_sequencer      1
+       $paramod\km_concept_micro_engine\DATA_WIDTH=s32'00000000000000000000000000100000      1
+         $paramod$2b1c2d56e1b58d1e1997cc5c41492a9eab282b12\kpol_txn_gate_v2      1
+     km_concept_bram                 1
+
+   Number of wires:               1696
+   Number of wire bits:           8437
+   Number of public wires:         240
+   Number of public wire bits:    3181
+   Number of ports:                102
+   Number of port bits:            956
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               4272
+     BUFG                            1
+     CARRY4                        111
+     FDCE                          755
+     FDRE                          608
+     IBUF                          108
+     INV                           834
+     LUT2                          261
+     LUT3                          207
+     LUT4                           82
+     LUT5                          113
+     LUT6                         1080
+     MUXF7                          24
+     MUXF8                           8
+     OBUF                           79
+     RAMB36E1                        1
+

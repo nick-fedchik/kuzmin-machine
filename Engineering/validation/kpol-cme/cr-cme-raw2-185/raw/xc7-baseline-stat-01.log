@@ -1,0 +1,14 @@
+# Command: yosys -p 'read_verilog -sv Engineering/hw/rtl/core/kpol_txn_gate_v2.sv Engineering/hw/rtl/core/km_concept_bram.sv Engineering/hw/rtl/core/km_concept_micro_engine.sv Engineering/hw/rtl/core/km_autonomous_sequencer.sv Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv; synth_xilinx -family xc7 -top kpol_bram_pipeline_axi; stat'
+# Timestamp: 2026-11-14T17:50:56Z
+# Base-SHA: 103b5179166b5d94718f901e4efac327d4ab7fe2
+# Host: Linux 7.0.0-42-generic x86_64 (AORUS-5-SE)
+Warning: Replacing memory \fifo_param_q with list of registers. See Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+exit_code=0
