@@ -1,6 +1,6 @@
 # Інженерні перевірки
 
-* **Версія:** 0.5.7
+* **Версія:** 0.5.8
 * **Дата:** 2026-11-14
 * **Тип WP:** Guide
 
@@ -24,7 +24,7 @@
 | [Синхронізація реєстрів і документації / #169](kpol-cme/docs-registers-169/report.md) | Синхронізація `open-work-items.md`, `formal-analysis.md` (RFC-008), `system-boundary-allocation-b1.md`, `s2-candidate-system.md`, `trl/report.md` (`CFG-R` 20 нс vs `CFG-P` 80 нс), `work-products.md`, `goals-needs-work-items.md` та індексу `wp-index.json`; структурна та посилальна перевірка. |
 | [Верифікатор `Proof`, `change(...)` і базове CME-lowering / #183](kpol-cme/verifier-lowering-183/report.md) | Одноразовий початковий `change(...)` в `Interpreter`, відхилення вакуумних `Proof`, усунення інверсії охоронця за іменем правила, точне перенесення `>=`/`<=`/знакового `int16` `RANGE` у `km_concept_micro_engine.sv` та синхронізація `RFC-010`; RTL-симуляція (`iverilog`), не HIL. |
 | [Профіль `KPOL-CME-2` / #184](kpol-cme/cme2-profile-184/report.md) | Багатоконцептна компіляція до 64 станів на `CME-RAW-1`, ациклічні каскади `on change(...)` (включно з `CID 0`), `ADD/SUB/ASSIGN`, `CME2-OPERAND-COLLISION` і побітова еквівалентність `Interpreter` з AXI RTL (`kpol_bram_pipeline_axi.sv`); RTL-симуляція (`iverilog`), не HIL. |
-| [CR `KPOL-SYS-02` і дескриптор `CME-RAW-2` / #185](kpol-cme/cr-cme-raw2-185/report.md) | Синтез `yosys` двобанкової пам'яті `2 × RAMB36E1` (64-бітний Порт B, 8 тактів до 256 концептів), перевірка неперетинності 256-бітної розкладки `W0..W7` і контейнера `Secure Boot` `v0x0007` без зміни RTL `CFG-P`. |
+| [CR `KPOL-SYS-02` і дескриптор `CME-RAW-2` / #185](kpol-cme/cr-cme-raw2-185/report.md) | Синтез `yosys` двобанкової пам'яті `2 × RAMB36E1` (модель на 128 концептів із 64-бітним Портом B; 8 тактів до 256 концептів — проєктна ціль, не перевірено без RTL `CME-RAW-2`), перевірка 256-бітної розкладки `W0..W7` і поточного `Secure Boot` (`v0x0006` із відхиленням `0x0007`/`2048` Б) без зміни RTL `CFG-P`. |
 
 ## Використання
 

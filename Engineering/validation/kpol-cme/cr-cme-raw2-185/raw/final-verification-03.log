@@ -1,0 +1,121 @@
+=== grep 8 тактів ===
+Engineering/validation/README.md:27:| [CR `KPOL-SYS-02` і дескриптор `CME-RAW-2` / #185](kpol-cme/cr-cme-raw2-185/report.md) | Синтез `yosys` двобанкової пам'яті `2 × RAMB36E1` (модель на 128 концептів із 64-бітним Портом B; 8 тактів до 256 концептів — проєктна ціль, не перевірено без RTL `CME-RAW-2`), перевірка 256-бітної розкладки `W0..W7` і поточного `Secure Boot` (`v0x0006` із відхиленням `0x0007`/`2048` Б) без зміни RTL `CFG-P`. |
+Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md:45:| Розрахунок місткості `BRAM36` та LUT `XC7Z020` для 64+ концептів і впливу на AXI `B4` | Числові оцінки для 64, 128 і 256 концептів із підтвердженням примітивів Xilinx 7-Series | `1 × RAMB36E1` (`2a`) або `2 × RAMB36E1` (`1.43%`, `2b`, проєктна ціль 8 тактів до 256 концептів — не перевірено без RTL), мапінг пам'яті перевірено синтезом `yosys` ([`raw/dual-bank-xc7-probe-02.log`](raw/dual-bank-xc7-probe-02.log)); AXI карта `0x000..0x02C` незмінна, але CID-шини секвенсора потребують розширення з 6 бітів | Виконано |
+Engineering/decisions/cme-raw2-kpol-sys02.md:123:| **`CME-RAW-2` Підваріант `2b` (64..256 × 32 Б, Even/Odd 64-біт Порт B)** | **2048..8192 Б** | **`2`** (`1.43%`; синтез проби для 128 концептів, 256 — розрахунок) | **8 тактів (`80 нс`, проєктна ціль; RTL відсутній)** | **Орієнтовно $\approx 1950..2100$ (`+34` LUT на мультиплексор банків + оцінка розширення логіки ядра)** |
+Project/registers/open-work-items.md:54:| [#185 — CR `KPOL-SYS-02` і дескриптор `CME-RAW-2`](https://github.com/nick-fedchik/kuzmin-machine/issues/185) | Closed, completed | Done ([PR #189](https://github.com/nick-fedchik/kuzmin-machine/pull/189), sub-issue `#8`; ADR у статусі `Proposed`, рішення власника щодо варіантів А/Б/В очікується) | Проєкт рішення [ADR B7](../../Engineering/decisions/cme-raw2-kpol-sys02.md) (Proposed): 32-байтний слот `W0..W7`, `W1.state_valid` для `_`, розділені 32-бітні операнди охоронця й дії, двобанкова пам'ять `2 × RAMB36E1` (проєктна ціль 8 тактів, не перевірено без RTL `CME-RAW-2`) і сумісність із `Secure Boot` ([звіт](../../Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md)); повторна рецензія `claude-sonnet-5.5` — «Прийнято із зауваженнями» (залишок — [#192](https://github.com/nick-fedchik/kuzmin-machine/issues/192)). |
+Project/registers/open-work-items.md:57:| [#192 — недоведені твердження про `CME-RAW-2` у похідних документах (знахідки рецензії PR #189)](https://github.com/nick-fedchik/kuzmin-machine/issues/192) | Open | Ready (sub-issue `#8`) | «8 тактів» без позначки «ціль / не перевірено» у README і реєстрах, скрипт `verify_cr_cme_raw2.py`, джерело латентності, статус критерію Secure Boot. |
+Project/registers/open-work-items.md:75:| 0.4.4 | 2026-11-14 | #192: у рядку #185 позначено «8 тактів» для `CME-RAW-2` як проєктну ціль (не перевірено без RTL). |
+Project/registers/goals-needs-work-items.md:26:| G1/N1–N2: проєкт `KPOL-SYS-02` і дескриптора `CME-RAW-2` | [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185), частина #8; `KPOL-SYS-02` / `RFC-005` / `RFC-017` | [Requirement `KPOL-SYS-02`](../../Engineering/requirements/kpol.md) → [ADR B7 (`CME-RAW-2`)](../../Engineering/decisions/cme-raw2-kpol-sys02.md) → [Report #185](../../Engineering/validation/kpol-cme/cr-cme-raw2-185/report.md). | Запропоновано (Proposed) 32-байтний слот `W0..W7` (`2 × RAMB36E1`, проєктна ціль 8 тактів до 256 концептів — не перевірено без RTL `CME-RAW-2`, окремий `W1.state_valid` для `_` і розділені 32-бітні операнди); реалізація в RTL відкладена до рішення власника та відповіді на `RFC-017`. |
+Project/registers/goals-needs-work-items.md:53:| 0.9.4 | 2026-11-14 | #192: у рядку G1/N1–N2 (`#185`) уточнено, що «8 тактів до 256 концептів» для `CME-RAW-2` є проєктною ціллю (не перевірено без RTL). |
+=== verify_cr_cme_raw2.py ===
+PASS: CME-RAW-1 (128 bits, verified vs ConceptMicroDescriptor.pack) and CME-RAW-2 W0..W7 (256 bits) complete.
+CALC: N=64 concepts -> 2048 B -> single-bank 1xRAMB36E1 (0.71%), dual-bank 2xRAMB36E1 (1.43%)
+CALC: N=128 concepts -> 4096 B -> single-bank 1xRAMB36E1 (0.71%), dual-bank 2xRAMB36E1 (1.43%)
+CALC: N=256 concepts -> 8192 B -> single-bank 2xRAMB36E1 (1.43%), dual-bank 2xRAMB36E1 (1.43%)
+PASS: verify_bram_signature rejects version 0x0007 on current code (Unsupported version: 0x0007 (expected 0x0006))
+PASS: current compile_signed_bram_image rejects 2048 B until v0x0007 update (Internal compiler error: invalid payload length 2048)
+PASS: zero changes in Engineering/hw and Engineering/sw.
+=== check_links.py ===
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 17, пропущено 0
+=== check_wp_documents.py ===
+{
+  "documents_checked": 140,
+  "immutable_checked": 108,
+  "errors": []
+}
+=== run_open_flow.sh ===
+........................................................................ [ 42%]
+........................................................................ [ 84%]
+..........................                                               [100%]
+170 passed in 17.47s
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.025 MB sources in 2 modules, into 0.023 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.006 s (elab=0.000, cvt=0.002, bld=0.000); cpu 0.006 s on 1 threads; alloced 7.992 MB
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.023 MB sources in 2 modules, into 0.023 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.007 s (elab=0.001, cvt=0.003, bld=0.000); cpu 0.007 s on 1 threads; alloced 7.996 MB
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:189:10: Cell pin connected by name with empty reference: 'rejected_input_o'
+  189 |         .rejected_input_o(),
+      |          ^~~~~~~~~~~~~~~~
+                          ... For warning description see https://verilator.org/warn/PINCONNECTEMPTY?v=5.032
+                          ... Use "/* verilator lint_off PINCONNECTEMPTY */" and lint_on around source to disable this message.
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:190:10: Cell pin connected by name with empty reference: 'rejected_invariant_o'
+  190 |         .rejected_invariant_o(),
+      |          ^~~~~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:191:10: Cell pin connected by name with empty reference: 'rejected_hazard_o'
+  191 |         .rejected_hazard_o(),
+      |          ^~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:192:10: Cell pin connected by name with empty reference: 'changed_o'
+  192 |         .changed_o(),
+      |          ^~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:194:10: Cell pin connected by name with empty reference: 'hazard_blocked_o'
+  194 |         .hazard_blocked_o(),
+      |          ^~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:196:10: Cell pin connected by name with empty reference: 'alert_observed_o'
+  196 |         .alert_observed_o()
+      |          ^~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/bus/kpol_bram_pipeline_axi.sv:115:10: Cell pin connected by name with empty reference: 'collision_detected_o'
+  115 |         .collision_detected_o()
+      |          ^~~~~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/bus/kpol_bram_pipeline_axi.sv:137:10: Cell pin connected by name with empty reference: 'fifo_full_o'
+  137 |         .fifo_full_o(),
+      |          ^~~~~~~~~~~
+%Warning-UNUSEDPARAM: rtl/core/km_autonomous_sequencer.sv:13:19: Parameter is not used: 'NUM_CONCEPTS'
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   13 |     parameter int NUM_CONCEPTS = 64,
+      |                   ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:112:28: Signal is not used: 'cme_rejected'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  112 |     wire                   cme_rejected;
+      |                            ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:113:28: Signal is not used: 'cme_hazard_obs'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  113 |     wire                   cme_hazard_obs;
+      |                            ^~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:114:28: Signal is not used: 'cme_unknown_haz'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  114 |     wire                   cme_unknown_haz;
+      |                            ^~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:116:28: Signal is not used: 'cme_state_changed'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  116 |     wire                   cme_state_changed;
+      |                            ^~~~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:117:28: Bits of signal are not used: 'cme_subscriber_cid'[31:6]
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  117 |     wire [31:0]            cme_subscriber_cid;
+      |                            ^~~~~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_concept_micro_engine.sv:17:36: Signal is not used: 'event_id_i'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer.cme_inst'
+   17 |     input  logic [7:0]             event_id_i,
+      |                                    ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_concept_micro_engine.sv:44:18: Bits of signal are not used: 'guard_flags_w'[7:5]
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer.cme_inst'
+   44 |     logic [7:0]  guard_flags_w;
+      |                  ^~~~~~~~~~~~~
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.160 MB sources in 6 modules, into 0.110 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.019 s (elab=0.002, cvt=0.009, bld=0.000); cpu 0.019 s on 1 threads; alloced 9.520 MB
+Warning: Replacing memory \fifo_param_q with list of registers. See rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See rtl/core/km_autonomous_sequencer.sv:236
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+NG RTL simulation, lint and XC7 logic synthesis completed; no P&R, bitstream or HIL performed.
+=== pytest -q ===
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+....................................................................................................................................................................... [ 88%]
+.......................................                                  [100%]
+350 passed, 337 subtests passed in 23.08s
+=== git diff --check ===

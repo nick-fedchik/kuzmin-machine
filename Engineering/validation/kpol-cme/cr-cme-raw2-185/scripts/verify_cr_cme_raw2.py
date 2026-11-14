@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reproducible verification script for ADR B7 / CR #185 (CME-RAW-2 & KPOL-SYS-02)."""
 import math
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -8,6 +9,31 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[5]
 sys.path.insert(0, str(REPO_ROOT / "Engineering" / "sw" / "kpol-ref"))
 import kpol_reference as kr  # noqa: E402
+
+
+def parse_adr_cme_raw2_table(adr_path: Path) -> dict[str, list[tuple[int, int, str]]]:
+    """Parse W0..W7 bit-layout table directly from ADR B7 (cme-raw2-kpol-sys02.md)."""
+    text = adr_path.read_text(encoding="utf-8")
+    section_match = re.search(
+        r"### 2\.2\.[^\n]*\n(.*?)(?:\n### |\n---|\Z)",
+        text,
+        flags=re.DOTALL,
+    )
+    assert section_match, "§2.2 CME-RAW-2 table section not found in ADR"
+    words: dict[str, list[tuple[int, int, str]]] = {}
+    row_re = re.compile(
+        r"^\|\s*\*{0,2}`(W\d+)\s*\(\+0x[0-9A-Fa-f]+\)`\*{0,2}\s*\|\s*`\[(\d+)(?::(\d+))?\]`\s*\|\s*`([^`]+)`\s*\|"
+    )
+    for line in section_match.group(1).splitlines():
+        m = row_re.match(line.strip())
+        if not m:
+            continue
+        wname, hi_s, lo_s, field = m.groups()
+        hi = int(hi_s)
+        lo = int(lo_s) if lo_s is not None else hi
+        words.setdefault(wname, []).append((hi, lo, field))
+    assert set(words) == {f"W{i}" for i in range(8)}, f"expected W0..W7 in ADR, got {sorted(words)}"
+    return words
 
 
 def verify_bit_layout(name: str, words: dict[str, list[tuple[int, int, str]]]) -> None:
@@ -29,27 +55,9 @@ def main() -> int:
         "W2": [(31, 24, "action_opcode"), (23, 16, "hazard_limit"), (15, 8, "guard_flags"), (7, 0, "pred_opcode")],
         "W3": [(31, 8, "reserved"), (7, 0, "subscriber_cid")],
     }
-    cme_raw2_words = {
-        "W0": [(31, 0, "state_value_i32")],
-        "W1": [
-            (31, 16, "commit_seq_u16"),
-            (15, 8, "last_reject_code"),
-            (7, 2, "runtime_flags_rsvd"),
-            (1, 1, "fault_latched"),
-            (0, 0, "state_valid"),
-        ],
-        "W2": [(31, 0, "guard_operand_i32")],
-        "W3": [(31, 0, "action_operand_i32")],
-        "W4": [(31, 24, "inv_mode"), (23, 16, "action_opcode"), (15, 8, "guard_flags"), (7, 0, "pred_opcode")],
-        "W5": [(31, 0, "inv_bound_lo_i32")],
-        "W6": [(31, 0, "inv_bound_hi_i32")],
-        "W7": [
-            (31, 24, "routing_acl_flags"),
-            (23, 16, "hazard_target_cid"),
-            (15, 8, "uninit_sub_cid"),
-            (7, 0, "subscriber0_cid"),
-        ],
-    }
+    cme_raw2_words = parse_adr_cme_raw2_table(
+        REPO_ROOT / "Engineering" / "decisions" / "cme-raw2-kpol-sys02.md"
+    )
     verify_bit_layout("CME-RAW-1", cme_raw1_words)
     verify_bit_layout("CME-RAW-2", cme_raw2_words)
 
@@ -105,9 +113,9 @@ def main() -> int:
     except (ValueError, kr.KpolError) as exc:
         print(f"PASS: current compile_signed_bram_image rejects 2048 B until v0x0007 update ({exc})")
 
-    # Verify zero changes in Engineering/hw and Engineering/sw relative to feat/184-kpol-cme2-profile
+    # Verify zero changes in Engineering/hw and Engineering/sw relative to origin/main
     diff = subprocess.run(
-        ["git", "-C", str(REPO_ROOT), "diff", "--name-only", "origin/feat/184-kpol-cme2-profile", "--", "Engineering/hw", "Engineering/sw"],
+        ["git", "-C", str(REPO_ROOT), "diff", "--name-only", "origin/main", "--", "Engineering/hw", "Engineering/sw"],
         capture_output=True, text=True, check=True,
     )
     assert diff.stdout.strip() == "", f"unexpected changes in hw/sw: {diff.stdout}"
