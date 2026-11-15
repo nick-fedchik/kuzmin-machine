@@ -17,6 +17,7 @@ class CorpusExample:
     expected_cst_kind: str | None
     expected_diagnostics: tuple[str, ...]
     source_boundary_note: str
+    in_source_scope: bool = True
     show_to_author: bool = False
 
 
@@ -135,6 +136,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U01",),
         source_boundary_note="Поза межами джерела: тимчасова репліка Автора про И/ИЛИ не пояснює зв'язок із Min/Max.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -148,6 +150,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U02",),
         source_boundary_note="Поза межами джерела: не-Token індекси та вихід за межі не визначені.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -162,6 +165,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U03",),
         source_boundary_note="Поза межами джерела: остаточне написання CloseBracket vs CloseBracked не підтверджено.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -175,6 +179,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U04",),
         source_boundary_note="Поза межами джерела: Автор позначив момент виконання дужок як не визначений («не придумал»).",
+        in_source_scope=False,
         show_to_author=False,
     ),
     CorpusExample(
@@ -189,6 +194,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U05",),
         source_boundary_note="Поза межами джерела: нова пара знаків замість '#' не повідомлена.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -202,6 +208,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U06",),
         source_boundary_note="Поза межами джерела: спосіб запису закривального знака всередині тексту не визначений.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -215,6 +222,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U07",),
         source_boundary_note="Поза межами джерела: не визначено, чи межа 16 рахується у буквах, байтах чи 4-бітних Token.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -228,6 +236,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U08",),
         source_boundary_note="Поза межами джерела: зміст булевого значення '•' не визначений.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -241,6 +250,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U09",),
         source_boundary_note="Поза межами джерела: стан busy у проміжку між читанням і записом прямо не визначений.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -254,6 +264,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U10",),
         source_boundary_note="Поза межами джерела: поведінка обчислення при читанні '_' не визначена.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -267,6 +278,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U11",),
         source_boundary_note="Поза межами джерела: Автор назвав Child «лишним», остаточна ширина Def не визначена.",
+        in_source_scope=False,
         show_to_author=True,
     ),
     CorpusExample(
@@ -280,6 +292,7 @@ AUTHOR_CORPUS: tuple[CorpusExample, ...] = (
         expected_cst_kind=None,
         expected_diagnostics=("KPOL-AUTH-U12",),
         source_boundary_note="Поза межами джерела: розрізнення відсутнього елемента і присутнього зі станом '_' не визначене.",
+        in_source_scope=False,
         show_to_author=True,
     ),
 )

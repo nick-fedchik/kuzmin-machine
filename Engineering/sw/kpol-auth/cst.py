@@ -409,13 +409,20 @@ class _Parser:
     ) -> CSTNode:
         name = ident.token.value
         if name == "Def":
-            if len(group.elements) == 8:
+            width = len(group.elements)
+            if width == 8:
                 emit_uncertainty(
                     "KPOL-AUTH-U11",
                     "8-бітний запис Def включає елемент Child, який Автор назвав «лишний» (RFC-018).",
                     self.config,
                     span=group.span,
                     diagnostics=self.diagnostics,
+                )
+            elif width != 7:
+                self._syntax_error(
+                    "KPOL-AUTH-SYNTAX-04",
+                    f"Непідтримувана ширина Def({width} бітів): підтверджено лише 7-бітний запис (8-бітний із Child підпадає під KPOL-AUTH-U11).",
+                    group.span,
                 )
             bits: list[int] = []
             for el in group.elements:
@@ -438,10 +445,23 @@ class _Parser:
         if name == "Name":
             if len(group.elements) == 1 and isinstance(group.elements[0], LiteralCST):
                 val = group.elements[0].token.value
-                if not val.isascii() or len(val) > 16:
+                codepoints_len = len(val)
+                utf8_len = len(val.encode("utf-8"))
+                unit = self.config.name_length_unit
+                exceeds = False
+                if unit == "codepoints":
+                    exceeds = codepoints_len > 16
+                elif unit == "utf8_bytes":
+                    exceeds = utf8_len > 16
+                else:
+                    exceeds = codepoints_len > 16 or utf8_len > 16
+                if exceeds:
                     emit_uncertainty(
                         "KPOL-AUTH-U07",
-                        "Одиниця довжини Name (букви vs байти vs 4-бітні Token, межа 16) не визначена автором (RFC-016 п. 3).",
+                        (
+                            f"Одиниця довжини Name (режим '{unit}': codepoints={codepoints_len}, "
+                            f"utf8_bytes={utf8_len}, межа 16) не визначена автором (RFC-016 п. 3)."
+                        ),
                         self.config,
                         span=group.elements[0].span,
                         diagnostics=self.diagnostics,

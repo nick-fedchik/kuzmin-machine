@@ -123,6 +123,7 @@ UNCERTAINTY_REGISTRY: dict[str, UncertaintyPoint] = {
 }
 
 ALLOWED_POLICIES = frozenset({"fail-closed", "record-diagnostic"})
+ALLOWED_NAME_LENGTH_UNITS = frozenset({"fail-closed", "codepoints", "utf8_bytes"})
 
 
 @dataclass(frozen=True)
@@ -130,13 +131,23 @@ class AuthFrontendConfig:
     """Single configuration point for all KPOL-AUTH uncertainty policies.
 
     By default, every registered uncertainty point is `fail-closed`.
+    `name_length_unit` controls U07 (`Name` length <= 16) measurement:
+    - `fail-closed` (default): fail-closed if either codepoints > 16 or UTF-8 bytes > 16
+      (rejecting ambiguous multibyte strings > 16 UTF-8 bytes even when codepoints <= 16);
+    - `codepoints`: measure in Unicode codepoints;
+    - `utf8_bytes`: measure in UTF-8 encoded bytes.
     """
 
     policies: Mapping[str, str] = field(
         default_factory=lambda: {code: "fail-closed" for code in UNCERTAINTY_REGISTRY}
     )
+    name_length_unit: str = "fail-closed"
 
     def __post_init__(self) -> None:
+        if self.name_length_unit not in ALLOWED_NAME_LENGTH_UNITS:
+            raise ValueError(
+                f"Unsupported name_length_unit '{self.name_length_unit}'"
+            )
         merged = {code: "fail-closed" for code in UNCERTAINTY_REGISTRY}
         for code, policy in self.policies.items():
             if code not in UNCERTAINTY_REGISTRY:
