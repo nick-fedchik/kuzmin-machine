@@ -1,0 +1,122 @@
+# command: python3 -m pytest Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py -v
+# timestamp: 2026-11-15T22:02:58+02:00
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-219
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 10 items
+
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_all_uncertainty_points_default_to_fail_closed PASSED [ 10%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics 
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics PASSED [ 20%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_paired_brackets_and_negative_mismatch_controls 
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_paired_brackets_and_negative_mismatch_controls PASSED [ 30%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc009_min_max_bounds_and_negative_controls PASSED [ 40%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc015_open_close_bracket_stubs_and_negative_controls PASSED [ 50%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc016_hash_escaping_and_name_length_negative_controls 
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc016_hash_escaping_and_name_length_negative_controls PASSED [ 60%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls FAILED [ 70%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc018_def_bit_order_and_child_uninit_negative_controls PASSED [ 80%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_can_switch_uncertainty_to_record_diagnostic FAILED [ 90%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_rejects_unknown_code_or_policy PASSED [100%]
+
+=================================== FAILURES ===================================
+_ KpolAuthFrontendTests.test_author_corpus_examples_match_expected_cst_and_diagnostics (example_id='EX-14', title="RFC-017 п. 2: використання '•' як булевого значення") _
+
+self = <test_kpol_auth_frontend.KpolAuthFrontendTests testMethod=test_author_corpus_examples_match_expected_cst_and_diagnostics>
+
+    def test_author_corpus_examples_match_expected_cst_and_diagnostics(self) -> None:
+        self.assertGreaterEqual(len(ka.AUTHOR_CORPUS), 18)
+        for ex in ka.AUTHOR_CORPUS:
+            with self.subTest(example_id=ex.id, title=ex.title):
+                self.assertTrue(ex.source_refs, f"{ex.id} must cite Author sources")
+                if ex.expected_status == "ok":
+                    prog = ka.parse_kpol_auth(ex.source_text)
+                    self.assertEqual(prog.diagnostics, ())
+                    self.assertEqual(len(prog.items), 1)
+                    self.assertEqual(type(prog.items[0]).__name__, ex.expected_cst_kind)
+                else:
+                    self.assertEqual(ex.expected_status, "fail-closed")
+                    self.assertIn("поза межами", ex.source_boundary_note.lower() if "поза межами" in ex.source_boundary_note.lower() else "поза межами")
+>                   with self.assertRaises(ka.KpolAuthError) as ctx:
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                   AssertionError: KpolAuthError not raised
+
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py:66: AssertionError
+_ KpolAuthFrontendTests.test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls _
+
+self = <test_kpol_auth_frontend.KpolAuthFrontendTests testMethod=test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls>
+
+    def test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls(self) -> None:
+        prog = ka.parse_kpol_auth("A • B")
+        seq = prog.items[0]
+        self.assertIsInstance(seq, ka.SubscriptionSeqCST)
+        self.assertEqual(seq.left.token.value, "A")
+        self.assertEqual(seq.right.token.value, "B")
+    
+        # Simple uninitialized assignment is distinct from arithmetic over '_'
+        init_prog = ka.parse_kpol_auth("A := _")
+        self.assertIsInstance(init_prog.items[0], ka.AssignmentCST)
+        self.assertIsInstance(init_prog.items[0].value, ka.UninitCST)
+    
+        with self.assertRaises(ka.KpolAuthError) as ctx_not:
+            ka.parse_kpol_auth("• Flag")
+        self.assertEqual(ctx_not.exception.diagnostic.code, "KPOL-AUTH-SYNTAX-03")
+    
+>       with self.assertRaises(ka.KpolAuthError) as ctx_bool:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: KpolAuthError not raised
+
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py:160: AssertionError
+_ KpolAuthFrontendTests.test_single_config_place_can_switch_uncertainty_to_record_diagnostic _
+
+self = <test_kpol_auth_frontend.KpolAuthFrontendTests testMethod=test_single_config_place_can_switch_uncertainty_to_record_diagnostic>
+
+    def test_single_config_place_can_switch_uncertainty_to_record_diagnostic(self) -> None:
+        cfg = ka.AuthFrontendConfig(policies={"KPOL-AUTH-U05": "record-diagnostic"})
+>       prog = ka.parse_kpol_auth("#legacy", config=cfg)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+Engineering/sw/kpol-auth/cst.py:533: in parse_kpol_auth
+    return parser.parse_program()
+           ^^^^^^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-auth/cst.py:145: in parse_program
+    items.append(self.parse_statement())
+                 ^^^^^^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-auth/cst.py:149: in parse_statement
+    node = self.parse_subscription_or_assign()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-auth/cst.py:153: in parse_subscription_or_assign
+    left = self.parse_expr()
+           ^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-auth/cst.py:208: in parse_expr
+    left = self.parse_postfix()
+           ^^^^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-auth/cst.py:241: in parse_postfix
+    node = self.parse_primary()
+           ^^^^^^^^^^^^^^^^^^^^
+Engineering/sw/kpol-auth/cst.py:393: in parse_primary
+    self._syntax_error(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kpol_auth.cst._Parser object at 0x7fe3a871e5f0>
+code = 'KPOL-AUTH-SYNTAX-01', message = "Несподіваний токен HASH_LEGACY ('#')."
+span = Span(line=1, column=1, offset=0, length=1)
+
+    def _syntax_error(self, code: str, message: str, span: Span | None) -> None:
+        diag = Diagnostic(code=code, severity="error", message=message, span=span)
+        self.diagnostics.append(diag)
+>       raise KpolAuthError(diag)
+E       kpol_auth.uncertainty.KpolAuthError: KPOL-AUTH-SYNTAX-01: Несподіваний токен HASH_LEGACY ('#').
+
+Engineering/sw/kpol-auth/cst.py:140: KpolAuthError
+=========================== short test summary info ============================
+SUBFAILED(example_id='EX-14', title="RFC-017 п. 2: використання '•' як булевого значення") Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics
+FAILED Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls
+FAILED Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_can_switch_uncertainty_to_record_diagnostic
+=============== 3 failed, 8 passed, 24 subtests passed in 0.11s ================
