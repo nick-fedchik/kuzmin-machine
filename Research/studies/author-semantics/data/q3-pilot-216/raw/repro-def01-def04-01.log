@@ -1,0 +1,11 @@
+# cmd: python3 Research/studies/author-semantics/data/q3-pilot-216/repro_def01_def04.py
+# timestamp: 2026-11-15T22:16:40+02:00
+# git_head: 5584f1f5e5a0a1715bd5a250928d46b05c808e0b
+== Q3-DEF-01: literal 'rule R on Ev(p) when G' from kpol-cme2-profile-0.1.0.md section 2 item 4
+golden (rule R on Ev when ...): parsed and compiled
+literal (rule R on Ev(p) when ...): KpolError: 7:17: expected '{', got '('
+== Q3-DEF-04: Interpreter.run() on an invariant violation (golden task 2, S=1 -> 0 -> reject)
+state={'S': 0}
+rejected=[]
+diagnostics=['InvariantViolation:NonNeg']
+# exit: 0
