@@ -1,0 +1,5 @@
+# cmd: env KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py
+# timestamp: 2026-11-15T22:18:07+02:00
+# git_head(base): 5584f1f5e5a0a1715bd5a250928d46b05c808e0b (working tree with uncommitted 0.1.1 edits)
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 18, пропущено 0
+# exit: 0

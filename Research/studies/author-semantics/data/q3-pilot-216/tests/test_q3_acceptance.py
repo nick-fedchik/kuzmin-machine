@@ -150,4 +150,3 @@ def test_pilot_sessions_acceptance(session_file: str):
     assert r1["profile"] == "KPOL-CME-1"
     assert r2["profile"] == "KPOL-CME-2"
     assert r3["profile"] == "KPOL-CME-2"
-
