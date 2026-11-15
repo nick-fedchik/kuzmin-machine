@@ -1,10 +1,10 @@
 # Рішення B7 (CR #185): Контракт неініціалізованого стану `KPOL-SYS-02` (`_`) та проєкт 32-байтного дескриптора `CME-RAW-2`
 
-* **Версія:** 0.2.0
+* **Версія:** 0.2.1
 * **Дата:** 2026-11-15
 * **Тип WP:** Decision
 * **Статус:** Прийнято власником за Варіантом А (2026-11-15): `CME-RAW-2` (Варіант 2b) — цільова специфікація `CFG-P2`; модифікація RTL відкладена до відповіді Автора на `RFC-017` і завершення HIL `CFG-P`. Чинний RTL конфігурації `CFG-P` і формат `CME-RAW-1` цим документом не змінюються.
-* **WI:** [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)), пов'язано з вимогою [`KPOL-SYS-02`](../requirements/kpol.md) та відкритим запитом до Автора [`RFC-017`](https://github.com/nick-fedchik/drafts/pull/4).
+* **WI:** [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)), пов'язано з вимогою [`KPOL-SYS-02`](../requirements/kpol.md) та відкритим запитом до Автора [`RFC-017`](https://github.com/nick-fedchik/drafts/blob/84812f6448713d61caa30578b7021ca05ab80910/KuzminMachine/RFC/RFC-017-busy-release-and-uninitialized-ops.md).
 * **Власник рішення:** Микола Федчик; укладач проєкту CR — GitHub Copilot CLI (Gemini 4 Carbon, `gemini-4-carbon`).
 
 ---
@@ -165,7 +165,7 @@
 
 ---
 
-**Рішення власника (2026-11-15):** обрано **Варіант А** ([коментар у #185](https://github.com/nick-fedchik/kuzmin-machine/issues/185#issuecomment-6891956365)). Мотивація власника: у ході розробки мови й МК вихід за межі поточних 16-байтних слотів вважається неминучим. Задачу на RTL `CFG-P2` не створено; вона залежить від відповіді М. Ю. Кузьміна на `RFC-017` (відкритий у [`drafts#5`](https://github.com/nick-fedchik/drafts/pull/5), SHA `drafts/main` `e0c87c5`) і від завершення HIL `CFG-P`. Відповідь Автора на `RFC-017` ще не отримано.
+**Рішення власника (2026-11-15):** обрано **Варіант А** ([коментар у #185](https://github.com/nick-fedchik/kuzmin-machine/issues/185#issuecomment-6891956365)). Мотивація власника: у ході розробки мови й МК вихід за межі поточних 16-байтних слотів вважається неминучим. Задачу на RTL `CFG-P2` не створено; вона залежить від відповіді М. Ю. Кузьміна на `RFC-017` та від завершення HIL `CFG-P`. Станом на `drafts/main` `84812f6` (`drafts#6`, 2026-11-15) три відповіді на `RFC-017` пояснюють п. 1 на прикладі, але **не закрили п. 3 (читання стану `_` в обчисленнях)**, тому відкладення RTL `CFG-P2` зберігається.
 
 ---
 
@@ -178,6 +178,7 @@
 | 0.1.2 | 2026-11-14 | Уточнено §4.1 (N-6, N-7): окреме джерело латентності бази `CFG-P` (`REQ-HW-012`), розмежування синтезу проби 128 концептів і розрахунку для 256 концептів ([#192](https://github.com/nick-fedchik/kuzmin-machine/issues/192)). |
 | 0.1.3 | 2026-11-14 | §3.2, рядок `ASSIGN_PARAM`/`ASSIGN_CONST`: запис `{W1, W0}` за один такт позначено проєктною ціллю (не перевірено без RTL), із посиланням на §2.2 ([#198](https://github.com/nick-fedchik/kuzmin-machine/issues/198)). |
 | 0.2.0 | 2026-11-15 | §5: зафіксовано рішення власника — Варіант А (статус `Proposed` → прийнято; [#215](https://github.com/nick-fedchik/kuzmin-machine/issues/215)). |
+| 0.2.1 | 2026-11-15 | `WI`: оновлено посилання на `RFC-017` до `drafts/blob/84812f6448713d61caa30578b7021ca05ab80910/...` (`R217-1`, [#220](https://github.com/nick-fedchik/kuzmin-machine/issues/220)); §5: зафіксовано, що відповіді на `RFC-017` від 2026-11-15 не закрили п. 3 (читання `_`), тож RTL `CFG-P2` лишається відкладеним ([#218](https://github.com/nick-fedchik/kuzmin-machine/issues/218)). |
 
 ## Абревіатури та глосарій
 
