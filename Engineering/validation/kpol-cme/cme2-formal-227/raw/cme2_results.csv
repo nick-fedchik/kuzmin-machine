@@ -1,0 +1,8 @@
+design,check,engine,status,seconds,failed,reached,unreached,vcd
+original (CFG-P),P1_safety_ind,smtbmc z3 ind t=5,PASSED,0.202,,,,
+original (CFG-P),P1_safety_bmc,smtbmc z3 bmc t=20,PASSED,21.479,,,,
+original (CFG-P),P2_P3_liveness_bmc,smtbmc z3 bmc t=52,PASSED,196.659,,,,
+original (CFG-P),cover_non_vacuity,smtbmc z3 cover t=45,PASSED,10.687,,C1_cascade_3_commits;C2_reject_reached;C3_commit_and_idle,,
+M1_we_on_reject: bram_b_we_o asserted on reject,safety_bmc,smtbmc z3 bmc t=20,FAILED,0.491,P1a_no_we_on_reject,,,M1_we_on_reject.vcd
+M2_cascade_on_reject: cascade subscription requested on reject,safety_bmc,smtbmc z3 bmc t=20,FAILED,1.001,P1e_idle_after_isolated_reject,,,M2_cascade_on_reject.vcd
+M3_cyclic_cascade: self-loop cascade_cid violates acyclic termination,liveness_bmc,smtbmc z3 bmc t=53,FAILED,280.492,P2_bounded_termination,,,M3_cyclic_cascade.vcd

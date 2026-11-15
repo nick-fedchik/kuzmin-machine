@@ -1,0 +1,52 @@
+# cmd: yosys-smtbmc -s z3 -c -t 45 /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/orig_cover.smt2
+# timestamp: 2026-11-15T23:26:28.166172+02:00
+##   0:00:00  Solver: z3
+##   0:00:00  Checking cover reachability in step 0..
+##   0:00:00  Checking cover reachability in step 1..
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Checking cover reachability in step 3..
+##   0:00:00  Checking cover reachability in step 4..
+##   0:00:00  Checking cover reachability in step 5..
+##   0:00:00  Checking cover reachability in step 6..
+##   0:00:00  Checking cover reachability in step 7..
+##   0:00:00  Checking cover reachability in step 8..
+##   0:00:00  Checking cover reachability in step 9..
+##   0:00:00  Checking cover reachability in step 10..
+##   0:00:00  Checking cover reachability in step 11..
+##   0:00:00  Checking cover reachability in step 12..
+##   0:00:00  Checking cover reachability in step 13..
+##   0:00:00  Checking cover reachability in step 14..
+##   0:00:00  Checking cover reachability in step 15..
+##   0:00:00  Checking cover reachability in step 16..
+##   0:00:00  Checking cover reachability in step 17..
+##   0:00:00  Checking cover reachability in step 18..
+##   0:00:00  Checking cover reachability in step 19..
+##   0:00:00  Checking cover reachability in step 20..
+##   0:00:00  Checking cover reachability in step 21..
+##   0:00:00  Checking cover reachability in step 22..
+##   0:00:00  Checking cover reachability in step 23..
+##   0:00:00  Checking cover reachability in step 24..
+##   0:00:00  Reached cover statement in step 24 at cme2_formal_props: C2_reject_reached
+##   0:00:00  Checking cover reachability in step 24..
+##   0:00:01  Checking cover reachability in step 25..
+##   0:00:01  Reached cover statement in step 25 at cme2_formal_props: C3_commit_and_idle
+##   0:00:01  Checking cover reachability in step 25..
+##   0:00:01  Checking cover reachability in step 26..
+##   0:00:01  Checking cover reachability in step 27..
+##   0:00:01  Checking cover reachability in step 28..
+##   0:00:01  Checking cover reachability in step 29..
+##   0:00:01  Checking cover reachability in step 30..
+##   0:00:01  Checking cover reachability in step 31..
+##   0:00:01  Checking cover reachability in step 32..
+##   0:00:01  Checking cover reachability in step 33..
+##   0:00:01  Checking cover reachability in step 34..
+##   0:00:02  Checking cover reachability in step 35..
+##   0:00:02  Checking cover reachability in step 36..
+##   0:00:02  Checking cover reachability in step 37..
+##   0:00:03  Checking cover reachability in step 38..
+##   0:00:03  Checking cover reachability in step 39..
+##   0:00:04  Checking cover reachability in step 40..
+##   0:00:05  Checking cover reachability in step 41..
+##   0:00:10  Reached cover statement in step 41 at cme2_formal_props: C1_cascade_3_commits
+##   0:00:10  Status: PASSED
+ (2 seconds) /-\|/               (3 seconds) -\|/-\|/-\               (4 seconds) |/-\|/-\|/               (5 seconds) -\|/              

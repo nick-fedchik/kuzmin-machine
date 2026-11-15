@@ -1,0 +1,103 @@
+{
+  "timestamp": "2026-11-15T23:31:11.428442+02:00",
+  "issue": 227,
+  "parameters": {
+    "NUM_CONCEPTS": 4,
+    "QUEUE_DEPTH": 4,
+    "DATA_WIDTH": 32,
+    "ADDR_WIDTH": 4
+  },
+  "platform": {
+    "node": "AORUS-5-SE",
+    "system": "Linux",
+    "release": "7.0.0-42-generic",
+    "machine": "x86_64"
+  },
+  "sha256": {
+    "kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6",
+    "km_concept_micro_engine.sv": "2e95ee6d45c5faeb3594a17b741658fd9345f6a451da88976e790255f23a5831",
+    "km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297",
+    "km_autonomous_sequencer.sv": "d85172abeb9ccf4e7c7c01fc20fab67d6f67f348164920dc279909a64b35d6c5",
+    "cme2_formal_props.sv": "f7a2392b679cc2c2b88bb91709e83a3b44bec04329ed3881434ae1e5150872eb"
+  },
+  "verdict": "PASSED",
+  "rows": [
+    {
+      "design": "original (CFG-P)",
+      "check": "P1_safety_ind",
+      "engine": "smtbmc z3 ind t=5",
+      "status": "PASSED",
+      "seconds": 0.202,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P)",
+      "check": "P1_safety_bmc",
+      "engine": "smtbmc z3 bmc t=20",
+      "status": "PASSED",
+      "seconds": 21.479,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P)",
+      "check": "P2_P3_liveness_bmc",
+      "engine": "smtbmc z3 bmc t=52",
+      "status": "PASSED",
+      "seconds": 196.659,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P)",
+      "check": "cover_non_vacuity",
+      "engine": "smtbmc z3 cover t=45",
+      "status": "PASSED",
+      "seconds": 10.687,
+      "failed": "",
+      "reached": "C1_cascade_3_commits;C2_reject_reached;C3_commit_and_idle",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "M1_we_on_reject: bram_b_we_o asserted on reject",
+      "check": "safety_bmc",
+      "engine": "smtbmc z3 bmc t=20",
+      "status": "FAILED",
+      "seconds": 0.491,
+      "failed": "P1a_no_we_on_reject",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M1_we_on_reject.vcd"
+    },
+    {
+      "design": "M2_cascade_on_reject: cascade subscription requested on reject",
+      "check": "safety_bmc",
+      "engine": "smtbmc z3 bmc t=20",
+      "status": "FAILED",
+      "seconds": 1.001,
+      "failed": "P1e_idle_after_isolated_reject",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M2_cascade_on_reject.vcd"
+    },
+    {
+      "design": "M3_cyclic_cascade: self-loop cascade_cid violates acyclic termination",
+      "check": "liveness_bmc",
+      "engine": "smtbmc z3 bmc t=53",
+      "status": "FAILED",
+      "seconds": 280.492,
+      "failed": "P2_bounded_termination",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M3_cyclic_cascade.vcd"
+    }
+  ]
+}
