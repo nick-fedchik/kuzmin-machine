@@ -48,6 +48,16 @@ EXPECTED_RAW_SHA256 = {
     "scale_4x32.json": "3e1712614717ba9235e0323520f2e26a87d892ea621686ec401ef0130b4c38ac",
     "scale_8x32.json": "c55965ca75355a45ceb15cda6dc4e8b41018f239047b6c715bc25c27ffc7be5f",
     "scale_16x32.json": "18dfb86d234913a6a78f7dbc19058fbfff2029b1d9a6f471828b65b3f62e1a82",
+    "sass-sm87-02.txt": "3604d8a488df24e1de5b923011743e792b936c5cce17caa8f8976b156dd617a1",
+    "run-03-ab-scaling-10k.log": "d69a08b06553267001b712f7103f6c00c28aee33349d0d0c271ea1c09643883d",
+    "ab_scale_1x32_10k.json": "5d54f4fa5711d7e471966ed3652721d1c6818616e748ee589d94cbf01bcf5f69",
+    "ab_scale_1x128_10k.json": "58eef6155f971d56e8f31103f18b962c76679293423199c2fc4d77b24f9065f3",
+    "ab_scale_1x256_10k.json": "373105e7cca25887fe4d7597246d5bc3f89fd8c2588827c876f1097419896b25",
+    "ab_scale_1x512_10k.json": "e9cf16795509a4d173125bcc0e085c02e093098fdd44e8642a0418a4136a0370",
+    "ab_8x32_packed_10k.json": "ea78f3b3381065493d5348c44ce65cc868de35682e538809e8425152fd2fb9db",
+    "ab_8x32_isolated_10k.json": "80876be4a4443b96ec7a3c28abf5d7c313a9b9271ddfa18ff94b9326ae16ba2a",
+    "ab_16x32_packed_10k.json": "2972f2c72d808dcbd772b9d37f230e0976158647a74709bbc2e9e93a7620cee5",
+    "ab_16x32_isolated_10k.json": "552657a4e0e3c787abc13a18bdcd4a6bfdf357b9b0a0bf6da692a0bf1d8a8c68",
 }
 
 
@@ -101,7 +111,11 @@ def test_cu_source_contracts_and_no_hardcoded_clock():
     src = CU_FILE.read_text(encoding="utf-8")
     assert "GPU_CLOCK_KHZ" not in src, "Hardcoded nominal GPU clock constant is prohibited"
     assert "static_assert(sizeof(km_event_ingress_t) == 128" in src
-    assert "static_assert(offsetof(km_event_egress_t, outputs) == 128" in src
+    assert "static_assert(sizeof(km_ack_line_t) == 128" in src
+    assert "static_assert(offsetof(km_event_egress_t, isolated_ack) == 128" in src
+    assert "static_assert(offsetof(km_event_egress_t, outputs) == 128 + KM_MAX_BLOCKS * 128" in src
+    assert "--ack-mode" in src
+    assert "--allow-attr-clock" in src
     assert "%%globaltimer" in src
     assert "ld.global.acquire.sys.u32" in src
     assert "st.global.release.sys.u32" in src
@@ -121,6 +135,14 @@ def test_raw_artifacts_sha256_and_provenance_headers():
         assert re.match(r"^# timestamp: \d{4}-\d{2}-\d{2}T", head[1])
         assert head[2].startswith("# host: jetson")
         assert head[3].startswith("# git_base_sha: ")
+
+    for log_name in ("sass-sm87-02.txt", "run-03-ab-scaling-10k.log"):
+        head = (RAW_DIR / log_name).read_text(encoding="utf-8").splitlines()[:5]
+        assert head[0].startswith("# cmd: ")
+        assert re.match(r"^# timestamp(_start)?: \d{4}-\d{2}-\d{2}T", head[1])
+        assert head[2].startswith("# host: jetson")
+        assert re.match(r"^# cu_sha256: [0-9a-f]{64}$", head[3])
+        assert head[4].startswith("# nvcc: ") and "-O3 -arch=sm_87 -lineinfo" in head[4]
 
 
 def test_sass_predicated_execution_and_locked_metrology():
@@ -147,6 +169,45 @@ def test_sass_predicated_execution_and_locked_metrology():
     assert s_1x512["math_ns_mean"] <= 100.0
     # Empirical L2 snoop storm proof: Single-SM 1x512 must substantially beat naive 16x32
     assert s_16x32["e2e_sm_ns_mean"] > 4.0 * s_1x512["e2e_sm_ns_mean"]
+
+
+def test_ab_ack_isolation_10k_and_bootstrap_ci():
+    """F-1 / F-2 / F-3: N=10000, 95% bootstrap CI, packed vs isolated ack A/B, and SASS v2."""
+    sass2 = (RAW_DIR / "sass-sm87-02.txt").read_text(encoding="utf-8")
+    assert "SEL R" in sass2
+    assert re.search(r"@P\d+\s+STG\.E\s+\[R\d+\.64\+0x880\]", sass2)
+    assert "LDG.E.STRONG.SYS" in sass2
+    assert "STG.E.STRONG.SYS" in sass2
+
+    single_sm = {}
+    for geom in ("1x32", "1x128", "1x256", "1x512"):
+        rec = json.loads((RAW_DIR / f"ab_scale_{geom}_10k.json").read_text(encoding="utf-8"))
+        validate_metrology_record(rec, max_clock_gt_rel_err=0.01)
+        assert rec["events"] == 10000
+        assert rec["mid_run_mismatches"] == 0
+        assert rec["ack_mode"] == "isolated"
+        assert rec["e2e_sm_ns_p99_ci95_lo"] <= rec["e2e_sm_ns_p99"] <= rec["e2e_sm_ns_p99_ci95_hi"]
+        assert rec["e2e_sm_ns_p999_ci95_lo"] <= rec["e2e_sm_ns_p999"] <= rec["e2e_sm_ns_p999_ci95_hi"]
+        # F-1: at 816 MHz (MODE_50W), p99.9 exceeds 1500 ns across ALL geometries
+        assert rec["e2e_sm_ns_p999"] > 1500.0
+        single_sm[geom] = rec
+
+    for blk in (8, 16):
+        packed = json.loads((RAW_DIR / f"ab_{blk}x32_packed_10k.json").read_text(encoding="utf-8"))
+        isolated = json.loads((RAW_DIR / f"ab_{blk}x32_isolated_10k.json").read_text(encoding="utf-8"))
+        for rec in (packed, isolated):
+            validate_metrology_record(rec, max_clock_gt_rel_err=0.01)
+            assert rec["events"] == 10000
+            assert rec["mid_run_mismatches"] == 0
+            assert len(rec["per_block_e2e_sm_ns_mean"]) == blk
+        assert packed["ack_mode"] == "packed"
+        assert isolated["ack_mode"] == "isolated"
+        # Isolating ack lines reduces mean latency and p99.9, but L2 read snoop on ingress dominates
+        assert isolated["e2e_sm_ns_mean"] < packed["e2e_sm_ns_mean"]
+        assert isolated["e2e_sm_ns_p999"] < packed["e2e_sm_ns_p999"]
+
+    ab_16_iso = json.loads((RAW_DIR / "ab_16x32_isolated_10k.json").read_text(encoding="utf-8"))
+    assert ab_16_iso["e2e_sm_ns_mean"] > 5.0 * single_sm["1x512"]["e2e_sm_ns_mean"]
 
 
 def test_negative_controls_catch_fake_clock_dvfs_and_divergence():

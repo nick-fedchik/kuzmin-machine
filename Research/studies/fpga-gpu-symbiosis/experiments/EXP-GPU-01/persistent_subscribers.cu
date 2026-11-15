@@ -40,7 +40,9 @@
 #define KM_MAX_SUBSCRIBERS    512u
 #define KM_MAX_BLOCKS         16u
 #define KM_MASK_WORDS         (KM_MAX_SUBSCRIBERS / 32u)
-#define KM_TELEMETRY_CAP      4096u
+#define KM_TELEMETRY_CAP      10000u
+#define KM_BOOTSTRAP_ITERS    1000u
+#define KM_BOOTSTRAP_SEED     0x5EED22901234ULL
 
 /* --- Вхідна когерентна скринька подій: рівно одна 128-байтна лінія L2 --- */
 typedef struct __align__(128) {
@@ -54,14 +56,24 @@ typedef struct __align__(128) {
 
 static_assert(sizeof(km_event_ingress_t) == 128, "km_event_ingress_t must fit in one 128B L2 cache line");
 
+/* --- Окрема 128-байтна кеш-лінія для підтвердження одного блока SM --- */
+typedef struct __align__(128) {
+    uint32_t ack;
+    uint32_t pad[31];
+} km_ack_line_t;
+
+static_assert(sizeof(km_ack_line_t) == 128, "km_ack_line_t must fit in one 128B L2 cache line");
+
 /* --- Вихідний буфер підписників: окремі 128-байтні лінії кешу L2 --- */
 typedef struct __align__(128) {
-    uint32_t ack_seq_id[KM_MAX_BLOCKS];   /* [0..63]   Підтвердження від кожного блока SM */
-    uint32_t pad_ack[16];                 /* [64..127] Ізоляція лінії ack від масиву outputs */
-    int32_t  outputs[KM_MAX_SUBSCRIBERS]; /* [128..]   Виходи підписників (предикатний запис) */
+    uint32_t      packed_ack[KM_MAX_BLOCKS];   /* [0..63]     Суміжний масив для A/B (packed) */
+    uint32_t      pad_packed[16];              /* [64..127]   Ізоляція від isolated_ack */
+    km_ack_line_t isolated_ack[KM_MAX_BLOCKS]; /* [128..2175] Окрема 128-Б лінія на кожен блок */
+    int32_t       outputs[KM_MAX_SUBSCRIBERS]; /* [2176..]    Виходи підписників (предикатний запис) */
 } km_event_egress_t;
 
-static_assert(offsetof(km_event_egress_t, outputs) == 128, "outputs must start on a separate 128B cache line");
+static_assert(offsetof(km_event_egress_t, isolated_ack) == 128, "isolated_ack must start on a separate 128B cache line");
+static_assert(offsetof(km_event_egress_t, outputs) == 128 + KM_MAX_BLOCKS * 128, "outputs must start on a separate 128B cache line");
 
 /* --- Дескриптор стану підписника (ініціалізація та фінальна верифікація) --- */
 typedef struct {
@@ -75,13 +87,13 @@ typedef struct {
     uint32_t trigger_count;
 } km_sub_state_t;
 
-/* --- Буфер телеметрії у локальній пам'яті GPU (cudaMalloc, без host snooping) --- */
+/* --- Буфер телеметрії у локальній пам'яті GPU (cudaMalloc, окремо для кожного блока) --- */
 typedef struct {
-    uint64_t t_math_cycles[KM_TELEMETRY_CAP];
-    uint64_t t_e2e_cycles[KM_TELEMETRY_CAP];
-    uint64_t t_math_gt_ns[KM_TELEMETRY_CAP];
-    uint64_t t_e2e_gt_ns[KM_TELEMETRY_CAP];
-    uint32_t recorded_samples;
+    uint64_t t_math_cycles[KM_MAX_BLOCKS][KM_TELEMETRY_CAP];
+    uint64_t t_e2e_cycles[KM_MAX_BLOCKS][KM_TELEMETRY_CAP];
+    uint64_t t_math_gt_ns[KM_MAX_BLOCKS][KM_TELEMETRY_CAP];
+    uint64_t t_e2e_gt_ns[KM_MAX_BLOCKS][KM_TELEMETRY_CAP];
+    uint32_t recorded_samples[KM_MAX_BLOCKS];
 } km_telemetry_t;
 
 __device__ __forceinline__ uint64_t km_read_globaltimer(void) {
@@ -129,7 +141,8 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
     km_telemetry_t           * __restrict__ telemetry,
     const km_sub_state_t     * __restrict__ init_states,
     km_sub_state_t           * __restrict__ final_states,
-    uint32_t                                sleep_ns
+    uint32_t                                sleep_ns,
+    uint32_t                                ack_isolated
 ) {
     const uint32_t tid        = threadIdx.x;
     const uint32_t lane_id    = tid & 31u;
@@ -224,14 +237,17 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
                 uint64_t t_e2e_g1 = km_read_globaltimer();
 
                 if (lane_id == 0u) {
-                    km_st_release_sys_u32(&egress->ack_seq_id[blockIdx.x], cur_seq);
-                    if (blockIdx.x == 0u && cur_seq <= KM_TELEMETRY_CAP) {
+                    uint32_t *ack_ptr = (ack_isolated != 0u)
+                        ? &egress->isolated_ack[blockIdx.x].ack
+                        : &egress->packed_ack[blockIdx.x];
+                    km_st_release_sys_u32(ack_ptr, cur_seq);
+                    if (cur_seq <= KM_TELEMETRY_CAP) {
                         uint32_t idx = cur_seq - 1u;
-                        telemetry->t_math_cycles[idx] = t_math_c1 - t_math_c0;
-                        telemetry->t_e2e_cycles[idx]  = t_e2e_c1  - t_e2e_c0;
-                        telemetry->t_math_gt_ns[idx]  = t_math_g1 - t_math_g0;
-                        telemetry->t_e2e_gt_ns[idx]   = t_e2e_g1  - t_e2e_g0;
-                        telemetry->recorded_samples   = cur_seq;
+                        telemetry->t_math_cycles[blockIdx.x][idx] = t_math_c1 - t_math_c0;
+                        telemetry->t_e2e_cycles[blockIdx.x][idx]  = t_e2e_c1  - t_e2e_c0;
+                        telemetry->t_math_gt_ns[blockIdx.x][idx]  = t_math_g1 - t_math_g0;
+                        telemetry->t_e2e_gt_ns[blockIdx.x][idx]   = t_e2e_g1  - t_e2e_g0;
+                        telemetry->recorded_samples[blockIdx.x]   = cur_seq;
                     }
                 }
                 last_seq = cur_seq;
@@ -301,14 +317,17 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
                 uint64_t t_e2e_g1 = km_read_globaltimer();
 
                 if (tid == 0u) {
-                    km_st_release_sys_u32(&egress->ack_seq_id[blockIdx.x], cur_seq);
-                    if (blockIdx.x == 0u && cur_seq <= KM_TELEMETRY_CAP) {
+                    uint32_t *ack_ptr = (ack_isolated != 0u)
+                        ? &egress->isolated_ack[blockIdx.x].ack
+                        : &egress->packed_ack[blockIdx.x];
+                    km_st_release_sys_u32(ack_ptr, cur_seq);
+                    if (cur_seq <= KM_TELEMETRY_CAP) {
                         uint32_t idx = cur_seq - 1u;
-                        telemetry->t_math_cycles[idx] = t_math_c1 - t_math_c0;
-                        telemetry->t_e2e_cycles[idx]  = t_e2e_c1  - t_e2e_c0;
-                        telemetry->t_math_gt_ns[idx]  = t_math_g1 - t_math_g0;
-                        telemetry->t_e2e_gt_ns[idx]   = t_e2e_g1  - t_e2e_g0;
-                        telemetry->recorded_samples   = cur_seq;
+                        telemetry->t_math_cycles[blockIdx.x][idx] = t_math_c1 - t_math_c0;
+                        telemetry->t_e2e_cycles[blockIdx.x][idx]  = t_e2e_c1  - t_e2e_c0;
+                        telemetry->t_math_gt_ns[blockIdx.x][idx]  = t_math_g1 - t_math_g0;
+                        telemetry->t_e2e_gt_ns[blockIdx.x][idx]   = t_e2e_g1  - t_e2e_g0;
+                        telemetry->recorded_samples[blockIdx.x]   = cur_seq;
                     }
                 }
                 last_seq = cur_seq;
@@ -391,11 +410,24 @@ typedef struct {
     uint64_t min;
     uint64_t p50;
     uint64_t p99;
+    uint64_t p99_ci_lo;
+    uint64_t p99_ci_hi;
     uint64_t p999;
+    uint64_t p999_ci_lo;
+    uint64_t p999_ci_hi;
     uint64_t max;
 } km_stats_t;
 
-static km_stats_t compute_stats(const uint64_t *raw, uint32_t n) {
+static uint64_t km_xorshift64(uint64_t *state) {
+    uint64_t x = *state;
+    x ^= x >> 12;
+    x ^= x << 25;
+    x ^= x >> 27;
+    *state = x;
+    return x * 0x2545F4914F6CDD1DULL;
+}
+
+static km_stats_t compute_stats(const uint64_t *raw, uint32_t n, bool with_bootstrap) {
     km_stats_t st = {0};
     if (n == 0u) return st;
 
@@ -420,6 +452,35 @@ static km_stats_t compute_stats(const uint64_t *raw, uint32_t n) {
     st.p99    = sorted[(size_t)((n - 1u) * 0.99)];
     st.p999   = sorted[(size_t)((n - 1u) * 0.999)];
     st.max    = sorted[n - 1u];
+
+    if (with_bootstrap && n >= 2u) {
+        uint64_t *boot_sample = (uint64_t *)malloc(n * sizeof(uint64_t));
+        uint64_t  boot_p99[KM_BOOTSTRAP_ITERS];
+        uint64_t  boot_p999[KM_BOOTSTRAP_ITERS];
+        uint64_t  rng = KM_BOOTSTRAP_SEED;
+        size_t    idx99  = (size_t)((n - 1u) * 0.99);
+        size_t    idx999 = (size_t)((n - 1u) * 0.999);
+
+        for (uint32_t it = 0; it < KM_BOOTSTRAP_ITERS; it++) {
+            for (uint32_t i = 0; i < n; i++) {
+                uint32_t r = (uint32_t)(km_xorshift64(&rng) % (uint64_t)n);
+                boot_sample[i] = sorted[r];
+            }
+            qsort(boot_sample, n, sizeof(uint64_t), cmp_u64);
+            boot_p99[it]  = boot_sample[idx99];
+            boot_p999[it] = boot_sample[idx999];
+        }
+        qsort(boot_p99,  KM_BOOTSTRAP_ITERS, sizeof(uint64_t), cmp_u64);
+        qsort(boot_p999, KM_BOOTSTRAP_ITERS, sizeof(uint64_t), cmp_u64);
+        st.p99_ci_lo  = boot_p99[(size_t)((KM_BOOTSTRAP_ITERS - 1u) * 0.025)];
+        st.p99_ci_hi  = boot_p99[(size_t)((KM_BOOTSTRAP_ITERS - 1u) * 0.975)];
+        st.p999_ci_lo = boot_p999[(size_t)((KM_BOOTSTRAP_ITERS - 1u) * 0.025)];
+        st.p999_ci_hi = boot_p999[(size_t)((KM_BOOTSTRAP_ITERS - 1u) * 0.975)];
+        free(boot_sample);
+    } else {
+        st.p99_ci_lo = st.p99_ci_hi = st.p99;
+        st.p999_ci_lo = st.p999_ci_hi = st.p999;
+    }
 
     free(sorted);
     return st;
@@ -483,13 +544,16 @@ static void cpu_reference_step(
 }
 
 int main(int argc, char **argv) {
-    uint32_t       num_events = 1000u;
-    uint32_t       num_blocks = 1u;
-    uint32_t       threads    = 32u;
-    uint32_t       sleep_ns   = 0u;
-    km_mask_mode_t mask_mode  = MASK_ALL;
-    const char    *mask_name  = "all";
-    const char    *json_out   = NULL;
+    uint32_t       num_events      = 1000u;
+    uint32_t       num_blocks      = 1u;
+    uint32_t       threads         = 32u;
+    uint32_t       sleep_ns        = 0u;
+    km_mask_mode_t mask_mode       = MASK_ALL;
+    const char    *mask_name       = "all";
+    const char    *ack_mode_name   = "isolated";
+    uint32_t       ack_isolated    = 1u;
+    bool           allow_attr_clk  = false;
+    const char    *json_out        = NULL;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--events") == 0 && i + 1 < argc) {
@@ -500,6 +564,18 @@ int main(int argc, char **argv) {
             threads = (uint32_t)strtoul(argv[++i], NULL, 10);
         } else if (strcmp(argv[i], "--sleep-ns") == 0 && i + 1 < argc) {
             sleep_ns = (uint32_t)strtoul(argv[++i], NULL, 10);
+        } else if (strcmp(argv[i], "--ack-mode") == 0 && i + 1 < argc) {
+            ack_mode_name = argv[++i];
+            if (strcmp(ack_mode_name, "isolated") == 0) {
+                ack_isolated = 1u;
+            } else if (strcmp(ack_mode_name, "packed") == 0) {
+                ack_isolated = 0u;
+            } else {
+                fprintf(stderr, "[FATAL] Невідомий режим --ack-mode: %s (очікується isolated|packed)\n", ack_mode_name);
+                return 2;
+            }
+        } else if (strcmp(argv[i], "--allow-attr-clock") == 0) {
+            allow_attr_clk = true;
         } else if (strcmp(argv[i], "--mask") == 0 && i + 1 < argc) {
             mask_name = argv[++i];
             if (strcmp(mask_name, "all") == 0)       mask_mode = MASK_ALL;
@@ -590,7 +666,7 @@ int main(int argc, char **argv) {
     cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking);
 
     km_persistent_subscribers_kernel<<<num_blocks, threads, 0, stream>>>(
-        d_ingress, d_egress, d_telemetry, d_init, d_final, sleep_ns
+        d_ingress, d_egress, d_telemetry, d_init, d_final, sleep_ns, ack_isolated
     );
     cudaError_t launch_err = cudaGetLastError();
     if (launch_err != cudaSuccess) {
@@ -606,7 +682,8 @@ int main(int argc, char **argv) {
     uint32_t  local_masks[KM_MASK_WORDS];
     memset(local_masks, 0, sizeof(local_masks));
 
-    uint64_t t_wall_start = host_monotonic_raw_ns();
+    uint32_t  mid_run_mismatches = 0u;
+    uint64_t  t_wall_start = host_monotonic_raw_ns();
 
     for (uint32_t ev = 1u; ev <= num_events; ev++) {
         int32_t c_val = (int32_t)(25 + (ev % 15u));
@@ -622,7 +699,10 @@ int main(int argc, char **argv) {
         __atomic_store_n(&h_ingress->seq_id, ev, __ATOMIC_RELEASE);
 
         for (uint32_t b = 0; b < num_blocks; b++) {
-            while (__atomic_load_n(&h_egress->ack_seq_id[b], __ATOMIC_ACQUIRE) != ev) {
+            const volatile uint32_t *ack_ptr = (ack_isolated != 0u)
+                ? (const volatile uint32_t *)&h_egress->isolated_ack[b].ack
+                : (const volatile uint32_t *)&h_egress->packed_ack[b];
+            while (__atomic_load_n(ack_ptr, __ATOMIC_ACQUIRE) != ev) {
 #if defined(__aarch64__)
                 asm volatile("yield" ::: "memory");
 #endif
@@ -637,6 +717,14 @@ int main(int argc, char **argv) {
         }
 
         cpu_reference_step(ref_states, ref_outputs, total_subs, c_val, local_masks);
+
+        if ((ev % 100u) == 0u || ev == num_events) {
+            for (uint32_t i = 0; i < total_subs; i++) {
+                if (h_egress->outputs[i] != ref_outputs[i]) {
+                    mid_run_mismatches++;
+                }
+            }
+        }
     }
 
     uint64_t t_wall_end   = host_monotonic_raw_ns();
@@ -653,7 +741,7 @@ int main(int argc, char **argv) {
     cudaMemcpy(gpu_final, d_final, total_subs * sizeof(km_sub_state_t), cudaMemcpyDeviceToHost);
 
     /* Незалежна побітова перевірка станів та поштових виходів проти CPU-еталона */
-    uint32_t mismatches = 0u;
+    uint32_t mismatches = mid_run_mismatches;
     for (uint32_t i = 0; i < total_subs; i++) {
         if (gpu_final[i].integral      != ref_states[i].integral ||
             gpu_final[i].prev_err      != ref_states[i].prev_err ||
@@ -664,33 +752,90 @@ int main(int argc, char **argv) {
         }
     }
 
-    uint32_t n_samp = h_telemetry->recorded_samples;
-    km_stats_t st_math_cyc = compute_stats(h_telemetry->t_math_cycles, n_samp);
-    km_stats_t st_e2e_cyc  = compute_stats(h_telemetry->t_e2e_cycles,  n_samp);
-    km_stats_t st_math_gt  = compute_stats(h_telemetry->t_math_gt_ns,  n_samp);
-    km_stats_t st_e2e_gt   = compute_stats(h_telemetry->t_e2e_gt_ns,   n_samp);
-    km_stats_t st_host_rt  = compute_stats(host_rt_ns,                 num_events);
+    if (sysfs_cur_mid == 0ULL && !allow_attr_clk) {
+        fprintf(stderr, "[FATAL] Неможливо зчитати фактичну частоту GPU із sysfs devfreq (cur_freq == 0). "
+                        "Тихий fallback на cudaDevAttrClockRate заборонено (F-5). "
+                        "Використовуйте --allow-attr-clock лише для діагностики.\n");
+        cudaStreamDestroy(stream);
+        cudaFree(d_init);
+        cudaFree(d_final);
+        cudaFree(d_telemetry);
+        cudaFreeHost(h_ingress);
+        cudaFreeHost(h_egress);
+        free(h_telemetry);
+        free(host_rt_ns);
+        return 3;
+    }
 
-    uint64_t eff_freq_hz = (sysfs_cur_mid > 0ULL) ? sysfs_cur_mid : ((uint64_t)attr_clock_khz * 1000ULL);
+    uint64_t eff_freq_hz = sysfs_cur_mid;
+    if (eff_freq_hz == 0ULL) {
+        fprintf(stderr, "[WARN] Вимушений fallback на cudaDevAttrClockRate (%d кГц) через --allow-attr-clock.\n",
+                attr_clock_khz);
+        eff_freq_hz = (uint64_t)attr_clock_khz * 1000ULL;
+    }
     double ns_per_cyc_actual = (eff_freq_hz > 0ULL) ? (1e9 / (double)eff_freq_hz) : 0.0;
 
+    uint32_t n_samp = h_telemetry->recorded_samples[0];
+    for (uint32_t b = 1u; b < num_blocks; b++) {
+        if (h_telemetry->recorded_samples[b] < n_samp) {
+            n_samp = h_telemetry->recorded_samples[b];
+        }
+    }
+
+    uint64_t *max_math_cyc = (uint64_t *)calloc(n_samp ? n_samp : 1u, sizeof(uint64_t));
+    uint64_t *max_e2e_cyc  = (uint64_t *)calloc(n_samp ? n_samp : 1u, sizeof(uint64_t));
+    uint64_t *max_math_gt  = (uint64_t *)calloc(n_samp ? n_samp : 1u, sizeof(uint64_t));
+    uint64_t *max_e2e_gt   = (uint64_t *)calloc(n_samp ? n_samp : 1u, sizeof(uint64_t));
+    double    per_blk_e2e_ns_mean[KM_MAX_BLOCKS] = {0};
+
+    for (uint32_t i = 0u; i < n_samp; i++) {
+        uint64_t mmc = 0ULL, mec = 0ULL, mmg = 0ULL, meg = 0ULL;
+        for (uint32_t b = 0u; b < num_blocks; b++) {
+            uint64_t mc = h_telemetry->t_math_cycles[b][i];
+            uint64_t ec = h_telemetry->t_e2e_cycles[b][i];
+            uint64_t mg = h_telemetry->t_math_gt_ns[b][i];
+            uint64_t eg = h_telemetry->t_e2e_gt_ns[b][i];
+            if (mc > mmc) mmc = mc;
+            if (ec > mec) mec = ec;
+            if (mg > mmg) mmg = mg;
+            if (eg > meg) meg = eg;
+            per_blk_e2e_ns_mean[b] += (double)ec * ns_per_cyc_actual;
+        }
+        max_math_cyc[i] = mmc;
+        max_e2e_cyc[i]  = mec;
+        max_math_gt[i]  = mmg;
+        max_e2e_gt[i]   = meg;
+    }
+    if (n_samp > 0u) {
+        for (uint32_t b = 0u; b < num_blocks; b++) {
+            per_blk_e2e_ns_mean[b] /= (double)n_samp;
+        }
+    }
+
+    km_stats_t st_math_cyc  = compute_stats(max_math_cyc, n_samp, false);
+    km_stats_t st_e2e_cyc   = compute_stats(max_e2e_cyc,  n_samp, true);
+    km_stats_t st_math_gt   = compute_stats(max_math_gt,  n_samp, false);
+    km_stats_t st_e2e_gt    = compute_stats(max_e2e_gt,   n_samp, true);
+    km_stats_t st_e2e_b0    = compute_stats(h_telemetry->t_e2e_cycles[0], n_samp, false);
+    km_stats_t st_host_rt   = compute_stats(host_rt_ns,   num_events, true);
+
     printf("============================================================================\n");
-    printf(" МАШИНА КУЗЬМІНА: PERSISTENT GPU SUBSCRIBERS (ISSUE #225 / ADR B6)\n");
+    printf(" МАШИНА КУЗЬМІНА: PERSISTENT GPU SUBSCRIBERS (ISSUE #225 / #229 / ADR B6)\n");
     printf("============================================================================\n");
     printf("  Пристрій GPU:                 %s (SM %d.%d)\n", prop.name, prop.major, prop.minor);
     printf("  Геометрія запуску:            %u блок(ів) x %u ниток = %u підписників\n", num_blocks, threads, total_subs);
-    printf("  Режим маски / sleep_ns:       %s / %u нс\n", mask_name, sleep_ns);
+    printf("  Режим маски / ack / sleep_ns: %s / %s / %u нс\n", mask_name, ack_mode_name, sleep_ns);
     printf("  Кількість подій (вибірка SM): %u (%u)\n", num_events, n_samp);
     printf("  Розмір ingress / offset out:  %zu Б / %zu Б\n", sizeof(km_event_ingress_t), offsetof(km_event_egress_t, outputs));
     printf("  Частота GPU sysfs (до/під час/після, max): %.1f / %.1f / %.1f МГц (max %.1f МГц, CUDA attr %.1f МГц)\n",
-           sysfs_min_before ? (double)sysfs_cur_before / 1e6 : 0.0,
+           (sysfs_cur_before > 0ULL) ? (double)sysfs_cur_before / 1e6 : 0.0,
            (double)sysfs_cur_mid / 1e6,
            (double)sysfs_cur_after / 1e6,
            (double)sysfs_max_before / 1e6,
            (double)attr_clock_khz / 1e3);
     printf("  Квант апаратного %%globaltimer: %" PRIu64 " нс\n", h_gt_step);
-    printf("  Перевірка CPU-еталона:        %s (%u розбіжностей із %u підписників)\n",
-           (mismatches == 0u) ? "PASS" : "FAIL", mismatches, total_subs);
+    printf("  Перевірка CPU-еталона:        %s (total=%u, mid_run=%u із %u підписників)\n",
+           (mismatches == 0u) ? "PASS" : "FAIL", mismatches, mid_run_mismatches, total_subs);
     printf("  --------------------------------------------------------------------------\n");
     printf("  1. ЧИСТИЙ ЧАС ОБЧИСЛЕННЯ У РЕГІСТРАХ SM (clock64 -> нс за фактичної %.1f МГц):\n", (double)eff_freq_hz / 1e6);
     printf("     Такти SM: mean=%.2f sigma=%.2f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " p99.9=%" PRIu64 " max=%" PRIu64 "\n",
@@ -703,21 +848,28 @@ int main(int argc, char **argv) {
     printf("     %%globaltimer нс: mean=%.2f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " max=%" PRIu64 "\n",
            st_math_gt.mean, st_math_gt.min, st_math_gt.p50, st_math_gt.p99, st_math_gt.max);
     printf("  --------------------------------------------------------------------------\n");
-    printf("  2. ПОВНИЙ ЧАС НА SM З УМОВНИМ ЗАПИСОМ ВИХОДУ (T_e2e_sm):\n");
+    printf("  2. ПОВНИЙ ЧАС НА SM (T_e2e_sm, max по %u блоках; блок 0 mean=%.2f нс):\n",
+           num_blocks, st_e2e_b0.mean * ns_per_cyc_actual);
     printf("     Такти SM: mean=%.2f sigma=%.2f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " p99.9=%" PRIu64 " max=%" PRIu64 "\n",
            st_e2e_cyc.mean, st_e2e_cyc.stddev, st_e2e_cyc.min, st_e2e_cyc.p50, st_e2e_cyc.p99, st_e2e_cyc.p999, st_e2e_cyc.max);
-    printf("     Фіз. нс:  mean=%.2f sigma=%.2f | min=%.2f p50=%.2f p99=%.2f p99.9=%.2f max=%.2f\n",
+    printf("     Фіз. нс:  mean=%.2f sigma=%.2f | min=%.2f p50=%.2f p99=%.2f [%.2f..%.2f] p99.9=%.2f [%.2f..%.2f] max=%.2f\n",
            st_e2e_cyc.mean * ns_per_cyc_actual, st_e2e_cyc.stddev * ns_per_cyc_actual,
            st_e2e_cyc.min * ns_per_cyc_actual, st_e2e_cyc.p50 * ns_per_cyc_actual,
-           st_e2e_cyc.p99 * ns_per_cyc_actual, st_e2e_cyc.p999 * ns_per_cyc_actual,
+           st_e2e_cyc.p99 * ns_per_cyc_actual, st_e2e_cyc.p99_ci_lo * ns_per_cyc_actual, st_e2e_cyc.p99_ci_hi * ns_per_cyc_actual,
+           st_e2e_cyc.p999 * ns_per_cyc_actual, st_e2e_cyc.p999_ci_lo * ns_per_cyc_actual, st_e2e_cyc.p999_ci_hi * ns_per_cyc_actual,
            st_e2e_cyc.max * ns_per_cyc_actual);
-    printf("     %%globaltimer нс: mean=%.2f sigma=%.2f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " p99.9=%" PRIu64 " max=%" PRIu64 "\n",
-           st_e2e_gt.mean, st_e2e_gt.stddev, st_e2e_gt.min, st_e2e_gt.p50, st_e2e_gt.p99, st_e2e_gt.p999, st_e2e_gt.max);
+    printf("     %%globaltimer нс: mean=%.2f sigma=%.2f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " [%" PRIu64 "..%" PRIu64 "] p99.9=%" PRIu64 " [%" PRIu64 "..%" PRIu64 "] max=%" PRIu64 "\n",
+           st_e2e_gt.mean, st_e2e_gt.stddev, st_e2e_gt.min, st_e2e_gt.p50,
+           st_e2e_gt.p99, st_e2e_gt.p99_ci_lo, st_e2e_gt.p99_ci_hi,
+           st_e2e_gt.p999, st_e2e_gt.p999_ci_lo, st_e2e_gt.p999_ci_hi,
+           st_e2e_gt.max);
     printf("  --------------------------------------------------------------------------\n");
     printf("  3. НАСКРІЗНИЙ ROUND-TRIP HOST CPU -> L2 -> SM -> L2 -> HOST CPU (CLOCK_MONOTONIC_RAW):\n");
-    printf("     Фіз. нс:  mean=%.1f sigma=%.1f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " p99.9=%" PRIu64 " max=%" PRIu64 " (wall=%.2f мс)\n",
-           st_host_rt.mean, st_host_rt.stddev, st_host_rt.min, st_host_rt.p50, st_host_rt.p99, st_host_rt.p999, st_host_rt.max,
-           (double)(t_wall_end - t_wall_start) / 1e6);
+    printf("     Фіз. нс:  mean=%.1f sigma=%.1f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " [%" PRIu64 "..%" PRIu64 "] p99.9=%" PRIu64 " [%" PRIu64 "..%" PRIu64 "] max=%" PRIu64 " (wall=%.2f мс)\n",
+           st_host_rt.mean, st_host_rt.stddev, st_host_rt.min, st_host_rt.p50,
+           st_host_rt.p99, st_host_rt.p99_ci_lo, st_host_rt.p99_ci_hi,
+           st_host_rt.p999, st_host_rt.p999_ci_lo, st_host_rt.p999_ci_hi,
+           st_host_rt.max, (double)(t_wall_end - t_wall_start) / 1e6);
     printf("============================================================================\n");
 
     if (json_out != NULL) {
@@ -726,31 +878,52 @@ int main(int argc, char **argv) {
             fprintf(jf,
                 "{\n"
                 "  \"blocks\": %u, \"threads\": %u, \"subscribers\": %u,\n"
-                "  \"mask\": \"%s\", \"sleep_ns\": %u, \"events\": %u,\n"
+                "  \"mask\": \"%s\", \"ack_mode\": \"%s\", \"sleep_ns\": %u, \"events\": %u,\n"
                 "  \"sysfs_cur_freq_hz\": %" PRIu64 ", \"sysfs_max_freq_hz\": %" PRIu64 ",\n"
-                "  \"globaltimer_quantum_ns\": %" PRIu64 ", \"mismatches\": %u,\n"
+                "  \"globaltimer_quantum_ns\": %" PRIu64 ", \"mid_run_mismatches\": %u, \"mismatches\": %u,\n"
+                "  \"bootstrap_iters\": %u, \"bootstrap_seed\": \"0x%llx\",\n"
                 "  \"math_cycles_mean\": %.3f, \"math_cycles_sigma\": %.3f, \"math_cycles_p50\": %" PRIu64 ", \"math_cycles_p999\": %" PRIu64 ", \"math_cycles_max\": %" PRIu64 ",\n"
                 "  \"math_ns_mean\": %.3f, \"math_ns_p999\": %.3f,\n"
-                "  \"e2e_sm_cycles_mean\": %.3f, \"e2e_sm_cycles_sigma\": %.3f, \"e2e_sm_cycles_p50\": %" PRIu64 ", \"e2e_sm_cycles_p999\": %" PRIu64 ", \"e2e_sm_cycles_max\": %" PRIu64 ",\n"
-                "  \"e2e_sm_ns_mean\": %.3f, \"e2e_sm_ns_p50\": %.3f, \"e2e_sm_ns_p99\": %.3f, \"e2e_sm_ns_p999\": %.3f, \"e2e_sm_ns_max\": %.3f,\n"
-                "  \"e2e_gt_ns_mean\": %.3f, \"e2e_gt_ns_p50\": %" PRIu64 ", \"e2e_gt_ns_p99\": %" PRIu64 ", \"e2e_gt_ns_p999\": %" PRIu64 ", \"e2e_gt_ns_max\": %" PRIu64 ",\n"
-                "  \"host_rt_ns_mean\": %.3f, \"host_rt_ns_p50\": %" PRIu64 ", \"host_rt_ns_p99\": %" PRIu64 ", \"host_rt_ns_p999\": %" PRIu64 ", \"host_rt_ns_max\": %" PRIu64 "\n"
-                "}\n",
+                "  \"e2e_sm_cycles_mean\": %.3f, \"e2e_sm_cycles_sigma\": %.3f, \"e2e_sm_cycles_p50\": %" PRIu64 ", \"e2e_sm_cycles_p99\": %" PRIu64 ", \"e2e_sm_cycles_p999\": %" PRIu64 ", \"e2e_sm_cycles_max\": %" PRIu64 ",\n"
+                "  \"e2e_sm_ns_mean\": %.3f, \"e2e_sm_ns_p50\": %.3f, \"e2e_sm_ns_p99\": %.3f, \"e2e_sm_ns_p99_ci95_lo\": %.3f, \"e2e_sm_ns_p99_ci95_hi\": %.3f, \"e2e_sm_ns_p999\": %.3f, \"e2e_sm_ns_p999_ci95_lo\": %.3f, \"e2e_sm_ns_p999_ci95_hi\": %.3f, \"e2e_sm_ns_max\": %.3f,\n"
+                "  \"e2e_sm_b0_ns_mean\": %.3f, \"e2e_sm_b0_ns_p999\": %.3f,\n"
+                "  \"e2e_gt_ns_mean\": %.3f, \"e2e_gt_ns_p50\": %" PRIu64 ", \"e2e_gt_ns_p99\": %" PRIu64 ", \"e2e_gt_ns_p99_ci95_lo\": %" PRIu64 ", \"e2e_gt_ns_p99_ci95_hi\": %" PRIu64 ", \"e2e_gt_ns_p999\": %" PRIu64 ", \"e2e_gt_ns_p999_ci95_lo\": %" PRIu64 ", \"e2e_gt_ns_p999_ci95_hi\": %" PRIu64 ", \"e2e_gt_ns_max\": %" PRIu64 ",\n"
+                "  \"host_rt_ns_mean\": %.3f, \"host_rt_ns_p50\": %" PRIu64 ", \"host_rt_ns_p99\": %" PRIu64 ", \"host_rt_ns_p99_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p99_ci95_hi\": %" PRIu64 ", \"host_rt_ns_p999\": %" PRIu64 ", \"host_rt_ns_p999_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p999_ci95_hi\": %" PRIu64 ", \"host_rt_ns_max\": %" PRIu64 ",\n"
+                "  \"per_block_e2e_sm_ns_mean\": [",
                 num_blocks, threads, total_subs,
-                mask_name, sleep_ns, num_events,
+                mask_name, ack_mode_name, sleep_ns, num_events,
                 eff_freq_hz, sysfs_max_before,
-                h_gt_step, mismatches,
+                h_gt_step, mid_run_mismatches, mismatches,
+                KM_BOOTSTRAP_ITERS, (unsigned long long)KM_BOOTSTRAP_SEED,
                 st_math_cyc.mean, st_math_cyc.stddev, st_math_cyc.p50, st_math_cyc.p999, st_math_cyc.max,
                 st_math_cyc.mean * ns_per_cyc_actual, st_math_cyc.p999 * ns_per_cyc_actual,
-                st_e2e_cyc.mean, st_e2e_cyc.stddev, st_e2e_cyc.p50, st_e2e_cyc.p999, st_e2e_cyc.max,
-                st_e2e_cyc.mean * ns_per_cyc_actual, st_e2e_cyc.p50 * ns_per_cyc_actual, st_e2e_cyc.p99 * ns_per_cyc_actual, st_e2e_cyc.p999 * ns_per_cyc_actual, st_e2e_cyc.max * ns_per_cyc_actual,
-                st_e2e_gt.mean, st_e2e_gt.p50, st_e2e_gt.p99, st_e2e_gt.p999, st_e2e_gt.max,
-                st_host_rt.mean, st_host_rt.p50, st_host_rt.p99, st_host_rt.p999, st_host_rt.max
+                st_e2e_cyc.mean, st_e2e_cyc.stddev, st_e2e_cyc.p50, st_e2e_cyc.p99, st_e2e_cyc.p999, st_e2e_cyc.max,
+                st_e2e_cyc.mean * ns_per_cyc_actual, st_e2e_cyc.p50 * ns_per_cyc_actual,
+                st_e2e_cyc.p99 * ns_per_cyc_actual, st_e2e_cyc.p99_ci_lo * ns_per_cyc_actual, st_e2e_cyc.p99_ci_hi * ns_per_cyc_actual,
+                st_e2e_cyc.p999 * ns_per_cyc_actual, st_e2e_cyc.p999_ci_lo * ns_per_cyc_actual, st_e2e_cyc.p999_ci_hi * ns_per_cyc_actual,
+                st_e2e_cyc.max * ns_per_cyc_actual,
+                st_e2e_b0.mean * ns_per_cyc_actual, st_e2e_b0.p999 * ns_per_cyc_actual,
+                st_e2e_gt.mean, st_e2e_gt.p50,
+                st_e2e_gt.p99, st_e2e_gt.p99_ci_lo, st_e2e_gt.p99_ci_hi,
+                st_e2e_gt.p999, st_e2e_gt.p999_ci_lo, st_e2e_gt.p999_ci_hi,
+                st_e2e_gt.max,
+                st_host_rt.mean, st_host_rt.p50,
+                st_host_rt.p99, st_host_rt.p99_ci_lo, st_host_rt.p99_ci_hi,
+                st_host_rt.p999, st_host_rt.p999_ci_lo, st_host_rt.p999_ci_hi,
+                st_host_rt.max
             );
+            for (uint32_t b = 0u; b < num_blocks; b++) {
+                fprintf(jf, "%s%.3f", (b > 0u) ? ", " : "", per_blk_e2e_ns_mean[b]);
+            }
+            fprintf(jf, "]\n}\n");
             fclose(jf);
         }
     }
 
+    free(max_math_cyc);
+    free(max_e2e_cyc);
+    free(max_math_gt);
+    free(max_e2e_gt);
     cudaStreamDestroy(stream);
     cudaFree(d_init);
     cudaFree(d_final);

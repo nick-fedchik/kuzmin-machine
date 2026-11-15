@@ -1,6 +1,6 @@
 # Відкриті роботи та рішення власника
 
-* **Версія:** 0.4.11
+* **Версія:** 0.4.12
 * **Дата:** 2026-11-15
 * **Тип WP:** Register
 * **Власник рішень:** Микола Федчик.
@@ -73,6 +73,8 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 | [#225 — EXP-GPU-01 (Фаза 3–4): метрологія `persistent_subscribers.cu` і масштабування `32–512` підписників](https://github.com/nick-fedchik/kuzmin-machine/issues/225) | Open | In progress | 128-Б L2 mailbox, `clock64` + `%globaltimer` + sysfs `cur_freq`, `SASS` (`sm_87`), розріджені маски та порівняння `1x32..1x512` проти `4x32..16x32` на Jetson AGX Orin ([звіт](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md)); очікує рецензії. |
 | [#226 — EXP-GPU-01 (Фази 1–2, 4): RTL `PMOD Event Egress` і фізичне замикання `PYNQ-Z1 -> Jetson J501` із захватом `RP2040 PIO`](https://github.com/nick-fedchik/kuzmin-machine/issues/226) | Open | Todo | Міжплатний контур ПЛІС→GPU з узгодженням рівнів і зовнішньою цифровою метрологією `T_e2e`. |
 | [#227 — формальна верифікація `CFG-P` та каскадів `KPOL-CME-2` у SymbiYosys](https://github.com/nick-fedchik/kuzmin-machine/issues/227) | Open | Todo | BMC + `k`-індукція збереження `W0` при `Reject` і кінцевості ациклічних каскадів перед публікацією. |
+| [#229 — зауваження рецензії PR #228 щодо `EXP-GPU-01` Фази 3–4 (`F-1..F-5`)](https://github.com/nick-fedchik/kuzmin-machine/issues/229) | Open | In progress (PR #228) | $N=10000$ + 95% bootstrap CI, A/B `packed` vs `isolated` (`km_ack_line_t`), max по всіх блоках, `cu_sha256`/`nvcc` у логах, заборона тихого fallback `cudaDevAttrClockRate`, точні рядки `SASS`. |
+| [#230 — RTL-модуль `km_pmod_event_egress.sv` (`SPI` + 8-бітна шина) та верифікація XC7](https://github.com/nick-fedchik/kuzmin-machine/issues/230) | Open | Todo (sub-issue `#226`) | Експериментальний модуль виведення подій з `CFG-P` на PMOD JA для подальшого фізичного HIL у `#226`. |
 
 Джерела рішень:
 [пропрієтарний режим](https://github.com/nick-fedchik/kuzmin-machine/issues/20#issuecomment-6829699920),
@@ -90,6 +92,7 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.4.12 | 2026-11-15 | #229: додано `#229` (виправлення `F-1..F-5` у PR #228) та `#230` (RTL `km_pmod_event_egress.sv`, sub-issue `#226`). |
 | 0.4.11 | 2026-11-15 | #225: зафіксовано злиття PR #221–#223 та `drafts#7` (`59c701f`; закрито `#216`, `#218`, `#219`, `#220`), додано `#224` і заплановану програму експериментів `#225`–`#227`. |
 | 0.4.10 | 2026-11-15 | #218, #220: зафіксовано злиття PR #217 (`#215` закрито) і `drafts#6` (`84812f6`), оновлено `#186` (часткові відповіді від 2026-11-15, п. 3 `RFC-017` та `RFC-016` досі відкриті), додано рядки `#218`, `#219`, `#220`. |
 | 0.4.9 | 2026-11-15 | #215: зафіксовано злиття PR #214 (`#213` закрито) і `drafts#5` (`e0c87c5`), рішення власника (ADR B7 — Варіант А; `Q3` — пілот на LLM, `#216`), додано рядки `#215`, `#216`; відповіді Автора не отримано. |
