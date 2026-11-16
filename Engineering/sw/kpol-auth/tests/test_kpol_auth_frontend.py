@@ -6,6 +6,7 @@ import importlib.util
 from pathlib import Path
 import sys
 import unittest
+from unittest import mock
 
 PACKAGE_DIR = Path(__file__).resolve().parents[1]
 
@@ -42,27 +43,79 @@ class KpolAuthFrontendTests(unittest.TestCase):
             ka.AuthFrontendConfig(policies={"KPOL-AUTH-U99": "fail-closed"})
         with self.assertRaises(ValueError):
             ka.AuthFrontendConfig(policies={"KPOL-AUTH-U01": "silent-guess"})
+        with self.assertRaises(ValueError):
+            ka.AuthFrontendConfig(name_length_unit="tokens_guess")
 
-    def test_single_config_place_can_switch_uncertainty_to_record_diagnostic(self) -> None:
-        cfg = ka.AuthFrontendConfig(policies={"KPOL-AUTH-U05": "record-diagnostic"})
-        prog = ka.parse_kpol_auth("#legacy", config=cfg)
-        self.assertEqual(len(prog.diagnostics), 1)
-        self.assertEqual(prog.diagnostics[0].code, "KPOL-AUTH-U05")
-        self.assertEqual(prog.diagnostics[0].severity, "warning")
+    def test_single_config_place_can_switch_all_uncertainties_to_record_diagnostic(self) -> None:
+        samples = {
+            "KPOL-AUTH-U01": "Collection(A, B)[Min=1, Max=2, Logic=AND]",
+            "KPOL-AUTH-U02": "Array(A, B)[Min=Byte(1), Max=2]",
+            "KPOL-AUTH-U03": "Static(OpenBracket, A, CloseBracked)",
+            "KPOL-AUTH-U04": "Static(@runtime, OpenBracket, A, CloseBracket)",
+            "KPOL-AUTH-U05": "#legacy",
+            "KPOL-AUTH-U06": '"text \\" quote"',
+            "KPOL-AUTH-U07": 'Name("Абвгдеєжз")',
+            "KPOL-AUTH-U08": "Flag := (A • B)",
+            "KPOL-AUTH-U09": "A • busy(A)",
+            "KPOL-AUTH-U10": "C := _ + B",
+            "KPOL-AUTH-U11": "Def(1, 0, 0, 0, 0, 0, 0, 1)",
+            "KPOL-AUTH-U12": "Property(DefBit=1, Value=_)",
+        }
+        self.assertEqual(set(samples.keys()), set(ka.UNCERTAINTY_REGISTRY.keys()))
+        for code, source in samples.items():
+            with self.subTest(uncertainty_code=code):
+                cfg = ka.AuthFrontendConfig(policies={code: "record-diagnostic"})
+                prog = ka.parse_kpol_auth(source, config=cfg)
+                matching = [d for d in prog.diagnostics if d.code == code]
+                self.assertEqual(len(matching), 1)
+                self.assertEqual(matching[0].uncertainty_code, code)
+                self.assertEqual(matching[0].severity, "warning")
 
     def test_author_corpus_examples_match_expected_cst_and_diagnostics(self) -> None:
-        self.assertGreaterEqual(len(ka.AUTHOR_CORPUS), 18)
+        expected_ids = tuple(f"EX-{i:02d}" for i in range(1, 19))
+        actual_ids = tuple(ex.id for ex in ka.AUTHOR_CORPUS)
+        self.assertEqual(actual_ids, expected_ids)
+
+        in_scope_ids = {ex.id for ex in ka.AUTHOR_CORPUS if ex.in_source_scope}
+        outside_scope_ids = {ex.id for ex in ka.AUTHOR_CORPUS if not ex.in_source_scope}
+        self.assertEqual(in_scope_ids, {"EX-01", "EX-02", "EX-03", "EX-04", "EX-05", "EX-06"})
+        self.assertEqual(outside_scope_ids, {f"EX-{i:02d}" for i in range(7, 19)})
+
         for ex in ka.AUTHOR_CORPUS:
             with self.subTest(example_id=ex.id, title=ex.title):
                 self.assertTrue(ex.source_refs, f"{ex.id} must cite Author sources")
-                if ex.expected_status == "ok":
-                    prog = ka.parse_kpol_auth(ex.source_text)
-                    self.assertEqual(prog.diagnostics, ())
-                    self.assertEqual(len(prog.items), 1)
-                    self.assertEqual(type(prog.items[0]).__name__, ex.expected_cst_kind)
+                self.assertTrue(
+                    ex.source_boundary_note.strip(),
+                    f"{ex.id} must document source boundary",
+                )
+                if ex.in_source_scope:
+                    if ex.expected_status == "ok":
+                        prog = ka.parse_kpol_auth(ex.source_text)
+                        self.assertEqual(prog.diagnostics, ())
+                        self.assertEqual(len(prog.items), 1)
+                        self.assertEqual(type(prog.items[0]).__name__, ex.expected_cst_kind)
+                    else:
+                        self.assertEqual(ex.id, "EX-06")
+                        self.assertEqual(ex.expected_status, "fail-closed")
+                        self.assertNotIn(
+                            "поза межами джерела",
+                            ex.source_boundary_note.lower(),
+                        )
+                        with self.assertRaises(ka.KpolAuthError) as ctx:
+                            ka.parse_kpol_auth(ex.source_text)
+                        self.assertIn(
+                            ctx.exception.diagnostic.code,
+                            ex.expected_diagnostics,
+                        )
                 else:
                     self.assertEqual(ex.expected_status, "fail-closed")
-                    self.assertIn("поза межами", ex.source_boundary_note.lower() if "поза межами" in ex.source_boundary_note.lower() else "поза межами")
+                    self.assertIn(
+                        "поза межами джерела",
+                        ex.source_boundary_note.lower(),
+                    )
+                    self.assertTrue(
+                        any(d.startswith("KPOL-AUTH-U") for d in ex.expected_diagnostics)
+                    )
                     with self.assertRaises(ka.KpolAuthError) as ctx:
                         ka.parse_kpol_auth(ex.source_text)
                     self.assertIn(ctx.exception.diagnostic.code, ex.expected_diagnostics)
@@ -135,11 +188,35 @@ class KpolAuthFrontendTests(unittest.TestCase):
             ka.parse_kpol_auth('"abc \\" def"')
         self.assertEqual(ctx_esc.exception.diagnostic.code, "KPOL-AUTH-U06")
 
-        for bad_name in ('Name("ПривітСвітДовгеІм")', 'Name("SeventeenChars123")'):
+        for bad_name in ('Name("ПривітСвітДовгеІм")', 'Name("SeventeenChars123")', 'Name("Абвгдеєжз")'):
             with self.subTest(bad_name=bad_name):
                 with self.assertRaises(ka.KpolAuthError) as ctx_len:
                     ka.parse_kpol_auth(bad_name)
                 self.assertEqual(ctx_len.exception.diagnostic.code, "KPOL-AUTH-U07")
+
+    def test_u07_name_length_unit_is_configurable_for_multibyte_cyrillic(self) -> None:
+        # 9 Cyrillic characters = 9 Unicode codepoints, 18 UTF-8 bytes
+        cyrillic_9 = "Абвгдеєжз"
+        self.assertEqual(len(cyrillic_9), 9)
+        self.assertEqual(len(cyrillic_9.encode("utf-8")), 18)
+        source = f'Name("{cyrillic_9}")'
+
+        # Default "fail-closed" rejects ambiguous >16 UTF-8 bytes
+        with self.assertRaises(ka.KpolAuthError) as ctx_default:
+            ka.parse_kpol_auth(source)
+        self.assertEqual(ctx_default.exception.diagnostic.code, "KPOL-AUTH-U07")
+
+        # Explicit "utf8_bytes" also rejects 18 > 16
+        cfg_bytes = ka.AuthFrontendConfig(name_length_unit="utf8_bytes")
+        with self.assertRaises(ka.KpolAuthError) as ctx_bytes:
+            ka.parse_kpol_auth(source, config=cfg_bytes)
+        self.assertEqual(ctx_bytes.exception.diagnostic.code, "KPOL-AUTH-U07")
+
+        # Explicit "codepoints" accepts 9 <= 16
+        cfg_cp = ka.AuthFrontendConfig(name_length_unit="codepoints")
+        prog_cp = ka.parse_kpol_auth(source, config=cfg_cp)
+        self.assertEqual(prog_cp.diagnostics, ())
+        self.assertIsInstance(prog_cp.items[0], ka.CallOrConstructCST)
 
     def test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls(self) -> None:
         prog = ka.parse_kpol_auth("A • B")
@@ -187,6 +264,47 @@ class KpolAuthFrontendTests(unittest.TestCase):
         with self.assertRaises(ka.KpolAuthError) as ctx_def_uninit:
             ka.parse_kpol_auth("Property(DefBit=1, Value=_)")
         self.assertEqual(ctx_def_uninit.exception.diagnostic.code, "KPOL-AUTH-U12")
+
+        for bad_def in ("Def(1, 0, 1)", "Def(1, 0, 0, 0, 0, 0, 0, 0, 1)"):
+            with self.subTest(bad_def=bad_def):
+                with self.assertRaises(ka.KpolAuthError) as ctx_width:
+                    ka.parse_kpol_auth(bad_def)
+                self.assertEqual(ctx_width.exception.diagnostic.code, "KPOL-AUTH-SYNTAX-04")
+
+    def test_mutant_controls_catch_lexer_cst_and_uncertainty_defects(self) -> None:
+        cst_mod = sys.modules["kpol_auth.cst"]
+        lexer_mod = sys.modules["kpol_auth.lexer"]
+
+        # Mutant 1: CST treats unary '•' as valid 'not' instead of rejecting with SYNTAX-03
+        orig_parse_primary = cst_mod._Parser.parse_primary
+
+        def mutant_dot_as_not(parser_self):
+            tok = parser_self.peek()
+            if tok is not None and tok.kind == "SUBSCRIPTION_SEQ":
+                dot_tok = parser_self.advance()
+                operand = orig_parse_primary(parser_self)
+                return ka.ParamCST(span=dot_tok.span, at_token=dot_tok, target=operand)
+            return orig_parse_primary(parser_self)
+
+        with mock.patch.object(cst_mod._Parser, "parse_primary", mutant_dot_as_not):
+            with self.assertRaises(AssertionError):
+                with self.assertRaises(ka.KpolAuthError):
+                    ka.parse_kpol_auth("• Flag")
+
+        # Mutant 2: CST skips bracket-pair matching check
+        with mock.patch.dict(cst_mod.BRACKET_PAIRS, {"{": ")"}):
+            with self.assertRaises(AssertionError):
+                with self.assertRaises(ka.KpolAuthError):
+                    ka.parse_kpol_auth("{ A )")
+
+        # Mutant 3: Uncertainty gate silently ignores U05 instead of raising/recording
+        def mutant_silent_uncertainty(*args, **kwargs):
+            return None
+
+        with mock.patch.object(lexer_mod, "emit_uncertainty", mutant_silent_uncertainty):
+            with self.assertRaises(AssertionError):
+                with self.assertRaises(ka.KpolAuthError):
+                    ka.parse_kpol_auth("#legacy")
 
 
 if __name__ == "__main__":

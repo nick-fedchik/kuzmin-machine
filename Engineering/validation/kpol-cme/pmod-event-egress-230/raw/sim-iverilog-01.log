@@ -1,0 +1,10 @@
+# cmd: iverilog -g2012 -o Engineering/validation/kpol-cme/pmod-event-egress-230/raw/sim_tmp.vvp Engineering/hw/rtl/io/km_pmod_event_egress.sv Engineering/hw/tb/km_pmod_event_egress_tb.sv && vvp -n Engineering/validation/kpol-cme/pmod-event-egress-230/raw/sim_tmp.vvp
+# timestamp: 2026-11-15T23:12:39+02:00
+# commit: 3c89b4e4fe35286e9c9b670553eccf2db5088835
+# host: AORUS-5-SE
+[TB] PASS Test 1 (SPI Mode 0): bits=64 cycles=129 frame=8e45a55a12345678
+[TB] PASS Test 2 (SPI Collision): tx=2 drop=2
+[TB] PASS Test 3 (PAR8 Mode): bytes=8 cycles=17 frame=6e7fffff80000001
+[TB] PASS Test 4 (PAR8 Zero): frame=4540000000000000 tx=4 drop=3
+[TB] ALL KM_PMOD_EVENT_EGRESS SIMULATION TESTS PASSED
+Engineering/hw/tb/km_pmod_event_egress_tb.sv:326: $finish called at 3065000 (1ps)

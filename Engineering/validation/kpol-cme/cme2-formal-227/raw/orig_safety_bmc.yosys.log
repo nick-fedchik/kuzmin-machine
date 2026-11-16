@@ -1,0 +1,4 @@
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/orig_safety_bmc.ys
+# timestamp: 2026-11-15T23:22:38.456396+02:00
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236

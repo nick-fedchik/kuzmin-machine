@@ -1,0 +1,22 @@
+# cmd: { python3 -m pytest -q && KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py && python3 Project/tools/check_wp_documents.py && git diff --check origin/main..HEAD; } 2>&1 | sed 's/[[:space:]]*$//'
+=== pytest ===
+........................................................................ [ 19%]
+........................................................................ [ 39%]
+............................................................................ [ 60%]
+........................................... [ 72%]
+........................................................................ [ 92%]
+...........................                                              [100%]
+362 passed, 385 subtests passed in 23.14s
+pytest_exit_code=0
+=== check_links ===
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 41, пропущено 0
+check_links_exit_code=0
+=== check_wp_documents ===
+{
+  "documents_checked": 148,
+  "immutable_checked": 108,
+  "errors": []
+}
+check_wp_documents_exit_code=0
+=== git diff --check origin/main..HEAD ===
+git_diff_check_exit_code=0

@@ -1,0 +1,15 @@
+{
+  "blocks": 16, "threads": 32, "subscribers": 512,
+  "mask": "none", "ingress_mode": "shared", "ack_mode": "isolated", "sleep_ns": 0, "events": 10000,
+  "sysfs_cur_freq_hz": 816000000, "sysfs_max_freq_hz": 816000000,
+  "globaltimer_quantum_ns": 32, "mid_run_mismatches": 0, "mismatches": 0,
+  "bootstrap_iters": 1000, "bootstrap_seed": "0x5eed22901234",
+  "math_cycles_mean": 32.000, "math_cycles_sigma": 0.000, "math_cycles_p50": 32, "math_cycles_p999": 32, "math_cycles_max": 32,
+  "math_ns_mean": 39.216, "math_ns_p999": 39.216,
+  "e2e_sm_cycles_mean": 7748.540, "e2e_sm_cycles_sigma": 384.842, "e2e_sm_cycles_p50": 7738, "e2e_sm_cycles_p99": 8780, "e2e_sm_cycles_p999": 8936, "e2e_sm_cycles_max": 9077,
+  "e2e_sm_ns_mean": 9495.760, "e2e_sm_ns_p50": 9482.843, "e2e_sm_ns_p99": 10759.804, "e2e_sm_ns_p99_ci95_lo": 10689.951, "e2e_sm_ns_p99_ci95_hi": 10774.510, "e2e_sm_ns_p999": 10950.980, "e2e_sm_ns_p999_ci95_lo": 10903.186, "e2e_sm_ns_p999_ci95_hi": 10980.392, "e2e_sm_ns_max": 11123.775,
+  "e2e_sm_b0_ns_mean": 7884.172, "e2e_sm_b0_ns_p999": 10839.461,
+  "e2e_gt_ns_mean": 9501.757, "e2e_gt_ns_p50": 9472, "e2e_gt_ns_p99": 10720, "e2e_gt_ns_p99_ci95_lo": 10720, "e2e_gt_ns_p99_ci95_hi": 10784, "e2e_gt_ns_p999": 10976, "e2e_gt_ns_p999_ci95_lo": 10912, "e2e_gt_ns_p999_ci95_hi": 10976, "e2e_gt_ns_max": 11104,
+  "host_rt_ns_mean": 38739.853, "host_rt_ns_p50": 38720, "host_rt_ns_p99": 39744, "host_rt_ns_p99_ci95_lo": 39712, "host_rt_ns_p99_ci95_hi": 39808, "host_rt_ns_p999": 40160, "host_rt_ns_p999_ci95_lo": 40032, "host_rt_ns_p999_ci95_hi": 40416, "host_rt_ns_max": 46848,
+  "per_block_e2e_sm_ns_mean": [7884.172, 7633.608, 7892.037, 7643.821, 7445.490, 7226.418, 7442.919, 7243.869, 8608.580, 7798.558, 8616.132, 7955.176, 8067.528, 7693.302, 8137.491, 7753.262]
+}

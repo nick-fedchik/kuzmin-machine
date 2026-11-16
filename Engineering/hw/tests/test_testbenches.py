@@ -27,6 +27,10 @@ TESTBENCHES = {
          f"{CORE}/km_concept_bram.sv", f"{CORE}/km_autonomous_sequencer.sv"],
         "АВТОНОМНЕ ВИКОНАННЯ, ЧЕРГА ТА НЕЗМІННЕ ЯДРО УСПІШНО ДОВЕДЕНО"),
     "km_io_trigger_engine_tb.sv": ([f"{IO}/km_io_trigger_engine.sv"], None),
+    "km_pmod_event_egress_tb.sv": (
+        [f"{IO}/km_pmod_event_egress.sv"],
+        "ALL KM_PMOD_EVENT_EGRESS SIMULATION TESTS PASSED",
+    ),
 }
 
 FAIL_MARKERS = ("$fatal", "FATAL", "[FAIL]", "FAIL:", "mismatch", "ERROR")

@@ -1,9 +1,9 @@
 # Рішення B6: Гетерогенний симбіоз Машини Кузьміна та GPU для паралельного виконання підписок (Persistent Mega-Kernel)
 
-* **Версія:** 0.3.1
-* **Дата:** 2026-11-14
+* **Версія:** 0.3.3
+* **Дата:** 2026-11-16
 * **Тип WP:** Decision
-* **Статус:** Запропоновано (Proposed; цільові числові показники підлягають HIL-верифікації за EXP-GPU-01).
+* **Статус:** Частково верифіковано на GPU до `1024` підписників (Фаза 3–4 у [#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225), [#229](https://github.com/nick-fedchik/kuzmin-machine/issues/229), [#235](https://github.com/nick-fedchik/kuzmin-machine/issues/235): [звіт](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md); міжплатний контур ПЛІС→GPU очікує HIL у [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)).
 * **Власник:** Микола Федчик; автор концепції — Микола Федчик.
 
 ## Контекст і питання
@@ -42,7 +42,8 @@
 * **Обмеження та ризики:**
   * **Warp Divergence:** підписники у межах одного варпа повинні мати однорідну обчислювальну структуру (поліноми, ПІД, лінійні фільтри); сильне розходження гілок коду спричиняє серіалізацію потоків варпа.
   * **I-Cache Trashing:** код нано-колбеків повинен бути компактним або параметризованим через таблиці даних (Data-driven execution).
-  * Необхідність експериментальної верифікації на фізичному стенді (протокол [EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md) у складі дослідження [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md) на платформі Seeed Studio J501 / Jetson AGX Orin).
+  * **Декуплінг L2 Read Snoop для Multi-SM (512–1024 підписників):** у [#225](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md), [#229](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md) та $2 \times 2$ факторіальному експерименті [#235](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md) ($N=10000$, `816 МГц`) доведено, що монолітна вхідна лінія `ingress->seq_id` спричиняє `L2 Read Snoop Contention` (`16231.63 нс` на `16x64`), незалежно від запису `outputs[]` (`mask=none`: `9495.76 нс` проти `mask=rand`: `9305.11 нс` на `16x32`). Розділення поштового буфера на **per-SM partitioned 128-Б слоти `ingress[SM_ID]`** разом із 128-Б ізоляцією `ack` прискорює реакцію SM на `16x64` (`1024` паралельні підписники) у **`9.63x`** (`1686.10 ± 47.09 нс`, математика `41.67 нс`, `Host RT = 8.29 мкс`), а на `2x512` (`1024` підписники) забезпечує `Host RT = 6.65 мкс`. Отже, при виході за межі одного SM виділення окремої 128-Б вхідної кеш-лінії на кожен SM є обов'язковим інваріантом розкладки пам'яті.
+  * Необхідність експериментальної верифікації фізично замкненого контуру ПЛІС→GPU на стенді (протокол [EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md) у складі дослідження [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md), задача [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)).
 
 ## Специфікація обчислювальних ядер та інваріант пам'яті (Уточнення Федчика)
 
@@ -62,6 +63,8 @@
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.3.3 | 2026-11-16 | #235: впроваджено та верифіковано per-SM partitioned 128-Б вхідні слоти `ingress[SM_ID]` до `1024` підписників (`9.63x` прискорення SM на `16x64`: `16231.63 -> 1686.10 нс`, $2 \times 2$ факторіалом виключено вплив `outputs[]`). |
+| 0.3.2 | 2026-11-15 | #225, #229: зафіксовано емпіричну верифікацію GPU-рівня на Jetson AGX Orin (`41.67..78.99 нс` у регістрах SM для `32..512` підписників при `816 МГц`, 0% росту тактів на розріджених масках) та A/B розмежування `write false sharing` (`-3.3%`) від `L2 Read Snoop Contention` (`6.04x`) у Multi-SM. |
 | 0.3.1 | 2026-11-14 | #177 (рецензія PR #171): уточнено визначення `Persistent Mega-Kernel` у глосарії — розмежовано зовнішню когерентну поштову скриньку (`Event Mailbox`) і резидентний робочий стан у регістрах/`Shared Memory` SM, узгоджено з основним текстом і `KM-PAT-01`/`KM-PAT-02`. |
 | 0.3.0 | 2026-11-14 | #165: розмежовано когерентний вхідний `Event Mailbox` (`BAR1/Unified L2`) і резидентну `SM Shared Memory`/регістри; уточнено 8-тактовий цикл `CFG-P` і проєктний статус цільових метрик до `EXP-GPU-01`. |
 | 0.2.0 | 2026-11-13 | Додано уточнення щодо універсальних шейдерних ядер (CUDA Cores/SP/XVE) та інваріанта пам'яті. |
