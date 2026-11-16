@@ -1,7 +1,7 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.5.4
-* **Дата:** 2026-11-14
+* **Версія:** 0.5.5
+* **Дата:** 2026-11-16
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
 * **База складу:** [маніфест](migration-manifest.json), [карта шляхів](path-map.json).
@@ -30,7 +30,7 @@
 | WP | Основне місце / шаблон | Стан і межа |
 |---|---|---|
 | Requirement | [Реєстр](../../Engineering/requirements/requirements.md), [KPOL](../../Engineering/requirements/kpol.md); [SYS](../templates/work-products/requirement-sys.md), [HW](../templates/work-products/requirement-hw.md), [SW](../templates/work-products/requirement-sw.md) | Додано трасування уточнень і SW-крок #150 без розширення B3-01; B5 v2.2.0 і B4 v2.2.0 реалізовані в RTL для керованих джерел (#151, #168, очікують рецензії). |
-| Specification | [KPOL](../../Engineering/specifications/kpol/README.md), [`KPOL-CME-2`](../../Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md), [HW](../../Engineering/specifications/hw/README.md); [форма](../templates/work-products/specification.md) | Профілі `KPOL-CME-1` і `KPOL-CME-2` (#184) відрізняються від ширшого поточного фронтенду; HW-контракти B4 і B5 оновлено до v2.2.0 (#167, #168). |
+| Specification | [KPOL](../../Engineering/specifications/kpol/README.md), [`KPOL-CME-2`](../../Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md), [`KPOL-AUTH` (підмножина)](../../Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md), [HW](../../Engineering/specifications/hw/README.md); [форма](../templates/work-products/specification.md) | Профілі `KPOL-CME-1` і `KPOL-CME-2` (#184) відокремлені від ізольованого прототипу `KPOL-AUTH` (#245, частина #186/#8) та ширшого фронтенду; HW-контракти B4 і B5 оновлено до v2.2.0 (#167, #168). |
 | Design | [B1](../../Engineering/design/system-boundary-allocation-b1.md), [B2](../../Engineering/design/bram-pipeline-event-integration.md); [форма](../templates/work-products/design.md) | Межа й інтеграція, не доказ готовності всього продукту. |
 | Decision | [Карта](../../Engineering/decisions/README.md), [B6](../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md), [B7 (`CME-RAW-2` / `KPOL-SYS-02`)](../../Engineering/decisions/cme-raw2-kpol-sys02.md), розділи контрактів; [форма ADR](../templates/work-products/decision.md) | Додано архітектурні пропозиції B6 (симбіоз із GPU, Proposed) та B7 (CR #185: 32-байтний дескриптор і `state_valid`, Proposed). |
 | Solution | [Пакет](../../Engineering/solutions/compiler-bram-pipeline.md); [форма](../templates/work-products/solution.md) | Явний склад, залежності й обмеження. |
@@ -73,6 +73,7 @@
 | 0.3.0 | 2026-11-12 | Додано реєстрацію B6 (ADR GPU симбіоз) та пакету експерименту EXP-GPU-01 (Protocol, Plan, Guide). |
 | 0.4.0 | 2026-11-13 | #151: оновлено стан B5 v2.1 та додано реєстрацію звіту верифікації черги `queue-retention-151/report.md`. |
 | 0.5.0 | 2026-11-14 | #169: зареєстровано звіти перевірок #115, #164, #167, #168, #169 та оновлено стан специфікацій B4/B5 v2.2.0 і `wp-index.json`. |
+| 0.5.5 | 2026-11-16 | #245 (частина #186, #8): зареєстровано специфікацію `Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md` і пакет `Engineering/sw/kpol-auth/` у `work-products.md` та `wp-index.json` (`0.15.0`). |
 | 0.5.4 | 2026-11-14 | #203: зареєстровано звіт `Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md` у `work-products.md` та `wp-index.json` (`0.14.0`). |
 | 0.5.3 | 2026-11-14 | #185: зареєстровано архітектурне рішення B7 (`cme-raw2-kpol-sys02.md`), звіт перевірки `cr-cme-raw2-185/report.md` та оновлено `wp-index.json`. |
 | 0.5.2 | 2026-11-14 | #184: зареєстровано специфікацію багатоконцептного профілю `kpol-cme2-profile-0.1.0.md`, звіт перевірки `cme2-profile-184/report.md` та оновлено `wp-index.json`. |
