@@ -1,5 +1,5 @@
 {
-  "version": "0.15.0",
+  "version": "0.16.0",
   "date": "2026-11-16",
   "entries": [
     {
@@ -255,6 +255,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi_ha.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/rtl/core/km_autonomous_sequencer.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -262,6 +268,12 @@
     },
     {
       "path": "Engineering/hw/rtl/core/km_concept_bram.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -322,6 +334,12 @@
     },
     {
       "path": "Engineering/hw/tb/kpol_txn_gate_v2_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_axi_ha_tb.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -2517,13 +2535,13 @@
       "immutable_input": false
     },
     {
-      "path": "Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md",
+      "path": "Research/studies/author-semantics/report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false
     },
     {
-      "path": "Research/studies/author-semantics/report.md",
+      "path": "Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false
@@ -2589,6 +2607,36 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_10k_swaps_summary.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_phases1_4.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_timing.csv",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/iverilog_10k_swaps.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/yosys_xc7_cfg_p_ha.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/epistemology-and-learning.md",
       "direction": "Research",
       "wp_type": "Model / Analysis",
@@ -2625,6 +2673,162 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/cfg_p_ha_formal_props.sv",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M1_unsafe_immediate_swap.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M1_unsafe_immediate_swap.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M1_unsafe_immediate_swap.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M3_drop_w0_mirror.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M3_drop_w0_mirror.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M3_drop_w0_mirror.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M4_block_trigger_on_shadow.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M4_block_trigger_on_shadow.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M4_block_trigger_on_shadow.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/cfg_p_ha_formal_provenance.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/cfg_p_ha_formal_results.csv",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_cover.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_cover.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_ctrl_bmc30.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_ctrl_bmc30.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_h1_h6_base_bmc.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_h1_h6_base_bmc.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_h1_h6_ind.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_h1_h6_ind.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_h3_bmc30.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/orig_h3_bmc30.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/run_cfg_p_ha_formal.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/plan.md",
       "direction": "Research",
       "wp_type": "Plan",
@@ -2634,6 +2838,24 @@
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/protocol.md",
       "direction": "Research",
       "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/report-stage1-2-cfg-p-ha.md",
+      "direction": "Research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/rule_injector.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/tests/test_exp_gpu_02_cfg_p_ha.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {

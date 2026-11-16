@@ -1,9 +1,9 @@
 # Каталог первинних вимірювальних даних (Data)
 
-* **Версія:** 0.3.1
-* **Дата:** 2026-11-15
+* **Версія:** 0.3.2
+* **Дата:** 2026-11-16
 * **Тип WP:** Guide
-* **Статус:** Частково наповнено: збережено сирі дані GPU Фази 3–4 у [`exp-gpu-01-phase3/`](exp-gpu-01-phase3/) ([#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225)); траси міжплатного контуру `RP2040 PIO` очікуються в [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226).
+* **Статус:** Частково наповнено: збережено сирі дані GPU Фази 3–4 у [`exp-gpu-01-phase3/`](exp-gpu-01-phase3/) ([#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225)) та симуляційні/синтезні артефакти Етапів 1–2 `EXP-GPU-02` у [`exp-gpu-02-sim/`](exp-gpu-02-sim/) ([#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), RTL-симуляція та логічний синтез `Yosys XC7`, не фізичний HIL); натурні траси `RP2040 PIO` очікуються в [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226) та [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253).
 * **Власник:** Микола Федчик.
 
 ## Призначення каталогу
@@ -22,6 +22,7 @@
 
 | Версія | Дата | Автор | Зміни |
 |---|---|---|---|
+| 0.3.2 | 2026-11-16 | GitHub Copilot CLI | #252: зареєстровано підкаталог `exp-gpu-02-sim/` (симуляційні траси `10 000` перемикань `CFG-P-HA` та лог синтезу `Yosys XC7`; явно відокремлено від натурного HIL у #253). |
 | 0.3.1 | 2026-11-15 | GitHub Copilot CLI (`gemini-4-hydrogen`) | #229: додано серію `run-03-ab-scaling-10k.log`, `sass-sm87-02.txt` та `ab_*_10k.json` (10 000 подій, 95% bootstrap CI, A/B `packed` vs `isolated`). |
 | 0.3.0 | 2026-11-15 | GitHub Copilot CLI (`gemini-4-carbon`) | #225: зареєстровано каталог `exp-gpu-01-phase3/` із незмінними журналами, JSON-вибірками та дампом `SASS` (`sm_87`) на Jetson AGX Orin. |
 | 0.2.0 | 2026-11-14 | Микола Федчик, Copilot CLI | #166: виправлено опис первинних даних (цифрові траси RP2040 PIO окремо від опційного зовнішнього осцилографа >= 200 МГц). |
