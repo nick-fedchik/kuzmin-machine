@@ -2478,6 +2478,8 @@ class KpolCme2ProfileTests(unittest.TestCase):
             "  wire hw_trigger_ready_o, hw_commit_pulse_o, hw_reject_pulse_o;",
             "  wire hw_pipeline_busy_o, fifo_overflow_o;",
             "  wire [31:0] events_dropped_count_o;",
+            "  wire [5:0] hw_commit_cid_o;",
+            "  wire [31:0] hw_last_committed_state_o;",
             "  logic [31:0] init_words [0:255];",
             "  logic [31:0] read_word;",
             "  always #5 clk = ~clk;",

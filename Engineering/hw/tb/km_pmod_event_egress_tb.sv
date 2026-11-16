@@ -51,6 +51,12 @@ module km_pmod_event_egress_tb;
     // 100 MHz clock (10 ns period)
     always #5 clk = ~clk;
 
+    // Global watchdog to prevent simulation hangs
+    initial begin
+        #200000;
+        $fatal(1, "[TB] WATCHDOG TIMEOUT");
+    end
+
     // Independent reference CRC-8 (poly 0x07, init 0x00, MSB-first)
     function automatic [7:0] ref_crc8;
         input [55:0] payload;
@@ -93,6 +99,7 @@ module km_pmod_event_egress_tb;
     // 8-bit Source-Synchronous Parallel Receiver/Decoder (MSB byte first)
     // ------------------------------------------------------------------------
     reg [63:0] par_rx_frame;
+    reg [63:0] par_rx_captured;
     integer    par_rx_bytes;
     reg        par_rx_done;
 
@@ -105,25 +112,105 @@ module km_pmod_event_egress_tb;
 
     always @(negedge par_valid_o) begin
         if (rst_n && par_rx_bytes > 0) begin
-            par_rx_done <= 1'b1;
+            par_rx_captured <= par_rx_frame;
+            par_rx_done     <= 1'b1;
         end
     end
 
-    // Cycle counter for transfer duration and event_start_o strobe verification
+    // Cycle counter for transfer duration, framing, idle, and setup/hold checks
     integer active_cycles;
     integer start_pulses;
+    reg     prev_spi_sck;
+    reg     prev_par_clk;
+    time    last_mosi_change_t;
+    time    last_par_data_change_t;
 
     always @(posedge clk) begin
         if (!rst_n) begin
             active_cycles <= 0;
             start_pulses  <= 0;
+            prev_spi_sck  <= 1'b0;
+            prev_par_clk  <= 1'b0;
         end else begin
+            prev_spi_sck <= spi_sck_o;
+            prev_par_clk <= par_clk_o;
+
             if (busy_o)
                 active_cycles <= active_cycles + 1;
             if (event_start_o)
                 start_pulses <= start_pulses + 1;
+
+            // Framing check: CS must stay low during S_SPI_END (1 cycle after 64th falling edge)
+            if (prev_spi_sck && !spi_sck_o && (spi_rx_bits == 64)) begin
+                if (spi_cs_n_o !== 1'b0) begin
+                    $display("[TB] FAIL: spi_cs_n_o rose prematurely in S_SPI_END");
+                    $fatal(1);
+                end
+            end
+
+            // Framing check: par_valid_o must stay high during S_PAR_END (1 cycle after 8th falling edge)
+            if (prev_par_clk && !par_clk_o && (par_rx_bytes == 8)) begin
+                if (par_valid_o !== 1'b1) begin
+                    $display("[TB] FAIL: par_valid_o dropped prematurely in S_PAR_END");
+                    $fatal(1);
+                end
+            end
         end
     end
+
+    // Setup/hold checks for SPI MOSI and PAR8 Data
+    always @(spi_mosi_o) begin
+        if (rst_n && spi_sck_o === 1'b1) begin
+            $display("[TB] FAIL: spi_mosi_o changed while spi_sck_o==1 (hold violation)");
+            $fatal(1);
+        end
+        last_mosi_change_t = $time;
+    end
+
+    always @(posedge spi_sck_o) begin
+        if (rst_n) begin
+            if (spi_cs_n_o !== 1'b0) begin
+                $display("[TB] FAIL: spi_cs_n_o not low at posedge spi_sck_o");
+                $fatal(1);
+            end
+            if (($time - last_mosi_change_t) < 10) begin
+                $display("[TB] FAIL: spi_mosi_o setup violation (<10ns) at t=%0t", $time);
+                $fatal(1);
+            end
+        end
+    end
+
+    always @(par_data_o) begin
+        if (rst_n && par_clk_o === 1'b1) begin
+            $display("[TB] FAIL: par_data_o changed while par_clk_o==1 (hold violation)");
+            $fatal(1);
+        end
+        last_par_data_change_t = $time;
+    end
+
+    always @(posedge par_clk_o) begin
+        if (rst_n) begin
+            if (par_valid_o !== 1'b1) begin
+                $display("[TB] FAIL: par_valid_o not high at posedge par_clk_o");
+                $fatal(1);
+            end
+            if (($time - last_par_data_change_t) < 10) begin
+                $display("[TB] FAIL: par_data_o setup violation (<10ns) at t=%0t", $time);
+                $fatal(1);
+            end
+        end
+    end
+
+    task automatic check_idle_outputs(input [8*16-1:0] label);
+        begin
+            if (spi_cs_n_o !== 1'b1 || spi_sck_o !== 1'b0 ||
+                par_valid_o !== 1'b0 || par_clk_o !== 1'b0) begin
+                $display("[TB] FAIL (%0s): non-idle outputs cs_n=%b sck=%b par_v=%b par_c=%b",
+                         label, spi_cs_n_o, spi_sck_o, par_valid_o, par_clk_o);
+                $fatal(1);
+            end
+        end
+    endtask
 
     task automatic verify_frame(
         input [63:0] rx_frame,
@@ -193,14 +280,17 @@ module km_pmod_event_egress_tb;
         par_rx_frame  = 64'd0;
         par_rx_bytes  = 0;
         par_rx_done   = 1'b0;
+        last_mosi_change_t     = 0;
+        last_par_data_change_t = 0;
 
         #25 rst_n = 1'b1;
         @(posedge clk);
 
-        if (ready_o !== 1'b1 || busy_o !== 1'b0 || spi_cs_n_o !== 1'b1) begin
+        if (ready_o !== 1'b1 || busy_o !== 1'b0) begin
             $display("[TB] FAIL: invalid reset idle state");
             $fatal(1);
         end
+        check_idle_outputs("RESET-IDLE");
 
         // --------------------------------------------------------------------
         // Test 1: SPI Mode 0 single frame (cid=5, mask=0x0000A55A, state=0x12345678)
@@ -320,7 +410,101 @@ module km_pmod_event_egress_tb;
             $display("[TB] FAIL (PAR8-ZERO): expected tx=4 drop=3, got tx=%0d drop=%0d", tx_count_o, drop_count_o);
             $fatal(1);
         end
+        @(posedge clk);
+        check_idle_outputs("AFTER-PAR8-ZERO");
         $display("[TB] PASS Test 4 (PAR8 Zero): frame=%h tx=%0d drop=%0d", par_rx_frame, tx_count_o, drop_count_o);
+
+        // --------------------------------------------------------------------
+        // Test 5: Boundary collision in S_SPI_END (dropped) & immediate accept in first S_IDLE
+        // --------------------------------------------------------------------
+        spi_rx_bits   = 0;
+        spi_rx_done   = 1'b0;
+        active_cycles = 0;
+        start_pulses  = 0;
+        send_event(1'b0, 6'd7, 32'h0000_1111, 32'hAAAA_BBBB);
+        // send_event returns at negedge of cycle 1 (S_SPI_LOW); 128 posedges later is S_SPI_END
+        repeat (128) @(posedge clk);
+        if (busy_o !== 1'b1) begin
+            $display("[TB] FAIL (SPI-END-COL): expected busy_o == 1 in S_SPI_END");
+            $fatal(1);
+        end
+        // Assert event_valid_i during S_SPI_END -> must be dropped
+        @(negedge clk);
+        mode_par8_i   = 1'b0;
+        event_cid_i   = 6'd9;
+        event_mask_i  = 32'h0000_2222;
+        event_state_i = 32'hCCCC_DDDD;
+        event_valid_i = 1'b1;
+        // Hold for next cycle (first S_IDLE cycle) -> must be accepted!
+        @(negedge clk);
+        event_cid_i   = 6'd10;
+        event_mask_i  = 32'h0000_3333;
+        event_state_i = 32'hEEEE_FFFF;
+        @(negedge clk);
+        event_valid_i = 1'b0;
+
+        wait(spi_rx_done == 1'b1);
+        @(posedge clk);
+        verify_frame(spi_rx_frame, 6'd7, 16'h1111, 32'hAAAA_BBBB, "SPI-END-1");
+
+        // Wait for the immediately accepted frame (cid=10)
+        spi_rx_bits = 0;
+        spi_rx_done = 1'b0;
+        wait(spi_rx_done == 1'b1);
+        @(posedge clk);
+        verify_frame(spi_rx_frame, 6'd10, 16'h3333, 32'hEEEE_FFFF, "SPI-IMM-IDLE");
+        if (tx_count_o !== 32'd6 || drop_count_o !== 32'd4) begin
+            $display("[TB] FAIL (SPI-END-COL): expected tx=6 drop=4, got tx=%0d drop=%0d", tx_count_o, drop_count_o);
+            $fatal(1);
+        end
+        @(posedge clk);
+        check_idle_outputs("AFTER-SPI-END");
+        $display("[TB] PASS Test 5 (SPI S_SPI_END drop + first S_IDLE accept): tx=%0d drop=%0d", tx_count_o, drop_count_o);
+
+        // --------------------------------------------------------------------
+        // Test 6: Boundary collision in S_PAR_END (dropped) & multi-cycle event_valid_i (3 cycles)
+        // --------------------------------------------------------------------
+        par_rx_bytes  = 0;
+        par_rx_done   = 1'b0;
+        send_event(1'b1, 6'd11, 32'h0000_4444, 32'h1234_0001);
+        // send_event returns at negedge of cycle 1 (S_PAR_LOW); 16 posedges later is S_PAR_END
+        repeat (16) @(posedge clk);
+        if (busy_o !== 1'b1) begin
+            $display("[TB] FAIL (PAR-END-COL): expected busy_o == 1 in S_PAR_END");
+            $fatal(1);
+        end
+        // Assert event_valid_i in S_PAR_END (drop) + keep high for 3 cycles in S_IDLE (1 accept + 2 drops)
+        @(negedge clk);
+        mode_par8_i   = 1'b1;
+        event_cid_i   = 6'd12;
+        event_mask_i  = 32'h0000_5555;
+        event_state_i = 32'h1234_0002;
+        event_valid_i = 1'b1;
+        @(negedge clk); // 1st S_IDLE: accepted
+        event_cid_i   = 6'd13;
+        event_mask_i  = 32'h0000_6666;
+        event_state_i = 32'h1234_0003;
+        @(negedge clk); // 2nd cycle (busy): dropped
+        @(negedge clk); // 3rd cycle (busy): dropped
+        @(negedge clk);
+        event_valid_i = 1'b0;
+
+        wait(par_rx_done == 1'b1);
+        @(posedge clk);
+        verify_frame(par_rx_captured, 6'd11, 16'h4444, 32'h1234_0001, "PAR-END-1");
+
+        par_rx_bytes = 0;
+        par_rx_done  = 1'b0;
+        wait(par_rx_done == 1'b1);
+        @(posedge clk);
+        verify_frame(par_rx_frame, 6'd13, 16'h6666, 32'h1234_0003, "PAR-MULTI-CYC");
+        if (tx_count_o !== 32'd8 || drop_count_o !== 32'd7) begin
+            $display("[TB] FAIL (PAR-END-COL): expected tx=8 drop=7, got tx=%0d drop=%0d", tx_count_o, drop_count_o);
+            $fatal(1);
+        end
+        @(posedge clk);
+        check_idle_outputs("AFTER-PAR-END");
+        $display("[TB] PASS Test 6 (PAR S_PAR_END drop + multi-cycle valid): tx=%0d drop=%0d", tx_count_o, drop_count_o);
 
         $display("[TB] ALL KM_PMOD_EVENT_EGRESS SIMULATION TESTS PASSED");
         $finish;
