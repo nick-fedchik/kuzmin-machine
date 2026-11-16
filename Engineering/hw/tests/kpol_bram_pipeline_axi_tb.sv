@@ -28,6 +28,8 @@ module kpol_bram_pipeline_axi_tb;
     wire hw_pipeline_busy_o;
     wire fifo_overflow_o;
     wire [31:0] events_dropped_count_o;
+    wire [5:0] hw_commit_cid_o;
+    wire [31:0] hw_last_committed_state_o;
     logic b4_audit_mode = 0;
 
     always #5 clk = ~clk;

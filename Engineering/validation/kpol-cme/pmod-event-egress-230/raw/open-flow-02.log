@@ -1,0 +1,92 @@
+# cmd: bash Engineering/hw/scripts/run_open_flow.sh
+# timestamp: 2026-11-16T11:44:00+02:00
+# commit: 0e01996d4eb35858e9479e5cf8ec88dbfc65a94d
+# host: AORUS-5-SE
+........................................................................ [ 42%]
+........................................................................ [ 84%]
+...........................                                              [100%]
+171 passed in 14.39s
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.025 MB sources in 2 modules, into 0.023 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.005 s (elab=0.000, cvt=0.002, bld=0.000); cpu 0.005 s on 1 threads; alloced 7.992 MB
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.023 MB sources in 2 modules, into 0.023 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.005 s (elab=0.000, cvt=0.002, bld=0.000); cpu 0.005 s on 1 threads; alloced 7.996 MB
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:189:10: Cell pin connected by name with empty reference: 'rejected_input_o'
+  189 |         .rejected_input_o(),
+      |          ^~~~~~~~~~~~~~~~
+                          ... For warning description see https://verilator.org/warn/PINCONNECTEMPTY?v=5.032
+                          ... Use "/* verilator lint_off PINCONNECTEMPTY */" and lint_on around source to disable this message.
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:190:10: Cell pin connected by name with empty reference: 'rejected_invariant_o'
+  190 |         .rejected_invariant_o(),
+      |          ^~~~~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:191:10: Cell pin connected by name with empty reference: 'rejected_hazard_o'
+  191 |         .rejected_hazard_o(),
+      |          ^~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:192:10: Cell pin connected by name with empty reference: 'changed_o'
+  192 |         .changed_o(),
+      |          ^~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:194:10: Cell pin connected by name with empty reference: 'hazard_blocked_o'
+  194 |         .hazard_blocked_o(),
+      |          ^~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/core/km_concept_micro_engine.sv:196:10: Cell pin connected by name with empty reference: 'alert_observed_o'
+  196 |         .alert_observed_o()
+      |          ^~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/bus/kpol_bram_pipeline_axi.sv:119:10: Cell pin connected by name with empty reference: 'collision_detected_o'
+  119 |         .collision_detected_o()
+      |          ^~~~~~~~~~~~~~~~~~~~
+%Warning-PINCONNECTEMPTY: rtl/bus/kpol_bram_pipeline_axi.sv:141:10: Cell pin connected by name with empty reference: 'fifo_full_o'
+  141 |         .fifo_full_o(),
+      |          ^~~~~~~~~~~
+%Warning-UNUSEDPARAM: rtl/core/km_autonomous_sequencer.sv:13:19: Parameter is not used: 'NUM_CONCEPTS'
+                                                               : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+   13 |     parameter int NUM_CONCEPTS = 64,
+      |                   ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:112:28: Signal is not used: 'cme_rejected'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  112 |     wire                   cme_rejected;
+      |                            ^~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:113:28: Signal is not used: 'cme_hazard_obs'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  113 |     wire                   cme_hazard_obs;
+      |                            ^~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:114:28: Signal is not used: 'cme_unknown_haz'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  114 |     wire                   cme_unknown_haz;
+      |                            ^~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:116:28: Signal is not used: 'cme_state_changed'
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  116 |     wire                   cme_state_changed;
+      |                            ^~~~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_autonomous_sequencer.sv:117:28: Bits of signal are not used: 'cme_subscriber_cid'[31:6]
+                                                                 : ... note: In instance 'kpol_bram_pipeline_axi.sequencer'
+  117 |     wire [31:0]            cme_subscriber_cid;
+      |                            ^~~~~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_concept_micro_engine.sv:17:36: Signal is not used: 'event_id_i'
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer.cme_inst'
+   17 |     input  logic [7:0]             event_id_i,
+      |                                    ^~~~~~~~~~
+%Warning-UNUSEDSIGNAL: rtl/core/km_concept_micro_engine.sv:44:18: Bits of signal are not used: 'guard_flags_w'[7:5]
+                                                                : ... note: In instance 'kpol_bram_pipeline_axi.sequencer.cme_inst'
+   44 |     logic [7:0]  guard_flags_w;
+      |                  ^~~~~~~~~~~~~
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.160 MB sources in 6 modules, into 0.110 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.020 s (elab=0.002, cvt=0.009, bld=0.000); cpu 0.020 s on 1 threads; alloced 9.531 MB
+Warning: Replacing memory \fifo_param_q with list of registers. See rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See rtl/core/km_autonomous_sequencer.sv:236
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIADI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DIBDI from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOADO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOBDO from 64 bits to 32 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPADOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.DOPBDOP from 8 bits to 4 bits.
+Warning: Resizing cell port km_concept_bram.ram.0.0.WEBWE from 4 bits to 8 bits.
+NG RTL simulation, lint and XC7 logic synthesis completed; no P&R, bitstream or HIL performed.

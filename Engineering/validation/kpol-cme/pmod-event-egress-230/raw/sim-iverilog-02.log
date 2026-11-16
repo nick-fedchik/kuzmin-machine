@@ -1,0 +1,19 @@
+# cmd: iverilog -g2012 + vvp (km_pmod_event_egress_tb & kpol_bram_pipeline_pynq_z1_egress_top_tb)
+# timestamp: 2026-11-16T11:45:56+02:00
+# commit: 0e01996d4eb35858e9479e5cf8ec88dbfc65a94d
+# host: AORUS-5-SE
+[TB] PASS Test 1 (SPI Mode 0): bits=64 cycles=129 frame=8e45a55a12345678
+[TB] PASS Test 2 (SPI Collision): tx=2 drop=2
+[TB] PASS Test 3 (PAR8 Mode): bytes=8 cycles=17 frame=6e7fffff80000001
+[TB] PASS Test 4 (PAR8 Zero): frame=4540000000000000 tx=4 drop=3
+[TB] PASS Test 5 (SPI S_SPI_END drop + first S_IDLE accept): tx=6 drop=4
+[TB] PASS Test 6 (PAR S_PAR_END drop + multi-cycle valid): tx=8 drop=7
+[TB] ALL KM_PMOD_EVENT_EGRESS SIMULATION TESTS PASSED
+Engineering/hw/tb/km_pmod_event_egress_tb.sv:510: $finish called at 6095000 (1ps)
+Engineering/hw/rtl/core/km_concept_micro_engine.sv:88: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+Engineering/hw/rtl/core/km_concept_micro_engine.sv:88: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+Engineering/hw/rtl/core/km_concept_micro_engine.sv:88: sorry: constant selects in always_* processes are not currently supported (all bits will be included).
+PASS: pynq_z1_egress_top E2E SPI frame=8d420000000000c9
+PASS: pynq_z1_egress_top E2E PAR8 frame=84420000000000ca
+PASS: ALL PYNQ_Z1_EGRESS_TOP E2E TESTS PASSED
+Engineering/hw/tests/kpol_bram_pipeline_pynq_z1_egress_top_tb.sv:279: $finish called at 17670000 (1ps)

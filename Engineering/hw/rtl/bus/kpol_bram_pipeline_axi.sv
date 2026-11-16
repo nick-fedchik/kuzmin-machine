@@ -45,6 +45,8 @@ module kpol_bram_pipeline_axi (
     output logic        hw_pipeline_busy_o,
     output logic        fifo_overflow_o,
     output logic [31:0] events_dropped_count_o,
+    output logic [5:0]  hw_commit_cid_o,
+    output logic [31:0] hw_last_committed_state_o,
 
     // Загальний статус зайнятості ядра
     output logic        busy
@@ -98,6 +100,8 @@ module kpol_bram_pipeline_axi (
     assign hw_trigger_ready_o = seq_trigger_ready && !ext_trigger_blocked;
     assign fifo_overflow_o = seq_fifo_overflow || axi_sw_overflow_q;
     assign events_dropped_count_o = seq_dropped_count + axi_sw_dropped_q;
+    assign hw_commit_cid_o = b_addr[7:2];
+    assign hw_last_committed_state_o = last_state;
 
     km_concept_bram bram (
         .clk(clk),
