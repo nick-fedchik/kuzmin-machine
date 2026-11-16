@@ -195,28 +195,98 @@ class KpolAuthFrontendTests(unittest.TestCase):
                 self.assertEqual(ctx_len.exception.diagnostic.code, "KPOL-AUTH-U07")
 
     def test_u07_name_length_unit_is_configurable_for_multibyte_cyrillic(self) -> None:
+        # 8 Cyrillic characters = 8 Unicode codepoints, 16 UTF-8 bytes (boundary: accepted)
+        cyrillic_8 = "Абвгдеєж"
+        self.assertEqual(len(cyrillic_8), 8)
+        self.assertEqual(len(cyrillic_8.encode("utf-8")), 16)
+        prog_16 = ka.parse_kpol_auth(f'Name("{cyrillic_8}")')
+        self.assertEqual(prog_16.diagnostics, ())
+        self.assertIsInstance(prog_16.items[0], ka.CallOrConstructCST)
+
+        # 8 Cyrillic + 1 ASCII = 9 Unicode codepoints, 17 UTF-8 bytes (exceeds 16 bytes)
+        cyrillic_8_plus_1 = "АбвгдеєжA"
+        self.assertEqual(len(cyrillic_8_plus_1), 9)
+        self.assertEqual(len(cyrillic_8_plus_1.encode("utf-8")), 17)
+
         # 9 Cyrillic characters = 9 Unicode codepoints, 18 UTF-8 bytes
         cyrillic_9 = "Абвгдеєжз"
         self.assertEqual(len(cyrillic_9), 9)
         self.assertEqual(len(cyrillic_9.encode("utf-8")), 18)
-        source = f'Name("{cyrillic_9}")'
 
-        # Default "fail-closed" rejects ambiguous >16 UTF-8 bytes
-        with self.assertRaises(ka.KpolAuthError) as ctx_default:
-            ka.parse_kpol_auth(source)
-        self.assertEqual(ctx_default.exception.diagnostic.code, "KPOL-AUTH-U07")
+        cfg_default = ka.AuthFrontendConfig()
+        self.assertEqual(cfg_default.name_length_unit, "utf8_bytes")
 
-        # Explicit "utf8_bytes" also rejects 18 > 16
-        cfg_bytes = ka.AuthFrontendConfig(name_length_unit="utf8_bytes")
-        with self.assertRaises(ka.KpolAuthError) as ctx_bytes:
-            ka.parse_kpol_auth(source, config=cfg_bytes)
-        self.assertEqual(ctx_bytes.exception.diagnostic.code, "KPOL-AUTH-U07")
+        for over_str in (cyrillic_8_plus_1, cyrillic_9):
+            source = f'Name("{over_str}")'
+            # Default "utf8_bytes" rejects 17 and 18 > 16
+            with self.assertRaises(ka.KpolAuthError) as ctx_default:
+                ka.parse_kpol_auth(source)
+            self.assertEqual(ctx_default.exception.diagnostic.code, "KPOL-AUTH-U07")
 
-        # Explicit "codepoints" accepts 9 <= 16
-        cfg_cp = ka.AuthFrontendConfig(name_length_unit="codepoints")
-        prog_cp = ka.parse_kpol_auth(source, config=cfg_cp)
-        self.assertEqual(prog_cp.diagnostics, ())
-        self.assertIsInstance(prog_cp.items[0], ka.CallOrConstructCST)
+            # Explicit "codepoints" accepts 9 <= 16
+            cfg_cp = ka.AuthFrontendConfig(name_length_unit="codepoints")
+            prog_cp = ka.parse_kpol_auth(source, config=cfg_cp)
+            self.assertEqual(prog_cp.diagnostics, ())
+            self.assertIsInstance(prog_cp.items[0], ka.CallOrConstructCST)
+
+        # Explicit "codepoints" still rejects >16 codepoints
+        cyrillic_17 = "Абвгдеєжзиіїйклмн"
+        self.assertEqual(len(cyrillic_17), 17)
+        with self.assertRaises(ka.KpolAuthError) as ctx_cp_over:
+            ka.parse_kpol_auth(
+                f'Name("{cyrillic_17}")',
+                config=ka.AuthFrontendConfig(name_length_unit="codepoints"),
+            )
+        self.assertEqual(ctx_cp_over.exception.diagnostic.code, "KPOL-AUTH-U07")
+
+    def test_utf8_byte_offsets_and_diagnostic_spans_for_cyrillic_and_symbols(self) -> None:
+        source = "Температура • «Текст» ¬ Стан\nНаступний"
+        source_bytes = source.encode("utf-8")
+        tokens, diags = ka.tokenize(source)
+        self.assertEqual(diags, [])
+
+        # Every non-TEXT token must round-trip identically via UTF-8 byte slice
+        for tok in tokens:
+            sliced = source_bytes[tok.span.byte_offset : tok.span.byte_end].decode("utf-8")
+            self.assertEqual(sliced, source[tok.span.offset : tok.span.offset + tok.span.length])
+            if tok.kind != "TEXT":
+                self.assertEqual(sliced, tok.value)
+            else:
+                self.assertEqual(sliced, f"«{tok.value}»")
+
+        # Verify exact codepoint columns vs UTF-8 byte offsets on line 1 and line 2
+        ident_temp = tokens[0]
+        self.assertEqual(ident_temp.value, "Температура")
+        self.assertEqual((ident_temp.span.line, ident_temp.span.col), (1, 1))
+        self.assertEqual((ident_temp.span.end_line, ident_temp.span.end_col), (1, 12))
+        self.assertEqual((ident_temp.span.byte_offset, ident_temp.span.byte_end), (0, 22))
+
+        dot_tok = tokens[1]
+        self.assertEqual(dot_tok.value, "•")
+        self.assertEqual((dot_tok.span.line, dot_tok.span.col), (1, 13))
+        self.assertEqual((dot_tok.span.byte_offset, dot_tok.span.byte_end), (23, 26))
+
+        ident_next = tokens[5]
+        self.assertEqual(ident_next.value, "Наступний")
+        self.assertEqual((ident_next.span.line, ident_next.span.col), (2, 1))
+        self.assertEqual((ident_next.span.end_line, ident_next.span.end_col), (2, 10))
+        self.assertEqual(
+            source_bytes[ident_next.span.byte_offset : ident_next.span.byte_end].decode("utf-8"),
+            "Наступний",
+        )
+
+        # Diagnostic Span on Cyrillic line preserves exact UTF-8 byte offsets
+        bad_src = "Помилка #старий"
+        with self.assertRaises(ka.KpolAuthError) as ctx:
+            ka.parse_kpol_auth(bad_src)
+        dspan = ctx.exception.diagnostic.span
+        self.assertIsNotNone(dspan)
+        assert dspan is not None
+        self.assertEqual((dspan.line, dspan.col), (1, 9))
+        self.assertEqual(
+            bad_src.encode("utf-8")[dspan.byte_offset : dspan.byte_end].decode("utf-8"),
+            "#",
+        )
 
     def test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls(self) -> None:
         prog = ka.parse_kpol_auth("A • B")
@@ -291,8 +361,28 @@ class KpolAuthFrontendTests(unittest.TestCase):
                 with self.assertRaises(ka.KpolAuthError):
                     ka.parse_kpol_auth("• Flag")
 
-        # Mutant 2: CST skips bracket-pair matching check
-        with mock.patch.dict(cst_mod.BRACKET_PAIRS, {"{": ")"}):
+        # Mutant 2: CST skips bracket-pair matching logic in parse_bracket_group
+        def mutant_skip_bracket_match(parser_self):
+            open_tok = parser_self.advance()
+            elements = []
+            commas = []
+            while (tok := parser_self.peek()) is not None:
+                if tok.kind in ("RBRACE", "RPAREN", "RBRACKET"):
+                    close_tok = parser_self.advance()
+                    return ka.BracketGroupCST(
+                        span=open_tok.span,
+                        open_token=open_tok,
+                        close_token=close_tok,
+                        kind=cst_mod.BRACKET_KIND[open_tok.value],
+                        elements=tuple(elements),
+                        comma_tokens=tuple(commas),
+                    )
+                elements.append(parser_self.parse_statement())
+                if (nxt := parser_self.peek()) is not None and nxt.kind == "COMMA":
+                    commas.append(parser_self.advance())
+            raise AssertionError("unclosed")
+
+        with mock.patch.object(cst_mod._Parser, "parse_bracket_group", mutant_skip_bracket_match):
             with self.assertRaises(AssertionError):
                 with self.assertRaises(ka.KpolAuthError):
                     ka.parse_kpol_auth("{ A )")

@@ -74,17 +74,33 @@ def tokenize(
     n = len(source)
     line = 1
     col = 1
+    byte_pos = 0
 
     def advance(count: int = 1) -> None:
-        nonlocal i, line, col
+        nonlocal i, line, col, byte_pos
         for _ in range(count):
             ch = source[i]
             i += 1
+            byte_pos += len(ch.encode("utf-8"))
             if ch == "\n":
                 line += 1
                 col = 1
             else:
                 col += 1
+
+    def make_span(
+        start_line: int, start_col: int, start_off: int, start_byte: int
+    ) -> Span:
+        return Span(
+            line=start_line,
+            column=start_col,
+            offset=start_off,
+            length=i - start_off,
+            end_line=line,
+            end_column=col,
+            byte_offset=start_byte,
+            byte_end=byte_pos,
+        )
 
     while i < n:
         ch = source[i]
@@ -93,10 +109,11 @@ def tokenize(
             advance()
             continue
 
-        start_line, start_col, start_off = line, col, i
+        start_line, start_col, start_off, start_byte = line, col, i, byte_pos
 
         if ch == "#":
-            span = Span(start_line, start_col, start_off, 1)
+            advance()
+            span = make_span(start_line, start_col, start_off, start_byte)
             emit_uncertainty(
                 "KPOL-AUTH-U05",
                 "Символ '#' звільнено автором (RFC-011/RFC-016), але нова пара роздільників ще не визначена.",
@@ -104,7 +121,6 @@ def tokenize(
                 span=span,
                 diagnostics=diagnostics,
             )
-            advance()
             tokens.append(Token("HASH_LEGACY", "#", span))
             continue
 
@@ -116,7 +132,9 @@ def tokenize(
             while i < n:
                 cur = source[i]
                 if cur == "\\":
-                    err_span = Span(line, col, i, 1)
+                    err_line, err_col, err_off, err_byte = line, col, i, byte_pos
+                    advance()
+                    err_span = make_span(err_line, err_col, err_off, err_byte)
                     emit_uncertainty(
                         "KPOL-AUTH-U06",
                         "Екранування закривального знака всередині Text/Help не визначено автором (RFC-016 п. 2).",
@@ -124,7 +142,6 @@ def tokenize(
                         span=err_span,
                         diagnostics=diagnostics,
                     )
-                    advance()
                     if i < n:
                         buf.append(source[i])
                         advance()
@@ -135,7 +152,7 @@ def tokenize(
                     break
                 buf.append(cur)
                 advance()
-            span = Span(start_line, start_col, start_off, i - start_off)
+            span = make_span(start_line, start_col, start_off, start_byte)
             if not closed:
                 diag = Diagnostic(
                     code="KPOL-AUTH-SYNTAX-01",
@@ -151,14 +168,14 @@ def tokenize(
         if ch == ":" and i + 1 < n and source[i + 1] == "=":
             advance(2)
             tokens.append(
-                Token("ASSIGN", ":=", Span(start_line, start_col, start_off, 2))
+                Token("ASSIGN", ":=", make_span(start_line, start_col, start_off, start_byte))
             )
             continue
 
         if ch == ":":
             advance()
             tokens.append(
-                Token("COLON", ":", Span(start_line, start_col, start_off, 1))
+                Token("COLON", ":", make_span(start_line, start_col, start_off, start_byte))
             )
             continue
 
@@ -168,7 +185,7 @@ def tokenize(
                 Token(
                     OPEN_BRACKETS[ch],
                     ch,
-                    Span(start_line, start_col, start_off, 1),
+                    make_span(start_line, start_col, start_off, start_byte),
                 )
             )
             continue
@@ -179,7 +196,7 @@ def tokenize(
                 Token(
                     CLOSE_BRACKETS[ch],
                     ch,
-                    Span(start_line, start_col, start_off, 1),
+                    make_span(start_line, start_col, start_off, start_byte),
                 )
             )
             continue
@@ -190,7 +207,7 @@ def tokenize(
                 Token(
                     SINGLE_CHAR_TOKENS[ch],
                     ch,
-                    Span(start_line, start_col, start_off, 1),
+                    make_span(start_line, start_col, start_off, start_byte),
                 )
             )
             continue
@@ -200,14 +217,14 @@ def tokenize(
                 advance()
             val = source[start_off:i]
             tokens.append(
-                Token("INT", val, Span(start_line, start_col, start_off, len(val)))
+                Token("INT", val, make_span(start_line, start_col, start_off, start_byte))
             )
             continue
 
         if ch == "_" and (i + 1 == n or not (source[i + 1].isalnum() or source[i + 1] == "_")):
             advance()
             tokens.append(
-                Token("UNINIT", "_", Span(start_line, start_col, start_off, 1))
+                Token("UNINIT", "_", make_span(start_line, start_col, start_off, start_byte))
             )
             continue
 
@@ -216,7 +233,7 @@ def tokenize(
                 advance()
             val = source[start_off:i]
             tokens.append(
-                Token("IDENT", val, Span(start_line, start_col, start_off, len(val)))
+                Token("IDENT", val, make_span(start_line, start_col, start_off, start_byte))
             )
             continue
 
@@ -225,7 +242,7 @@ def tokenize(
             code="KPOL-AUTH-LEX-01",
             severity="error",
             message=f"Несподіваний символ '{ch}' у потоці KPOL-AUTH.",
-            span=Span(start_line, start_col, start_off, 1),
+            span=make_span(start_line, start_col, start_off, start_byte),
         )
         diagnostics.append(diag)
         raise KpolAuthError(diag)

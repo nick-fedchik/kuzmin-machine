@@ -8,12 +8,24 @@ from typing import Mapping
 
 @dataclass(frozen=True)
 class Span:
-    """1-based source location."""
+    """1-based source location in Unicode codepoints and exact UTF-8 byte offsets."""
 
     line: int
     column: int
     offset: int
     length: int
+    end_line: int = 0
+    end_column: int = 0
+    byte_offset: int = 0
+    byte_end: int = 0
+
+    @property
+    def col(self) -> int:
+        return self.column
+
+    @property
+    def end_col(self) -> int:
+        return self.end_column
 
 
 @dataclass(frozen=True)
@@ -123,7 +135,7 @@ UNCERTAINTY_REGISTRY: dict[str, UncertaintyPoint] = {
 }
 
 ALLOWED_POLICIES = frozenset({"fail-closed", "record-diagnostic"})
-ALLOWED_NAME_LENGTH_UNITS = frozenset({"fail-closed", "codepoints", "utf8_bytes"})
+ALLOWED_NAME_LENGTH_UNITS = frozenset({"utf8_bytes", "codepoints"})
 
 
 @dataclass(frozen=True)
@@ -131,17 +143,15 @@ class AuthFrontendConfig:
     """Single configuration point for all KPOL-AUTH uncertainty policies.
 
     By default, every registered uncertainty point is `fail-closed`.
-    `name_length_unit` controls U07 (`Name` length <= 16) measurement:
-    - `fail-closed` (default): fail-closed if either codepoints > 16 or UTF-8 bytes > 16
-      (rejecting ambiguous multibyte strings > 16 UTF-8 bytes even when codepoints <= 16);
-    - `codepoints`: measure in Unicode codepoints;
-    - `utf8_bytes`: measure in UTF-8 encoded bytes.
+    `name_length_unit` controls U07 (`Name` length <= 16) measurement unit:
+    - `utf8_bytes` (default, conservative): measure in UTF-8 encoded bytes;
+    - `codepoints`: measure in Unicode codepoints.
     """
 
     policies: Mapping[str, str] = field(
         default_factory=lambda: {code: "fail-closed" for code in UNCERTAINTY_REGISTRY}
     )
-    name_length_unit: str = "fail-closed"
+    name_length_unit: str = "utf8_bytes"
 
     def __post_init__(self) -> None:
         if self.name_length_unit not in ALLOWED_NAME_LENGTH_UNITS:

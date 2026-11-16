@@ -1,0 +1,21 @@
+# cleaned with: sed 's/[[:space:]]*$//'
+# date: 2026-11-16T11:38:27+02:00
+# commit: deb9434e09c681fe96f6d23446f105e026a1f8fe
+=== KM_SKIP_LIVE_HIL=1 python3 -m pytest -q ===
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+.................................................................................. [ 58%]
+...................................................s......................................................... [ 87%]
+..................................................                       [100%]
+384 passed, 1 skipped, 385 subtests passed in 67.57s (0:01:07)
+pytest_exit_code=0
+=== KM_DRAFTS_REPO=/home/mfedchyk/GitHub/nick-fedchik/drafts python3 Project/tools/check_links.py ===
+Битих посилань: 0; посилань file:: 0; посилань на drafts: перевірено 41, пропущено 0
+check_links_exit_code=0
+=== python3 Project/tools/check_wp_documents.py ===
+{
+  "documents_checked": 153,
+  "immutable_checked": 108,
+  "errors": []
+}
+check_wp_documents_exit_code=0

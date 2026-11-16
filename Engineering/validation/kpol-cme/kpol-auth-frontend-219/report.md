@@ -1,22 +1,23 @@
 # Звіт #219: Прототип фронтенду native-діалекту `KPOL-AUTH` (лексер/CST, точки невизначеності та корпус прикладів)
 
-* **Версія:** 0.1.1
-* **Дата:** 2026-11-15
+* **Версія:** 0.2.0
+* **Дата:** 2026-11-16
 * **Тип WP:** Report / Analysis
-* **Issue:** [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#224](https://github.com/nick-fedchik/kuzmin-machine/issues/224) (частина #186/#8; не закриває #186). **PR:** гілка `feat/219-kpol-auth-frontend` (`0.1.0`), `fix/224-kpol-auth-review-fixes` (`0.1.1`).
-* **Виконавець:** GitHub Copilot CLI (`gemini-4-hydrogen`). **Рецензент:** незалежна рецензія не проведена.
-* **Коміт, на якому виконано:** `56c9abd50f70dcb8318f66bfa26e7e73f4597e5b`. **Хост / плата:** Linux (`AORUS-5-SE`); фізична плата FPGA не залучалася. **Бітстрім (SHA-256):** не генерувався.
-* **Критерії успіху (зафіксовано до виконання):** критерії приймання в описі [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219).
+* **Issue:** [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#224](https://github.com/nick-fedchik/kuzmin-machine/issues/224), [#233](https://github.com/nick-fedchik/kuzmin-machine/issues/233), [#243](https://github.com/nick-fedchik/kuzmin-machine/issues/243) (частина #8/#186; не закриває #8 або #186). **PR:** `feat/219-kpol-auth-frontend` (`0.1.0`), `fix/224-kpol-auth-review-fixes` (`0.1.1`), `feat/243-kpol-auth-utf8-dogo-lowering` (`0.2.0`).
+* **Виконавець:** GitHub Copilot CLI (`gemini-4-hydrogen`). **Рецензент:** `claude-sonnet-5.5` (рецензії PR #222 для `0.1.0` та PR #231 для `0.1.1`); незалежна рецензія для `0.2.0` не проведена.
+* **Коміт, на якому виконано:** `deb9434e09c681fe96f6d23446f105e026a1f8fe`. **Хост / плата:** Linux (`AORUS-5-SE`); фізична плата FPGA не залучалася (`KM_SKIP_LIVE_HIL=1`). **Бітстрім (SHA-256):** не генерувався.
+* **Критерії успіху (зафіксовано до виконання):** критерії приймання в описах [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#233](https://github.com/nick-fedchik/kuzmin-machine/issues/233) та [#243](https://github.com/nick-fedchik/kuzmin-machine/issues/243).
 
 ---
 
 ## 1. Що не вдалося і обмеження
 
-* Усі перевірки виконано в хостовому інтерпретаторі Python 3 (`unittest`/`pytest`); генератор байт-коду або образу BRAM, семантичний обчислювач, RTL-симуляція та HIL на FPGA не реалізовувалися й не запускалися.
+* Усі перевірки виконано в хостовому інтерпретаторі Python 3 (`unittest`/`pytest`) та незалежному еталонному стековому інтерпретаторі `ReferenceDoGoVM`; компіляція C99-рантайму на фізичній платі PYNQ-Z1, RTL-симуляція та HIL на FPGA не запускалися (`KM_SKIP_LIVE_HIL=1`).
+* Модуль [`lowering.py`](../../../sw/kpol-auth/lowering.py) є **похідною інженерною трансляцією** (`AGENTS.md §6.1`) детермінованої підмножини `KPOL-AUTH` у 32-бітний байткод `Do/Go` ([`km_mcu_fpga_bridge.c`](../../../sw/runtime/mcu/km_mcu_fpga_bridge.c)) та 1024-байтний образ BRAM `CME-RAW-1` ([`kpol-cme2-profile-0.1.0.md`](../../../specifications/kpol/kpol-cme2-profile-0.1.0.md)); це НЕ специфікація Автора (М. Ю. Кузьміна).
 * Прототип фронтенду не розв'язує 12 відкритих питань (`RFC-009` п. 2–3, `RFC-015`, `RFC-016`, `RFC-017` п. 2–3, `RFC-018`) і не приписує Автору жодного правила понад дослівні відповіді. Усі 12 точок невизначеності (`KPOL-AUTH-U01`..`KPOL-AUTH-U12`) за замовчуванням працюють у режимі `fail-closed`.
 * Первинні прогони тестів [`raw/kpol-auth-tests-01.log`](raw/kpol-auth-tests-01.log) та [`raw/kpol-auth-tests-02.log`](raw/kpol-auth-tests-02.log) виявили два дефекти: відносний імпорт у `kpol-auth/__init__.py` без `__package__` під час збирання `pytest` та неповну перевірку `SubscriptionSeqCST` у дужках (`Flag := (A • B)`) і токена `HASH_LEGACY` у режимі `record-diagnostic`. Обидва дефекти виправлено, а повторний прогін записано в новий файл [`raw/kpol-auth-tests-03.log`](raw/kpol-auth-tests-03.log).
-* Історичні сирі логи [`raw/kpol-auth-tests-01.log`](raw/kpol-auth-tests-01.log)..[`raw/kpol-auth-tests-03.log`](raw/kpol-auth-tests-03.log) містять хвостові пробіли з виводу `pytest`, через які `git diff --check` на них повертав `rc=2`, а [`raw/full-verification-01.log`](raw/full-verification-01.log) мав порожній розділ `=== git diff --check ===` без зафіксованого `exit_code`. Згідно з `AGENTS.md §4.5` ці історичні файли збережено незмінними; для редакції `0.1.1` записано нові чисті логи [`raw/revision-0.1.1-kpol-auth-tests.log`](raw/revision-0.1.1-kpol-auth-tests.log) та [`raw/revision-0.1.1-full-verification.log`](raw/revision-0.1.1-full-verification.log) (рядки очищено через `sed 's/[[:space:]]*$//'` із задокументованою командою на рядку 1).
-* Чинний компілятор `kpol_reference.py`, профілі `KPOL-CME-1`/`KPOL-CME-2` та файли в `Engineering/hw/` не змінювалися.
+* Історичні сирі логи [`raw/kpol-auth-tests-01.log`](raw/kpol-auth-tests-01.log)..[`raw/kpol-auth-tests-03.log`](raw/kpol-auth-tests-03.log) містять хвостові пробіли з виводу `pytest`, через які `git diff --check` на них повертав `rc=2`, а [`raw/full-verification-01.log`](raw/full-verification-01.log) мав порожній розділ `=== git diff --check ===` без зафіксованого `exit_code`. Згідно з `AGENTS.md §4.5` ці історичні файли збережено незмінними; для редакцій `0.1.1` і `0.2.0` записано нові чисті логи [`raw/revision-0.1.1-kpol-auth-tests.log`](raw/revision-0.1.1-kpol-auth-tests.log), [`raw/revision-0.1.1-full-verification.log`](raw/revision-0.1.1-full-verification.log), [`raw/revision-0.2.0-kpol-auth-tests.log`](raw/revision-0.2.0-kpol-auth-tests.log) та [`raw/revision-0.2.0-full-verification.log`](raw/revision-0.2.0-full-verification.log) (рядки очищено через `sed 's/[[:space:]]*$//'` із задокументованою командою на рядку 1).
+* Чинний компілятор `kpol_reference.py`, `Engineering/sw/runtime/mcu/km_mcu_fpga_bridge.c`, `Project/registers/open-work-items.md` та файли в `Engineering/hw/` не змінювалися.
 
 ## 2. Метод
 
@@ -31,8 +32,9 @@
 
 ## 3. Результати
 
-* **Цільові тести `kpol-auth` (редакція `0.1.1`, [`raw/revision-0.1.1-kpol-auth-tests.log`](raw/revision-0.1.1-kpol-auth-tests.log)):** `12 passed, 40 subtests passed in 0.08s`, `exit_code=0`.
-* **Наскрізна перевірка репозиторію (редакція `0.1.1`, [`raw/revision-0.1.1-full-verification.log`](raw/revision-0.1.1-full-verification.log)):** `python3 -m pytest -q` (`362 passed, 385 subtests passed`), `check_links.py` (0 битих, 41 drafts-посилання перевірено), `check_wp_documents.py` (`148` документів, `errors: []`), `git diff --check origin/main..HEAD` (`exit_code=0`).
+* **Цільові тести `kpol-auth` (редакція `0.2.0`, [`raw/revision-0.2.0-kpol-auth-tests.log`](raw/revision-0.2.0-kpol-auth-tests.log)):** `17 passed, 40 subtests passed in 0.09s`, `exit_code=0`.
+* **Наскрізна перевірка репозиторію (редакція `0.2.0`, [`raw/revision-0.2.0-full-verification.log`](raw/revision-0.2.0-full-verification.log)):** `KM_SKIP_LIVE_HIL=1 python3 -m pytest -q` (`384 passed, 1 skipped, 385 subtests passed`), `check_links.py` (0 битих, 41 drafts-посилання перевірено), `check_wp_documents.py` (`153` документи, `errors: []`), `git diff --check origin/main..HEAD` (`exit_code=0`).
+* **Редакція `0.1.1`:** [`raw/revision-0.1.1-kpol-auth-tests.log`](raw/revision-0.1.1-kpol-auth-tests.log) (`12 passed, 40 subtests passed`), [`raw/revision-0.1.1-full-verification.log`](raw/revision-0.1.1-full-verification.log) (`362 passed, 385 subtests passed`).
 * **Історичні логи редакції `0.1.0`:** [`raw/kpol-auth-tests-03.log`](raw/kpol-auth-tests-03.log) (`10 passed, 25 subtests passed`) і [`raw/full-verification-01.log`](raw/full-verification-01.log) (`360 passed, 370 subtests passed`, але `git diff --check` на `raw/*-01..03.log` давав `rc=2` через хвостові пробіли `pytest`).
 
 ### 3.1. Реєстр точок невизначеності (`fail-closed` за замовчуванням)
@@ -97,6 +99,7 @@ git diff --check origin/main..HEAD
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 0.2.0 | 2026-11-16 | Закрито знахідки #233 (`G-1` логічний мутант парності дужок, `G-2` оновлено поле «Рецензент» із PR #222/#231, `G-3` чисті одиниці `utf8_bytes`/`codepoints` і граничні тести 16/17/18 байтів) та виконано #243: точні UTF-8 зміщення `Span` (`byte_offset`, `byte_end`, `end_line`, `end_column`), похідний модуль кодогенерації `lowering.py` у `Do/Go` байткод і 1024-байтний `CME-RAW-1` BRAM із верифікацією на `ReferenceDoGoVM` та мутантними контролями. |
 | 0.1.1 | 2026-11-15 | Виправлення за рецензією PR #222 ([#224](https://github.com/nick-fedchik/kuzmin-machine/issues/224), `F-1..F-4`): уточнено примітку про історичні `raw/*-01..03.log` і додано чисті логи `revision-0.1.1-*.log`; замінено тавтологію в тесті корпусу через `in_source_scope`; додано `record-diagnostic` для всіх 12 точок `U01..U12` і 3 мутантні контролі; явне відхилення `Def` ширини != 7/8 (`KPOL-AUTH-SYNTAX-04`) та конфігурована одиниця довжини `Name` (`U07`). |
 | 0.1.0 | 2026-11-15 | Перша редакція звіту прототипу фронтенду `KPOL-AUTH` ([#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219)). |
 
