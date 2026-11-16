@@ -7,27 +7,33 @@ in the CFG-P BRAM pipeline running on Digilent PYNQ-Z1 (XC7Z020 PL silicon).
 import subprocess
 import pytest
 
-PYNQ_HOST = "xilinx@192.168.68.69"
+PYNQ_HOSTS = [
+    ("pynq1", "xilinx@192.168.68.81"),
+    ("pynq2", "xilinx@192.168.68.69"),
+]
 REMOTE_SCRIPT = "/home/xilinx/test_bram_cascade_live.py"
 
 
-def is_pynq_reachable():
+def is_pynq_reachable(host: str) -> bool:
     cmd = [
         "sshpass", "-p", "xilinx",
         "ssh", "-o", "ConnectTimeout=2", "-o", "StrictHostKeyChecking=no",
-        PYNQ_HOST, "echo OK"
+        host, "echo OK"
     ]
     res = subprocess.run(cmd, capture_output=True, text=True)
     return res.returncode == 0 and "OK" in res.stdout
 
 
-@pytest.mark.skipif(not is_pynq_reachable(), reason="PYNQ-Z1 board not reachable via SSH")
-def test_bram_cascade_execution_on_pynq_silicon():
-    """Verify 4-concept endogenous subscription cascade in physical FPGA BRAM."""
+@pytest.mark.parametrize("board_name,pynq_host", PYNQ_HOSTS)
+def test_bram_cascade_execution_on_pynq_silicon(board_name, pynq_host):
+    """Verify 4-concept endogenous subscription cascade in physical FPGA BRAM on pynq1 and pynq2."""
+    if not is_pynq_reachable(pynq_host):
+        pytest.skip(f"{board_name} ({pynq_host}) not reachable via SSH")
+
     cmd = [
         "sshpass", "-p", "xilinx",
         "ssh", "-o", "StrictHostKeyChecking=no",
-        PYNQ_HOST, f"echo xilinx | sudo -S python3 {REMOTE_SCRIPT}"
+        pynq_host, f"echo xilinx | sudo -S python3 {REMOTE_SCRIPT}"
     ]
     res = subprocess.run(cmd, capture_output=True, text=True)
     assert res.returncode == 0, f"Execution failed: {res.stderr}\n{res.stdout}"
