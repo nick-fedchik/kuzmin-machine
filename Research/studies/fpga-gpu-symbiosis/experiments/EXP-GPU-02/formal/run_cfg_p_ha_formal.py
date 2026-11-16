@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
-"""Issue #252 (EXP-GPU-02): Formal SMT verification of dual-bank CFG-P-HA via Yosys + Z3.
+"""Issue #252 / #259 (EXP-GPU-02): Formal SMT verification of dual-bank CFG-P-HA via Yosys + Z3.
 
 Proves on parameterized top-level `kpol_bram_pipeline_axi_ha`
 (NUM_CONCEPTS=4, QUEUE_DEPTH=4, DATA_WIDTH=32, ADDR_WIDTH=4) with zero vacuous
 assumptions on internal states:
-  * Unbounded k-induction (`yosys-smtbmc -s z3 -i -t 8`):
+  * Concrete 32-bit base BMC (`yosys-smtbmc -s z3 -t 3`) + unbounded k-induction
+    (`yosys-smtbmc -s z3 -i -t 2`) on full 32-bit datapath without cutpoints:
       H1_lockstep_phase, H2_zero_bram_collision, H3_no_torn_descriptor_read,
-      H4_zero_sequencer_stall, H5_bounded_swap_latency, H6_live_state_preserved.
-  * Bounded Model Checking (`yosys-smtbmc -s z3 -t 30`):
-      Full 30-step reachable check of H1..H6 + H6b_banks_identical_after_resync.
-  * Cover non-vacuity (`yosys-smtbmc -s z3 -c -t 36`):
-      Full online rule injection lifecycle (old rule reject -> hot shadow write
-      while sequencer active -> atomic bank_swap_commit_o -> background resync
-      completion -> new rule commit) + pending wait + back-to-back zero-bubble swap.
+      H4_zero_sequencer_stall, H5_bounded_swap_latency, H6_live_state_preserved,
+      H6b_banks_identical_after_resync, H7_multi_patch_rule_persistence.
+  * 30-step Bounded Model Checking (`yosys-smtbmc -s z3 --noincr -t 0:30:30`):
+      - H1, H2, H4, H5 with sound CME over-approximation (`cut_cme=True`);
+      - H2 & H3_no_torn_descriptor_read on a 1-bit per word data-independence slice
+        (`WOLPER_1BIT_SLICE`, bit [0] of each 32-bit word W0..W3; full 32-bit H3 is
+        proved by `bmc t=3` + `ind t=2`).
+  * Cover non-vacuity (`yosys-smtbmc -s z3 -c -t 30`):
+      C1_full_online_update_lifecycle, C2_swap_after_pending_wait,
+      C3_back_to_back_events_across_swap, C4_b_we_at_swap (`obs_b_we && obs_swap_commit_w`,
+      simultaneous Port-B W0 write on the exact active-bank flip edge; `bank_swap_commit_o`
+      is its 1-cycle registered strobe).
   * Mutant negative controls (AGENTS.md §4.1) with counterexample VCDs:
       - M1_unsafe_immediate_swap       -> caught by H3_no_torn_descriptor_read
       - M2_write_active_bank_while_busy -> caught by H2_zero_bram_collision / H3_no_torn_descriptor_read
       - M3_drop_w0_mirror              -> caught by H6_live_state_preserved
       - M4_block_trigger_on_shadow     -> caught by H4_zero_sequencer_stall
+      - M5_skip_port_a_resync          -> caught by H7_multi_patch_rule_persistence
 """
 
 import argparse
@@ -57,6 +64,8 @@ CORE_CONNECTS = [
     "connect -set obs_desc_w2_q \\dut.sequencer.desc_w2_q",
     "connect -set obs_desc_w3_q \\dut.sequencer.desc_w3_q",
     "connect -set obs_b_addr \\dut.b_addr",
+    "connect -set obs_b_we \\dut.b_we",
+    "connect -set obs_swap_commit_w \\dut.bram_dual.swap_commit_w",
     "connect -set obs_active_bank \\dut.active_bank",
     "connect -set obs_swap_pending \\dut.swap_pending",
     "connect -set obs_sync_busy \\dut.sync_busy",
@@ -82,13 +91,11 @@ SAFETY_EXTRA_CONNECTS = [
     "connect -set obs_bram_we \\dut.bram_we",
     "connect -set obs_cfg_write_fire \\dut.cfg_write_fire",
     "connect -set obs_b_wdata \\dut.b_wdata",
-    "connect -set obs_b_we \\dut.b_we",
     "connect -set obs_dual_a_addr \\dut.dual_a_addr",
     "connect -set obs_dual_a_wdata \\dut.dual_a_wdata",
     "connect -set obs_sync_load_accept \\dut.bram_dual.sync_load_accept",
     "connect -set obs_hot_write_accept \\dut.bram_dual.hot_write_accept",
     "connect -set obs_swap_req_accept \\dut.bram_dual.swap_req_accept",
-    "connect -set obs_swap_commit_w \\dut.bram_dual.swap_commit_w",
     "connect -set obs_last_swap_wait_cycles_q \\dut.last_swap_wait_cycles_q",
     "connect -set obs_last_seq_exec_cycles_q \\dut.last_seq_exec_cycles_q",
     "connect -set obs_seq_anomaly_count_q \\dut.seq_anomaly_count_q",
@@ -168,6 +175,18 @@ MUTANTS = [
         "    wire ext_trigger_blocked   = sw_trigger || bram_we || cfg_write_fire;",
         "    wire ext_trigger_blocked   = sw_trigger || bram_we || shadow_we || cfg_write_fire;",
     ),
+    (
+        "M5_skip_port_a_resync",
+        "dual",
+        ["FORMAL_SAFETY", "ONLY_H7"],
+        20,
+        "broken Port-A dirty_word_q resync after swap leaves stale rule from patch 1 on partial patch 2",
+        "                        if (next_has_dirty_w) begin\n"
+        "                            sync_state_q <= SYNC_READ;\n"
+        "                            sync_addr_q  <= next_dirty_addr_w;\n"
+        "                        end",
+        "                        dirty_word_q <= '0;",
+    ),
 ]
 
 
@@ -185,7 +204,8 @@ def write_log(log_path, cmd, text):
 
 def sh(cmd, cwd, log_path=None):
     t0 = time.time()
-    p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    env = {**os.environ, "TMPDIR": cwd}
+    p = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True)
     dt = time.time() - t0
     out = (p.stdout or "") + (p.stderr or "")
     if log_path:
@@ -352,13 +372,88 @@ def run_smtbmc(
     }
 
 
+def run_sim_c4_counter(work, out_dir):
+    tb_path = os.path.join(REPO_ROOT, "Engineering", "hw", "tests", "kpol_bram_pipeline_axi_ha_tb.sv")
+    if shutil.which("iverilog") is None or shutil.which("vvp") is None or not os.path.isfile(tb_path):
+        return None
+    mon_sv = os.path.join(work, "c4_b_we_at_swap_mon.sv")
+    vvp_bin = os.path.join(work, "c4_b_we_at_swap.vvp")
+    with open(mon_sv, "w", encoding="utf-8") as f:
+        f.write(
+            "`timescale 1ns/1ps\n"
+            "module c4_b_we_at_swap_mon;\n"
+            "  int unsigned c4_total = 0;\n"
+            "  int unsigned c4_no_override = 0;\n"
+            "  int unsigned c4_with_override = 0;\n"
+            "  wire clk_w  = kpol_bram_pipeline_axi_ha_tb.clk;\n"
+            "  wire rst_nw = kpol_bram_pipeline_axi_ha_tb.rst_n;\n"
+            "  wire b_we_w = kpol_bram_pipeline_axi_ha_tb.dut.b_we;\n"
+            "  wire swap_w = kpol_bram_pipeline_axi_ha_tb.dut.bram_dual.swap_commit_w;\n"
+            "  wire [5:0] b_cid_w = kpol_bram_pipeline_axi_ha_tb.dut.b_addr[7:2];\n"
+            "  wire ovr_w  = kpol_bram_pipeline_axi_ha_tb.dut.bram_dual.shadow_w0_override_q[b_cid_w];\n"
+            "  always @(posedge clk_w) begin\n"
+            "    if (rst_nw && b_we_w && swap_w) begin\n"
+            "      c4_total <= c4_total + 1;\n"
+            "      if (ovr_w) c4_with_override <= c4_with_override + 1;\n"
+            "      else       c4_no_override   <= c4_no_override + 1;\n"
+            "    end\n"
+            "  end\n"
+            "  final begin\n"
+            "    $display(\"C4_SIM_COUNT total=%0d no_override=%0d with_override=%0d swaps=%0d\",\n"
+            "             c4_total, c4_no_override, c4_with_override,\n"
+            "             kpol_bram_pipeline_axi_ha_tb.dut.swap_count_q);\n"
+            "  end\n"
+            "endmodule\n"
+        )
+    comp_cmd = [
+        "iverilog",
+        "-g2012",
+        "-s",
+        "kpol_bram_pipeline_axi_ha_tb",
+        "-s",
+        "c4_b_we_at_swap_mon",
+        "-o",
+        vvp_bin,
+        RTL_GATE,
+        RTL_CME,
+        RTL_BRAM,
+        RTL_DUAL,
+        RTL_SEQ,
+        RTL_AXI_HA,
+        tb_path,
+        mon_sv,
+    ]
+    rc, comp_out, _ = sh(comp_cmd, work)
+    if rc != 0:
+        raise RuntimeError(f"iverilog failed for c4 monitor:\n{comp_out}")
+    run_cmd = ["vvp", "-n", vvp_bin, "+num_swaps=10000"]
+    rc, out, dt = sh(run_cmd, work, os.path.join(out_dir, "sim_c4_b_we_at_swap.log"))
+    if rc != 0:
+        raise RuntimeError(f"vvp failed for c4 monitor:\n{out}")
+    m = re.search(
+        r"C4_SIM_COUNT total=(\d+) no_override=(\d+) with_override=(\d+) swaps=(\d+)",
+        out,
+    )
+    if not m:
+        raise RuntimeError(f"Missing C4_SIM_COUNT in output:\n{out}")
+    return {
+        "evidence_kind": "rtl_simulation_iverilog",
+        "not_physical_hil": True,
+        "b_we_at_swap_total": int(m.group(1)),
+        "b_we_at_swap_no_override": int(m.group(2)),
+        "b_we_at_swap_with_override": int(m.group(3)),
+        "total_bank_swaps": int(m.group(4)),
+        "seconds": round(dt, 3),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default=DEFAULT_OUT)
     ap.add_argument(
         "--fast",
         action="store_true",
-        help="Run fast smoke subset (unbounded k-induction + all 4 mutants, skip 30-step BMC/cover)",
+        help="Run fast smoke subset (unbounded k-induction + all 5 mutants, skip 30-step BMC/cover)",
     )
     args = ap.parse_args()
 
@@ -375,6 +470,7 @@ def main():
         axi_ha_src = f.read()
 
     rows = []
+    sim_c4_stats = None
     try:
         # 1a. Induction base case BMC (t=3) + 1b. Unbounded k-induction (k=2) of H1..H6 + H6b
         rows.append({
@@ -460,6 +556,9 @@ def main():
                 ),
             })
 
+            # 3b. Companion simulation count of simultaneous b_we && bank_swap_commit_o across 10,003 swaps (#259, N3)
+            sim_c4_stats = run_sim_c4_counter(work, out_dir)
+
         # 4. Mutant negative controls (AGENTS.md §4.1)
         for mid, target_kind, m_defines, depth, desc, old, new in MUTANTS:
             if target_kind == "dual":
@@ -516,9 +615,11 @@ def main():
     provenance = {
         "timestamp": datetime.datetime.now().astimezone().isoformat(),
         "issue": 252,
+        "followup_issue": 259,
         "experiment": "EXP-GPU-02",
         "evidence_kind": "formal_smt_z3_verification",
         "parameters": {"NUM_CONCEPTS": 4, "QUEUE_DEPTH": 4, "DATA_WIDTH": 32, "ADDR_WIDTH": 4},
+        "bmc_h3_slice_note": "30-step BMC H2_H3_safety_bmc uses 1-bit per word data-independence slice (WOLPER_1BIT_SLICE); full 32-bit H3 is proved by bmc t=3 + k-induction ind t=2.",
         "platform": {
             "node": platform.node(),
             "system": platform.system(),
@@ -537,8 +638,11 @@ def main():
         "verdict": verdict,
         "rows": rows,
     }
+    if sim_c4_stats is not None:
+        provenance["sim_c4_b_we_at_swap"] = sim_c4_stats
     with open(os.path.join(out_dir, "cfg_p_ha_formal_provenance.json"), "w", encoding="utf-8") as f:
         json.dump(provenance, f, indent=2)
+        f.write("\n")
 
     print("=" * 92)
     print("EXP-GPU-02 CFG-P-HA FORMAL SMT SUMMARY (Issue #252)")

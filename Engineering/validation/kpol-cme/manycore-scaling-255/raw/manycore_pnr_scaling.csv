@@ -1,0 +1,5 @@
+num_cores,yosys_xbar_only_lcs,yosys_estimated_lcs,yosys_fd_total,yosys_ramb36e1,pnr_slice_lutx,pnr_slice_lutx_pct,pnr_slice_ffx,pnr_slice_ffx_pct,pnr_carry4,pnr_ramb36e1,pnr_ramb36e1_pct,pnr_pads,target_freq_mhz,fmax_mhz,critical_path_ns,meets_100mhz,peak_cluster_mcps_at_100mhz,peak_cluster_mcps_at_fmax,yosys_sec,nextpnr_sec,analytic_lut_pred,analytic_lut_rel_err_pct
+1,51,2040,1503,1,3141,2.95,1503,1.41,139,1,0.71,21,100.0,113.92,8.778,True,12.5,14.24,19.65,55.86,3170.5,-0.94
+2,118,4090,2769,2,6328,5.95,2769,2.6,285,2,1.43,21,100.0,95.21,10.503,False,25.0,23.8,29.87,119.22,6400.2,-1.14
+4,773,8988,5303,4,13031,12.25,5303,4.98,506,4,2.86,21,100.0,78.11,12.803,False,50.0,39.05,65.26,330.11,13036.8,-0.04
+8,2325,19392,10375,8,27025,25.4,10375,9.75,948,8,5.71,21,100.0,50.81,19.68,False,100.0,50.81,158.92,1126.65,27019.0,0.02

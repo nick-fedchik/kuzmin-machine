@@ -1,5 +1,5 @@
-# cmd: yosys-smtbmc --noprogress -s z3 -t 16 --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/M2_write_active_bank_while_busy.smt2
-# timestamp: 2026-11-16T20:38:20.232265+02:00
+# cmd: yosys-smtbmc --noprogress -s z3 -t 16 --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/M2_write_active_bank_while_busy.smt2
+# timestamp: 2026-11-16T22:43:39.419204+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Checking assertions in step 0..
 ##   0:00:00  Checking assertions in step 1..
@@ -12,5 +12,5 @@
 ##   0:00:00  Checking assertions in step 8..
 ##   0:00:01  BMC failed!
 ##   0:00:01  Assert failed in cfg_p_ha_formal_props: H3_no_torn_descriptor_read
-##   0:00:01  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.vcd
+##   0:00:01  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M2_write_active_bank_while_busy.vcd
 ##   0:00:01  Status: FAILED

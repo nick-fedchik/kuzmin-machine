@@ -1,0 +1,118 @@
+{
+  "timestamp": "2026-11-16T23:28:54.929919+02:00",
+  "issue": 255,
+  "evidence_kind": "formal_smt_z3_verification",
+  "parameters": {
+    "NUM_CORES": 2,
+    "NUM_EXT_PORTS": 2,
+    "QUEUE_DEPTH": 4,
+    "NUM_CONCEPTS": 4,
+    "DATA_WIDTH": 32,
+    "ADDR_WIDTH": 4
+  },
+  "platform": {
+    "node": "AORUS-5-SE",
+    "system": "Linux",
+    "release": "7.0.0-42-generic",
+    "machine": "x86_64"
+  },
+  "sha256": {
+    "kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6",
+    "km_concept_micro_engine.sv": "2e95ee6d45c5faeb3594a17b741658fd9345f6a451da88976e790255f23a5831",
+    "km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297",
+    "km_event_crossbar.sv": "df571eaea52ea9f78d1683fbf29fb585f66e3d006a7ad589a9d3409614cb8e43",
+    "km_manycore_cluster.sv": "78c6ea180919dc7c9bfe68e3214b47b246ac6c32bd77180457568dea93571c73",
+    "manycore_formal_props.sv": "e0d8c2b0e8aaa156dc12476cffd617ff85f1360f6d7d5fbce97f469518bd79dc"
+  },
+  "verdict": "PASSED",
+  "rows": [
+    {
+      "design": "original (Cluster N=2)",
+      "check": "MC1_MC4_base_bmc",
+      "engine": "smtbmc z3 bmc t=4",
+      "status": "PASSED",
+      "seconds": 0.388,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (Cluster N=2)",
+      "check": "MC1_MC4_safety_ind",
+      "engine": "smtbmc z3 ind t=2",
+      "status": "PASSED",
+      "seconds": 11.419,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (Cluster N=2)",
+      "check": "MC3_dag_progress_bmc",
+      "engine": "smtbmc z3 bmc t=45",
+      "status": "PASSED",
+      "seconds": 4.097,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (Cluster N=2)",
+      "check": "MC4_cyclic_deadlock_witness",
+      "engine": "smtbmc z3 cover t=28",
+      "status": "PASSED",
+      "seconds": 16.337,
+      "failed": "",
+      "reached": "MC4_cyclic_deadlock_witness",
+      "unreached": "",
+      "vcd": "MC4_cyclic_deadlock_witness.vcd"
+    },
+    {
+      "design": "original (Cluster N=2)",
+      "check": "cover_dag_and_contention",
+      "engine": "smtbmc z3 cover t=30",
+      "status": "PASSED",
+      "seconds": 33.974,
+      "failed": "",
+      "reached": "C1_interbank_cascade_to_idle;C2_many_to_one_contention",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "M1_fixed_priority_starvation: fixed priority 0 > 1 > 2 > 3 instead of round-robin pointer causes starvation",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=8",
+      "status": "FAILED",
+      "seconds": 0.541,
+      "failed": "MC2_rr_fairness",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M1_fixed_priority_starvation.vcd"
+    },
+    {
+      "design": "M2_drop_crossbar_backpressure: ignoring dst_ready_i == 0 overwrites crossbar slice under backpressure and drops events",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=12",
+      "status": "FAILED",
+      "seconds": 3.007,
+      "failed": "MC1_event_conservation",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M2_drop_crossbar_backpressure.vcd"
+    },
+    {
+      "design": "M3_duplicate_broadcast: faulty crossbar bank decode routes a single event into both banks simultaneously",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=6",
+      "status": "FAILED",
+      "seconds": 0.484,
+      "failed": "MC1_event_conservation",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M3_duplicate_broadcast.vcd"
+    }
+  ]
+}

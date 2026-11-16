@@ -11,7 +11,8 @@
 //   - H4_zero_sequencer_stall    : кожна подія триває рівно 8 тактів, ready не блокується тіньовим записом
 //   - H5_bounded_swap_latency    : bank_swap_commit_o настає за 1..8 тактів після прийнятого swap_req
 //   - H6_live_state_preserved    : живий стан W0 зберігається через перемикання банків та досинхронізацію
-//   - C1..C3 (FORMAL_COVER)      : невакуумні свідки повного циклу онлайн-інжекції
+//   - H7_multi_patch_rule_persistence : правила й стани W0..W3 зберігаються через серію часткових патчів різних концептів
+//   - C1..C4 (FORMAL_COVER)      : невакуумні свідки повного циклу інжекції та збігу b_we && bank_swap_commit_o
 // ============================================================================
 `timescale 1ns/1ps
 
@@ -338,17 +339,27 @@ module cfg_p_ha_formal_props #(
     end
 
 `ifndef ONLY_CTRL
-    // 3. Еталонна архітектурна модель живих станів W0 для H6_live_state_preserved
+    // 3. Еталонна архітектурна модель живих станів W0 (H6) та повної таблиці W0..W3 (H7)
     logic [31:0] gold_active_w0    [0:3];
     logic [31:0] gold_staged_w0    [0:3];
     logic [3:0]  gold_has_override;
 
+    logic [31:0] gold_active_ram   [0:15];
+    logic [31:0] gold_staged_ram   [0:15];
+    logic [15:0] gold_word_staged;
+
     integer g_idx;
+    integer g_w;
     initial begin
         gold_has_override = 4'b0000;
+        gold_word_staged  = 16'd0;
         for (g_idx = 0; g_idx < 4; g_idx = g_idx + 1) begin
             gold_active_w0[g_idx] = 32'd0;
             gold_staged_w0[g_idx] = 32'd0;
+        end
+        for (g_w = 0; g_w < 16; g_w = g_w + 1) begin
+            gold_active_ram[g_w] = 32'd0;
+            gold_staged_ram[g_w] = 32'd0;
         end
     end
 
@@ -358,9 +369,14 @@ module cfg_p_ha_formal_props #(
     always_ff @(posedge clk) begin
         if (!rst_n) begin
             gold_has_override <= 4'b0000;
+            gold_word_staged  <= 16'd0;
             for (g_idx = 0; g_idx < 4; g_idx = g_idx + 1) begin
                 gold_active_w0[g_idx] <= 32'd0;
                 gold_staged_w0[g_idx] <= 32'd0;
+            end
+            for (g_w = 0; g_w < 16; g_w = g_w + 1) begin
+                gold_active_ram[g_w] <= 32'd0;
+                gold_staged_ram[g_w] <= 32'd0;
             end
         end else if (obs_swap_commit_w) begin
             for (g_idx = 0; g_idx < 4; g_idx = g_idx + 1) begin
@@ -370,18 +386,35 @@ module cfg_p_ha_formal_props #(
                     gold_active_w0[g_idx] <= obs_b_wdata;
                 end
             end
-            gold_has_override <= 4'b0000;
-        end else begin
-            if (obs_sync_load_accept && (obs_dual_a_addr[1:0] == 2'b00)) begin
-                gold_active_w0[dual_a_cid_w]    <= obs_dual_a_wdata;
-                gold_has_override[dual_a_cid_w] <= 1'b0;
+            for (g_w = 0; g_w < 16; g_w = g_w + 1) begin
+                if (gold_word_staged[g_w]) begin
+                    gold_active_ram[g_w] <= gold_staged_ram[g_w];
+                end else if (obs_b_we && (obs_b_addr == g_w[3:0])) begin
+                    gold_active_ram[g_w] <= obs_b_wdata;
+                end
             end
-            if (obs_hot_write_accept && (obs_dual_a_addr[1:0] == 2'b00)) begin
-                gold_staged_w0[dual_a_cid_w]    <= obs_dual_a_wdata;
-                gold_has_override[dual_a_cid_w] <= 1'b1;
+            gold_has_override <= 4'b0000;
+            gold_word_staged  <= 16'd0;
+        end else begin
+            if (obs_sync_load_accept) begin
+                gold_active_ram[obs_dual_a_addr]  <= obs_dual_a_wdata;
+                gold_word_staged[obs_dual_a_addr] <= 1'b0;
+                if (obs_dual_a_addr[1:0] == 2'b00) begin
+                    gold_active_w0[dual_a_cid_w]    <= obs_dual_a_wdata;
+                    gold_has_override[dual_a_cid_w] <= 1'b0;
+                end
+            end
+            if (obs_hot_write_accept) begin
+                gold_staged_ram[obs_dual_a_addr]  <= obs_dual_a_wdata;
+                gold_word_staged[obs_dual_a_addr] <= 1'b1;
+                if (obs_dual_a_addr[1:0] == 2'b00) begin
+                    gold_staged_w0[dual_a_cid_w]    <= obs_dual_a_wdata;
+                    gold_has_override[dual_a_cid_w] <= 1'b1;
+                end
             end
             if (obs_b_we && (obs_b_addr[1:0] == 2'b00)) begin
-                gold_active_w0[b_cid_w] <= obs_b_wdata;
+                gold_active_w0[b_cid_w]     <= obs_b_wdata;
+                gold_active_ram[obs_b_addr] <= obs_b_wdata;
             end
         end
     end
@@ -419,6 +452,8 @@ module cfg_p_ha_formal_props #(
                 assert (!(hw_commit_pulse_o && hw_reject_pulse_o));
             INV_b_we_state:
                 assert (!obs_b_we || ((obs_state_q == 4'd0) && (obs_b_addr[1:0] == 2'b00) && (obs_b_wstrb == 4'hf)));
+            INV_swap_pulse_after_idle:
+                assert (!bank_swap_commit_o || !obs_b_we);
             INV_no_sync_load_busy:
                 assert (!(obs_bram_we && busy));
             INV_no_dual_we_overlap:
@@ -480,6 +515,10 @@ module cfg_p_ha_formal_props #(
                 assert (!obs_sync_busy || obs_dirty_word_q[obs_sync_addr_q]);
             INV_sync_no_override:
                 assert (!obs_sync_busy || (obs_shadow_w0_override_q == 4'b0000));
+            INV_sync_no_staged:
+                assert (!obs_sync_busy || (gold_word_staged == 16'd0));
+            INV_dirty_eq_staged_when_idle:
+                assert (obs_sync_busy || (obs_dirty_word_q == gold_word_staged));
             INV_sync_write_rdata:
                 assert ((obs_sync_state_q != 2'd2) || (sync_act_rdata_w == sync_act_word_w));
             INV_gold_override_eq:
@@ -492,10 +531,14 @@ module cfg_p_ha_formal_props #(
 
             for (inv_w = 0; inv_w < 16; inv_w = inv_w + 1) begin
                 assert (obs_dirty_word_q[inv_w] || (sel_b0(inv_w[3:0]) == sel_b1(inv_w[3:0])));
+                assert (!gold_word_staged[inv_w] ||
+                        ((obs_active_bank ? sel_b0(inv_w[3:0]) : sel_b1(inv_w[3:0])) == gold_staged_ram[inv_w]));
+                assert ((obs_active_bank ? sel_b1(inv_w[3:0]) : sel_b0(inv_w[3:0])) == gold_active_ram[inv_w]);
             end
 
             for (inv_w = 0; inv_w < 4; inv_w = inv_w + 1) begin
                 assert (obs_sync_busy || (obs_shadow_w0_override_q[inv_w] == obs_dirty_word_q[{inv_w[1:0], 2'b00}]));
+                assert (gold_word_staged[{inv_w[1:0], 2'b00}] == obs_shadow_w0_override_q[inv_w]);
                 assert (!obs_shadow_w0_override_q[inv_w] ||
                         ((obs_active_bank ? sel_b0({inv_w[1:0], 2'b00}) : sel_b1({inv_w[1:0], 2'b00})) == gold_staged_w0[inv_w]));
             end
@@ -514,6 +557,30 @@ module cfg_p_ha_formal_props #(
         if (!rst_n) seen_b_we_q <= 1'b0;
         else if (obs_b_we) seen_b_we_q <= 1'b1;
     end
+
+`ifdef ONLY_H7
+    // Спостережний трекер серії двох часткових патчів на різних концептах для контрприкладу M5 (0 assume)
+    logic [3:0] cur_patch_cids_q  = 4'b0000;
+    logic [3:0] prev_patch_cids_q = 4'b0000;
+    logic       seen_distinct_partial_patch_q = 1'b0;
+    always_ff @(posedge clk) begin
+        if (!rst_n) begin
+            cur_patch_cids_q              <= 4'b0000;
+            prev_patch_cids_q             <= 4'b0000;
+            seen_distinct_partial_patch_q <= 1'b0;
+        end else if (obs_swap_commit_w) begin
+            if ((prev_patch_cids_q != 4'b0000) &&
+                (cur_patch_cids_q != 4'b0000) &&
+                ((cur_patch_cids_q & prev_patch_cids_q) == 4'b0000)) begin
+                seen_distinct_partial_patch_q <= 1'b1;
+            end
+            prev_patch_cids_q <= cur_patch_cids_q;
+            cur_patch_cids_q  <= 4'b0000;
+        end else if (obs_hot_write_accept && (obs_dual_a_addr[1:0] != 2'b00)) begin
+            cur_patch_cids_q[dual_a_cid_w] <= 1'b1;
+        end
+    end
+`endif
 `endif
 `endif
 
@@ -526,21 +593,26 @@ module cfg_p_ha_formal_props #(
         if (rst_n) begin
 `ifndef ONLY_H2_H3
 `ifndef ONLY_H6
+`ifndef ONLY_H7
             // H1: Зовнішній 3-бітний детектор фази секвенсера тотожний внутрішньому стану FSM
             H1_lockstep_phase:
                 assert ({1'b0, obs_seq_phase_q} == obs_state_q);
 `endif
 `endif
+`endif
 
 `ifndef ONLY_H6
+`ifndef ONLY_H7
             // H2: Нуль колізій портів A/B на обох банках BRAM у будь-якому стані
             H2_zero_bram_collision:
                 assert (!obs_collision_detected && !obs_bank0_col && !obs_bank1_col &&
                         !(obs_bank0_a_we && obs_bank0_b_we && (obs_bank0_a_addr == obs_b_addr)) &&
                         !(obs_bank1_a_we && obs_bank1_b_we && (obs_bank1_a_addr == obs_b_addr)));
 `endif
+`endif
 
 `ifndef ONLY_H6
+`ifndef ONLY_H7
 `ifndef ONLY_CTRL
             // H3: Відсутність torn-read 128-бітного дескриптора на такті оцінки cme_event_valid
             if (obs_cme_event_valid && snap_valid_q) begin
@@ -563,9 +635,11 @@ module cfg_p_ha_formal_props #(
             end
 `endif
 `endif
+`endif
 
 `ifndef ONLY_H2_H3
 `ifndef ONLY_H6
+`ifndef ONLY_H7
             // H4: Нульовий простій секвенсера (рівно 8 тактів на подію, ready не блокується тіньовими записами)
             H4_zero_sequencer_stall:
                 assert ((obs_seq_anomaly_count_q == 16'd0) &&
@@ -582,8 +656,10 @@ module cfg_p_ha_formal_props #(
                          ((f_swap_last_q >= 4'd1) && (f_swap_last_q <= 4'd8) &&
                           (obs_last_swap_wait_cycles_q == {28'd0, f_swap_last_q}))));
 `endif
+`endif
 
 `ifndef ONLY_CTRL
+`ifndef ONLY_H7
             // H6: Повне збереження живих лічильників W0 у всіх концептів після перемикання правил (bank_swap_commit_o)
 `ifdef ONLY_H6
             if (bank_swap_commit_o && seen_b_we_q) begin
@@ -596,6 +672,34 @@ module cfg_p_ha_formal_props #(
                             ((obs_active_bank ? obs_b1_ram_8 : obs_b0_ram_8) == gold_active_w0[2]) &&
                             ((obs_active_bank ? obs_b1_ram_12 : obs_b0_ram_12) == gold_active_w0[3]));
             end
+`endif
+
+`ifndef ONLY_H6
+            // H7: Повне збереження правил і станів W0..W3 усіх концептів після серії часткових патчів (#259, N1)
+`ifdef ONLY_H7
+            if (bank_swap_commit_o && seen_distinct_partial_patch_q) begin
+`else
+            if (bank_swap_commit_o) begin
+`endif
+                H7_multi_patch_rule_persistence:
+                    assert (((obs_active_bank ? obs_b1_ram_0  : obs_b0_ram_0)  == gold_active_ram[0])  &&
+                            ((obs_active_bank ? obs_b1_ram_1  : obs_b0_ram_1)  == gold_active_ram[1])  &&
+                            ((obs_active_bank ? obs_b1_ram_2  : obs_b0_ram_2)  == gold_active_ram[2])  &&
+                            ((obs_active_bank ? obs_b1_ram_3  : obs_b0_ram_3)  == gold_active_ram[3])  &&
+                            ((obs_active_bank ? obs_b1_ram_4  : obs_b0_ram_4)  == gold_active_ram[4])  &&
+                            ((obs_active_bank ? obs_b1_ram_5  : obs_b0_ram_5)  == gold_active_ram[5])  &&
+                            ((obs_active_bank ? obs_b1_ram_6  : obs_b0_ram_6)  == gold_active_ram[6])  &&
+                            ((obs_active_bank ? obs_b1_ram_7  : obs_b0_ram_7)  == gold_active_ram[7])  &&
+                            ((obs_active_bank ? obs_b1_ram_8  : obs_b0_ram_8)  == gold_active_ram[8])  &&
+                            ((obs_active_bank ? obs_b1_ram_9  : obs_b0_ram_9)  == gold_active_ram[9])  &&
+                            ((obs_active_bank ? obs_b1_ram_10 : obs_b0_ram_10) == gold_active_ram[10]) &&
+                            ((obs_active_bank ? obs_b1_ram_11 : obs_b0_ram_11) == gold_active_ram[11]) &&
+                            ((obs_active_bank ? obs_b1_ram_12 : obs_b0_ram_12) == gold_active_ram[12]) &&
+                            ((obs_active_bank ? obs_b1_ram_13 : obs_b0_ram_13) == gold_active_ram[13]) &&
+                            ((obs_active_bank ? obs_b1_ram_14 : obs_b0_ram_14) == gold_active_ram[14]) &&
+                            ((obs_active_bank ? obs_b1_ram_15 : obs_b0_ram_15) == gold_active_ram[15]));
+            end
+`endif
 `endif
 
 `ifdef FORMAL_INDUCTION
@@ -669,6 +773,8 @@ module cfg_p_ha_formal_props #(
                 cover (cov_p_swap_pending && bank_swap_commit_o);
             C3_back_to_back_events_across_swap:
                 cover (bank_swap_commit_o && (obs_state_q == 4'd1));
+            C4_b_we_at_swap:
+                cover (obs_b_we && obs_swap_commit_w);
         end
     end
 `endif

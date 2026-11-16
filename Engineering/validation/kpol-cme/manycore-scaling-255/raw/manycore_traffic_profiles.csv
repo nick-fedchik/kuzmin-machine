@@ -1,0 +1,9 @@
+evidence_kind,num_cores,profile,primary_events,total_events_evaluated,local_cascades,remote_cascades,xbar_routed_events,active_cycles,throughput_mcps_at_100mhz,throughput_mcps_at_fmax,avg_latency_cycles,min_latency_cycles,max_latency_cycles,backpressure_stalls,ext_port_wait_cycles,dropped_accepted_events,w0_golden_mismatches
+rtl_simulation_iverilog,4,local,1024,2048,1024,0,1024,4098,49.976,39.036,148.11,10,262,3572,14288,0,0
+rtl_simulation_iverilog,4,uniform,1024,2048,640,384,1408,5134,39.891,31.159,187.63,10,461,9011,18503,0,0
+rtl_simulation_iverilog,4,hotspot,1024,1280,160,96,1120,7938,16.125,12.595,135.57,9,206,7699,28131,0,0
+rtl_simulation_iverilog,4,many-to-one,1024,1792,0,768,1792,8194,21.87,17.082,345.43,10,582,25946,29318,0,0
+rtl_simulation_iverilog,8,local,1024,2048,1024,0,1024,2050,99.902,50.76,143.25,10,262,1708,13664,0,0
+rtl_simulation_iverilog,8,uniform,1024,2048,576,448,1472,2632,77.812,39.536,147.46,9,645,6389,17426,0,0
+rtl_simulation_iverilog,8,hotspot,1024,1280,144,112,1136,7554,16.945,8.61,155.08,9,270,7347,55727,0,0
+rtl_simulation_iverilog,8,many-to-one,1024,1920,0,896,1920,8194,23.432,11.906,622.89,10,1158,56662,54670,0,0

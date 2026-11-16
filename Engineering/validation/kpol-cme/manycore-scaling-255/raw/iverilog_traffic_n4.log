@@ -1,0 +1,7 @@
+# cmd: vvp -n /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_traffic/cluster_tb_n4.vvp +events_per_profile=1024 +summary_json=/home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_traffic/traffic_n4.json
+# timestamp: 2026-11-16T23:22:02.289521+02:00
+PROFILE N=4 profile=local primary=1024 total_ev=2048 loc_casc=1024 rem_casc=0 cycles=4098 mcps_100mhz=49.976 avg_lat_cyc=148.11 min_lat_cyc=10 max_lat_cyc=262 backpressure_stalls=3572 ext_port_wait_cyc=14288 dropped=0 w0_mismatches=0
+PROFILE N=4 profile=uniform primary=1024 total_ev=2048 loc_casc=640 rem_casc=384 cycles=5134 mcps_100mhz=39.891 avg_lat_cyc=187.63 min_lat_cyc=10 max_lat_cyc=461 backpressure_stalls=9011 ext_port_wait_cyc=18503 dropped=0 w0_mismatches=0
+PROFILE N=4 profile=hotspot primary=1024 total_ev=1280 loc_casc=160 rem_casc=96 cycles=7938 mcps_100mhz=16.125 avg_lat_cyc=135.57 min_lat_cyc=9 max_lat_cyc=206 backpressure_stalls=7699 ext_port_wait_cyc=28131 dropped=0 w0_mismatches=0
+PROFILE N=4 profile=many-to-one primary=1024 total_ev=1792 loc_casc=0 rem_casc=768 cycles=8194 mcps_100mhz=21.870 avg_lat_cyc=345.42 min_lat_cyc=10 max_lat_cyc=582 backpressure_stalls=25946 ext_port_wait_cyc=29318 dropped=0 w0_mismatches=0
+PASS: km_manycore_cluster_tb N=4 verified all 4 profiles (1024+ primary events each, 0 drops, 0 golden mismatches)

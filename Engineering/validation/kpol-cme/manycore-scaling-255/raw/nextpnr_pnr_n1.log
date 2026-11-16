@@ -1,0 +1,1430 @@
+# cmd: /home/mfedchyk/opt/openxc7/bin/nextpnr-himbaechel --chipdb /home/mfedchyk/opt/openxc7/share/nextpnr/himbaechel/xilinx/chipdb-xc7z020.bin --device xc7z020clg400-1 -o xdc=/home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/scripts/km_manycore_synth.xdc --json /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_pnr/manycore_n1.json -o fasm=/home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_pnr/manycore_n1.fasm --router router2 --seed 1 --freq 100 --timing-allow-fail --report /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n1.json --log /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_pnr/nextpnr_internal_n1.log
+# timestamp: 2026-11-16T22:49:08.788334+02:00
+Info: Using uarch 'xilinx' for device 'xc7z020clg400-1'
+
+Info: Parsing XDC file...
+Info: Packing constants..
+Info: Inserting IO buffers..
+Info:     IO port 'cmd_mode_i[0]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_mode_i'
+Info:     IO port 'cmd_data_i[7]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_7'
+Info:     IO port 'cmd_data_i[6]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_6'
+Info:     IO port 'cmd_data_i[5]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_5'
+Info:     IO port 'cmd_data_i[4]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_4'
+Info:     IO port 'cmd_data_i[3]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_3'
+Info:     IO port 'cmd_data_i[2]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_2'
+Info:     IO port 'cmd_data_i[1]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i_1'
+Info:     IO port 'cmd_data_i[0]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_data_i'
+Info:     IO port 'clk_i' driven by IBUF '$iopadmap$km_manycore_synth_top.clk_i'
+Info:     IO port 'status_ready_o' driven by OBUF '$iopadmap$km_manycore_synth_top.status_ready_o'
+Info:     IO port 'status_busy_o' driven by OBUF '$iopadmap$km_manycore_synth_top.status_busy_o'
+Info:     IO port 'rst_ni' driven by IBUF '$iopadmap$km_manycore_synth_top.rst_ni'
+Info:     IO port 'obs_data_o[2]' driven by OBUF '$iopadmap$km_manycore_synth_top.obs_data_o_2'
+Info:     IO port 'obs_data_o[1]' driven by OBUF '$iopadmap$km_manycore_synth_top.obs_data_o_1'
+Info:     IO port 'obs_data_o[0]' driven by OBUF '$iopadmap$km_manycore_synth_top.obs_data_o'
+Info:     IO port 'cmd_valid_i' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_valid_i'
+Info:     IO port 'cmd_sel_i[2]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_sel_i_2'
+Info:     IO port 'cmd_sel_i[1]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_sel_i_1'
+Info:     IO port 'cmd_sel_i[0]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_sel_i'
+Info:     IO port 'cmd_mode_i[1]' driven by IBUF '$iopadmap$km_manycore_synth_top.cmd_mode_i_1'
+Info:     Constraining 'cmd_mode_i[0]' to pad 'X186Y19/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_data_i[7]' to pad 'X186Y77/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_data_i[6]' to pad 'X186Y77/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'cmd_data_i[5]' to pad 'X186Y98/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_data_i[4]' to pad 'X186Y98/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'cmd_data_i[3]' to pad 'X186Y67/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_data_i[2]' to pad 'X186Y67/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'cmd_data_i[1]' to pad 'X186Y88/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_data_i[0]' to pad 'X186Y88/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'clk_i' to pad 'X186Y28/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'status_ready_o' to pad 'X186Y65/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'status_busy_o' to pad 'X186Y65/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'rst_ni' to pad 'X186Y9/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'obs_data_o[2]' to pad 'X186Y40/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'obs_data_o[1]' to pad 'X186Y48/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'obs_data_o[0]' to pad 'X186Y44/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_valid_i' to pad 'X186Y9/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_sel_i[2]' to pad 'X186Y40/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'cmd_sel_i[1]' to pad 'X186Y15/IOB_X0Y1.IOB33M.PAD'
+Info:     Constraining 'cmd_sel_i[0]' to pad 'X186Y15/IOB_X0Y0.IOB33S.PAD'
+Info:     Constraining 'cmd_mode_i[1]' to pad 'X186Y19/IOB_X0Y1.IOB33M.PAD'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_mode_i'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_7'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_6'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_5'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_4'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_3'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_2'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i_1'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_data_i'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.clk_i'
+Info: Generating output buffer for '$iopadmap$km_manycore_synth_top.status_ready_o'
+Info: Generating output buffer for '$iopadmap$km_manycore_synth_top.status_busy_o'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.rst_ni'
+Info: Generating output buffer for '$iopadmap$km_manycore_synth_top.obs_data_o_2'
+Info: Generating output buffer for '$iopadmap$km_manycore_synth_top.obs_data_o_1'
+Info: Generating output buffer for '$iopadmap$km_manycore_synth_top.obs_data_o'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_valid_i'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_sel_i_2'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_sel_i_1'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_sel_i'
+Info: Generating input buffer for '$iopadmap$km_manycore_synth_top.cmd_mode_i_1'
+Info:     Created 21 PAD cells from:
+Info:             21x PAD
+Info: Preparing clocking...
+Info: Packing constants..
+Info: Packing IOLOGIC...
+Info: Packing cfg...
+Info: Packing PLLs...
+Info: Packing global buffers...
+Info: Packing Gigabit Transceivers..
+Info: Generating derived timing constraints...
+Info: Packing MUX[789]s..
+Info: Packing carries..
+Info:    Grouped 540 MUXCYs and 540 XORCYs into 28 chains.
+Info:    Moved 12 shared LUTs driving carry S inputs into the carry site.
+Info:    Duplicated 2 shared LUTs driving carry S inputs.
+Info:    Blasted 0 non-chain MUXCYs and 1 non-chain XORCYs to soft logic
+Info: Packing LUTs..
+Info:     Created 3141 SLICE_LUTX cells from:
+Info:            957x LUT1
+Info:            142x LUT2
+Info:            642x LUT3
+Info:             87x LUT4
+Info:           1060x LUT5
+Info:            253x LUT6
+Info: Packing DRAM..
+Info:    Transformed 0 tied-low DRAM address inputs to be tied-high
+Info: Packing BRAM..
+Info: BRAM cascade scan: 1 BRAM(s), 0 tie(s) seen, 0 dropped
+Info: Packing DSPs..
+Info: Packing flipflops..
+Info:     Created 1503 SLICE_FFX cells from:
+Info:            713x FDCE
+Info:            790x FDRE
+Info:     Created 1 SELMUX2_1 cells from:
+Info:              1x MUXF7
+Info: Constrained 1094 LUTFF pairs.
+Info: Checksum: 0x707917b5
+
+Info: Device utilisation:
+Info: 	          SLICE_LUTX:    3141/ 106400     2%
+Info: 	           SLICE_FFX:    1503/ 106400     1%
+Info: 	              CARRY4:     139/  13300     1%
+Info: 	          PSEUDO_GND:       1/      1   100%
+Info: 	          PSEUDO_VCC:       1/      1   100%
+Info: 	               HARD0:       0/   1584     0%
+Info: 	             DSP48E1:       0/    220     0%
+Info: 	                 PAD:      21/    392     5%
+Info: 	       IOB33M_OUTBUF:       0/     96     0%
+Info: 	       IOB33S_OUTBUF:       0/     96     0%
+Info: 	        IOB33_OUTBUF:       5/    200     2%
+Info: 	     IOB33M_INBUF_EN:       0/     96     0%
+Info: 	     IOB33S_INBUF_EN:       0/     96     0%
+Info: 	      IOB33_INBUF_EN:      16/    200     8%
+Info: 	IOB33M_TERM_OVERRIDE:       0/     96     0%
+Info: 	IOB33S_TERM_OVERRIDE:       0/     96     0%
+Info: 	 IOB33_TERM_OVERRIDE:       0/    200     0%
+Info: 	       PULL_OR_KEEP1:       0/    392     0%
+Info: 	            IDELAYE2:       0/    200     0%
+Info: 	        OLOGICE3_TFF:       0/    200     0%
+Info: 	      OLOGICE3_OUTFF:       0/    200     0%
+Info: 	       OLOGICE3_MISR:       0/    200     0%
+Info: 	           OSERDESE2:       0/    200     0%
+Info: 	        ILOGICE3_IFF:       0/    200     0%
+Info: 	ILOGICE3_ZHOLD_DELAY:       0/    200     0%
+Info: 	           ISERDESE2:       0/    200     0%
+Info: 	               BUFIO:       0/     16     0%
+Info: 	            BUFGCTRL:       1/     32     3%
+Info: 	                 PS7:       0/      1     0%
+Info: 	               BSCAN:       0/      4     0%
+Info: 	            DCIRESET:       0/      1     0%
+Info: 	            DNA_PORT:       0/      1     0%
+Info: 	           EFUSE_USR:       0/      1     0%
+Info: 	                BUFG:       0/     32     0%
+Info: 	              BUFHCE:       0/     72     0%
+Info: 	            FIFO18E1:       0/    140     0%
+Info: 	          IDELAYCTRL:       0/      4     0%
+Info: 	            INVERTER:       0/     96     0%
+Info: 	          MMCME2_ADV:       0/      4     0%
+Info: 	        OLOGICE2_TFF:       0/    200     0%
+Info: 	      OLOGICE2_OUTFF:       0/    200     0%
+Info: 	           PLLE2_ADV:       0/      4     0%
+Info: 	            RAMB18E1:       0/    280     0%
+Info: 	            RAMB36E1:       1/    140     0%
+Info: 	           SELMUX2_1:       1/  40700     0%
+Info: 	        RAMBFIFO36E1:       0/    140     0%
+Info: 	           FRAME_ECC:       0/      1     0%
+Info: 	                ICAP:       0/      2     0%
+Info: 	             STARTUP:       0/      1     0%
+Info: 	          USR_ACCESS:       0/      1     0%
+Info: 	        ILOGICE2_IFF:       0/    200     0%
+Info: 	       OLOGICE2_MISR:       0/    200     0%
+
+Info:     source at X92Y77 reached 768 of 2401 offsets
+Info:     source at X81Y84 reached 752 of 2401 offsets
+Info:     source at X103Y68 reached 517 of 2401 offsets
+Info: Delay matrix: 1484 of 2401 offsets measured from 3 sources in 5.45s (window 24).
+Info: Delay matrix: interpolated 917 structural holes.
+Info: Delay matrix: out-of-window rates 16.1 ps/tile (x), 20.0 ps/tile (y).
+Info: Indexed 45 control sets.
+Info: Placed 21 cells based on constraints.
+Info: Creating initial analytic placement for 2495 cells, random placement wirelen = 594337.
+Info:     at initial placer iter 0, wirelen = 2335
+Info:     at initial placer iter 1, wirelen = 2733
+Info:     at initial placer iter 2, wirelen = 2289
+Info:     at initial placer iter 3, wirelen = 2368
+Info: Running main analytical placer, max placement attempts per cell = 2916112.
+Info:     at iteration #1, type ALL: wirelen solved = 2610, spread = 44068, legal = 67422; time = 1.22s
+Info:     at iteration #2, type ALL: wirelen solved = 2890, spread = 33795, legal = 70838; time = 2.30s
+Info:     at iteration #3, type ALL: wirelen solved = 5322, spread = 35420, legal = 59926; time = 0.95s
+Info:     at iteration #4, type ALL: wirelen solved = 8026, spread = 40663, legal = 62601; time = 1.02s
+Info:     at iteration #5, type ALL: wirelen solved = 10013, spread = 35293, legal = 51134; time = 0.75s
+Info:     at iteration #6, type ALL: wirelen solved = 11302, spread = 29957, legal = 47018; time = 1.07s
+Info:     at iteration #7, type ALL: wirelen solved = 11845, spread = 36135, legal = 48354; time = 1.04s
+Info:     at iteration #8, type ALL: wirelen solved = 14605, spread = 28923, legal = 41699; time = 0.45s
+Info:     at iteration #9, type ALL: wirelen solved = 14311, spread = 30620, legal = 44084; time = 0.65s
+Info:     at iteration #10, type ALL: wirelen solved = 14323, spread = 29193, legal = 45094; time = 0.98s
+Info:     at iteration #11, type ALL: wirelen solved = 14645, spread = 30386, legal = 45437; time = 0.86s
+Info:     at iteration #12, type ALL: wirelen solved = 16569, spread = 31419, legal = 44146; time = 1.40s
+Info:     at iteration #13, type ALL: wirelen solved = 16746, spread = 28537, legal = 52797; time = 1.64s
+Info: HeAP Placer Time: 17.07s
+Info:   of which solving equations: 5.15s
+Info:   of which spreading cells: 0.77s
+Info:   of which strict legalisation: 9.71s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 385, wirelen = 41699
+Info:   at iteration #5: temp = 0.000000, timing cost = 265, wirelen = 36928
+Info:   at iteration #10: temp = 0.000000, timing cost = 239, wirelen = 35823
+Info:   at iteration #15: temp = 0.000000, timing cost = 218, wirelen = 35360
+Info:   at iteration #20: temp = 0.000000, timing cost = 215, wirelen = 35243
+Info:   at iteration #25: temp = 0.000000, timing cost = 248, wirelen = 35164
+Info:   at iteration #30: temp = 0.000000, timing cost = 248, wirelen = 35128
+Info:   at iteration #32: temp = 0.000000, timing cost = 248, wirelen = 35121
+Info: SA placement time 12.46s
+
+Info: Max frequency for clock 'clk': 136.39 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 10 endpoint(s)
+Info:          + represents [1,10) endpoint(s)
+Info: [  2668,   3006) |*******+
+Info: [  3006,   3344) |***********************************+
+Info: [  3344,   3682) |************************************************+
+Info: [  3682,   4020) |*************************************+
+Info: [  4020,   4358) |*************+
+Info: [  4358,   4696) |**+
+Info: [  4696,   5034) |+
+Info: [  5034,   5372) |
+Info: [  5372,   5710) |*+
+Info: [  5710,   6048) |*+
+Info: [  6048,   6386) |+
+Info: [  6386,   6724) |**+
+Info: [  6724,   7062) |*******+
+Info: [  7062,   7400) |****************+
+Info: [  7400,   7738) |***********************************+
+Info: [  7738,   8076) |************************************************************
+Info: [  8076,   8414) |******************************************+
+Info: [  8414,   8752) |*********+
+Info: [  8752,   9090) |********+
+Info: [  9090,   9428) |**********+
+Info: Checksum: 0x876213b8
+Info: Running post-placement legalisation...
+Info: Routing global clocks...
+Info:     routing clock 'clk'
+Info: Running router2...
+Info: Setting up routing resources...
+Info: Running main router loop...
+Info:     iter=1 wires=75267 overused=4222 overuse=4500 archfail=NA
+Info:     iter=2 wires=77216 overused=1200 overuse=1202 archfail=NA
+Info:     iter=3 wires=77787 overused=163 overuse=163 archfail=NA
+Info:     iter=4 wires=77895 overused=26 overuse=26 archfail=NA
+Info:     iter=5 wires=77914 overused=4 overuse=4 archfail=NA
+Info:     iter=6 wires=77915 overused=4 overuse=4 archfail=NA
+Info:     iter=7 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=8 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=9 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=10 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=11 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=12 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=13 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=14 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=15 wires=77917 overused=2 overuse=2 archfail=NA
+Info:     iter=16 wires=77919 overused=2 overuse=2 archfail=NA
+Info:     iter=17 wires=77919 overused=0 overuse=0 archfail=0
+Info: 1000 slowest nets by runtime:
+                                                                         $PACKER_GND_NET   1084 1102.4ms
+                    $techmap93528$auto$abc_ops_reintegrate.cc:611:reintegrate$92643.A[3]    635 888.4ms
+                                              $techmap29828$auto$ff.cc:337:slice$13199.D    634 732.8ms
+        $techmap$techmap29668$auto$ff.cc:337:slice$18501.$auto$abc9_ops.cc:411:prep_bypass$29596.CLR    860 206.2ms
+                                 $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[2]    133 201.6ms
+                                       $techmap93564$abc$92551$lut$aiger92550$10108.A[5]    153 193.7ms
+                                       $techmap93564$abc$92551$lut$aiger92550$10108.A[4]    117 142.4ms
+                                            $techmap93954$abc$92551$lut$aiger$o3024.A[1]     77 136.8ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8679     38 126.1ms
+                                            $techmap94015$abc$92551$lut$aiger$o5184.A[1]     77 124.0ms
+                                       $techmap94053$abc$92551$lut$aiger92550$12525.A[1]     77 122.7ms
+                                            $techmap93972$abc$92551$lut$aiger$o3205.A[1]     77 116.5ms
+                                                                        obs_mux_sel_q[1]    130 116.4ms
+                               dut_cluster.gen_core[0].node_inst.active_descriptor_w[97]     20 116.3ms
+                                        $techmap93969$abc$92551$lut$aiger92550$3727.A[1]     77 112.2ms
+                                            $techmap94035$abc$92551$lut$aiger$o4942.A[1]     77 102.7ms
+                    $techmap93569$auto$abc_ops_reintegrate.cc:611:reintegrate$92617.A[0]    111 102.4ms
+                                            $techmap94078$abc$92551$lut$aiger$o4411.A[1]     77 99.4ms
+                                            $techmap93958$abc$92551$lut$aiger$o3061.A[1]     77 92.7ms
+                                       $techmap94096$abc$92551$lut$aiger92550$10207.A[2]     77 87.1ms
+                                       $techmap94033$abc$92551$lut$aiger92550$13142.A[2]     77 85.6ms
+                                            $techmap94083$abc$92551$lut$aiger$o4280.A[1]     77 84.6ms
+                                        $techmap93975$abc$92551$lut$aiger92550$3747.A[1]     77 83.0ms
+                                       $techmap94019$abc$92551$lut$aiger92550$10127.A[1]     77 82.3ms
+                                       $techmap94013$abc$92551$lut$aiger92550$14845.A[1]     77 81.5ms
+                                                                        obs_mux_sel_q[2]     99 71.6ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8898     38 71.2ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8891     38 70.5ms
+                                        $techmap94028$abc$92551$lut$aiger92550$9473.A[2]     77 70.3ms
+                                       $techmap94055$abc$92551$lut$aiger92550$10303.A[2]     64 69.5ms
+                              dut_cluster.gen_core[0].node_inst.active_descriptor_w[101]     20 68.5ms
+                                            $techmap93752$abc$92551$lut$aiger$o2942.A[1]     41 68.0ms
+                                            $techmap94021$abc$92551$lut$aiger$o4517.A[1]     77 65.9ms
+                                                                         $PACKER_VCC_NET    955 61.1ms
+                                       $techmap94055$abc$92551$lut$aiger92550$10303.A[3]     65 59.2ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8797     38 59.0ms
+                                       $techmap94055$abc$92551$lut$aiger92550$10303.A[1]     65 55.1ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8877     38 51.2ms
+                                        $techmap94117$abc$92551$lut$aiger92550$9697.A[1]     16 49.4ms
+                                        $techmap94203$abc$92551$lut$aiger92550$7344.A[2]     16 49.0ms
+                                              $techmap29873$auto$ff.cc:337:slice$13092.D     43 48.8ms
+                               dut_cluster.gen_core[0].node_inst.active_descriptor_w[98]     20 48.4ms
+                                          dut_cluster.gen_core[0].node_inst.deq_delta[0]     45 47.6ms
+                                                                        obs_mux_sel_q[4]     35 47.5ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8808     38 45.5ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8863     38 42.2ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8761     38 41.8ms
+                                                                        obs_mux_sel_q[3]     66 41.7ms
+                                            $techmap94103$abc$92551$lut$aiger$o4612.A[0]     17 40.1ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8849     38 39.1ms
+                                       $techmap95020$abc$92551$lut$aiger92550$13471.A[1]     16 39.1ms
+                                 $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[4]     41 38.1ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8711     38 37.6ms
+                                       $techmap94427$abc$92551$lut$aiger92550$13008.A[1]     16 37.3ms
+                                        $techmap93468$abc$92551$lut$aiger92550$3545.A[0]     36 36.4ms
+                                        $techmap93561$abc$92551$lut$aiger92550$4426.A[3]     32 35.6ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8856     38 34.8ms
+                    $techmap93770$auto$abc_ops_reintegrate.cc:611:reintegrate$92577.A[2]     31 34.1ms
+                    $techmap93569$auto$abc_ops_reintegrate.cc:611:reintegrate$92617.A[1]     39 32.8ms
+                                            $techmap94391$abc$92551$lut$aiger$o4454.A[0]     17 31.3ms
+                                                                                   rst_n     36 30.4ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8842     38 30.2ms
+                                            $techmap94210$abc$92551$lut$aiger$o4079.A[0]     17 29.9ms
+                                            $techmap94189$abc$92551$lut$aiger$o4492.A[0]     17 29.4ms
+                                       $techmap94436$abc$92551$lut$aiger92550$14626.A[1]     16 29.3ms
+                                       $techmap94019$abc$92551$lut$aiger92550$10127.A[2]     16 29.0ms
+                                            $techmap94225$abc$92551$lut$aiger$o4556.A[0]     17 27.6ms
+                                        $techmap94192$abc$92551$lut$aiger92550$6801.A[2]     16 27.6ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8884     38 27.4ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8730     38 27.3ms
+                                        $techmap94099$abc$92551$lut$aiger92550$9931.A[1]     16 27.2ms
+                                        $techmap93468$abc$92551$lut$aiger92550$3545.A[1]     37 27.1ms
+                                              $techmap29744$auto$ff.cc:337:slice$13341.D     40 27.0ms
+                                            $techmap94109$abc$92551$lut$aiger$o4854.A[2]     33 27.0ms
+                 $abc$92551$flatten\dut_cluster.\gen_core[0].node_inst.$procmux$7401_CMP     29 26.8ms
+                               dut_cluster.gen_core[0].node_inst.active_descriptor_w[99]     20 26.7ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8870     38 26.7ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8774     38 26.6ms
+                                            $techmap94142$abc$92551$lut$aiger$o4787.A[0]     17 26.2ms
+                                       $techmap94038$abc$92551$lut$aiger92550$11277.A[1]     16 26.0ms
+                               dut_cluster.gen_core[0].node_inst.active_descriptor_w[96]     20 25.9ms
+                                                                            in_mode_q[0]     19 25.8ms
+                                       $techmap94013$abc$92551$lut$aiger92550$14845.A[2]     16 25.1ms
+                                            $techmap94217$abc$92551$lut$aiger$o4148.A[0]     17 24.6ms
+                              dut_cluster.gen_core[0].node_inst.active_descriptor_w[100]     20 24.0ms
+                                       $techmap94053$abc$92551$lut$aiger92550$12525.A[2]     16 23.2ms
+                                            $techmap94083$abc$92551$lut$aiger$o4280.A[0]     17 23.1ms
+                                                                           core_commit_w     66 22.7ms
+                                            $techmap94209$abc$92551$lut$aiger$o4678.A[0]     17 22.7ms
+                                        $techmap93965$abc$92551$lut$aiger92550$3692.A[1]     16 22.6ms
+                    $techmap93531$auto$abc_ops_reintegrate.cc:611:reintegrate$92640.A[0]     11 22.4ms
+                    $techmap93539$auto$abc_ops_reintegrate.cc:611:reintegrate$92632.A[3]      9 22.2ms
+                                                                              in_valid_q     34 21.8ms
+                                            $techmap94428$abc$92551$lut$aiger$o4919.A[0]     17 21.8ms
+                                                                  $abc$92551$aiger$o2364      2 21.7ms
+                                       $techmap94102$abc$92551$lut$aiger92550$10762.A[2]     16 21.6ms
+                                       $techmap94033$abc$92551$lut$aiger92550$13142.A[1]     16 21.4ms
+                    $techmap93506$auto$abc_ops_reintegrate.cc:611:reintegrate$92651.A[0]      8 21.3ms
+                 $abc$92551$flatten\dut_cluster.\gen_core[0].node_inst.$procmux$7383_CMP     32 21.2ms
+                                            $techmap94069$abc$92551$lut$aiger$o4249.A[0]     17 21.0ms
+                                       $techmap94810$abc$92551$lut$aiger92550$12311.A[1]     16 20.9ms
+                                            $techmap94206$abc$92551$lut$aiger$o4252.A[0]     17 20.7ms
+                                            $techmap94084$abc$92551$lut$aiger$o4146.A[0]     17 20.4ms
+                                       $techmap94061$abc$92551$lut$aiger92550$11609.A[2]     16 20.4ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8618     48 20.1ms
+                                                                  $abc$92551$aiger$o3935      1 19.5ms
+                 $abc$92551$flatten\dut_cluster.\gen_core[0].node_inst.$procmux$7382_CMP     32 19.0ms
+                                                                        obs_mux_sel_q[0]     16 18.8ms
+                                            $techmap94172$abc$92551$lut$aiger$o3829.A[0]     17 18.6ms
+                                            $techmap94830$abc$92551$lut$aiger$o4757.A[0]     17 18.4ms
+                                        $techmap94092$abc$92551$lut$aiger92550$9062.A[1]     16 18.1ms
+                                            $techmap94078$abc$92551$lut$aiger$o4411.A[0]     17 18.1ms
+                                            $techmap94124$abc$92551$lut$aiger$o4586.A[0]     17 18.1ms
+                                       $techmap95076$abc$92551$lut$aiger92550$12774.A[2]     16 18.0ms
+                                            $techmap94171$abc$92551$lut$aiger$o4378.A[0]     17 17.9ms
+                                       $techmap95231$abc$92551$lut$aiger92550$14163.A[1]     16 17.7ms
+                                            $techmap94494$abc$92551$lut$aiger$o5020.A[0]     17 17.4ms
+                    $techmap93531$auto$abc_ops_reintegrate.cc:611:reintegrate$92640.A[1]     11 17.3ms
+                                              $techmap29737$auto$ff.cc:337:slice$17739.D     33 17.2ms
+                    $techmap93538$auto$abc_ops_reintegrate.cc:611:reintegrate$92633.A[4]      9 17.2ms
+                    $techmap93482$auto$abc_ops_reintegrate.cc:611:reintegrate$92675.A[0]      6 17.2ms
+                    $techmap93478$auto$abc_ops_reintegrate.cc:611:reintegrate$92679.A[1]     10 17.2ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][18]      2 17.1ms
+                    $techmap93547$auto$abc_ops_reintegrate.cc:611:reintegrate$92626.A[2]      8 17.1ms
+                    $techmap93785$auto$abc_ops_reintegrate.cc:611:reintegrate$92574.A[1]     43 16.9ms
+                                            $techmap94849$abc$92551$lut$aiger$o5117.A[0]     17 16.7ms
+                                            $techmap94093$abc$92551$lut$aiger$o4363.A[0]     17 16.7ms
+                                            $techmap95077$abc$92551$lut$aiger$o4888.A[0]     17 16.6ms
+                                                 dut_cluster.xbar_inst.any_src_stalled_w     32 16.5ms
+                                        $techmap94133$abc$92551$lut$aiger92550$9208.A[1]     16 16.5ms
+                    $techmap93497$auto$abc_ops_reintegrate.cc:611:reintegrate$92660.A[0]      8 16.2ms
+                                        $techmap94028$abc$92551$lut$aiger92550$9473.A[1]     16 16.2ms
+                    $techmap93482$auto$abc_ops_reintegrate.cc:611:reintegrate$92675.A[1]      9 16.1ms
+                                            $techmap95232$abc$92551$lut$aiger$o5084.A[0]     17 15.9ms
+                    $techmap93540$auto$abc_ops_reintegrate.cc:611:reintegrate$92631.A[3]      9 15.8ms
+                    $techmap93492$auto$abc_ops_reintegrate.cc:611:reintegrate$92665.A[0]      5 15.8ms
+                                        $techmap94295$abc$92551$lut$aiger92550$6830.A[1]     16 15.8ms
+                                       $techmap94123$abc$92551$lut$aiger92550$10575.A[2]     16 15.8ms
+                    $techmap93490$auto$abc_ops_reintegrate.cc:611:reintegrate$92667.A[1]      9 15.4ms
+                                            $techmap94073$abc$92551$lut$aiger$o4641.A[0]     17 15.3ms
+                                            $techmap94021$abc$92551$lut$aiger$o4517.A[0]     17 15.3ms
+                                        $techmap93522$abc$92551$lut$aiger92550$3640.A[3]     38 15.0ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[17]      4 14.8ms
+                                        $techmap94046$abc$92551$lut$aiger92550$7315.A[1]     16 14.7ms
+                                            $techmap94043$abc$92551$lut$aiger$o5045.A[0]     17 14.7ms
+                    $techmap93540$auto$abc_ops_reintegrate.cc:611:reintegrate$92631.A[0]      9 14.7ms
+                                            $techmap93966$abc$92551$lut$aiger$o3169.A[0]     17 14.1ms
+                                            $techmap94035$abc$92551$lut$aiger$o4942.A[0]     17 13.8ms
+                                                                            in_mode_q[1]     20 13.7ms
+                                            $techmap94811$abc$92551$lut$aiger$o4824.A[0]     17 13.6ms
+                                            $techmap94143$abc$92551$lut$aiger$o4147.A[0]     17 13.3ms
+                    $techmap93487$auto$abc_ops_reintegrate.cc:611:reintegrate$92670.A[1]      9 13.2ms
+                                            $techmap93961$abc$92551$lut$aiger$o3069.A[1]     35 13.1ms
+                                            $techmap94062$abc$92551$lut$aiger$o4725.A[0]     17 13.1ms
+                    $techmap93502$auto$abc_ops_reintegrate.cc:611:reintegrate$92655.A[0]      7 13.0ms
+                    $techmap93531$auto$abc_ops_reintegrate.cc:611:reintegrate$92640.A[2]     11 13.0ms
+                                            $techmap94313$abc$92551$lut$aiger$o4082.A[0]     17 12.8ms
+                                            $techmap94437$abc$92551$lut$aiger$o5149.A[0]     17 12.8ms
+                    $techmap93540$auto$abc_ops_reintegrate.cc:611:reintegrate$92631.A[4]      9 12.6ms
+                                        $techmap94520$abc$92551$lut$aiger92550$6262.A[1]     16 12.6ms
+                                                                           cfg_addr_q[7]      4 12.5ms
+                                            $techmap95021$abc$92551$lut$aiger$o4987.A[0]     17 12.2ms
+                    $techmap93484$auto$abc_ops_reintegrate.cc:611:reintegrate$92673.A[0]      6 12.2ms
+                                        $techmap94151$abc$92551$lut$aiger92550$8453.A[1]     16 12.1ms
+                                            $techmap93467$abc$92551$lut$aiger$o3243.A[1]      8 12.1ms
+                    $techmap93509$auto$abc_ops_reintegrate.cc:611:reintegrate$92648.A[0]     19 12.1ms
+                                                                  $abc$92551$aiger$o2361      2 12.1ms
+                    $techmap93483$auto$abc_ops_reintegrate.cc:611:reintegrate$92674.A[1]      9 12.0ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[6]      4 11.9ms
+                    $techmap93496$auto$abc_ops_reintegrate.cc:611:reintegrate$92661.A[0]      7 11.9ms
+                                            $techmap94054$abc$92551$lut$aiger$o4855.A[0]     17 11.9ms
+                    $techmap93537$auto$abc_ops_reintegrate.cc:611:reintegrate$92634.A[2]     10 11.8ms
+                    $techmap93533$auto$abc_ops_reintegrate.cc:611:reintegrate$92638.A[2]      9 11.8ms
+                    $techmap93481$auto$abc_ops_reintegrate.cc:611:reintegrate$92676.A[0]      6 11.7ms
+                    $techmap93478$auto$abc_ops_reintegrate.cc:611:reintegrate$92679.A[0]      8 11.7ms
+                    $techmap93532$auto$abc_ops_reintegrate.cc:611:reintegrate$92639.A[2]      8 11.6ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[1]      4 11.6ms
+                    $techmap93540$auto$abc_ops_reintegrate.cc:611:reintegrate$92631.A[1]      9 11.6ms
+                    $techmap93535$auto$abc_ops_reintegrate.cc:611:reintegrate$92636.A[0]      8 11.5ms
+                    $techmap93539$auto$abc_ops_reintegrate.cc:611:reintegrate$92632.A[4]      9 11.5ms
+                                            $techmap94185$abc$92551$lut$aiger$o4281.A[0]     17 11.4ms
+                                       $techmap94072$abc$92551$lut$aiger92550$10993.A[2]     16 11.3ms
+                                            $techmap93467$abc$92551$lut$aiger$o3243.A[0]      9 11.3ms
+                                            $techmap94535$abc$92551$lut$aiger$o4013.A[0]     17 11.2ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[15]      4 11.1ms
+                                        $techmap93957$abc$92551$lut$aiger92550$3651.A[3]     11 11.1ms
+                                                                           sh_frame_q[7]      4 11.0ms
+                    $techmap93538$auto$abc_ops_reintegrate.cc:611:reintegrate$92633.A[3]      9 11.0ms
+                    $techmap93533$auto$abc_ops_reintegrate.cc:611:reintegrate$92638.A[0]      9 10.9ms
+                    $techmap93762$auto$abc_ops_reintegrate.cc:611:reintegrate$92579.A[1]     37 10.9ms
+                                        $techmap94815$abc$92551$lut$aiger92550$4565.A[3]      1 10.9ms
+                    $techmap93499$auto$abc_ops_reintegrate.cc:611:reintegrate$92658.A[0]      7 10.8ms
+                                        $techmap94113$abc$92551$lut$aiger92550$6087.A[2]      5 10.7ms
+                                        $techmap94794$abc$92551$lut$aiger92550$4551.A[3]      2 10.6ms
+                                        $techmap93957$abc$92551$lut$aiger92550$3651.A[0]     10 10.6ms
+                    $techmap93532$auto$abc_ops_reintegrate.cc:611:reintegrate$92639.A[1]      8 10.5ms
+                    $techmap93799$auto$abc_ops_reintegrate.cc:611:reintegrate$92571.A[0]      5 10.5ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[13][2]      2 10.4ms
+                    $techmap93485$auto$abc_ops_reintegrate.cc:611:reintegrate$92672.A[1]      9 10.3ms
+                                        $techmap94177$abc$92551$lut$aiger92550$8158.A[1]     16 10.2ms
+                    $techmap93545$auto$abc_ops_reintegrate.cc:611:reintegrate$92628.A[1]      9 10.2ms
+                                                                  $abc$92551$aiger$o2424      1 10.2ms
+                    $techmap93498$auto$abc_ops_reintegrate.cc:611:reintegrate$92659.A[0]      6 10.2ms
+                    $techmap93532$auto$abc_ops_reintegrate.cc:611:reintegrate$92639.A[0]      8 10.2ms
+                                                                  $abc$92551$aiger$o2428      1 10.2ms
+                                        $techmap94113$abc$92551$lut$aiger92550$6087.A[4]      3 10.2ms
+                                 $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[0]      2 10.2ms
+                    $techmap93536$auto$abc_ops_reintegrate.cc:611:reintegrate$92635.A[2]      8 10.2ms
+                                        $techmap94082$abc$92551$lut$aiger92550$8440.A[2]     16 10.2ms
+                                 $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[5]      2 10.1ms
+                                                                            in_data_q[2]      3 10.1ms
+                    $techmap93495$auto$abc_ops_reintegrate.cc:611:reintegrate$92662.A[0]      6 10.0ms
+                                        $techmap93472$abc$92551$lut$aiger92550$3571.A[0]      1 10.0ms
+                    $techmap93533$auto$abc_ops_reintegrate.cc:611:reintegrate$92638.A[1]      9 10.0ms
+                    $techmap93480$auto$abc_ops_reintegrate.cc:611:reintegrate$92677.A[1]      9 10.0ms
+                                        $techmap94068$abc$92551$lut$aiger92550$8135.A[1]     16 9.9ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[20]      4 9.9ms
+                    $techmap93677$auto$abc_ops_reintegrate.cc:611:reintegrate$92599.A[2]      1 9.9ms
+                                                                            in_data_q[0]      3 9.9ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[14]      4 9.9ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[12]      4 9.8ms
+                    $techmap93531$auto$abc_ops_reintegrate.cc:611:reintegrate$92640.A[3]     14 9.7ms
+                    $techmap93494$auto$abc_ops_reintegrate.cc:611:reintegrate$92663.A[1]      9 9.7ms
+                                            $techmap95173$abc$92551$lut$aiger$o4041.A[2]      1 9.6ms
+                                       $techmap94829$abc$92551$lut$aiger92550$11845.A[1]     16 9.6ms
+                    $techmap93743$auto$abc_ops_reintegrate.cc:611:reintegrate$92588.A[4]      1 9.5ms
+                    $techmap93540$auto$abc_ops_reintegrate.cc:611:reintegrate$92631.A[2]      9 9.5ms
+                    $techmap93485$auto$abc_ops_reintegrate.cc:611:reintegrate$92672.A[0]      6 9.5ms
+                                            $techmap94428$abc$92551$lut$aiger$o4919.A[2]      1 9.4ms
+                                                                           sh_frame_q[3]      4 9.4ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[0]      4 9.4ms
+                    $techmap93484$auto$abc_ops_reintegrate.cc:611:reintegrate$92673.A[1]      9 9.2ms
+                    $techmap93505$auto$abc_ops_reintegrate.cc:611:reintegrate$92652.A[0]      7 9.1ms
+                                       $techmap93911$abc$92551$lut$not$aiger92550$1765.A      3 9.1ms
+                    $techmap93486$auto$abc_ops_reintegrate.cc:611:reintegrate$92671.A[1]      9 9.1ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[16]      4 9.1ms
+                    $techmap93534$auto$abc_ops_reintegrate.cc:611:reintegrate$92637.A[1]      8 9.0ms
+                                                                  $abc$92551$aiger$o2371      2 9.0ms
+                    $techmap93507$auto$abc_ops_reintegrate.cc:611:reintegrate$92650.A[1]     10 8.9ms
+                                        $techmap93730$abc$92551$lut$aiger92550$4812.A[5]      1 8.9ms
+                                  $abc$92551$auto$simple.cc:210:make_patterns_logic$8695     38 8.8ms
+                    $techmap93479$auto$abc_ops_reintegrate.cc:611:reintegrate$92678.A[1]      9 8.7ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[25]      4 8.7ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[31]      4 8.6ms
+                    $techmap93501$auto$abc_ops_reintegrate.cc:611:reintegrate$92656.A[1]      9 8.6ms
+                                        $techmap94161$abc$92551$lut$aiger92550$6106.A[1]     16 8.5ms
+                                              $techmap29887$auto$ff.cc:337:slice$13074.D      1 8.4ms
+                                       $techmap94066$abc$92551$lut$aiger92550$10429.A[2]     16 8.4ms
+                    $techmap93500$auto$abc_ops_reintegrate.cc:611:reintegrate$92657.A[1]      9 8.3ms
+                                                                  $abc$92551$aiger$o2461      1 8.3ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][28]      2 8.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][26]      2 8.3ms
+                                       $techmap94493$abc$92551$lut$aiger92550$13700.A[2]     16 8.2ms
+                                        $techmap95071$abc$92551$lut$aiger92550$7088.A[2]      1 8.1ms
+                    $techmap93481$auto$abc_ops_reintegrate.cc:611:reintegrate$92676.A[1]      9 8.1ms
+                    $techmap93501$auto$abc_ops_reintegrate.cc:611:reintegrate$92656.A[0]      6 8.1ms
+                    $techmap93536$auto$abc_ops_reintegrate.cc:611:reintegrate$92635.A[0]      8 8.1ms
+                    $techmap93494$auto$abc_ops_reintegrate.cc:611:reintegrate$92663.A[0]      7 8.1ms
+                    $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[3]      3 8.0ms
+                                        $techmap94048$abc$92551$lut$aiger92550$6077.A[3]      3 8.0ms
+                    $techmap93540$auto$abc_ops_reintegrate.cc:611:reintegrate$92631.A[5]      9 7.9ms
+                                        $techmap93727$abc$92551$lut$aiger92550$4798.A[3]      2 7.9ms
+                                            $techmap94977$abc$92551$lut$aiger$o5106.A[2]      1 7.8ms
+                                                                  $abc$92551$aiger$o4178      1 7.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][18]      2 7.8ms
+                    $techmap93534$auto$abc_ops_reintegrate.cc:611:reintegrate$92637.A[0]      8 7.8ms
+                                              $techmap29736$auto$ff.cc:337:slice$17803.D     33 7.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][17]      2 7.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][28]      2 7.7ms
+                                                                             ext_ready_w      3 7.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][10]      2 7.6ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[23]      4 7.6ms
+                                        $techmap93953$abc$92551$lut$aiger92550$3642.A[0]     10 7.6ms
+                                       $techmap94141$abc$92551$lut$aiger92550$12002.A[2]     16 7.6ms
+                    $techmap93498$auto$abc_ops_reintegrate.cc:611:reintegrate$92659.A[1]      9 7.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][22]      2 7.6ms
+                    $techmap93509$auto$abc_ops_reintegrate.cc:611:reintegrate$92648.A[1]     12 7.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][10]      2 7.5ms
+                                                                        ext_dst_cid_q[4]      1 7.5ms
+                    $techmap93503$auto$abc_ops_reintegrate.cc:611:reintegrate$92654.A[0]      8 7.4ms
+                                        $techmap93474$abc$92551$lut$aiger92550$3577.A[2]      1 7.4ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[7][9]      2 7.4ms
+                                        $techmap94955$abc$92551$lut$aiger92550$4653.A[1]      3 7.3ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[2]      4 7.3ms
+                    $techmap93431$auto$abc_ops_reintegrate.cc:611:reintegrate$92711.A[1]      2 7.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][10]      2 7.3ms
+                                            $techmap94202$abc$92551$lut$aiger$o5033.A[2]      1 7.1ms
+                                            $techmap94070$abc$92551$lut$aiger$o4639.A[1]      9 7.1ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[27]      4 7.1ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][23]      2 7.1ms
+                    $techmap93546$auto$abc_ops_reintegrate.cc:611:reintegrate$92627.A[2]      8 7.1ms
+                                            $techmap94015$abc$92551$lut$aiger$o5184.A[0]     17 7.1ms
+                                        $techmap93990$abc$92551$lut$aiger92550$3979.A[4]      1 7.0ms
+                                        $techmap94022$abc$92551$lut$aiger92550$4091.A[3]      2 7.0ms
+                    $techmap93536$auto$abc_ops_reintegrate.cc:611:reintegrate$92635.A[1]     10 6.9ms
+                                       $techmap94042$abc$92551$lut$aiger92550$13894.A[1]     16 6.9ms
+                                        $techmap94431$abc$92551$lut$aiger92550$5364.A[0]      4 6.9ms
+                                            $techmap93467$abc$92551$lut$aiger$o3243.A[3]      8 6.9ms
+                                       $techmap94848$abc$92551$lut$aiger92550$14397.A[1]     16 6.9ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][25]      2 6.8ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[8]      4 6.8ms
+                    $techmap93496$auto$abc_ops_reintegrate.cc:611:reintegrate$92661.A[1]      9 6.8ms
+                                        $techmap94127$abc$92551$lut$aiger92550$7328.A[1]     16 6.8ms
+                                            $techmap95554$abc$92551$lut$aiger$o4376.A[2]      1 6.7ms
+                    $techmap93677$auto$abc_ops_reintegrate.cc:611:reintegrate$92599.A[3]      1 6.7ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[10]      4 6.7ms
+                                        $techmap93993$abc$92551$lut$aiger92550$3993.A[4]      1 6.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][26]      2 6.7ms
+                                                                          sh_frame_q[22]      3 6.6ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[3][4]      2 6.6ms
+                                        $techmap94877$abc$92551$lut$aiger92550$4607.A[2]      3 6.5ms
+                                        $techmap94106$abc$92551$lut$aiger92550$5616.A[1]      1 6.5ms
+                    $techmap93508$auto$abc_ops_reintegrate.cc:611:reintegrate$92649.A[1]     10 6.5ms
+                                                                            in_data_q[1]      3 6.4ms
+                    $techmap93480$auto$abc_ops_reintegrate.cc:611:reintegrate$92677.A[0]      4 6.4ms
+                                        $techmap94559$abc$92551$lut$aiger92550$5432.A[2]      1 6.4ms
+                                        $techmap93586$abc$92551$lut$aiger92550$4359.A[4]      1 6.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][11]      2 6.3ms
+                    $techmap93503$auto$abc_ops_reintegrate.cc:611:reintegrate$92654.A[1]     10 6.3ms
+                                            $techmap94275$abc$92551$lut$aiger$o4929.A[2]      1 6.3ms
+                                              $techmap29907$auto$ff.cc:337:slice$13054.D      1 6.3ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[29]      4 6.3ms
+                                       $techmap95117$abc$92551$lut$aiger92550$14241.A[3]      1 6.3ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[4][2]      2 6.2ms
+                    $techmap93491$auto$abc_ops_reintegrate.cc:611:reintegrate$92666.A[1]      9 6.2ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[14][29]      2 6.2ms
+                                        $techmap94559$abc$92551$lut$aiger92550$5432.A[1]      1 6.2ms
+                                        $techmap94431$abc$92551$lut$aiger92550$5364.A[1]      3 6.2ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[28]      4 6.1ms
+                    $techmap93505$auto$abc_ops_reintegrate.cc:611:reintegrate$92652.A[1]      9 6.1ms
+                    $techmap93544$auto$abc_ops_reintegrate.cc:611:reintegrate$92629.A[3]      2 6.1ms
+                    $techmap93487$auto$abc_ops_reintegrate.cc:611:reintegrate$92670.A[0]      6 6.1ms
+                                            $techmap94878$abc$92551$lut$aiger$o4027.A[1]      1 6.1ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][19]      2 6.1ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[14]      3 6.1ms
+                                        $techmap93522$abc$92551$lut$aiger92550$3640.A[2]      4 6.0ms
+                    $techmap93490$auto$abc_ops_reintegrate.cc:611:reintegrate$92667.A[0]      6 6.0ms
+                    $techmap93535$auto$abc_ops_reintegrate.cc:611:reintegrate$92636.A[2]      8 6.0ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[7]      4 6.0ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[26]      4 6.0ms
+                                                                                     clk   1507 6.0ms
+                    $techmap93507$auto$abc_ops_reintegrate.cc:611:reintegrate$92650.A[0]      6 5.9ms
+                    $techmap93436$auto$abc_ops_reintegrate.cc:611:reintegrate$92706.A[1]      2 5.9ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[6]      4 5.9ms
+                                        $techmap93893$abc$92551$lut$aiger92550$4407.A[1]      3 5.9ms
+                                            $techmap94035$abc$92551$lut$aiger$o4942.A[2]      1 5.8ms
+                    $techmap93486$auto$abc_ops_reintegrate.cc:611:reintegrate$92671.A[0]      4 5.8ms
+                                            $techmap95357$abc$92551$lut$aiger$o4052.A[2]      1 5.8ms
+                                        $techmap93640$abc$92551$lut$aiger92550$4749.A[3]      1 5.8ms
+                    $techmap93488$auto$abc_ops_reintegrate.cc:611:reintegrate$92669.A[1]      9 5.8ms
+                                            $techmap94634$abc$92551$lut$aiger$o5138.A[2]      1 5.8ms
+                                                                           core_reject_w     32 5.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[14][18]      2 5.7ms
+                                        $techmap93985$abc$92551$lut$aiger92550$3933.A[3]      2 5.7ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[21]      4 5.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][26]      2 5.6ms
+                                        $techmap93981$abc$92551$lut$aiger92550$3913.A[4]      1 5.6ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[10]      4 5.6ms
+                                        $techmap93745$abc$92551$lut$aiger92550$4822.A[3]      2 5.6ms
+                    $techmap93499$auto$abc_ops_reintegrate.cc:611:reintegrate$92658.A[1]      9 5.6ms
+                    $techmap93504$auto$abc_ops_reintegrate.cc:611:reintegrate$92653.A[1]      9 5.6ms
+                        dut_cluster.gen_core[0].node_inst.cme_inst.candidate_state_w[31]      2 5.5ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[28]      4 5.5ms
+                                        $techmap94128$abc$92551$lut$aiger92550$6094.A[2]      3 5.5ms
+                                            $techmap94873$abc$92551$lut$aiger$o4389.A[1]      1 5.5ms
+                                            $techmap94906$abc$92551$lut$aiger$o4754.A[2]      1 5.5ms
+                    $techmap93491$auto$abc_ops_reintegrate.cc:611:reintegrate$92666.A[0]      6 5.5ms
+                    $techmap93506$auto$abc_ops_reintegrate.cc:611:reintegrate$92651.A[1]     10 5.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][29]      2 5.4ms
+                                        $techmap93656$abc$92551$lut$aiger92550$4668.A[4]      2 5.4ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[5]      4 5.4ms
+                                        $techmap93525$abc$92551$lut$aiger92550$3621.A[1]      2 5.4ms
+                    $techmap93707$auto$abc_ops_reintegrate.cc:611:reintegrate$92594.A[2]      1 5.4ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[8]      4 5.4ms
+                                                                           cfg_addr_q[6]      4 5.4ms
+                                            $techmap95187$abc$92551$lut$aiger$o4810.A[2]      1 5.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][24]      2 5.3ms
+                    $techmap93900$auto$abc_ops_reintegrate.cc:611:reintegrate$92553.A[4]      1 5.3ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][20]      2 5.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][17]      2 5.3ms
+                                              $techmap29897$auto$ff.cc:337:slice$13064.D      1 5.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][30]      2 5.3ms
+                                                                          sh_frame_q[38]      3 5.2ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[11]      4 5.2ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[22]      4 5.2ms
+                                        $techmap93512$abc$92551$lut$aiger92550$3518.A[3]      2 5.2ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[12]      4 5.2ms
+                                                                            in_data_q[6]      2 5.2ms
+                                        $techmap93985$abc$92551$lut$aiger92550$3933.A[4]      2 5.1ms
+                                            $techmap94939$abc$92551$lut$aiger$o4109.A[1]      1 5.1ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[9][6]      2 5.1ms
+                                        $techmap93656$abc$92551$lut$aiger92550$4668.A[3]      2 5.1ms
+                                            $techmap95125$abc$92551$lut$aiger$o4741.A[2]      1 5.1ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[13][29]      2 5.1ms
+                                            $techmap93467$abc$92551$lut$aiger$o3243.A[2]      9 5.1ms
+                                            $techmap94375$abc$92551$lut$aiger$o4714.A[2]      1 5.1ms
+                    $techmap93489$auto$abc_ops_reintegrate.cc:611:reintegrate$92668.A[1]      9 5.1ms
+                    $techmap93508$auto$abc_ops_reintegrate.cc:611:reintegrate$92649.A[0]      7 5.1ms
+                                                                           cfg_addr_q[4]      4 5.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][11]      2 5.0ms
+                                        $techmap93475$abc$92551$lut$aiger92550$3581.A[0]      1 5.0ms
+                    $techmap93539$auto$abc_ops_reintegrate.cc:611:reintegrate$92632.A[2]      3 5.0ms
+                                            $techmap95521$abc$92551$lut$aiger$o4865.A[2]      1 5.0ms
+                                        $techmap93953$abc$92551$lut$aiger92550$3642.A[1]     10 5.0ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][26]      2 5.0ms
+                                        $techmap93992$abc$92551$lut$aiger92550$3988.A[2]      1 5.0ms
+                                        $techmap93597$abc$92551$lut$aiger92550$4223.A[2]      1 5.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][15]      2 5.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][21]      2 5.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][25]      2 4.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][16]      2 4.9ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[15][5]      2 4.9ms
+                                                                  $abc$92551$aiger$o3936      1 4.9ms
+                                        $techmap94883$abc$92551$lut$aiger92550$4612.A[4]      2 4.9ms
+                                        $techmap94462$abc$92551$lut$aiger92550$5379.A[4]      1 4.9ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[19]      4 4.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][29]      2 4.9ms
+                                        $techmap94796$abc$92551$lut$aiger92550$4556.A[3]      2 4.9ms
+                    $techmap93500$auto$abc_ops_reintegrate.cc:611:reintegrate$92657.A[0]      8 4.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][30]      2 4.9ms
+                                            $techmap94095$abc$92551$lut$aiger$o4939.A[2]      1 4.9ms
+                    $techmap93502$auto$abc_ops_reintegrate.cc:611:reintegrate$92655.A[1]     10 4.9ms
+                                        $techmap94448$abc$92551$lut$aiger92550$4335.A[1]      3 4.9ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[4]      4 4.9ms
+                                        $techmap94024$abc$92551$lut$aiger92550$6069.A[2]      2 4.8ms
+                    $techmap93479$auto$abc_ops_reintegrate.cc:611:reintegrate$92678.A[0]      7 4.8ms
+                                        $techmap94856$abc$92551$lut$aiger92550$4584.A[4]      1 4.8ms
+                                                                            in_data_q[4]      3 4.8ms
+                    $techmap93538$auto$abc_ops_reintegrate.cc:611:reintegrate$92633.A[1]      3 4.8ms
+                                        $techmap93873$abc$92551$lut$aiger92550$4494.A[3]      2 4.8ms
+                    $techmap93811$auto$abc_ops_reintegrate.cc:611:reintegrate$92569.A[4]      1 4.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][20]      2 4.7ms
+                                            $techmap94506$abc$92551$lut$aiger$o4771.A[2]      1 4.7ms
+                                                                          sh_frame_q[13]      3 4.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][31]      2 4.7ms
+                                        $techmap94571$abc$92551$lut$aiger92550$5440.A[3]      1 4.6ms
+                                        $techmap93621$abc$92551$lut$aiger92550$4720.A[2]      1 4.6ms
+                                            $techmap94777$abc$92551$lut$aiger$o5000.A[2]      1 4.6ms
+                                                                          sh_frame_q[29]      3 4.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][24]      2 4.6ms
+                                            $techmap95155$abc$92551$lut$aiger$o4984.A[2]      1 4.6ms
+                    $techmap93599$auto$abc_ops_reintegrate.cc:611:reintegrate$92612.A[3]      2 4.6ms
+                                        $techmap93596$abc$92551$lut$aiger92550$4219.A[3]      2 4.6ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[26]      4 4.6ms
+                    $techmap93504$auto$abc_ops_reintegrate.cc:611:reintegrate$92653.A[0]      6 4.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][21]      2 4.6ms
+                                        $techmap93619$abc$92551$lut$aiger92550$4711.A[3]      2 4.5ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][24]      2 4.5ms
+                                        $techmap93688$abc$92551$lut$aiger92550$3870.A[4]      1 4.5ms
+                                                                  $abc$92551$aiger$o2493      1 4.5ms
+                                            $techmap94768$abc$92551$lut$aiger$o5126.A[2]      1 4.5ms
+                    $techmap93653$auto$abc_ops_reintegrate.cc:611:reintegrate$92603.A[2]      1 4.5ms
+                                        $techmap93992$abc$92551$lut$aiger92550$3988.A[4]      1 4.5ms
+                                            $techmap95404$abc$92551$lut$aiger$o4798.A[2]      1 4.5ms
+                                        $techmap93984$abc$92551$lut$aiger92550$3928.A[3]      2 4.5ms
+                    $techmap93799$auto$abc_ops_reintegrate.cc:611:reintegrate$92571.A[1]      7 4.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][25]      2 4.5ms
+                                        $techmap93709$abc$92551$lut$aiger92550$3880.A[3]      2 4.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][10]      2 4.5ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[13]      3 4.4ms
+                                                                           sh_frame_q[4]      4 4.4ms
+                    $techmap93439$auto$abc_ops_reintegrate.cc:611:reintegrate$92703.A[0]      3 4.4ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[15]      3 4.4ms
+                                        $techmap93637$abc$92551$lut$aiger92550$4735.A[3]      2 4.4ms
+                    $techmap93665$auto$abc_ops_reintegrate.cc:611:reintegrate$92601.A[2]      1 4.4ms
+                                        $techmap94005$abc$92551$lut$aiger92550$4059.A[3]      2 4.4ms
+                                  $abc$92551$auto$simple.cc:193:make_patterns_logic$8714      1 4.4ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][10]      2 4.4ms
+                                            $techmap95415$abc$92551$lut$aiger$o4959.A[2]      1 4.4ms
+                    $techmap93492$auto$abc_ops_reintegrate.cc:611:reintegrate$92665.A[1]      9 4.4ms
+                                                                           cfg_addr_q[2]      5 4.4ms
+                                        $techmap94867$abc$92551$lut$aiger92550$4597.A[4]      1 4.4ms
+                                        $techmap93658$abc$92551$lut$aiger92550$4677.A[3]      1 4.4ms
+                                            $techmap95203$abc$92551$lut$aiger$o4437.A[2]      1 4.3ms
+                                        $techmap93873$abc$92551$lut$aiger92550$4494.A[4]      2 4.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][23]      2 4.3ms
+                                                                              out_busy_q      1 4.3ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[13][3]      2 4.3ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[9][2]      2 4.3ms
+                                            $techmap94242$abc$92551$lut$aiger$o2437.A[2]      2 4.2ms
+                                        $techmap94559$abc$92551$lut$aiger92550$5432.A[0]      2 4.2ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][29]      2 4.2ms
+                                        $techmap93996$abc$92551$lut$aiger92550$4008.A[4]      2 4.2ms
+                                        $techmap94384$abc$92551$lut$aiger92550$4294.A[3]      2 4.2ms
+                                            $techmap94918$abc$92551$lut$aiger$o4899.A[2]      1 4.2ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[1][6]      2 4.2ms
+                                                                            in_data_q[7]      2 4.2ms
+                                            $techmap95348$abc$92551$lut$aiger$o4273.A[2]      1 4.2ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[13]      4 4.2ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[6][15]      2 4.2ms
+                                 $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[1]      4 4.2ms
+                                            $techmap94443$abc$92551$lut$aiger$o4346.A[2]      1 4.1ms
+                                                                            in_data_q[5]      3 4.1ms
+                    $techmap93665$auto$abc_ops_reintegrate.cc:611:reintegrate$92601.A[3]      1 4.1ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[9]      4 4.1ms
+                    $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[0]      6 4.1ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][26]      2 4.1ms
+                                                                  $abc$92551$aiger$o2403      4 4.1ms
+                                             $auto$alumacc.cc:548:replace_alu$10490.Y[0]      2 4.1ms
+                                        $techmap93669$abc$92551$lut$aiger92550$4695.A[1]      1 4.1ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[15][7]      2 4.1ms
+                    $techmap93443$auto$abc_ops_reintegrate.cc:611:reintegrate$92699.A[0]      3 4.1ms
+                                            $techmap94608$abc$92551$lut$aiger$o5014.A[2]      1 4.1ms
+                    $techmap93534$auto$abc_ops_reintegrate.cc:611:reintegrate$92637.A[2]      8 4.1ms
+                                        $techmap94502$abc$92551$lut$aiger92550$5406.A[3]      1 4.0ms
+                                            $techmap94793$abc$92551$lut$aiger$o4999.A[2]      1 4.0ms
+                                        $techmap94557$abc$92551$lut$aiger92550$5001.A[2]      3 4.0ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[1][2]      2 4.0ms
+                    $techmap93435$auto$abc_ops_reintegrate.cc:611:reintegrate$92707.A[0]      3 4.0ms
+                                        $techmap93712$abc$92551$lut$aiger92550$3894.A[1]      3 4.0ms
+                    $techmap93535$auto$abc_ops_reintegrate.cc:611:reintegrate$92636.A[1]      8 4.0ms
+                                        $techmap93583$abc$92551$lut$aiger92550$4345.A[3]      2 3.9ms
+                                              $techmap29877$auto$ff.cc:337:slice$13084.D      1 3.9ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][23]      2 3.9ms
+                                        $techmap94929$abc$92551$lut$aiger92550$4636.A[3]      2 3.9ms
+                                            $techmap94711$abc$92551$lut$aiger$o4217.A[2]      1 3.9ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[3]      4 3.9ms
+                    $techmap93497$auto$abc_ops_reintegrate.cc:611:reintegrate$92660.A[1]      9 3.9ms
+                    $techmap93489$auto$abc_ops_reintegrate.cc:611:reintegrate$92668.A[0]      4 3.9ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[5][1]      2 3.9ms
+                                            $techmap95565$abc$92551$lut$aiger$o4645.A[2]      1 3.9ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[30]      4 3.9ms
+                                        $techmap94553$abc$92551$lut$aiger92550$4965.A[2]      4 3.9ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[15][31]      2 3.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][27]      2 3.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][15]      2 3.9ms
+                                     dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[9]      4 3.9ms
+                    $techmap93743$auto$abc_ops_reintegrate.cc:611:reintegrate$92588.A[2]      1 3.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][14]      2 3.9ms
+                                                                           sh_frame_q[6]      4 3.8ms
+                                        $techmap94509$abc$92551$lut$aiger92550$4374.A[4]      2 3.8ms
+                                       $techmap95239$abc$92551$lut$aiger92550$13365.A[3]      1 3.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][30]      2 3.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][31]      2 3.8ms
+                                            $techmap94892$abc$92551$lut$aiger$o4174.A[2]      1 3.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][22]      2 3.8ms
+                                                                           sh_frame_q[8]      3 3.8ms
+                                                                          ext_param_q[0]      1 3.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][21]      2 3.8ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[6][8]      2 3.7ms
+                                            $techmap94086$abc$92551$lut$aiger$o5043.A[2]      1 3.7ms
+                                            $techmap94826$abc$92551$lut$aiger$o4171.A[1]      1 3.7ms
+                              dut_cluster.gen_core[0].node_inst.active_descriptor_w[105]      2 3.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][30]      2 3.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][21]      2 3.7ms
+                                            $techmap94318$abc$92551$lut$aiger$o4413.A[2]      1 3.7ms
+                                            $techmap95162$abc$92551$lut$aiger$o4269.A[2]      1 3.7ms
+                                              $techmap29903$auto$ff.cc:337:slice$13058.D      1 3.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][18]      2 3.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][13]      2 3.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][28]      2 3.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[15][30]      2 3.6ms
+                    $techmap93653$auto$abc_ops_reintegrate.cc:611:reintegrate$92603.A[3]      1 3.6ms
+                                            $techmap94160$abc$92551$lut$aiger$o5173.A[2]      1 3.6ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[30]      4 3.6ms
+                                        $techmap93598$abc$92551$lut$aiger92550$4228.A[3]      1 3.6ms
+                                            $techmap94789$abc$92551$lut$aiger$o4170.A[2]      1 3.6ms
+                                                                  $abc$92551$aiger$i1722      1 3.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][18]      2 3.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][19]      2 3.6ms
+                    $techmap93671$auto$abc_ops_reintegrate.cc:611:reintegrate$92600.A[3]      2 3.6ms
+                    $techmap93539$auto$abc_ops_reintegrate.cc:611:reintegrate$92632.A[0]      3 3.6ms
+                                                                           sh_frame_q[5]      4 3.6ms
+                                        $techmap94837$abc$92551$lut$aiger92550$4580.A[3]      2 3.6ms
+                                        $techmap94733$abc$92551$lut$aiger92550$4513.A[3]      2 3.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][23]      2 3.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][22]      2 3.6ms
+                                        $techmap94833$abc$92551$lut$aiger92550$4575.A[3]      2 3.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][22]      2 3.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][23]      2 3.6ms
+                                            $techmap94886$abc$92551$lut$aiger$o4105.A[2]      1 3.6ms
+                    $techmap93719$auto$abc_ops_reintegrate.cc:611:reintegrate$92592.A[4]      1 3.6ms
+                    $techmap93448$auto$abc_ops_reintegrate.cc:611:reintegrate$92694.A[1]      2 3.6ms
+                                        $techmap94902$abc$92551$lut$aiger92550$4621.A[4]      1 3.5ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[9][2]      2 3.5ms
+                                                                             in_sel_q[0]      2 3.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][28]      2 3.5ms
+                                        $techmap93769$abc$92551$lut$aiger92550$4172.A[2]      1 3.5ms
+                                       $techmap93742$abc$92551$lut$aiger92550$14683.A[2]      1 3.5ms
+                    $techmap93495$auto$abc_ops_reintegrate.cc:611:reintegrate$92662.A[1]      9 3.5ms
+                                                                          ext_param_q[4]      1 3.5ms
+                                            $techmap94075$abc$92551$lut$aiger$o5044.A[1]      1 3.5ms
+                                                                  $abc$92551$aiger$o2426      1 3.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][16]      2 3.5ms
+                                            $techmap94145$abc$92551$lut$aiger$o5178.A[2]      1 3.5ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[25]      4 3.5ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][23]      2 3.4ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[16]      4 3.4ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[15][13]      2 3.4ms
+                                            $techmap94351$abc$92551$lut$aiger$o4925.A[4]      1 3.4ms
+                                            $techmap94894$abc$92551$lut$aiger$o4223.A[1]      1 3.4ms
+                    $techmap93440$auto$abc_ops_reintegrate.cc:611:reintegrate$92702.A[1]      2 3.4ms
+                                       $techmap94183$abc$92551$lut$aiger92550$10064.A[2]      1 3.4ms
+                                        $techmap93597$abc$92551$lut$aiger92550$4223.A[4]      1 3.4ms
+                                        $techmap93596$abc$92551$lut$aiger92550$4219.A[4]      2 3.4ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[24]      4 3.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][26]      2 3.4ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[5][2]      2 3.4ms
+                                            $techmap94335$abc$92551$lut$aiger$o4433.A[2]      1 3.4ms
+                                            $techmap95511$abc$92551$lut$aiger$o4469.A[2]      1 3.4ms
+                                            $techmap95472$abc$92551$lut$aiger$o5062.A[2]      1 3.3ms
+                                       $techmap95064$abc$92551$lut$aiger92550$10864.A[2]      1 3.3ms
+                    $techmap93812$auto$abc_ops_reintegrate.cc:611:reintegrate$92568.A[0]      8 3.3ms
+                                        $techmap94000$abc$92551$lut$aiger92550$4035.A[3]      2 3.3ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[17]      4 3.3ms
+                                                                  $abc$92551$aiger$o2372      1 3.3ms
+                                                                  $abc$92551$aiger$o4401      1 3.3ms
+                    $techmap93460$auto$abc_ops_reintegrate.cc:611:reintegrate$92682.A[0]      3 3.3ms
+                                                                          sh_frame_q[27]      3 3.3ms
+                                        $techmap94548$abc$92551$lut$aiger92550$4921.A[1]      3 3.2ms
+                                            $techmap95242$abc$92551$lut$aiger$o4694.A[2]      1 3.2ms
+                    $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[2]      3 3.2ms
+                                            $techmap94016$abc$92551$lut$aiger$o4508.A[0]      1 3.2ms
+                                                                          sh_frame_q[14]      3 3.2ms
+                                                                          sh_frame_q[37]      3 3.2ms
+                                                                          sh_frame_q[19]      3 3.2ms
+                                                                          sh_frame_q[23]      3 3.2ms
+                                            $techmap95209$abc$92551$lut$aiger$o4658.A[2]      1 3.2ms
+                                            $techmap95046$abc$92551$lut$aiger$o4662.A[3]      1 3.2ms
+                                 $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[3]      5 3.2ms
+                                                                           sh_frame_q[0]      4 3.2ms
+                                            $techmap94834$abc$92551$lut$aiger$o4103.A[2]      1 3.2ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][18]      2 3.2ms
+                    $techmap93538$auto$abc_ops_reintegrate.cc:611:reintegrate$92633.A[2]      3 3.1ms
+                                                                  $abc$92551$aiger$o4088      1 3.1ms
+                                            $techmap95265$abc$92551$lut$aiger$o4972.A[2]      1 3.1ms
+                                            $techmap95437$abc$92551$lut$aiger$o4871.A[2]      1 3.1ms
+                                            $techmap95428$abc$92551$lut$aiger$o5068.A[2]      1 3.1ms
+                                                                           cfg_addr_q[5]      4 3.1ms
+                                        $techmap93998$abc$92551$lut$aiger92550$4025.A[5]      1 3.1ms
+                                        $techmap94558$abc$92551$lut$aiger92550$5092.A[2]      1 3.1ms
+                                                                           sh_frame_q[2]      4 3.1ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[11][2]      2 3.1ms
+                                                                  $abc$92551$aiger$i3214      1 3.0ms
+                                        $techmap95331$abc$92551$lut$aiger92550$9288.A[2]      1 3.0ms
+        $abc$92551$flatten\dut_cluster.\gen_core[0].node_inst.$0\fifo_param_q[15][31:0][3]      1 3.0ms
+        $abc$92551$flatten\dut_cluster.\gen_core[0].node_inst.$0\fifo_param_q[0][31:0][6]      1 3.0ms
+                                                                          sh_frame_q[36]      3 3.0ms
+                                       $techmap94743$abc$92551$lut$aiger92550$14460.A[4]      1 3.0ms
+                                                                         ext_param_q[18]      1 3.0ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[0]      4 3.0ms
+                                                                         ext_param_q[26]      1 3.0ms
+                    $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[1]      3 3.0ms
+                                            $techmap94153$abc$92551$lut$aiger$o4177.A[0]      1 3.0ms
+                                              $techmap29901$auto$ff.cc:337:slice$13060.D      1 3.0ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[1]      4 2.9ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[15][0]      2 2.9ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[7]      4 2.9ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[7][1]      2 2.9ms
+                                                                       cfg_bank_sel_q[1]      3 2.9ms
+                                       $techmap95045$abc$92551$lut$aiger92550$11113.A[2]      1 2.9ms
+                                        $techmap94377$abc$92551$lut$aiger92550$4289.A[3]      2 2.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][24]      2 2.9ms
+                                        $techmap93857$abc$92551$lut$aiger92550$4252.A[1]      3 2.9ms
+                                        $techmap94005$abc$92551$lut$aiger92550$4059.A[4]      1 2.9ms
+                                                                  $abc$92551$aiger$o4339      1 2.9ms
+                    $techmap93444$auto$abc_ops_reintegrate.cc:611:reintegrate$92698.A[0]      3 2.9ms
+                                       $techmap94105$abc$92551$lut$aiger92550$12517.A[2]      1 2.9ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[18]      4 2.8ms
+                                            $techmap95531$abc$92551$lut$aiger$o4410.A[1]      1 2.8ms
+                                                                          sh_frame_q[39]      3 2.8ms
+                                        $techmap93640$abc$92551$lut$aiger92550$4749.A[1]      3 2.8ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[15][1]      2 2.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][30]      2 2.8ms
+                                        $techmap93468$abc$92551$lut$aiger92550$3545.A[3]      1 2.8ms
+                    $techmap93449$auto$abc_ops_reintegrate.cc:611:reintegrate$92693.A[1]      2 2.8ms
+                                                                  $abc$92551$aiger$i1708      1 2.8ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[1][3]      2 2.8ms
+                                        $techmap93512$abc$92551$lut$aiger92550$3518.A[4]      2 2.8ms
+                                        $techmap93559$abc$92551$lut$aiger92550$4417.A[4]      1 2.8ms
+                                                                       cfg_bank_sel_q[3]      3 2.7ms
+                                        $techmap93595$abc$92551$lut$aiger92550$4214.A[3]      2 2.7ms
+                                              $techmap29898$auto$ff.cc:337:slice$13063.D      1 2.7ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[23]      4 2.7ms
+                                                                         ext_param_q[13]      1 2.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][22]      2 2.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][16]      2 2.7ms
+                                            $techmap94811$abc$92551$lut$aiger$o4824.A[2]      1 2.7ms
+                                                                          sh_frame_q[20]      3 2.7ms
+                                                                          sh_frame_q[35]      3 2.7ms
+                                            $techmap94564$abc$92551$lut$aiger$o5146.A[2]      1 2.7ms
+                                            $techmap94148$abc$92551$lut$aiger$o3826.A[1]      3 2.7ms
+                                       $techmap94743$abc$92551$lut$aiger92550$14460.A[2]      1 2.7ms
+                                                                    $abc$92551$aiger$o52      8 2.7ms
+                                        $techmap94794$abc$92551$lut$aiger92550$4551.A[2]      3 2.7ms
+                                       $techmap94105$abc$92551$lut$aiger92550$12517.A[4]      1 2.7ms
+                                                                          sh_frame_q[44]      1 2.6ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[0][5]      2 2.6ms
+                                        $techmap94735$abc$92551$lut$aiger92550$5545.A[0]      1 2.6ms
+                                       $techmap93905$abc$92551$lut$not$aiger92550$1764.A      2 2.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][21]      2 2.6ms
+                                                       dut_cluster.node_cfg_rdata[0][31]      1 2.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][28]      2 2.6ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[27]      4 2.6ms
+                                        $techmap94876$abc$92551$lut$aiger92550$5630.A[1]      1 2.6ms
+                                        $techmap93464$abc$92551$lut$aiger92550$3534.A[3]      1 2.6ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[24]      4 2.6ms
+                                                                           sh_frame_q[1]      4 2.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[13][8]      2 2.6ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[5]      4 2.6ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[2]      4 2.6ms
+                                        $techmap93871$abc$92551$lut$aiger92550$4484.A[4]      2 2.6ms
+                                        $techmap93521$abc$92551$lut$aiger92550$3637.A[1]      8 2.6ms
+                                        $techmap94128$abc$92551$lut$aiger92550$6094.A[3]      3 2.5ms
+                                        $techmap94377$abc$92551$lut$aiger92550$4289.A[2]      3 2.5ms
+                                        $techmap93522$abc$92551$lut$aiger92550$3640.A[1]      7 2.5ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[5][4]      2 2.5ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[4][0]      2 2.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][11]      2 2.5ms
+                    $techmap93452$auto$abc_ops_reintegrate.cc:611:reintegrate$92690.A[1]      2 2.5ms
+                                        $techmap93970$abc$92551$lut$aiger92550$3728.A[0]      3 2.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][11]      2 2.5ms
+                                            $techmap94410$abc$92551$lut$aiger$o4425.A[2]      1 2.5ms
+                                        $techmap94548$abc$92551$lut$aiger92550$4921.A[2]      3 2.5ms
+                    $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[4]      3 2.5ms
+                                        $techmap93464$abc$92551$lut$aiger92550$3534.A[4]      1 2.5ms
+                    $techmap93539$auto$abc_ops_reintegrate.cc:611:reintegrate$92632.A[1]      3 2.5ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[22]      4 2.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][28]      2 2.5ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[12][3]      2 2.5ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[21]      4 2.5ms
+                                                                         ext_param_q[29]      1 2.5ms
+                    $techmap93483$auto$abc_ops_reintegrate.cc:611:reintegrate$92674.A[0]      4 2.5ms
+                                        $techmap93669$abc$92551$lut$aiger92550$4695.A[3]      1 2.5ms
+                                                                    $abc$92551$aiger$o59      2 2.5ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[29]      4 2.5ms
+                                        $techmap94003$abc$92551$lut$aiger92550$4049.A[3]      1 2.5ms
+                    $techmap93454$auto$abc_ops_reintegrate.cc:611:reintegrate$92688.A[1]      2 2.5ms
+                                              $techmap29879$auto$ff.cc:337:slice$13082.D      1 2.5ms
+                                            $techmap94297$abc$92551$lut$aiger$o4782.A[2]      1 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][30]      2 2.4ms
+                                            $techmap95625$abc$92551$lut$aiger$o4279.A[2]      1 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[11][7]      2 2.4ms
+                                        $techmap93619$abc$92551$lut$aiger92550$4711.A[2]      3 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[6][24]      2 2.4ms
+                    $techmap93442$auto$abc_ops_reintegrate.cc:611:reintegrate$92700.A[1]      2 2.4ms
+                                        $techmap94553$abc$92551$lut$aiger92550$4965.A[1]      4 2.4ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[31]      4 2.4ms
+                    $techmap93436$auto$abc_ops_reintegrate.cc:611:reintegrate$92706.A[0]      3 2.4ms
+                                        $techmap93557$abc$92551$lut$aiger92550$3854.A[3]      1 2.4ms
+                                            $techmap95043$abc$92551$lut$aiger$o5099.A[2]      1 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[6][29]      2 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[6][18]      2 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][21]      2 2.4ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[3][1]      2 2.4ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][29]      2 2.4ms
+                                                                             in_sel_q[2]      1 2.4ms
+                                                                          sh_frame_q[31]      3 2.4ms
+                    $techmap93488$auto$abc_ops_reintegrate.cc:611:reintegrate$92669.A[0]      6 2.4ms
+                                        $techmap93470$abc$92551$lut$aiger92550$3559.A[0]      2 2.3ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[7][3]      2 2.3ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[11]      4 2.3ms
+                                                                          sh_frame_q[46]      1 2.3ms
+                                              $techmap29876$auto$ff.cc:337:slice$13085.D      1 2.3ms
+                                                                          obs_shift_q[7]      1 2.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][26]      2 2.3ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[2][1]      2 2.3ms
+                                                                          sh_frame_q[11]      3 2.3ms
+                                                       dut_cluster.node_cfg_rdata[0][21]      1 2.3ms
+                                        $techmap94921$abc$92551$lut$aiger92550$4631.A[3]      2 2.3ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[2][9]      2 2.3ms
+                                                                         ext_param_q[21]      1 2.3ms
+                                        $techmap94528$abc$92551$lut$aiger92550$4383.A[1]      3 2.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][31]      2 2.3ms
+                                            $techmap94744$abc$92551$lut$aiger$o5127.A[3]      1 2.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[13][9]      2 2.3ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][11]      2 2.3ms
+                                        $techmap93819$abc$92551$lut$aiger92550$4115.A[3]      2 2.3ms
+                    $techmap93517$auto$abc_ops_reintegrate.cc:611:reintegrate$92646.A[2]      4 2.2ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][17]      2 2.2ms
+                                        $techmap94049$abc$92551$lut$aiger92550$4100.A[2]      1 2.2ms
+                                                                  $abc$92551$aiger$i1710      1 2.2ms
+                                            $techmap94957$abc$92551$lut$aiger$o5107.A[2]      1 2.2ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[2][0]      2 2.2ms
+                                            $techmap94301$abc$92551$lut$aiger$o4928.A[2]      1 2.2ms
+                    $techmap93442$auto$abc_ops_reintegrate.cc:611:reintegrate$92700.A[0]      3 2.2ms
+                                        $techmap94394$abc$92551$lut$aiger92550$4303.A[4]      1 2.2ms
+                                                                  $abc$92551$aiger$i1670      1 2.2ms
+                    $techmap93440$auto$abc_ops_reintegrate.cc:611:reintegrate$92702.A[0]      3 2.2ms
+                                        $techmap94732$abc$92551$lut$aiger92550$5542.A[3]      2 2.2ms
+                                                                          sh_frame_q[28]      3 2.2ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[1][8]      2 2.2ms
+                    $techmap93750$auto$abc_ops_reintegrate.cc:611:reintegrate$92586.A[1]      3 2.2ms
+                                        $techmap94794$abc$92551$lut$aiger92550$4551.A[4]      1 2.2ms
+                                       $techmap94518$abc$92551$lut$aiger92550$13692.A[4]      1 2.2ms
+                                            $techmap94519$abc$92551$lut$aiger$o5019.A[4]      1 2.2ms
+                                        $techmap93872$abc$92551$lut$aiger92550$4489.A[3]      2 2.2ms
+                                        $techmap95331$abc$92551$lut$aiger92550$9288.A[4]      1 2.1ms
+                                        $techmap95022$abc$92551$lut$aiger92550$7569.A[2]      1 2.1ms
+                                                       dut_cluster.node_cfg_rdata[0][15]      1 2.1ms
+                                        $techmap93983$abc$92551$lut$aiger92550$3923.A[4]      2 2.1ms
+                                                       dut_cluster.node_cfg_rdata[0][16]      1 2.1ms
+                                        $techmap93764$abc$92551$lut$aiger92550$3720.A[2]      5 2.1ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[13][18]      2 2.1ms
+                                                                  $abc$92551$aiger$o2435      1 2.1ms
+                                            $techmap94209$abc$92551$lut$aiger$o4678.A[2]      1 2.1ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[4]      4 2.1ms
+                                        $techmap93994$abc$92551$lut$aiger92550$3998.A[4]      2 2.1ms
+                                        $techmap93463$abc$92551$lut$aiger92550$3529.A[0]      1 2.1ms
+                                        $techmap93560$abc$92551$lut$aiger92550$4422.A[3]      2 2.1ms
+                                        $techmap94387$abc$92551$lut$aiger92550$4298.A[4]      1 2.1ms
+                                                                        ext_dst_cid_q[2]      1 2.1ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[1][9]      2 2.1ms
+                                        $techmap94377$abc$92551$lut$aiger92550$4289.A[4]      1 2.1ms
+                                        $techmap94921$abc$92551$lut$aiger92550$4631.A[2]      3 2.1ms
+                                                                          sh_frame_q[17]      3 2.1ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[6][14]      2 2.1ms
+                    $techmap93758$auto$abc_ops_reintegrate.cc:611:reintegrate$92581.A[2]      4 2.1ms
+                                                                  $abc$92551$aiger$o2381      1 2.1ms
+                                        $techmap94048$abc$92551$lut$aiger92550$6077.A[2]      3 2.1ms
+                                            $techmap95004$abc$92551$lut$aiger$o5103.A[1]      1 2.1ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[10][4]      2 2.1ms
+                                            $techmap94667$abc$92551$lut$aiger$o4348.A[2]      1 2.0ms
+                                        $techmap93464$abc$92551$lut$aiger92550$3534.A[0]      1 2.0ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[10][31]      2 2.0ms
+        $abc$92551$flatten\dut_cluster.\gen_core[0].node_inst.$0\fifo_param_q[14][31:0][23]      1 2.0ms
+                                        $techmap93767$abc$92551$lut$aiger92550$4163.A[3]      2 2.0ms
+                                        $techmap94191$abc$92551$lut$aiger92550$6288.A[0]      1 2.0ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][19]      2 2.0ms
+                                            $techmap95103$abc$92551$lut$aiger$o4887.A[4]      1 2.0ms
+                                        $techmap95272$abc$92551$lut$aiger92550$8357.A[2]      1 2.0ms
+                                                                           cfg_addr_q[1]      4 2.0ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[5][9]      2 2.0ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[4][8]      2 2.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][13]      2 2.0ms
+                                        $techmap93470$abc$92551$lut$aiger92550$3559.A[2]      2 2.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][26]      2 2.0ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[6][1]      2 2.0ms
+                                                                             ext_valid_q      5 2.0ms
+                                    dut_cluster.gen_core[0].node_inst.bram_b_rdata_w[20]      4 2.0ms
+                                       $techmap94518$abc$92551$lut$aiger92550$13692.A[2]      1 2.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[13][0]      2 2.0ms
+                                            $techmap93952$abc$92551$lut$aiger$o3022.A[1]      3 2.0ms
+                                       $techmap94349$abc$92551$lut$aiger92550$13036.A[4]      1 2.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[15][9]      2 2.0ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][21]      2 2.0ms
+                                        $techmap93667$abc$92551$lut$aiger92550$4687.A[3]      2 1.9ms
+                                                                          sh_frame_q[10]      3 1.9ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[9][1]      2 1.9ms
+                                                                  $abc$92551$aiger$o4068      1 1.9ms
+                    $techmap93453$auto$abc_ops_reintegrate.cc:611:reintegrate$92689.A[0]      3 1.9ms
+                                                                           cfg_addr_q[3]      4 1.9ms
+                                        $techmap93890$abc$92551$lut$aiger92550$4393.A[4]      1 1.9ms
+                                        $techmap94440$abc$92551$lut$aiger92550$4322.A[4]      1 1.9ms
+                                        $techmap93688$abc$92551$lut$aiger92550$3870.A[1]      3 1.9ms
+                                            $techmap94064$abc$92551$lut$aiger$o4543.A[0]      1 1.9ms
+                                       $techmap94758$abc$92551$lut$aiger92550$11865.A[4]      1 1.9ms
+                                  dut_cluster.gen_core[0].node_inst.cme_updated_state[3]      4 1.9ms
+                                       $techmap94851$abc$92551$lut$aiger92550$10680.A[4]      1 1.9ms
+                                        $techmap94548$abc$92551$lut$aiger92550$4921.A[0]      3 1.9ms
+                                            $techmap95545$abc$92551$lut$aiger$o4949.A[2]      1 1.9ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[3][4]      2 1.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][23]      2 1.9ms
+                                        $techmap93464$abc$92551$lut$aiger92550$3534.A[1]      1 1.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][14]      2 1.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][17]      2 1.9ms
+                                            $techmap94507$abc$92551$lut$aiger$o4834.A[1]      1 1.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][14]      2 1.9ms
+                    $techmap93450$auto$abc_ops_reintegrate.cc:611:reintegrate$92692.A[1]      2 1.9ms
+                                            $techmap94421$abc$92551$lut$aiger$o3962.A[2]      1 1.9ms
+                                            $techmap94889$abc$92551$lut$aiger$o4702.A[2]      1 1.9ms
+                                        $techmap93512$abc$92551$lut$aiger92550$3518.A[2]      2 1.9ms
+                                        $techmap93748$abc$92551$lut$aiger92550$4836.A[1]      3 1.9ms
+                                        $techmap94553$abc$92551$lut$aiger92550$4965.A[3]      4 1.9ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][16]      2 1.8ms
+                                                                          sh_frame_q[33]      3 1.8ms
+                    $techmap93725$auto$abc_ops_reintegrate.cc:611:reintegrate$92591.A[2]      1 1.8ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[9][0]      2 1.8ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][20]      2 1.8ms
+                                            $techmap94725$abc$92551$lut$aiger$o4289.A[2]      1 1.8ms
+                                        $techmap94150$abc$92551$lut$aiger92550$4144.A[4]      2 1.8ms
+                                             $techmap93510$abc$92551$lut$aiger$o575.A[0]      4 1.8ms
+                                        $techmap93466$abc$92551$lut$aiger92550$3539.A[1]      1 1.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[7][30]      2 1.8ms
+                                                                  $abc$92551$aiger$i1666      1 1.8ms
+                                        $techmap93469$abc$92551$lut$aiger92550$3552.A[2]      2 1.8ms
+                                                                            in_data_q[3]      2 1.8ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[2][7]      2 1.8ms
+                                       $techmap95116$abc$92551$lut$aiger92550$14236.A[4]      1 1.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][16]      2 1.8ms
+                                        $techmap94004$abc$92551$lut$aiger92550$4054.A[4]      2 1.8ms
+                                       $techmap95134$abc$92551$lut$aiger92550$11402.A[2]      1 1.8ms
+                                        $techmap94431$abc$92551$lut$aiger92550$5364.A[4]      1 1.8ms
+                                              $techmap29883$auto$ff.cc:337:slice$13078.D      1 1.8ms
+                    $techmap93858$auto$abc_ops_reintegrate.cc:611:reintegrate$92560.A[3]      2 1.8ms
+                                                                  $abc$92551$aiger$i1712      1 1.8ms
+                    $techmap93433$auto$abc_ops_reintegrate.cc:611:reintegrate$92709.A[1]      2 1.8ms
+                                        $techmap93466$abc$92551$lut$aiger92550$3539.A[0]      1 1.8ms
+                                        $techmap93667$abc$92551$lut$aiger92550$4687.A[2]      3 1.8ms
+                                                                          sh_frame_q[26]      3 1.8ms
+                                             $auto$alumacc.cc:548:replace_alu$10457.Y[0]      2 1.8ms
+                                            $techmap95510$abc$92551$lut$aiger$o4531.A[1]      1 1.8ms
+                    $techmap93435$auto$abc_ops_reintegrate.cc:611:reintegrate$92707.A[1]      2 1.8ms
+                                        $techmap94005$abc$92551$lut$aiger92550$4059.A[2]      3 1.8ms
+                                        $techmap94106$abc$92551$lut$aiger92550$5616.A[0]      1 1.8ms
+                                        $techmap93990$abc$92551$lut$aiger92550$3979.A[2]      3 1.8ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[19]      4 1.8ms
+                                              $techmap29902$auto$ff.cc:337:slice$13059.D      1 1.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[6][11]      2 1.8ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[2][29]      2 1.8ms
+                                        $techmap94024$abc$92551$lut$aiger92550$6069.A[3]      4 1.7ms
+                                            $techmap95377$abc$92551$lut$aiger$o4397.A[3]      1 1.7ms
+                                        $techmap94081$abc$92551$lut$aiger92550$8381.A[0]      1 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][18]      2 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[1][22]      2 1.7ms
+                    $techmap93750$auto$abc_ops_reintegrate.cc:611:reintegrate$92586.A[0]      2 1.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[15][15]      2 1.7ms
+                                                                    $abc$92551$aiger$o57      2 1.7ms
+                                            $techmap95107$abc$92551$lut$aiger$o4039.A[2]      1 1.7ms
+                                                                          ext_param_q[5]      1 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][10]      2 1.7ms
+                                        $techmap94530$abc$92551$lut$aiger92550$9998.A[2]      1 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[14][6]      2 1.7ms
+                                        $techmap93595$abc$92551$lut$aiger92550$4214.A[4]      1 1.7ms
+                                            $techmap94967$abc$92551$lut$aiger$o4367.A[2]      1 1.7ms
+                                        $techmap94951$abc$92551$lut$aiger92550$4640.A[2]      1 1.7ms
+                                                                  $abc$92551$aiger$o4067      1 1.7ms
+                                            $techmap95379$abc$92551$lut$aiger$o4801.A[2]      1 1.7ms
+                                                                  $abc$92551$aiger$o4066      1 1.7ms
+                                        $techmap93462$abc$92551$lut$aiger92550$3528.A[1]      1 1.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[15][24]      2 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[3][14]      2 1.7ms
+                                        $techmap93996$abc$92551$lut$aiger92550$4008.A[3]      2 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[15][2]      2 1.7ms
+                                       $techmap95133$abc$92551$lut$aiger92550$11397.A[4]      1 1.7ms
+                    $techmap93569$auto$abc_ops_reintegrate.cc:611:reintegrate$92617.A[3]      1 1.7ms
+                                                                  $abc$92551$aiger$o2423      1 1.7ms
+                                        $techmap93728$abc$92551$lut$aiger92550$4803.A[3]      2 1.7ms
+                    $techmap93458$auto$abc_ops_reintegrate.cc:611:reintegrate$92684.A[1]      2 1.7ms
+                                                                          sh_frame_q[32]      3 1.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[11][14]      2 1.7ms
+                                        $techmap94006$abc$92551$lut$aiger92550$4064.A[4]      2 1.7ms
+                                       $techmap94758$abc$92551$lut$aiger92550$11865.A[2]      1 1.7ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[5][27]      2 1.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[14][26]      2 1.7ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][13]      2 1.7ms
+                                        $techmap93891$abc$92551$lut$aiger92550$4398.A[3]      2 1.7ms
+                                        $techmap94504$abc$92551$lut$aiger92550$4369.A[4]      1 1.7ms
+                                       $techmap94104$abc$92551$lut$aiger92550$12512.A[4]      1 1.7ms
+                                        $techmap94548$abc$92551$lut$aiger92550$4921.A[3]      4 1.7ms
+                                        $techmap93559$abc$92551$lut$aiger92550$4417.A[3]      2 1.7ms
+                    $techmap93457$auto$abc_ops_reintegrate.cc:611:reintegrate$92685.A[1]      2 1.6ms
+                                            $techmap94119$abc$92551$lut$aiger$o5179.A[2]      1 1.6ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[1][4]      2 1.6ms
+                                            $techmap94386$abc$92551$lut$aiger$o4671.A[2]      1 1.6ms
+                                    dut_cluster.gen_core[0].node_inst.fifo_param_q[0][5]      2 1.6ms
+                                       $techmap93700$abc$92551$lut$aiger92550$13545.A[1]      1 1.6ms
+                                            $techmap94898$abc$92551$lut$aiger$o4474.A[2]      1 1.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[8][20]      2 1.6ms
+                                       $techmap95239$abc$92551$lut$aiger92550$13365.A[2]      1 1.6ms
+                                            $techmap94172$abc$92551$lut$aiger$o3829.A[2]      1 1.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[0][14]      2 1.6ms
+                                                                  $abc$92551$aiger$o2363      2 1.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[12][27]      2 1.6ms
+                                       $techmap94243$abc$92551$lut$aiger92550$13813.A[4]      1 1.6ms
+                                            $techmap94987$abc$92551$lut$aiger$o4032.A[2]      1 1.6ms
+                    $techmap93835$auto$abc_ops_reintegrate.cc:611:reintegrate$92564.A[2]      1 1.6ms
+                    $techmap93737$auto$abc_ops_reintegrate.cc:611:reintegrate$92589.A[2]      1 1.6ms
+                                            $techmap94703$abc$92551$lut$aiger$o4020.A[2]      1 1.6ms
+                                       $techmap94426$abc$92551$lut$aiger92550$12792.A[0]      1 1.6ms
+                                            $techmap94575$abc$92551$lut$aiger$o4475.A[1]      1 1.6ms
+                                        $techmap94490$abc$92551$lut$aiger92550$5400.A[2]      1 1.6ms
+                                        $techmap93854$abc$92551$lut$aiger92550$4238.A[3]      2 1.6ms
+                                  dut_cluster.gen_core[0].node_inst.fifo_param_q[13][23]      2 1.6ms
+                                        $techmap93595$abc$92551$lut$aiger92550$4214.A[2]      3 1.6ms
+                                        $techmap93685$abc$92551$lut$aiger92550$3849.A[4]      1 1.6ms
+                    $techmap93635$auto$abc_ops_reintegrate.cc:611:reintegrate$92606.A[3]      1 1.6ms
+                                            $techmap94920$abc$92551$lut$aiger$o4318.A[2]      1 1.6ms
+                                      dut_cluster.gen_core[0].node_inst.fifo_cid_q[3][5]      2 1.6ms
+                                                                         ext_param_q[25]      1 1.6ms
+                    $techmap93882$auto$abc_ops_reintegrate.cc:611:reintegrate$92556.A[4]      1 1.6ms
+                                     dut_cluster.gen_core[0].node_inst.fifo_cid_q[13][5]      2 1.6ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][31]      2 1.6ms
+                                       $techmap94071$abc$92551$lut$aiger92550$10935.A[0]      1 1.6ms
+                                            $techmap94406$abc$92551$lut$aiger$o4212.A[2]      1 1.6ms
+                                        $techmap93745$abc$92551$lut$aiger92550$4822.A[4]      1 1.6ms
+                                                                          sh_frame_q[25]      3 1.6ms
+                                            $techmap94143$abc$92551$lut$aiger$o4147.A[2]      1 1.6ms
+                                       $techmap93907$abc$92551$lut$not$aiger92550$2165.A      2 1.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[9][31]      2 1.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[4][27]      2 1.5ms
+                                            $techmap95407$abc$92551$lut$aiger$o5069.A[3]      1 1.5ms
+                                            $techmap94496$abc$92551$lut$aiger$o4601.A[2]      1 1.5ms
+                    $techmap93538$auto$abc_ops_reintegrate.cc:611:reintegrate$92633.A[0]      3 1.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[12][1]      2 1.5ms
+                                        $techmap94009$abc$92551$lut$aiger92550$4086.A[4]      2 1.5ms
+                                            $techmap94344$abc$92551$lut$aiger$o4845.A[2]      1 1.5ms
+                                            $techmap95425$abc$92551$lut$aiger$o4652.A[2]      1 1.5ms
+                                            $techmap95103$abc$92551$lut$aiger$o4887.A[3]      1 1.5ms
+                                   dut_cluster.gen_core[0].node_inst.fifo_param_q[12][3]      2 1.5ms
+                                                                          cfg_wdata_q[0]      1 1.5ms
+                                        $techmap94867$abc$92551$lut$aiger92550$4597.A[1]      3 1.5ms
+                                       $techmap93945$abc$92551$lut$not$aiger92550$1986.A      6 1.5ms
+                                        $techmap95397$abc$92551$lut$aiger92550$8066.A[2]      1 1.5ms
+                                 dut_cluster.gen_core[0].node_inst.cme_updated_state[18]      4 1.5ms
+                                        $techmap93474$abc$92551$lut$aiger92550$3577.A[1]      1 1.5ms
+                                            $techmap94651$abc$92551$lut$aiger$o5009.A[2]      1 1.5ms
+                                            $techmap94832$abc$92551$lut$aiger$o4468.A[3]      1 1.5ms
+                                        $techmap94899$abc$92551$lut$aiger92550$5640.A[4]      2 1.5ms
+                                        $techmap94833$abc$92551$lut$aiger92550$4575.A[2]      3 1.5ms
+Info: Router2 time 17.77s
+Info: Running router1 to check that route is legal...
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 0 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:          0 |        0          0 |    0     0 |         0|       0.35       0.35|
+Info: Routing complete.
+Info: Router1 time 0.35s
+Info: Checksum: 0x253f14e2
+
+Info: Critical path report for clock 'clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$12725.Q
+Info:    routing  0.64  0.99 Net $techmap93462$abc$92551$lut$aiger92550$3528.A[1] (173,36) -> (163,30)
+Info:                          Sink $abc$92551$lut$aiger92550$3528.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  1.11 Source $abc$92551$lut$aiger92550$3528.O6
+Info:    routing  0.51  1.62 Net $techmap93464$abc$92551$lut$aiger92550$3534.A[5] (163,30) -> (163,30)
+Info:                          Sink $abc$92551$lut$aiger92550$3534.A6
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  1.74 Source $abc$92551$lut$aiger92550$3534.O6
+Info:    routing  0.64  2.39 Net $techmap93468$abc$92551$lut$aiger92550$3545.A[3] (163,30) -> (163,35)
+Info:                          Sink $abc$92551$lut$aiger92550$3545.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  2.51 Source $abc$92551$lut$aiger92550$3545.O6
+Info:    routing  0.51  3.02 Net $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[5] (163,35) -> (163,35)
+Info:                          Sink $auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A6
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  3.14 Source $auto$abc_ops_reintegrate.cc:611:reintegrate$92680.O6
+Info:    routing  0.34  3.48 Net $abc$92551$aiger$o576 (163,35) -> (162,36)
+Info:                          Sink $abc$92551$aiger$o576$LUT$$auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].A2
+Info:      logic  0.12  3.60 Source $abc$92551$aiger$o576$LUT$$auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].O6
+Info:    routing  0.00  3.60 Net $abc$92551$aiger$o576$legal$$auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1] (162,36) -> (162,36)
+Info:                          Sink $auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.S1
+Info:      logic  0.62  4.23 Source $auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.O3
+Info:    routing  0.20  4.43 Net $techmap93511$abc$92551$lut$aiger92550$3613.A[3] (162,36) -> (162,36)
+Info:                          Sink $abc$92551$lut$aiger92550$3613.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.15  4.57 Source $abc$92551$lut$aiger92550$3613.O5
+Info:    routing  0.33  4.90 Net $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[0] (162,36) -> (162,35)
+Info:                          Sink $abc$92551$lut$aiger92550$3617.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.15  5.05 Source $abc$92551$lut$aiger92550$3617.O5
+Info:    routing  0.74  5.79 Net $techmap93525$abc$92551$lut$aiger92550$3621.A[1] (162,35) -> (162,38)
+Info:                          Sink $abc$92551$lut$aiger92550$3621.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  5.91 Source $abc$92551$lut$aiger92550$3621.O6
+Info:    routing  0.65  6.57 Net $techmap93528$auto$abc_ops_reintegrate.cc:611:reintegrate$92643.A[3] (162,38) -> (143,38)
+Info:                          Sink $abc$92551$lut$aiger$o3061.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  6.69 Source $abc$92551$lut$aiger$o3061.O6
+Info:    routing  1.98  8.68 Net $abc$92551$auto$simple.cc:210:make_patterns_logic$8679 (143,38) -> (143,19)
+Info:                          Sink $auto$ff.cc:337:slice$13229.CE
+Info:      setup  0.10  8.78 Source $auto$ff.cc:337:slice$13229.CE
+Info: 2.25 ns logic, 6.53 ns routing
+
+Info: Max frequency for clock 'clk': 113.92 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 11 endpoint(s)
+Info:          + represents [1,11) endpoint(s)
+Info: [  1222,   1623) |*+
+Info: [  1623,   2024) |**************+
+Info: [  2024,   2425) |*********************************+
+Info: [  2425,   2826) |************************************+
+Info: [  2826,   3227) |**********************************+
+Info: [  3227,   3628) |******+
+Info: [  3628,   4029) |*+
+Info: [  4029,   4430) |+
+Info: [  4430,   4831) |+
+Info: [  4831,   5232) |*+
+Info: [  5232,   5633) |**+
+Info: [  5633,   6034) |***+
+Info: [  6034,   6435) |**+
+Info: [  6435,   6836) |*******+
+Info: [  6836,   7237) |***************************+
+Info: [  7237,   7638) |************************************************************
+Info: [  7638,   8039) |***********************************+
+Info: [  8039,   8440) |************+
+Info: [  8440,   8841) |*********+
+Info: [  8841,   9242) |**********+
+
+Info: Critical path report for clock 'clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.35  0.35 Source $auto$ff.cc:337:slice$12725.Q
+Info:    routing  0.64  0.99 Net $techmap93462$abc$92551$lut$aiger92550$3528.A[1] (173,36) -> (163,30)
+Info:                          Sink $abc$92551$lut$aiger92550$3528.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  1.11 Source $abc$92551$lut$aiger92550$3528.O6
+Info:    routing  0.51  1.62 Net $techmap93464$abc$92551$lut$aiger92550$3534.A[5] (163,30) -> (163,30)
+Info:                          Sink $abc$92551$lut$aiger92550$3534.A6
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  1.74 Source $abc$92551$lut$aiger92550$3534.O6
+Info:    routing  0.64  2.39 Net $techmap93468$abc$92551$lut$aiger92550$3545.A[3] (163,30) -> (163,35)
+Info:                          Sink $abc$92551$lut$aiger92550$3545.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  2.51 Source $abc$92551$lut$aiger92550$3545.O6
+Info:    routing  0.51  3.02 Net $techmap93477$auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A[5] (163,35) -> (163,35)
+Info:                          Sink $auto$abc_ops_reintegrate.cc:611:reintegrate$92680.A6
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  3.14 Source $auto$abc_ops_reintegrate.cc:611:reintegrate$92680.O6
+Info:    routing  0.34  3.48 Net $abc$92551$aiger$o576 (163,35) -> (162,36)
+Info:                          Sink $abc$92551$aiger$o576$LUT$$auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].A2
+Info:      logic  0.12  3.60 Source $abc$92551$aiger$o576$LUT$$auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1].O6
+Info:    routing  0.00  3.60 Net $abc$92551$aiger$o576$legal$$auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1] (162,36) -> (162,36)
+Info:                          Sink $auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.S1
+Info:      logic  0.62  4.23 Source $auto$alumacc.cc:548:replace_alu$10448.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$.O3
+Info:    routing  0.20  4.43 Net $techmap93511$abc$92551$lut$aiger92550$3613.A[3] (162,36) -> (162,36)
+Info:                          Sink $abc$92551$lut$aiger92550$3613.A4
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.15  4.57 Source $abc$92551$lut$aiger92550$3613.O5
+Info:    routing  0.33  4.90 Net $auto$abc_ops_reintegrate.cc:611:reintegrate$92647.A[0] (162,36) -> (162,35)
+Info:                          Sink $abc$92551$lut$aiger92550$3617.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.15  5.05 Source $abc$92551$lut$aiger92550$3617.O5
+Info:    routing  0.74  5.79 Net $techmap93525$abc$92551$lut$aiger92550$3621.A[1] (162,35) -> (162,38)
+Info:                          Sink $abc$92551$lut$aiger92550$3621.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  5.91 Source $abc$92551$lut$aiger92550$3621.O6
+Info:    routing  0.65  6.57 Net $techmap93528$auto$abc_ops_reintegrate.cc:611:reintegrate$92643.A[3] (162,38) -> (143,38)
+Info:                          Sink $abc$92551$lut$aiger$o3061.A2
+Info:                          Defined in:
+Info:                               /home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22
+Info:      logic  0.12  6.69 Source $abc$92551$lut$aiger$o3061.O6
+Info:    routing  1.98  8.68 Net $abc$92551$auto$simple.cc:210:make_patterns_logic$8679 (143,38) -> (143,19)
+Info:                          Sink $auto$ff.cc:337:slice$13229.CE
+Info:      setup  0.10  8.78 Source $auto$ff.cc:337:slice$13229.CE
+Info: 2.25 ns logic, 6.53 ns routing
+
+Info: Max frequency for clock 'clk': 113.92 MHz (PASS at 100.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: * represents 11 endpoint(s)
+Info:          + represents [1,11) endpoint(s)
+Info: [  1222,   1623) |*+
+Info: [  1623,   2024) |**************+
+Info: [  2024,   2425) |*********************************+
+Info: [  2425,   2826) |************************************+
+Info: [  2826,   3227) |**********************************+
+Info: [  3227,   3628) |******+
+Info: [  3628,   4029) |*+
+Info: [  4029,   4430) |+
+Info: [  4430,   4831) |+
+Info: [  4831,   5232) |*+
+Info: [  5232,   5633) |**+
+Info: [  5633,   6034) |***+
+Info: [  6034,   6435) |**+
+Info: [  6435,   6836) |*******+
+Info: [  6836,   7237) |***************************+
+Info: [  7237,   7638) |************************************************************
+Info: [  7638,   8039) |***********************************+
+Info: [  8039,   8440) |************+
+Info: [  8440,   8841) |*********+
+Info: [  8841,   9242) |**********+
+Info: Running post-routing legalisation...
+
+Info: Program finished normally.

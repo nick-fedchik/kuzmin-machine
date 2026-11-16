@@ -1,6 +1,7 @@
 {
-  "timestamp": "2026-11-16T20:38:46.186825+02:00",
+  "timestamp": "2026-11-16T22:44:36.235067+02:00",
   "issue": 252,
+  "followup_issue": 259,
   "experiment": "EXP-GPU-02",
   "evidence_kind": "formal_smt_z3_verification",
   "parameters": {
@@ -9,6 +10,7 @@
     "DATA_WIDTH": 32,
     "ADDR_WIDTH": 4
   },
+  "bmc_h3_slice_note": "30-step BMC H2_H3_safety_bmc uses 1-bit per word data-independence slice (WOLPER_1BIT_SLICE); full 32-bit H3 is proved by bmc t=3 + k-induction ind t=2.",
   "platform": {
     "node": "AORUS-5-SE",
     "system": "Linux",
@@ -22,7 +24,7 @@
     "km_concept_bram_dual_ha.sv": "23120124540b8994612af97a8b8dc8dc3600e49dae359bc5c407dd6a226b075b",
     "km_autonomous_sequencer.sv": "d85172abeb9ccf4e7c7c01fc20fab67d6f67f348164920dc279909a64b35d6c5",
     "kpol_bram_pipeline_axi_ha.sv": "ff60c23962b4c5bae79069499ea09b9d37b4688a0d560207d711d314f5d9fcce",
-    "cfg_p_ha_formal_props.sv": "fcf737f85a9e826b0d0a0f80eae72f0a77a8bd478333caa25a65bba93088688a"
+    "cfg_p_ha_formal_props.sv": "550f3cea541413ef2402a79022afcc35730c1a642d348e37dd0c723702c201b7"
   },
   "verdict": "PASSED",
   "rows": [
@@ -31,7 +33,7 @@
       "check": "H1_H6_base_bmc",
       "engine": "smtbmc z3 bmc t=3",
       "status": "PASSED",
-      "seconds": 0.569,
+      "seconds": 0.54,
       "failed": "",
       "reached": "",
       "unreached": "",
@@ -42,7 +44,7 @@
       "check": "H1_H6_safety_ind",
       "engine": "smtbmc z3 ind t=2",
       "status": "PASSED",
-      "seconds": 182.452,
+      "seconds": 131.466,
       "failed": "",
       "reached": "",
       "unreached": "",
@@ -53,7 +55,7 @@
       "check": "H1_H2_H4_H5_safety_bmc",
       "engine": "smtbmc z3 bmc t=30",
       "status": "PASSED",
-      "seconds": 14.662,
+      "seconds": 10.509,
       "failed": "",
       "reached": "",
       "unreached": "",
@@ -64,7 +66,7 @@
       "check": "H2_H3_safety_bmc",
       "engine": "smtbmc z3 bmc t=30",
       "status": "PASSED",
-      "seconds": 5.889,
+      "seconds": 7.223,
       "failed": "",
       "reached": "",
       "unreached": "",
@@ -75,9 +77,9 @@
       "check": "cover_non_vacuity",
       "engine": "smtbmc z3 cover t=30",
       "status": "PASSED",
-      "seconds": 159.715,
+      "seconds": 154.487,
       "failed": "",
-      "reached": "C1_full_online_update_lifecycle;C2_swap_after_pending_wait;C3_back_to_back_events_across_swap",
+      "reached": "C1_full_online_update_lifecycle;C2_swap_after_pending_wait;C3_back_to_back_events_across_swap;C4_b_we_at_swap",
       "unreached": "",
       "vcd": ""
     },
@@ -86,7 +88,7 @@
       "check": "mutant_bmc",
       "engine": "smtbmc z3 bmc t=18",
       "status": "FAILED",
-      "seconds": 2.108,
+      "seconds": 2.737,
       "failed": "H3_no_torn_descriptor_read",
       "reached": "",
       "unreached": "",
@@ -97,7 +99,7 @@
       "check": "mutant_bmc",
       "engine": "smtbmc z3 bmc t=16",
       "status": "FAILED",
-      "seconds": 1.751,
+      "seconds": 1.559,
       "failed": "H3_no_torn_descriptor_read",
       "reached": "",
       "unreached": "",
@@ -108,7 +110,7 @@
       "check": "mutant_bmc",
       "engine": "smtbmc z3 bmc t=20",
       "status": "FAILED",
-      "seconds": 18.15,
+      "seconds": 29.655,
       "failed": "H6_live_state_preserved",
       "reached": "",
       "unreached": "",
@@ -119,11 +121,31 @@
       "check": "mutant_bmc",
       "engine": "smtbmc z3 bmc t=10",
       "status": "FAILED",
-      "seconds": 0.417,
+      "seconds": 0.644,
       "failed": "H4_zero_sequencer_stall",
       "reached": "",
       "unreached": "",
       "vcd": "M4_block_trigger_on_shadow.vcd"
+    },
+    {
+      "design": "M5_skip_port_a_resync: broken Port-A dirty_word_q resync after swap leaves stale rule from patch 1 on partial patch 2",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=20",
+      "status": "FAILED",
+      "seconds": 7.724,
+      "failed": "H7_multi_patch_rule_persistence",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M5_skip_port_a_resync.vcd"
     }
-  ]
+  ],
+  "sim_c4_b_we_at_swap": {
+    "evidence_kind": "rtl_simulation_iverilog",
+    "not_physical_hil": true,
+    "b_we_at_swap_total": 4678,
+    "b_we_at_swap_no_override": 4629,
+    "b_we_at_swap_with_override": 49,
+    "total_bank_swaps": 10003,
+    "seconds": 109.788
+  }
 }

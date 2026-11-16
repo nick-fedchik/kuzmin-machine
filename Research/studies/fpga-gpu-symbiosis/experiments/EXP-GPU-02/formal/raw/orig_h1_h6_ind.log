@@ -1,8 +1,8 @@
-# cmd: yosys-smtbmc --noprogress -s z3 -i -t 2 /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_h1_h6_ind.smt2
-# timestamp: 2026-11-16T20:34:52.310175+02:00
+# cmd: yosys-smtbmc --noprogress -s z3 -i -t 2 /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_h1_h6_ind.smt2
+# timestamp: 2026-11-16T22:38:33.274911+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Trying induction in step 2..
 ##   0:00:00  Trying induction in step 1..
 ##   0:01:00  waiting for solver (1 minute)
-##   0:03:02  Temporal induction successful.
-##   0:03:02  Status: PASSED
+##   0:02:11  Temporal induction successful.
+##   0:02:11  Status: PASSED
