@@ -1,0 +1,4 @@
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/M3_cyclic_cascade.ys
+# timestamp: 2026-11-15T23:26:30.935377+02:00
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/M3_cyclic_cascade_seq.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/M3_cyclic_cascade_seq.sv:236

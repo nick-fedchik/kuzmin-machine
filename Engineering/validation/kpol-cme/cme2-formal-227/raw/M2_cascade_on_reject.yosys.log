@@ -1,0 +1,4 @@
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/M2_cascade_on_reject.ys
+# timestamp: 2026-11-15T23:26:29.485408+02:00
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/M2_cascade_on_reject_seq.sv:239
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-227/Engineering/validation/kpol-cme/cme2-formal-227/raw/_work/M2_cascade_on_reject_seq.sv:238
