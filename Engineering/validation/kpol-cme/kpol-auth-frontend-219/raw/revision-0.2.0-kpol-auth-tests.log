@@ -1,0 +1,38 @@
+# cleaned with: sed 's/[[:space:]]*$//'
+# command: python3 -m pytest Engineering/sw/kpol-auth/tests/ -v
+# date: 2026-11-16T11:38:27+02:00
+# commit: deb9434e09c681fe96f6d23446f105e026a1f8fe
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-243
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 17 items
+
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_all_uncertainty_points_default_to_fail_closed PASSED [  5%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics PASSED [ 11%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_mutant_controls_catch_lexer_cst_and_uncertainty_defects PASSED [ 17%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_paired_brackets_and_negative_mismatch_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_paired_brackets_and_negative_mismatch_controls PASSED [ 23%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc009_min_max_bounds_and_negative_controls PASSED [ 29%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc015_open_close_bracket_stubs_and_negative_controls PASSED [ 35%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc016_hash_escaping_and_name_length_negative_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc016_hash_escaping_and_name_length_negative_controls PASSED [ 41%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls PASSED [ 47%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc018_def_bit_order_and_child_uninit_negative_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc018_def_bit_order_and_child_uninit_negative_controls PASSED [ 52%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_can_switch_all_uncertainties_to_record_diagnostic
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_can_switch_all_uncertainties_to_record_diagnostic PASSED [ 58%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_rejects_unknown_code_or_policy PASSED [ 64%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_u07_name_length_unit_is_configurable_for_multibyte_cyrillic PASSED [ 70%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_utf8_byte_offsets_and_diagnostic_spans_for_cyrillic_and_symbols PASSED [ 76%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_bram_image_unpacking_matches_cme_raw_1_layout PASSED [ 82%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_fail_closed_negative_controls PASSED [ 88%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_mutant_controls_catch_opcode_exit_and_bram_cycle_defects PASSED [ 94%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_thermal_graph_lowering_executes_identically_on_reference_vm PASSED [100%]
+
+==================== 17 passed, 40 subtests passed in 0.09s ====================
+exit_code=0

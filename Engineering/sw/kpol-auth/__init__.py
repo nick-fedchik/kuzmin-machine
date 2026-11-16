@@ -19,6 +19,14 @@ if __package__:
         parse_kpol_auth,
     )
     from .lexer import Token, tokenize
+    from .lowering import (
+        KpolAuthLoweringError,
+        LoweredArtifact,
+        LoweredConcept,
+        LoweredSubscription,
+        km_pack_instr,
+        lower_kpol_auth,
+    )
     from .uncertainty import (
         UNCERTAINTY_REGISTRY,
         AuthFrontendConfig,
@@ -42,7 +50,11 @@ __all__ = [
     "GroupBoundsCST",
     "IdentifierCST",
     "KpolAuthError",
+    "KpolAuthLoweringError",
     "LiteralCST",
+    "LoweredArtifact",
+    "LoweredConcept",
+    "LoweredSubscription",
     "ParamCST",
     "ProgramCST",
     "Span",
@@ -51,6 +63,8 @@ __all__ = [
     "UNCERTAINTY_REGISTRY",
     "UncertaintyPoint",
     "UninitCST",
+    "km_pack_instr",
+    "lower_kpol_auth",
     "parse_kpol_auth",
     "tokenize",
 ]

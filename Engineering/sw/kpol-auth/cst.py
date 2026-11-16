@@ -113,6 +113,19 @@ BRACKET_KIND = {
 }
 
 
+def _merge_spans(start: Span, end: Span) -> Span:
+    return Span(
+        line=start.line,
+        column=start.column,
+        offset=start.offset,
+        length=(end.offset + end.length) - start.offset,
+        end_line=end.end_line,
+        end_column=end.end_column,
+        byte_offset=start.byte_offset,
+        byte_end=end.byte_end,
+    )
+
+
 class _Parser:
     def __init__(
         self,
@@ -163,12 +176,7 @@ class _Parser:
                     span=right.span,
                     diagnostics=self.diagnostics,
                 )
-            span = Span(
-                left.span.line,
-                left.span.column,
-                left.span.offset,
-                (right.span.offset + right.span.length) - left.span.offset,
-            )
+            span = _merge_spans(left.span, right.span)
             return AssignmentCST(span=span, target=left, op_token=op, value=right)
 
         while tok is not None and tok.kind == "SUBSCRIPTION_SEQ":
@@ -182,12 +190,7 @@ class _Parser:
                     span=right.span,
                     diagnostics=self.diagnostics,
                 )
-            span = Span(
-                left.span.line,
-                left.span.column,
-                left.span.offset,
-                (right.span.offset + right.span.length) - left.span.offset,
-            )
+            span = _merge_spans(left.span, right.span)
             left = SubscriptionSeqCST(span=span, left=left, dot_token=dot, right=right)
             tok = self.peek()
 
@@ -235,12 +238,7 @@ class _Parser:
                     span=op.span,
                     diagnostics=self.diagnostics,
                 )
-            span = Span(
-                left.span.line,
-                left.span.column,
-                left.span.offset,
-                (right.span.offset + right.span.length) - left.span.offset,
-            )
+            span = _merge_spans(left.span, right.span)
             left = BinaryExprCST(span=span, left=left, op_token=op, right=right)
         return left
 
@@ -301,12 +299,7 @@ class _Parser:
 
         eff_min = min_val if min_val is not None else 1
         eff_max = (max_val + 1) if max_val is not None else 1
-        span = Span(
-            target.span.line,
-            target.span.column,
-            target.span.offset,
-            (bounds_group.span.offset + bounds_group.span.length) - target.span.offset,
-        )
+        span = _merge_spans(target.span, bounds_group.span)
         return GroupBoundsCST(
             span=span,
             target=target,
@@ -347,12 +340,7 @@ class _Parser:
                     span=at_tok.span,
                     diagnostics=self.diagnostics,
                 )
-            span = Span(
-                at_tok.span.line,
-                at_tok.span.column,
-                at_tok.span.offset,
-                (target.span.offset + target.span.length) - at_tok.span.offset,
-            )
+            span = _merge_spans(at_tok.span, target.span)
             return ParamCST(span=span, at_token=at_tok, target=target)
 
         if tok.kind in ("LBRACE", "LPAREN", "LBRACKET"):
@@ -428,12 +416,7 @@ class _Parser:
             for el in group.elements:
                 if isinstance(el, LiteralCST) and el.token.kind == "INT":
                     bits.append(int(el.token.value))
-            span = Span(
-                ident.span.line,
-                ident.span.column,
-                ident.span.offset,
-                (group.span.offset + group.span.length) - ident.span.offset,
-            )
+            span = _merge_spans(ident.span, group.span)
             return DefLayoutCST(
                 span=span,
                 keyword=ident,
@@ -448,18 +431,15 @@ class _Parser:
                 codepoints_len = len(val)
                 utf8_len = len(val.encode("utf-8"))
                 unit = self.config.name_length_unit
-                exceeds = False
                 if unit == "codepoints":
                     exceeds = codepoints_len > 16
-                elif unit == "utf8_bytes":
-                    exceeds = utf8_len > 16
                 else:
-                    exceeds = codepoints_len > 16 or utf8_len > 16
+                    exceeds = utf8_len > 16
                 if exceeds:
                     emit_uncertainty(
                         "KPOL-AUTH-U07",
                         (
-                            f"Одиниця довжини Name (режим '{unit}': codepoints={codepoints_len}, "
+                            f"Одиниця довжини Name (одиниця '{unit}': codepoints={codepoints_len}, "
                             f"utf8_bytes={utf8_len}, межа 16) не визначена автором (RFC-016 п. 3)."
                         ),
                         self.config,
@@ -491,12 +471,7 @@ class _Parser:
                     diagnostics=self.diagnostics,
                 )
 
-        span = Span(
-            ident.span.line,
-            ident.span.column,
-            ident.span.offset,
-            (group.span.offset + group.span.length) - ident.span.offset,
-        )
+        span = _merge_spans(ident.span, group.span)
         return CallOrConstructCST(span=span, name=ident, group=group)
 
     def parse_bracket_group(self) -> BracketGroupCST:
@@ -519,13 +494,7 @@ class _Parser:
                     and el.token.value in ("OpenBracket", "CloseBracket")
                     for el in elements
                 )
-                span = Span(
-                    open_tok.span.line,
-                    open_tok.span.column,
-                    open_tok.span.offset,
-                    (close_tok.span.offset + close_tok.span.length)
-                    - open_tok.span.offset,
-                )
+                span = _merge_spans(open_tok.span, close_tok.span)
                 return BracketGroupCST(
                     span=span,
                     open_token=open_tok,
