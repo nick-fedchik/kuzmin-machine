@@ -1,0 +1,64 @@
+# cmd: yosys synth_xilinx -top kpol_bram_pipeline_pynq_z1_egress_top
+# timestamp: 2026-11-16T11:45:49+02:00
+# commit: 0e01996d4eb35858e9479e5cf8ec88dbfc65a94d
+# host: AORUS-5-SE
+     MUXF7                          16
+     MUXF8                           8
+     OBUF                           18
+     PS7                             1
+     km_pmod_event_egress            1
+     kpol_bram_pipeline_axi          1
+
+=== design hierarchy ===
+
+   kpol_bram_pipeline_pynq_z1_egress_top      1
+     km_pmod_event_egress            1
+     kpol_bram_pipeline_axi          1
+       $paramod$c025ebd37e506c9326b3dad929bb466f81310039\km_autonomous_sequencer      1
+         $paramod\km_concept_micro_engine\DATA_WIDTH=s32'00000000000000000000000000100000      1
+           $paramod$2b1c2d56e1b58d1e1997cc5c41492a9eab282b12\kpol_txn_gate_v2      1
+       km_concept_bram               1
+
+   Number of wires:               2205
+   Number of wire bits:          10417
+   Number of public wires:         349
+   Number of public wire bits:    4197
+   Number of ports:                134
+   Number of port bits:           1174
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               5154
+     BUFG                            1
+     CARRY4                        162
+     FDCE                         1031
+     FDPE                            2
+     FDRE                          608
+     IBUF                            8
+     INV                          1180
+     LUT1                            1
+     LUT2                          330
+     LUT3                          253
+     LUT4                          120
+     LUT5                          189
+     LUT6                         1192
+     MUXF7                          43
+     MUXF8                          14
+     OBUF                           18
+     PS7                             1
+     RAMB36E1                        1
+
+12. Executing CHECK pass (checking for obvious problems).
+Checking module $paramod$2b1c2d56e1b58d1e1997cc5c41492a9eab282b12\kpol_txn_gate_v2...
+Checking module $paramod$c025ebd37e506c9326b3dad929bb466f81310039\km_autonomous_sequencer...
+Checking module $paramod\km_concept_micro_engine\DATA_WIDTH=s32'00000000000000000000000000100000...
+Checking module km_concept_bram...
+Checking module km_pmod_event_egress...
+Checking module kpol_bram_pipeline_axi...
+Checking module kpol_bram_pipeline_pynq_z1_egress_top...
+Found and reported 0 problems.
+
+Warnings: 9 unique messages, 11 total
+End of script. Logfile hash: cc7953cd4b, CPU: user 4.97s system 0.06s, MEM: 153.17 MB peak
+Yosys 0.52 (git sha1 fee39a3284c90249e1d9684cf6944ffbbcbb8f90)
+Time spent: 22% 1x abc (1 sec), 17% 26x read_verilog (1 sec), ...

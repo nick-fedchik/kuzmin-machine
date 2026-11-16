@@ -314,4 +314,3 @@ def test_pynq_z1_egress_top_yosys_synth_xilinx(tmp_path):
         text=True,
     )
     assert res.returncode == 0, res.stdout + res.stderr
-

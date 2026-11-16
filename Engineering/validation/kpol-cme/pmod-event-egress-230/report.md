@@ -1,21 +1,22 @@
-# Звіт #230: RTL-модуль `km_pmod_event_egress.sv` (SPI + 8-бітна шина) та верифікація симуляцією і синтезом XC7
+# Звіт #230 / #241: RTL-модуль `km_pmod_event_egress.sv`, інтеграція в PYNQ-Z1 egress top та закриття #234
 
-* **Версія:** 0.1.0
-* **Дата:** 2026-11-15
+* **Версія:** 0.2.0
+* **Дата:** 2026-11-16
 * **Тип WP:** Report
-* **Issue:** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230) (sub-issue [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226); не закриває `#226`). **PR:** у гілці `feat/230-pmod-event-egress-rtl`.
+* **Issue:** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230), [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234), [#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241) (sub-issue [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226); не закриває `#226`). **PR:** у гілці `feat/241-pmod-top-egress-integration`.
 * **Виконавець:** GitHub Copilot CLI (`gemini-4-hydrogen`). **Рецензент:** не призначений (очікує перехресної рецензії моделлю іншої родини).
-* **Коміт бази, на якому виконано:** `3c89b4e4fe35286e9c9b670553eccf2db5088835`. **Хост / плата:** Linux x86_64 (`AORUS-5-SE`); фізична плата FPGA / GPU не залучалася. **Бітстрім (SHA-256):** не генерувався.
-* **Критерії успіху (зафіксовано до виконання):** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230) та перша інженерна передумова протоколу [EXP-GPU-01](../../../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md).
+* **Коміт коду, на якому знято `*-02.log`:** `0e01996d4eb35858e9479e5cf8ec88dbfc65a94d` (базовий зріз `0.1.0`: `3c89b4e4fe35286e9c9b670553eccf2db5088835`). **Хост / плата:** Linux x86_64 (`AORUS-5-SE`); фізична плата FPGA / GPU не залучалася. **Бітстрім (SHA-256):** не генерувався.
+* **Критерії успіху (зафіксовано до виконання):** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230), [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234), [#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241) та перша інженерна передумова протоколу [EXP-GPU-01](../../../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md).
 
 ---
 
 ## 1. Що не вдалося і обмеження
 
-* **Лише симуляція, лінт і логічний синтез XC7:** усі перевірки у цьому пакеті виконані в симуляції (`iverilog -g2012` + `vvp`), статичному лінті (`verilator --lint-only -Wall`) та логічному синтезі `yosys synth_xilinx` (без P&R `nextpnr-xilinx`, без генерації бітстріму і без статичного таймінгового аналізу на кристалі).
-* **Відсутній фізичний HIL-запуск (`#226` залишається відкритою):** фізичне підключення PYNQ-Z1 (`3.3V LVCMOS`) до Jetson J501 (`1.8V` / буферизовані домени) через перетворювач рівнів та вимірювання логічним аналізатором `RP2040 PIO` не виконувалися.
-* **Обсяг поля маски події:** у 64-бітному кадрі передаються молодші 16 біт маски підписок `event_mask_i[15:0]`; старші 16 біт `event_mask_i[31:16]` у цій версії не пакуються в кадр (закладено в заголовок порту для майбутнього розширення до 128-бітного кадра без зміни інтерфейсу).
-* **Незмінність ядра:** файли в `Engineering/hw/rtl/core/`, `Engineering/hw/rtl/bus/`, `Engineering/hw/scripts/run_open_flow.sh` і `Project/registers/open-work-items.md` не змінювалися.
+* **Лише симуляція (mock `PS7` / `BUFG`), лінт і логічний синтез XC7:** усі перевірки у цьому пакеті виконані в симуляції (`iverilog -g2012` + `vvp` із поведінковими моделями `PS7` та `BUFG`), статичному лінті (`verilator --lint-only -Wall`) та логічному синтезі `yosys synth_xilinx` (без P&R `nextpnr-xilinx`, без генерації бітстріму і без статичного таймінгового аналізу на кристалі).
+* **Фізичний HIL-захват очікує монтажу перетворювача рівнів (`#226` залишається відкритою):** фізичний HIL-захват `RP2040 PIO` між PYNQ-Z1 (`3.3V LVCMOS`) і Jetson J501 (`1.8V`) очікує монтажу спрямованого перетворювача рівнів у межах [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226).
+* **Обсяг поля маски події:** у 64-бітному кадрі передаються молодші 16 біт маски підписок `event_mask_i[15:0]`; старші 16 біт `event_mask_i[31:16]` у цій версії не пакуються в кадр (закладено в заголовок порту для майбутнього розширення без зміни інтерфейсу).
+* **Незмінність ядра та сумісність `CFG-P`:** файли в `Engineering/hw/rtl/core/`, базовий `kpol_bram_pipeline_pynq_z1_top.v`, `Engineering/hw/scripts/run_open_flow.sh`, `Project/registers/open-work-items.md` та попередні сирі логи `raw/*-01.log` не змінювалися. У `kpol_bram_pipeline_axi.sv` додано лише чисті діагностичні виходи `hw_commit_cid_o` та `hw_last_committed_state_o` без зміни логіки ядра чи існуючої поведінки AXI4-Lite.
+* **Межі `run_open_flow.sh` (уточнення #234 п. 5):** скрипт `Engineering/hw/scripts/run_open_flow.sh` виконує `pytest` для тестбенчів та `verilator`/`yosys` безпосередньо для `rtl/core` і `rtl/bus/kpol_bram_pipeline_axi.sv`, тоді як lint, логічний синтез XC7 та наскрізну E2E-симуляцію `km_pmod_event_egress` і `kpol_bram_pipeline_pynq_z1_egress_top` виконує pytest-обгортка [`test_km_pmod_event_egress.py`](../../../hw/tests/test_km_pmod_event_egress.py).
 
 ## 2. Метод
 
@@ -30,33 +31,38 @@
    * Режим `mode_par8_i == 0` (SPI Master Mode 0, CPOL=0, CPHA=0, MSB-first, `clk/2 = 50 МГц`): видає 64 імпульси `spi_sck_o` при `spi_cs_n_o == 0` (`129` тактів активного стану `busy_o`, або `1.29 мкс` при `100 МГц`).
    * Режим `mode_par8_i == 1` (8-бітна джерельно-синхронна паралельна шина, MSB byte first, `clk/2 = 50 МГц`): видає 8 байтів на `par_data_o[7:0]` із `par_valid_o == 1` та 8 імпульсами `par_clk_o` (`17` тактів активного стану `busy_o`, або `170 нс` при `100 МГц`, у межах порогу $`T_{\text{par}} \le 600\text{ нс}`$ з `EXP-GPU-01`).
    * Генерує 1-тактовий строб `event_start_o` при старті прийнятої події (для `GP0` аналізатора `RP2040 PIO`). При надходженні `event_valid_i` під час `busy_o == 1` активна передача не псується, а `drop_count_o` інкрементується.
-2. **Самоперевірний тестбенч [`km_pmod_event_egress_tb.sv`](../../../hw/tb/km_pmod_event_egress_tb.sv) та pytest-обгортка [`test_km_pmod_event_egress.py`](../../../hw/tests/test_km_pmod_event_egress.py):**
-   * Незалежні приймачі-декодери SPI Mode 0 та 8-бітної паралельної шини у SV перевіряють розпаковані поля `tag`, `cid`, `mask16`, `state`, `crc8`, кількість тактів `busy_o`, строб `event_start_o` і лічильники `tx_count_o` / `drop_count_o` (включаючи колізії в обох режимах).
+2. **Самоперевірний тестбенч [`km_pmod_event_egress_tb.sv`](../../../hw/tb/km_pmod_event_egress_tb.sv) та pytest-обгортка [`test_km_pmod_event_egress.py`](../../../hw/tests/test_km_pmod_event_egress.py) (закриття #234):**
+   * Незалежні приймачі-декодери SPI Mode 0 та 8-бітної паралельної шини у SV перевіряють розпаковані поля `tag`, `cid`, `mask16`, `state`, `crc8`, кількість тактів `busy_o`, строб `event_start_o` і лічильники `tx_count_o` / `drop_count_o`.
+   * Додано перевірки станів спокою (`spi_cs_n_o == 1`, `spi_sck_o == 0`, `par_valid_o == 0`, `par_clk_o == 0`), обрамлення `spi_cs_n_o == 0` у `S_SPI_END` та `par_valid_o == 1` у `S_PAR_END`, setup/hold стабільності даних (`>= 10 нс` до фронту, без змін при високому такті), глобальний `watchdog` (`#200000`) і граничні колізії (`event_valid_i` у такті `S_*_END`, у перший такт `S_IDLE`, багатотактовий `event_valid_i`).
    * Незалежний Python-розрахунок CRC-8 (`_py_crc8`) звіряє 64-бітні кадри, виведені з симуляції.
-   * Мутантний негативний контроль (`AGENTS.md §4.1`): три мутанти RTL (зіпсований поліном CRC-8 `8'h07 -> 8'h05`, зсув на 2 біти в SPI та зсув на 9 біт у паралельному режимі) повинні гарантовано провалювати симуляцію (`returncode != 0`).
-3. **Реєстрація та відкритий потік:** тестбенч додано до `TESTBENCHES` у [`test_testbenches.py`](../../../hw/tests/test_testbenches.py), пройдено `run_open_flow.sh`, `pytest`, `check_links.py`, `check_wp_documents.py`.
+   * Мутантний негативний контроль (`AGENTS.md §4.1`) розширено до **8 мутантів**: `corrupt_crc_poly`, `corrupt_spi_shift_bit`, `corrupt_par8_byte_shift`, `cs_high_in_end`, `par_valid_drop_end`, `broken_drop_count`, `missing_event_start`, `stuck_not_busy` — усі мають провалювати симуляцію (`returncode != 0`).
+3. **Інтеграція у топовий модуль [`kpol_bram_pipeline_pynq_z1_egress_top.v`](../../../hw/boards/pynq-z1/kpol_bram_pipeline_pynq_z1_egress_top.v) + [`kpol_bram_pipeline_egress.xdc`](../../../hw/boards/pynq-z1/kpol_bram_pipeline_egress.xdc) (#241):**
+   * Інстанційовано `kpol_bram_pipeline_axi` та `km_pmod_event_egress` із 1-тактовим вирівнюванням `hw_commit_pulse_o` до діагностичних виходів `hw_commit_cid_o` і `hw_last_committed_state_o`.
+   * Розподіл пінів PMOD JA (`LVCMOS33`): `JA1..JA4` (`Y18, Y19, Y16, Y17`) — зовнішній тригер і статус конвеєра; `JA7` (`U18`, `egress_par8_mode_i` з `PULLDOWN` і 2-FF CDC) — вибір режиму `0=SPI / 1=PAR8`; `JA8..JA10` (`U19, W18, W19`) — `event_start_o`, `par_valid_o`, `par_clk_o`.
+   * Розподіл пінів PMOD JB (`LVCMOS33`, стандарт Digilent PYNQ-Z1): `JB1..JB4` (`W14, Y14, T11, T10`) і `JB7..JB10` (`V16, W16, V12, W13`) передають `par_data_o[7:0]` у режимі PAR8 або `{2'b00, egress_drop_seen, egress_busy, egress_event_start, spi_sck, spi_mosi, spi_cs_n}` у режимі SPI; `led[3]` (`M14`) індикує `fifo_overflow | egress_drop_seen`.
+   * Наскрізний тестбенч [`kpol_bram_pipeline_pynq_z1_egress_top_tb.sv`](../../../hw/tests/kpol_bram_pipeline_pynq_z1_egress_top_tb.sv) (mock `PS7`/`BUFG`) перевіряє запис правила в BRAM через AXI, тригер `ja1`, коміт у BRAM та декодування валідного 64-бітного кадра з CRC-8 на виходах PMOD JB у обох режимах (SPI та PAR8).
+4. **Електричне обґрунтування перетворювача рівнів `3.3V <-> 1.8V` для `50 МГц`:**
+   * PMOD-інтерфейси PYNQ-Z1 працюють на `3.3V LVCMOS`, тоді як заголовкові I/O Jetson J501 мають домен `1.8V`.
+   * Авто-двонаправлені перетворювачі з відкритим стоком (open-drain + внутрішні pull-up резистори `~10 кОм`, наприклад `TXS0108E`) на частоті `50 МГц` (період `20 нс`, півперіод `10 нс`) обмежені RC-постійною підтяжки: фронт наростання затягується понад `10–20 нс`, що руйнує цілісність сигналу та запас setup/hold на `spi_sck_o` і `par_clk_o`.
+   * Тому для міжплатного з'єднання `PYNQ-Z1 -> Jetson J501` на `50 МГц` рекомендовано **спрямований push-pull перетворювач рівнів** (`SN74AVC8T245` або `SN74LVC8T245`) із затримкою поширення `t_pd < 3 нс` та симетричними активними драйверами.
 
 ## 3. Результати
 
-* **Симуляція `iverilog -g2012` / `vvp` ([`raw/sim-iverilog-01.log`](raw/sim-iverilog-01.log)):** `ALL KM_PMOD_EVENT_EGRESS SIMULATION TESTS PASSED`, `$finish` на `3065000 ps`:
-  * Test 1 (SPI Mode 0): `64` фронти `spi_sck_o`, `129` тактів `busy_o`, кадр `0x8e45a55a12345678`, `tx=1`, `drop=0`.
-  * Test 2 (SPI Collision): `2` колізійні імпульси під час `busy_o` відхилені без пошкодження кадра (`tx=2`, `drop=2`).
-  * Test 3 (PAR8 Mode + Collision): `8` байтів, `17` тактів `busy_o` (`170 нс` @ `100 МГц`), кадр `0x6e7fffff80000001`, `tx=3`, `drop=3`.
-  * Test 4 (PAR8 Zero boundary): `8` байтів, `17` тактів `busy_o`, кадр `0x4540000000000000`, `tx=4`, `drop=3`.
-* **Лінтер `Verilator 5.032` ([`raw/verilator-lint-01.log`](raw/verilator-lint-01.log)):** `verilator --lint-only -Wall --top-module km_pmod_event_egress` завершився з кодом `0`, попереджень немає.
-* **Логічний синтез XC7 `Yosys 0.52` ([`raw/yosys-synth-xc7-01.log`](raw/yosys-synth-xc7-01.log)):** `synth_xilinx -top km_pmod_event_egress` + `check` — `0 problems`, `661` комірок (`145` LCs, `154` `FDCE`, `2` `FDPE`, `19` `CARRY4`, `4` `MUXF7`, `LUT2..LUT6`).
-* **Pytest-обгортка з Python-оракулом CRC-8 та 3 мутантами ([`raw/pytest-egress-01.log`](raw/pytest-egress-01.log)):** `6 passed in 2.03s` (усі 3 мутанти очікувано впали у симуляції).
-* **Відкритий апаратний потік ([`raw/open-flow-01.log`](raw/open-flow-01.log)):** `bash Engineering/hw/scripts/run_open_flow.sh` — `171 passed in 14.24s`, lint та синтез XC7 завершилися з кодом `0`.
-* **Фінальна перевірка пакета ([`raw/final-verification-01.log`](raw/final-verification-01.log)):** повний `python3 -m pytest -q`, `check_links.py`, `check_wp_documents.py` та `git diff --check` завершилися з кодом `0`.
+* **Симуляція `iverilog -g2012` / `vvp` ([`raw/sim-iverilog-02.log`](raw/sim-iverilog-02.log)):**
+  * `km_pmod_event_egress_tb.sv`: `ALL KM_PMOD_EVENT_EGRESS SIMULATION TESTS PASSED`, `$finish` на `6095000 ps` (усі 6 тестів включно з колізіями `S_SPI_END` / `S_PAR_END`, першим тактом `S_IDLE`, багатотактовим `event_valid_i`, перевірками станів спокою, обрамлення CS/`par_valid_o` та setup/hold).
+  * `kpol_bram_pipeline_pynq_z1_egress_top_tb.sv` (mock `PS7`/`BUFG`): `PASS: ALL PYNQ_Z1_EGRESS_TOP E2E TESTS PASSED`, `$finish` на `17670000 ps` — кадри `0x8d420000000000c9` (SPI, `cid=2, state=201`) та `0x84420000000000ca` (PAR8, `cid=2, state=202`).
+* **Лінтер `Verilator 5.032` та pytest-обгортка ([`raw/pytest-egress-02.log`](raw/pytest-egress-02.log)):** `14 passed in 8.78s` — перевірено Python-оракул CRC-8 (модульний та E2E top), `verilator --lint-only -Wall` (для `km_pmod_event_egress` та `kpol_bram_pipeline_pynq_z1_egress_top`), `yosys synth_xilinx` (для обох модулів) і **усі 8 мутантів** (усі 8 очікувано впали у симуляції).
+* **Логічний синтез XC7 топа `kpol_bram_pipeline_pynq_z1_egress_top` у `Yosys 0.52` ([`raw/yosys-synth-xc7-02.log`](raw/yosys-synth-xc7-02.log)):** `synth_xilinx` + `check` — `0 problems`, `5154` комірки (`1 RAMB36E1`, `162 CARRY4`, `1031 FDCE`, `2 FDPE`, `608 FDRE`, `1180 INV`, `LUT1..LUT6`, `16 MUXF7`, `8 MUXF8`, `1 BUFG`, `1 PS7`).
+* **Відкритий апаратний потік ([`raw/open-flow-02.log`](raw/open-flow-02.log)):** `bash Engineering/hw/scripts/run_open_flow.sh` — `171 passed in 15.17s`, lint та синтез XC7 для `rtl/core` і `rtl/bus` завершилися з кодом `0`.
+* **Фінальна перевірка пакета ([`raw/final-verification-02.log`](raw/final-verification-02.log)):** `KM_SKIP_LIVE_HIL=1 python3 -m pytest -q` (`387 passed, 1 skipped, 385 subtests passed`), `check_links.py` (`0` битих посилань), `check_wp_documents.py` (`153` документи, `0` помилок).
 
 ## 4. Перевірка гіпотези / критеріїв
 
-| Критерій (`#230`) | Очікувано | Отримано | Висновок |
+| Критерій (`#230`, `#234`, `#241`) | Очікувано | Отримано | Висновок |
 | :--- | :--- | :--- | :--- |
-| Модуль `km_pmod_event_egress.sv` (SPI `clk/2` + 8-бітна шина + `event_start_o` + `drop_count_o`) | Побітова/побайтова передача 64-бітного кадра з CRC-8, захист від колізій при `busy_o` | Підтверджено в `iverilog` (`129` тактів SPI, `17` тактів PAR8) та незалежним Python-оракулом ([`raw/sim-iverilog-01.log`](raw/sim-iverilog-01.log), [`raw/pytest-egress-01.log`](raw/pytest-egress-01.log)) | Виконано (симуляція) |
-| Чистий лінт і логічний синтез XC7 | `verilator --lint-only -Wall` і `yosys synth_xilinx` з кодом `0` | `0` попереджень Verilator, `0` проблем Yosys (`145` LCs) ([`raw/verilator-lint-01.log`](raw/verilator-lint-01.log), [`raw/yosys-synth-xc7-01.log`](raw/yosys-synth-xc7-01.log)) | Виконано (синтез XC7) |
-| Мутантний негативний контроль (`AGENTS.md §4.1`) | Навмисно зіпсований RTL провалює тестбенч | Усі 3 мутанти (`corrupt_crc_poly`, `corrupt_spi_shift_bit`, `corrupt_par8_byte_shift`) впали (`returncode != 0`) ([`raw/pytest-egress-01.log`](raw/pytest-egress-01.log)) | Виконано |
-| Повна перевірка репозиторію | `pytest`, `run_open_flow.sh`, `check_links.py`, `check_wp_documents.py`, `git diff --check` == `0` | Усі 5 перевірок пройшли з кодом `0` ([`raw/open-flow-01.log`](raw/open-flow-01.log), [`raw/final-verification-01.log`](raw/final-verification-01.log)) | Виконано |
+| Закриття 5 пунктів `#234` (TB-перевірки, `watchdog`, граничні колізії, `>=7` мутантів, провенанс) | 8/8 мутантів гинуть, TB перевіряє CS/`par_valid_o`/idle/setup-hold, нові логи з кодовим SHA | Підтверджено: `14 passed in 8.78s`, 8/8 мутантів killed, SHA `0e01996` у `raw/*-02.log` ([`raw/pytest-egress-02.log`](raw/pytest-egress-02.log), [`raw/sim-iverilog-02.log`](raw/sim-iverilog-02.log)) | Виконано |
+| Інтеграція `kpol_bram_pipeline_pynq_z1_egress_top.v` + `kpol_bram_pipeline_egress.xdc` (`#241`) | Наскрізна симуляція (mock PS7) `ja1 -> BRAM -> PMOD JB` з CRC-8, чистий `verilator` та `yosys synth_xilinx` | Підтверджено: SPI (`0x8d420000000000c9`) і PAR8 (`0x84420000000000ca`), `0` проблем Yosys (`5154` комірки) ([`raw/sim-iverilog-02.log`](raw/sim-iverilog-02.log), [`raw/yosys-synth-xc7-02.log`](raw/yosys-synth-xc7-02.log)) | Виконано (симуляція / синтез XC7) |
+| Повна перевірка репозиторію | `pytest`, `run_open_flow.sh`, `check_links.py`, `check_wp_documents.py`, `git diff --check` == `0` | Усі 5 перевірок пройшли з кодом `0` ([`raw/open-flow-02.log`](raw/open-flow-02.log), [`raw/final-verification-02.log`](raw/final-verification-02.log)) | Виконано |
 
 ## 5. Відтворення
 
@@ -72,6 +78,7 @@ python3 Project/tools/check_wp_documents.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 0.2.0 | 2026-11-16 | Закрито 5 знахідок [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234) (посилений TB, 8 мутантів, `watchdog`, провенанс `*-02.log`, уточнення `run_open_flow.sh`), інтегровано `kpol_bram_pipeline_pynq_z1_egress_top.v` + `kpol_bram_pipeline_egress.xdc` та обґрунтування перетворювача рівнів `3.3V <-> 1.8V` ([#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241)). |
 | 0.1.0 | 2026-11-15 | Перша редакція звіту реалізації та верифікації симуляцією/синтезом XC7 модуля `km_pmod_event_egress.sv` ([#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230)). |
 
 ## Абревіатури та глосарій
