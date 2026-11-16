@@ -12,6 +12,7 @@ KPOL-AUTH CST into:
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 import struct
 
@@ -24,8 +25,9 @@ from .cst import (
     LiteralCST,
     ProgramCST,
     SubscriptionSeqCST,
+    parse_kpol_auth,
 )
-from .uncertainty import Span
+from .uncertainty import AuthFrontendConfig, Span
 
 # --- C99 VM constants (km_mcu_fpga_bridge.c) ---
 KM_MAX_CONCEPTS = 64
@@ -90,6 +92,9 @@ class KpolAuthLoweringError(Exception):
         self.message = message
         self.span = span
         super().__init__(f"{code}: {message}")
+
+
+LoweringError = KpolAuthLoweringError
 
 
 @dataclass(frozen=True)
@@ -415,32 +420,112 @@ def lower_kpol_auth(program: ProgramCST) -> LoweredArtifact:
                 )
             )
 
-    # Build 1024-byte CME-RAW-1 BRAM routing image (64 slots x 16 bytes)
+    bram_image = build_bram_routing_image(lowered_concepts, lowered_subs)
+    return LoweredArtifact(
+        concepts=tuple(lowered_concepts),
+        subscriptions=tuple(lowered_subs),
+        code_o=tuple(code_o),
+        bram_image=bram_image,
+    )
+
+
+def _validate_bram_acyclic(edges: Sequence[tuple[int, int]]) -> None:
+    """Validate that BRAM POST_CHANGE routing edges contain no self-loops or cycles
+    and satisfy strict topological rank ordering (dst_cid > src_cid)."""
+    for src_cid, dst_cid in edges:
+        if dst_cid == src_cid:
+            raise KpolAuthLoweringError(
+                "KPOL-LOWER-CYCLE",
+                f"Самопетля каскаду BRAM не допускається: dst_cid ({dst_cid}) == src_cid ({src_cid}).",
+            )
+
+    adj: dict[int, list[int]] = {}
+    nodes: set[int] = set()
+    for src_cid, dst_cid in edges:
+        adj.setdefault(src_cid, []).append(dst_cid)
+        nodes.add(src_cid)
+        nodes.add(dst_cid)
+
+    state: dict[int, int] = {}
+
+    def _dfs(node: int) -> None:
+        state[node] = 1
+        for nxt in adj.get(node, ()):
+            nxt_state = state.get(nxt, 0)
+            if nxt_state == 1:
+                raise KpolAuthLoweringError(
+                    "KPOL-LOWER-CYCLE",
+                    f"Цикл у графі каскадів BRAM через концепт C{nxt} (C{node} -> C{nxt}).",
+                )
+            if nxt_state == 0:
+                _dfs(nxt)
+        state[node] = 2
+
+    for node in sorted(nodes):
+        if state.get(node, 0) == 0:
+            _dfs(node)
+
+    for src_cid, dst_cid in edges:
+        if dst_cid <= src_cid:
+            raise KpolAuthLoweringError(
+                "KPOL-LOWER-CYCLE",
+                f"Порушення ациклічності каскаду BRAM: dst_cid ({dst_cid}) <= src_cid ({src_cid}).",
+            )
+
+
+def build_bram_routing_image(
+    concepts: Sequence[LoweredConcept],
+    subscriptions: Sequence[LoweredSubscription],
+) -> bytes:
+    """Pack a 1024-byte CME-RAW-1 BRAM routing image after fan-out and acyclicity checks."""
+    if len(concepts) > CME_SLOT_COUNT:
+        raise KpolAuthLoweringError(
+            "KPOL-LOWER-LIMIT",
+            f"Перевищено ліміт концептів BRAM ({CME_SLOT_COUNT}).",
+        )
+
+    for sub in subscriptions:
+        if sub.owner_cid < 0 or sub.owner_cid >= len(concepts):
+            raise KpolAuthLoweringError(
+                "KPOL-LOWER-UNKNOWN-CONCEPT",
+                f"Невідомий owner_cid ({sub.owner_cid}) у таблиці підписок.",
+            )
+        if sub.target_cid < 0 or sub.target_cid >= len(concepts):
+            raise KpolAuthLoweringError(
+                "KPOL-LOWER-UNKNOWN-CONCEPT",
+                f"Невідомий target_cid ({sub.target_cid}) у таблиці підписок.",
+            )
+
+    bram_edges: list[tuple[int, int]] = []
+    post_target_by_cid: dict[int, int] = {}
+
+    for cid, c in enumerate(concepts):
+        post_subs = [
+            s
+            for s in subscriptions
+            if s.owner_cid == cid and s.phase == KM_PHASE_POST_CHANGE
+        ]
+        if len(post_subs) > 1:
+            raise KpolAuthLoweringError(
+                "KPOL-LOWER-FANOUT",
+                f"Концепт C{cid} ('{c.name}') має {len(post_subs)} POST_CHANGE підписок; CME-RAW-1 підтримує fan-out <= 1.",
+            )
+        if len(post_subs) == 1:
+            dst_cid = post_subs[0].target_cid
+            bram_edges.append((cid, dst_cid))
+            post_target_by_cid[cid] = dst_cid
+
+    _validate_bram_acyclic(bram_edges)
+
     bram_chunks: list[bytes] = []
     for cid in range(CME_SLOT_COUNT):
-        if cid < len(lowered_concepts):
-            c = lowered_concepts[cid]
-            post_subs = [
-                s
-                for s in lowered_subs
-                if s.owner_cid == cid and s.phase == KM_PHASE_POST_CHANGE
-            ]
-            if len(post_subs) > 1:
-                raise KpolAuthLoweringError(
-                    "KPOL-LOWER-FANOUT",
-                    f"Концепт C{cid} ('{c.name}') має {len(post_subs)} POST_CHANGE підписок; CME-RAW-1 підтримує fan-out <= 1.",
-                )
+        if cid < len(concepts):
+            c = concepts[cid]
             guard_flags = CME_GUARD_INVARIANT_EN if (c.flags & KM_FLAG_HW_PROTECTED) else 0
             subscriber_cid = 0
-            if len(post_subs) == 1:
-                dst_cid = post_subs[0].target_cid
-                if dst_cid <= cid:
-                    raise KpolAuthLoweringError(
-                        "KPOL-LOWER-CYCLE",
-                        f"Порушення ациклічності каскаду BRAM: dst_cid ({dst_cid}) <= src_cid ({cid}).",
-                    )
+            if cid in post_target_by_cid:
                 guard_flags |= CME_GUARD_SUBSCRIBER_EN
-                subscriber_cid = dst_cid
+                subscriber_cid = post_target_by_cid[cid]
 
             word0 = c.init_val & 0xFFFFFFFF
             word1 = 0
@@ -452,10 +537,13 @@ def lower_kpol_auth(program: ProgramCST) -> LoweredArtifact:
 
     bram_image = b"".join(bram_chunks)
     assert len(bram_image) == CME_IMAGE_BYTES
+    return bram_image
 
-    return LoweredArtifact(
-        concepts=tuple(lowered_concepts),
-        subscriptions=tuple(lowered_subs),
-        code_o=tuple(code_o),
-        bram_image=bram_image,
-    )
+
+def lower_document(
+    document: ProgramCST | str,
+    config: AuthFrontendConfig | None = None,
+) -> LoweredArtifact:
+    """Lower either a parsed ProgramCST or raw KPOL-AUTH source text."""
+    prog = parse_kpol_auth(document, config=config) if isinstance(document, str) else document
+    return lower_kpol_auth(prog)

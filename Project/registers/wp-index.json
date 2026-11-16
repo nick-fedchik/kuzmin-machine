@@ -1,6 +1,6 @@
 {
-  "version": "0.14.0",
-  "date": "2026-11-14",
+  "version": "0.15.0",
+  "date": "2026-11-16",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -459,6 +459,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md",
       "direction": "Engineering",
       "wp_type": "Specification",
@@ -474,6 +480,66 @@
       "path": "Engineering/specifications/kpol/kpol-consolidated-0.1.0.md",
       "direction": "Engineering",
       "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/__init__.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/__main__.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/corpus.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/cst.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/kpol_auth.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/lexer.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/lowering.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-auth/uncertainty.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {

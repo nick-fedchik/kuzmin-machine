@@ -24,7 +24,10 @@ if __package__:
         LoweredArtifact,
         LoweredConcept,
         LoweredSubscription,
+        LoweringError,
+        build_bram_routing_image,
         km_pack_instr,
+        lower_document,
         lower_kpol_auth,
     )
     from .uncertainty import (
@@ -55,6 +58,7 @@ __all__ = [
     "LoweredArtifact",
     "LoweredConcept",
     "LoweredSubscription",
+    "LoweringError",
     "ParamCST",
     "ProgramCST",
     "Span",
@@ -63,7 +67,9 @@ __all__ = [
     "UNCERTAINTY_REGISTRY",
     "UncertaintyPoint",
     "UninitCST",
+    "build_bram_routing_image",
     "km_pack_instr",
+    "lower_document",
     "lower_kpol_auth",
     "parse_kpol_auth",
     "tokenize",
