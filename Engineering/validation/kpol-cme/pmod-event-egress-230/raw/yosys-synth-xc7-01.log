@@ -1,0 +1,2234 @@
+# cmd: yosys -Q -p 'read_verilog -sv Engineering/hw/rtl/io/km_pmod_event_egress.sv; hierarchy -check -top km_pmod_event_egress; synth_xilinx -top km_pmod_event_egress; stat; check'
+# timestamp: 2026-11-15T23:12:32+02:00
+# commit: 3c89b4e4fe35286e9c9b670553eccf2db5088835
+# host: AORUS-5-SE
+
+-- Running command `read_verilog -sv Engineering/hw/rtl/io/km_pmod_event_egress.sv; hierarchy -check -top km_pmod_event_egress; synth_xilinx -top km_pmod_event_egress; stat; check' --
+
+1. Executing Verilog-2005 frontend: Engineering/hw/rtl/io/km_pmod_event_egress.sv
+Parsing SystemVerilog input from `Engineering/hw/rtl/io/km_pmod_event_egress.sv' to AST representation.
+Generating RTLIL representation for module `\km_pmod_event_egress'.
+Successfully finished Verilog frontend.
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1. Analyzing design hierarchy..
+Top module:  \km_pmod_event_egress
+
+2.2. Analyzing design hierarchy..
+Top module:  \km_pmod_event_egress
+Removed 0 unused modules.
+
+3. Executing SYNTH_XILINX pass.
+
+3.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/cells_sim.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/cells_sim.v' to AST representation.
+Generating RTLIL representation for module `\VCC'.
+Generating RTLIL representation for module `\GND'.
+Generating RTLIL representation for module `\IBUF'.
+Generating RTLIL representation for module `\IBUFG'.
+Generating RTLIL representation for module `\OBUF'.
+Generating RTLIL representation for module `\IOBUF'.
+Generating RTLIL representation for module `\OBUFT'.
+Generating RTLIL representation for module `\BUFG'.
+Generating RTLIL representation for module `\BUFGCTRL'.
+Generating RTLIL representation for module `\BUFHCE'.
+Generating RTLIL representation for module `\INV'.
+Generating RTLIL representation for module `\LUT1'.
+Generating RTLIL representation for module `\LUT2'.
+Generating RTLIL representation for module `\LUT3'.
+Generating RTLIL representation for module `\LUT4'.
+Generating RTLIL representation for module `\LUT5'.
+Generating RTLIL representation for module `\LUT6'.
+Generating RTLIL representation for module `\LUT6_2'.
+Generating RTLIL representation for module `\$__ABC9_LUT7'.
+Generating RTLIL representation for module `\$__ABC9_LUT8'.
+Generating RTLIL representation for module `\MUXCY'.
+Generating RTLIL representation for module `\MUXF5'.
+Generating RTLIL representation for module `\MUXF6'.
+Generating RTLIL representation for module `\MUXF7'.
+Generating RTLIL representation for module `\MUXF8'.
+Generating RTLIL representation for module `\MUXF9'.
+Generating RTLIL representation for module `\XORCY'.
+Generating RTLIL representation for module `\CARRY4'.
+Generating RTLIL representation for module `\CARRY8'.
+Generating RTLIL representation for module `\ORCY'.
+Generating RTLIL representation for module `\MULT_AND'.
+Generating RTLIL representation for module `\FDRE'.
+Generating RTLIL representation for module `\FDRE_1'.
+Generating RTLIL representation for module `\FDSE'.
+Generating RTLIL representation for module `\FDSE_1'.
+Generating RTLIL representation for module `\FDRSE'.
+Generating RTLIL representation for module `\FDRSE_1'.
+Generating RTLIL representation for module `\FDCE'.
+Generating RTLIL representation for module `\FDCE_1'.
+Generating RTLIL representation for module `\FDPE'.
+Generating RTLIL representation for module `\FDPE_1'.
+Generating RTLIL representation for module `\FDCPE'.
+Generating RTLIL representation for module `\FDCPE_1'.
+Generating RTLIL representation for module `\LDCE'.
+Generating RTLIL representation for module `\LDPE'.
+Generating RTLIL representation for module `\LDCPE'.
+Generating RTLIL representation for module `\AND2B1L'.
+Generating RTLIL representation for module `\OR2L'.
+Generating RTLIL representation for module `\RAM16X1S'.
+Generating RTLIL representation for module `\RAM16X1S_1'.
+Generating RTLIL representation for module `\RAM32X1S'.
+Generating RTLIL representation for module `\RAM32X1S_1'.
+Generating RTLIL representation for module `\RAM64X1S'.
+Generating RTLIL representation for module `\RAM64X1S_1'.
+Generating RTLIL representation for module `\RAM128X1S'.
+Generating RTLIL representation for module `\RAM128X1S_1'.
+Generating RTLIL representation for module `\RAM256X1S'.
+Generating RTLIL representation for module `\RAM512X1S'.
+Generating RTLIL representation for module `\RAM16X2S'.
+Generating RTLIL representation for module `\RAM32X2S'.
+Generating RTLIL representation for module `\RAM64X2S'.
+Generating RTLIL representation for module `\RAM16X4S'.
+Generating RTLIL representation for module `\RAM32X4S'.
+Generating RTLIL representation for module `\RAM16X8S'.
+Generating RTLIL representation for module `\RAM32X8S'.
+Generating RTLIL representation for module `\RAM16X1D'.
+Generating RTLIL representation for module `\RAM16X1D_1'.
+Generating RTLIL representation for module `\RAM32X1D'.
+Generating RTLIL representation for module `\RAM32X1D_1'.
+Generating RTLIL representation for module `\RAM64X1D'.
+Generating RTLIL representation for module `\RAM64X1D_1'.
+Generating RTLIL representation for module `\RAM128X1D'.
+Generating RTLIL representation for module `\RAM256X1D'.
+Generating RTLIL representation for module `\RAM32M'.
+Generating RTLIL representation for module `\RAM32M16'.
+Generating RTLIL representation for module `\RAM64M'.
+Generating RTLIL representation for module `\RAM64M8'.
+Generating RTLIL representation for module `\RAM32X16DR8'.
+Generating RTLIL representation for module `\RAM64X8SW'.
+Generating RTLIL representation for module `\ROM16X1'.
+Generating RTLIL representation for module `\ROM32X1'.
+Generating RTLIL representation for module `\ROM64X1'.
+Generating RTLIL representation for module `\ROM128X1'.
+Generating RTLIL representation for module `\ROM256X1'.
+Generating RTLIL representation for module `\SRL16'.
+Generating RTLIL representation for module `\SRL16E'.
+Generating RTLIL representation for module `\SRLC16'.
+Generating RTLIL representation for module `\SRLC16E'.
+Generating RTLIL representation for module `\SRLC32E'.
+Generating RTLIL representation for module `\CFGLUT5'.
+Generating RTLIL representation for module `\MULT18X18'.
+Generating RTLIL representation for module `\MULT18X18S'.
+Generating RTLIL representation for module `\MULT18X18SIO'.
+Generating RTLIL representation for module `\DSP48A'.
+Generating RTLIL representation for module `\DSP48A1'.
+Generating RTLIL representation for module `\DSP48'.
+Generating RTLIL representation for module `\DSP48E1'.
+Generating RTLIL representation for module `\RAMB18E1'.
+Generating RTLIL representation for module `\RAMB36E1'.
+Successfully finished Verilog frontend.
+
+3.2. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/cells_xtra.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/cells_xtra.v' to AST representation.
+Generating RTLIL representation for module `\RAMB4_S1'.
+Generating RTLIL representation for module `\RAMB4_S2'.
+Generating RTLIL representation for module `\RAMB4_S4'.
+Generating RTLIL representation for module `\RAMB4_S8'.
+Generating RTLIL representation for module `\RAMB4_S16'.
+Generating RTLIL representation for module `\RAMB4_S1_S1'.
+Generating RTLIL representation for module `\RAMB4_S1_S2'.
+Generating RTLIL representation for module `\RAMB4_S1_S4'.
+Generating RTLIL representation for module `\RAMB4_S1_S8'.
+Generating RTLIL representation for module `\RAMB4_S1_S16'.
+Generating RTLIL representation for module `\RAMB4_S2_S2'.
+Generating RTLIL representation for module `\RAMB4_S2_S4'.
+Generating RTLIL representation for module `\RAMB4_S2_S8'.
+Generating RTLIL representation for module `\RAMB4_S2_S16'.
+Generating RTLIL representation for module `\RAMB4_S4_S4'.
+Generating RTLIL representation for module `\RAMB4_S4_S8'.
+Generating RTLIL representation for module `\RAMB4_S4_S16'.
+Generating RTLIL representation for module `\RAMB4_S8_S8'.
+Generating RTLIL representation for module `\RAMB4_S8_S16'.
+Generating RTLIL representation for module `\RAMB4_S16_S16'.
+Generating RTLIL representation for module `\RAMB16_S1'.
+Generating RTLIL representation for module `\RAMB16_S2'.
+Generating RTLIL representation for module `\RAMB16_S4'.
+Generating RTLIL representation for module `\RAMB16_S9'.
+Generating RTLIL representation for module `\RAMB16_S18'.
+Generating RTLIL representation for module `\RAMB16_S36'.
+Generating RTLIL representation for module `\RAMB16_S1_S1'.
+Generating RTLIL representation for module `\RAMB16_S1_S2'.
+Generating RTLIL representation for module `\RAMB16_S1_S4'.
+Generating RTLIL representation for module `\RAMB16_S1_S9'.
+Generating RTLIL representation for module `\RAMB16_S1_S18'.
+Generating RTLIL representation for module `\RAMB16_S1_S36'.
+Generating RTLIL representation for module `\RAMB16_S2_S2'.
+Generating RTLIL representation for module `\RAMB16_S2_S4'.
+Generating RTLIL representation for module `\RAMB16_S2_S9'.
+Generating RTLIL representation for module `\RAMB16_S2_S18'.
+Generating RTLIL representation for module `\RAMB16_S2_S36'.
+Generating RTLIL representation for module `\RAMB16_S4_S4'.
+Generating RTLIL representation for module `\RAMB16_S4_S9'.
+Generating RTLIL representation for module `\RAMB16_S4_S18'.
+Generating RTLIL representation for module `\RAMB16_S4_S36'.
+Generating RTLIL representation for module `\RAMB16_S9_S9'.
+Generating RTLIL representation for module `\RAMB16_S9_S18'.
+Generating RTLIL representation for module `\RAMB16_S9_S36'.
+Generating RTLIL representation for module `\RAMB16_S18_S18'.
+Generating RTLIL representation for module `\RAMB16_S18_S36'.
+Generating RTLIL representation for module `\RAMB16_S36_S36'.
+Generating RTLIL representation for module `\RAMB16BWE_S18'.
+Generating RTLIL representation for module `\RAMB16BWE_S36'.
+Generating RTLIL representation for module `\RAMB16BWE_S18_S9'.
+Generating RTLIL representation for module `\RAMB16BWE_S18_S18'.
+Generating RTLIL representation for module `\RAMB16BWE_S36_S9'.
+Generating RTLIL representation for module `\RAMB16BWE_S36_S18'.
+Generating RTLIL representation for module `\RAMB16BWE_S36_S36'.
+Generating RTLIL representation for module `\RAMB16BWER'.
+Generating RTLIL representation for module `\RAMB8BWER'.
+Generating RTLIL representation for module `\FIFO16'.
+Generating RTLIL representation for module `\RAMB16'.
+Generating RTLIL representation for module `\RAMB32_S64_ECC'.
+Generating RTLIL representation for module `\FIFO18'.
+Generating RTLIL representation for module `\FIFO18_36'.
+Generating RTLIL representation for module `\FIFO36'.
+Generating RTLIL representation for module `\FIFO36_72'.
+Generating RTLIL representation for module `\RAMB18'.
+Generating RTLIL representation for module `\RAMB36'.
+Generating RTLIL representation for module `\RAMB18SDP'.
+Generating RTLIL representation for module `\RAMB36SDP'.
+Generating RTLIL representation for module `\FIFO18E1'.
+Generating RTLIL representation for module `\FIFO36E1'.
+Generating RTLIL representation for module `\FIFO18E2'.
+Generating RTLIL representation for module `\FIFO36E2'.
+Generating RTLIL representation for module `\RAMB18E2'.
+Generating RTLIL representation for module `\RAMB36E2'.
+Generating RTLIL representation for module `\URAM288'.
+Generating RTLIL representation for module `\URAM288_BASE'.
+Generating RTLIL representation for module `\DSP48E'.
+Generating RTLIL representation for module `\DSP48E2'.
+Generating RTLIL representation for module `\FDDRCPE'.
+Generating RTLIL representation for module `\FDDRRSE'.
+Generating RTLIL representation for module `\IFDDRCPE'.
+Generating RTLIL representation for module `\IFDDRRSE'.
+Generating RTLIL representation for module `\OFDDRCPE'.
+Generating RTLIL representation for module `\OFDDRRSE'.
+Generating RTLIL representation for module `\OFDDRTCPE'.
+Generating RTLIL representation for module `\OFDDRTRSE'.
+Generating RTLIL representation for module `\IDDR2'.
+Generating RTLIL representation for module `\ODDR2'.
+Generating RTLIL representation for module `\IDDR'.
+Generating RTLIL representation for module `\IDDR_2CLK'.
+Generating RTLIL representation for module `\ODDR'.
+Generating RTLIL representation for module `\IDELAYCTRL'.
+Generating RTLIL representation for module `\IDELAY'.
+Generating RTLIL representation for module `\ISERDES'.
+Generating RTLIL representation for module `\OSERDES'.
+Generating RTLIL representation for module `\IODELAY'.
+Generating RTLIL representation for module `\ISERDES_NODELAY'.
+Generating RTLIL representation for module `\IODELAYE1'.
+Generating RTLIL representation for module `\ISERDESE1'.
+Generating RTLIL representation for module `\OSERDESE1'.
+Generating RTLIL representation for module `\IDELAYE2'.
+Generating RTLIL representation for module `\ODELAYE2'.
+Generating RTLIL representation for module `\ISERDESE2'.
+Generating RTLIL representation for module `\OSERDESE2'.
+Generating RTLIL representation for module `\PHASER_IN'.
+Generating RTLIL representation for module `\PHASER_IN_PHY'.
+Generating RTLIL representation for module `\PHASER_OUT'.
+Generating RTLIL representation for module `\PHASER_OUT_PHY'.
+Generating RTLIL representation for module `\PHASER_REF'.
+Generating RTLIL representation for module `\PHY_CONTROL'.
+Generating RTLIL representation for module `\IDDRE1'.
+Generating RTLIL representation for module `\ODDRE1'.
+Generating RTLIL representation for module `\IDELAYE3'.
+Generating RTLIL representation for module `\ODELAYE3'.
+Generating RTLIL representation for module `\ISERDESE3'.
+Generating RTLIL representation for module `\OSERDESE3'.
+Generating RTLIL representation for module `\BITSLICE_CONTROL'.
+Generating RTLIL representation for module `\RIU_OR'.
+Generating RTLIL representation for module `\RX_BITSLICE'.
+Generating RTLIL representation for module `\RXTX_BITSLICE'.
+Generating RTLIL representation for module `\TX_BITSLICE'.
+Generating RTLIL representation for module `\TX_BITSLICE_TRI'.
+Generating RTLIL representation for module `\IODELAY2'.
+Generating RTLIL representation for module `\IODRP2'.
+Generating RTLIL representation for module `\IODRP2_MCB'.
+Generating RTLIL representation for module `\ISERDES2'.
+Generating RTLIL representation for module `\OSERDES2'.
+Generating RTLIL representation for module `\IBUF_DLY_ADJ'.
+Generating RTLIL representation for module `\IBUF_IBUFDISABLE'.
+Generating RTLIL representation for module `\IBUF_INTERMDISABLE'.
+Generating RTLIL representation for module `\IBUF_ANALOG'.
+Generating RTLIL representation for module `\IBUFE3'.
+Generating RTLIL representation for module `\IBUFDS'.
+Generating RTLIL representation for module `\IBUFDS_DLY_ADJ'.
+Generating RTLIL representation for module `\IBUFDS_IBUFDISABLE'.
+Generating RTLIL representation for module `\IBUFDS_INTERMDISABLE'.
+Generating RTLIL representation for module `\IBUFDS_DIFF_OUT'.
+Generating RTLIL representation for module `\IBUFDS_DIFF_OUT_IBUFDISABLE'.
+Generating RTLIL representation for module `\IBUFDS_DIFF_OUT_INTERMDISABLE'.
+Generating RTLIL representation for module `\IBUFDSE3'.
+Generating RTLIL representation for module `\IBUFDS_DPHY'.
+Generating RTLIL representation for module `\IBUFGDS'.
+Generating RTLIL representation for module `\IBUFGDS_DIFF_OUT'.
+Generating RTLIL representation for module `\IOBUF_DCIEN'.
+Generating RTLIL representation for module `\IOBUF_INTERMDISABLE'.
+Generating RTLIL representation for module `\IOBUFE3'.
+Generating RTLIL representation for module `\IOBUFDS'.
+Generating RTLIL representation for module `\IOBUFDS_DCIEN'.
+Generating RTLIL representation for module `\IOBUFDS_INTERMDISABLE'.
+Generating RTLIL representation for module `\IOBUFDS_DIFF_OUT'.
+Generating RTLIL representation for module `\IOBUFDS_DIFF_OUT_DCIEN'.
+Generating RTLIL representation for module `\IOBUFDS_DIFF_OUT_INTERMDISABLE'.
+Generating RTLIL representation for module `\IOBUFDSE3'.
+Generating RTLIL representation for module `\OBUFDS'.
+Generating RTLIL representation for module `\OBUFDS_DPHY'.
+Generating RTLIL representation for module `\OBUFTDS'.
+Generating RTLIL representation for module `\KEEPER'.
+Generating RTLIL representation for module `\PULLDOWN'.
+Generating RTLIL representation for module `\PULLUP'.
+Generating RTLIL representation for module `\DCIRESET'.
+Generating RTLIL representation for module `\HPIO_VREF'.
+Generating RTLIL representation for module `\BUFGCE'.
+Generating RTLIL representation for module `\BUFGCE_1'.
+Generating RTLIL representation for module `\BUFGMUX'.
+Generating RTLIL representation for module `\BUFGMUX_1'.
+Generating RTLIL representation for module `\BUFGMUX_CTRL'.
+Generating RTLIL representation for module `\BUFGMUX_VIRTEX4'.
+Generating RTLIL representation for module `\BUFG_GT'.
+Generating RTLIL representation for module `\BUFG_GT_SYNC'.
+Generating RTLIL representation for module `\BUFG_PS'.
+Generating RTLIL representation for module `\BUFGCE_DIV'.
+Generating RTLIL representation for module `\BUFH'.
+Generating RTLIL representation for module `\BUFIO2'.
+Generating RTLIL representation for module `\BUFIO2_2CLK'.
+Generating RTLIL representation for module `\BUFIO2FB'.
+Generating RTLIL representation for module `\BUFPLL'.
+Generating RTLIL representation for module `\BUFPLL_MCB'.
+Generating RTLIL representation for module `\BUFIO'.
+Generating RTLIL representation for module `\BUFIODQS'.
+Generating RTLIL representation for module `\BUFR'.
+Generating RTLIL representation for module `\BUFMR'.
+Generating RTLIL representation for module `\BUFMRCE'.
+Generating RTLIL representation for module `\DCM'.
+Generating RTLIL representation for module `\DCM_SP'.
+Generating RTLIL representation for module `\DCM_CLKGEN'.
+Generating RTLIL representation for module `\DCM_ADV'.
+Generating RTLIL representation for module `\DCM_BASE'.
+Generating RTLIL representation for module `\DCM_PS'.
+Generating RTLIL representation for module `\PMCD'.
+Generating RTLIL representation for module `\PLL_ADV'.
+Generating RTLIL representation for module `\PLL_BASE'.
+Generating RTLIL representation for module `\MMCM_ADV'.
+Generating RTLIL representation for module `\MMCM_BASE'.
+Generating RTLIL representation for module `\MMCME2_ADV'.
+Generating RTLIL representation for module `\MMCME2_BASE'.
+Generating RTLIL representation for module `\PLLE2_ADV'.
+Generating RTLIL representation for module `\PLLE2_BASE'.
+Generating RTLIL representation for module `\MMCME3_ADV'.
+Generating RTLIL representation for module `\MMCME3_BASE'.
+Generating RTLIL representation for module `\PLLE3_ADV'.
+Generating RTLIL representation for module `\PLLE3_BASE'.
+Generating RTLIL representation for module `\MMCME4_ADV'.
+Generating RTLIL representation for module `\MMCME4_BASE'.
+Generating RTLIL representation for module `\PLLE4_ADV'.
+Generating RTLIL representation for module `\PLLE4_BASE'.
+Generating RTLIL representation for module `\BUFT'.
+Generating RTLIL representation for module `\IN_FIFO'.
+Generating RTLIL representation for module `\OUT_FIFO'.
+Generating RTLIL representation for module `\HARD_SYNC'.
+Generating RTLIL representation for module `\STARTUP_SPARTAN3'.
+Generating RTLIL representation for module `\STARTUP_SPARTAN3E'.
+Generating RTLIL representation for module `\STARTUP_SPARTAN3A'.
+Generating RTLIL representation for module `\STARTUP_SPARTAN6'.
+Generating RTLIL representation for module `\STARTUP_VIRTEX4'.
+Generating RTLIL representation for module `\STARTUP_VIRTEX5'.
+Generating RTLIL representation for module `\STARTUP_VIRTEX6'.
+Generating RTLIL representation for module `\STARTUPE2'.
+Generating RTLIL representation for module `\STARTUPE3'.
+Generating RTLIL representation for module `\CAPTURE_SPARTAN3'.
+Generating RTLIL representation for module `\CAPTURE_SPARTAN3A'.
+Generating RTLIL representation for module `\CAPTURE_VIRTEX4'.
+Generating RTLIL representation for module `\CAPTURE_VIRTEX5'.
+Generating RTLIL representation for module `\CAPTURE_VIRTEX6'.
+Generating RTLIL representation for module `\CAPTUREE2'.
+Generating RTLIL representation for module `\ICAP_SPARTAN3A'.
+Generating RTLIL representation for module `\ICAP_SPARTAN6'.
+Generating RTLIL representation for module `\ICAP_VIRTEX4'.
+Generating RTLIL representation for module `\ICAP_VIRTEX5'.
+Generating RTLIL representation for module `\ICAP_VIRTEX6'.
+Generating RTLIL representation for module `\ICAPE2'.
+Generating RTLIL representation for module `\ICAPE3'.
+Generating RTLIL representation for module `\BSCAN_SPARTAN3'.
+Generating RTLIL representation for module `\BSCAN_SPARTAN3A'.
+Generating RTLIL representation for module `\BSCAN_SPARTAN6'.
+Generating RTLIL representation for module `\BSCAN_VIRTEX4'.
+Generating RTLIL representation for module `\BSCAN_VIRTEX5'.
+Generating RTLIL representation for module `\BSCAN_VIRTEX6'.
+Generating RTLIL representation for module `\BSCANE2'.
+Generating RTLIL representation for module `\DNA_PORT'.
+Generating RTLIL representation for module `\DNA_PORTE2'.
+Generating RTLIL representation for module `\FRAME_ECC_VIRTEX4'.
+Generating RTLIL representation for module `\FRAME_ECC_VIRTEX5'.
+Generating RTLIL representation for module `\FRAME_ECC_VIRTEX6'.
+Generating RTLIL representation for module `\FRAME_ECCE2'.
+Generating RTLIL representation for module `\FRAME_ECCE3'.
+Generating RTLIL representation for module `\FRAME_ECCE4'.
+Generating RTLIL representation for module `\USR_ACCESS_VIRTEX4'.
+Generating RTLIL representation for module `\USR_ACCESS_VIRTEX5'.
+Generating RTLIL representation for module `\USR_ACCESS_VIRTEX6'.
+Generating RTLIL representation for module `\USR_ACCESSE2'.
+Generating RTLIL representation for module `\POST_CRC_INTERNAL'.
+Generating RTLIL representation for module `\SUSPEND_SYNC'.
+Generating RTLIL representation for module `\KEY_CLEAR'.
+Generating RTLIL representation for module `\MASTER_JTAG'.
+Generating RTLIL representation for module `\SPI_ACCESS'.
+Generating RTLIL representation for module `\EFUSE_USR'.
+Generating RTLIL representation for module `\SYSMON'.
+Generating RTLIL representation for module `\XADC'.
+Generating RTLIL representation for module `\SYSMONE1'.
+Generating RTLIL representation for module `\SYSMONE4'.
+Generating RTLIL representation for module `\GTPA1_DUAL'.
+Generating RTLIL representation for module `\GT11_CUSTOM'.
+Generating RTLIL representation for module `\GT11_DUAL'.
+Generating RTLIL representation for module `\GT11CLK'.
+Generating RTLIL representation for module `\GT11CLK_MGT'.
+Generating RTLIL representation for module `\GTP_DUAL'.
+Generating RTLIL representation for module `\GTX_DUAL'.
+Generating RTLIL representation for module `\CRC32'.
+Generating RTLIL representation for module `\CRC64'.
+Generating RTLIL representation for module `\GTHE1_QUAD'.
+Generating RTLIL representation for module `\GTXE1'.
+Generating RTLIL representation for module `\IBUFDS_GTXE1'.
+Generating RTLIL representation for module `\IBUFDS_GTHE1'.
+Generating RTLIL representation for module `\GTHE2_CHANNEL'.
+Generating RTLIL representation for module `\GTHE2_COMMON'.
+Generating RTLIL representation for module `\GTPE2_CHANNEL'.
+Generating RTLIL representation for module `\GTPE2_COMMON'.
+Generating RTLIL representation for module `\GTXE2_CHANNEL'.
+Generating RTLIL representation for module `\GTXE2_COMMON'.
+Generating RTLIL representation for module `\IBUFDS_GTE2'.
+Generating RTLIL representation for module `\GTHE3_CHANNEL'.
+Generating RTLIL representation for module `\GTHE3_COMMON'.
+Generating RTLIL representation for module `\GTYE3_CHANNEL'.
+Generating RTLIL representation for module `\GTYE3_COMMON'.
+Generating RTLIL representation for module `\IBUFDS_GTE3'.
+Generating RTLIL representation for module `\OBUFDS_GTE3'.
+Generating RTLIL representation for module `\OBUFDS_GTE3_ADV'.
+Generating RTLIL representation for module `\GTHE4_CHANNEL'.
+Generating RTLIL representation for module `\GTHE4_COMMON'.
+Generating RTLIL representation for module `\GTYE4_CHANNEL'.
+Generating RTLIL representation for module `\GTYE4_COMMON'.
+Generating RTLIL representation for module `\IBUFDS_GTE4'.
+Generating RTLIL representation for module `\OBUFDS_GTE4'.
+Generating RTLIL representation for module `\OBUFDS_GTE4_ADV'.
+Generating RTLIL representation for module `\GTM_DUAL'.
+Generating RTLIL representation for module `\IBUFDS_GTM'.
+Generating RTLIL representation for module `\OBUFDS_GTM'.
+Generating RTLIL representation for module `\OBUFDS_GTM_ADV'.
+Generating RTLIL representation for module `\HSDAC'.
+Generating RTLIL representation for module `\HSADC'.
+Generating RTLIL representation for module `\RFDAC'.
+Generating RTLIL representation for module `\RFADC'.
+Generating RTLIL representation for module `\PCIE_A1'.
+Generating RTLIL representation for module `\PCIE_EP'.
+Generating RTLIL representation for module `\PCIE_2_0'.
+Generating RTLIL representation for module `\PCIE_2_1'.
+Generating RTLIL representation for module `\PCIE_3_0'.
+Generating RTLIL representation for module `\PCIE_3_1'.
+Generating RTLIL representation for module `\PCIE40E4'.
+Generating RTLIL representation for module `\PCIE4CE4'.
+Generating RTLIL representation for module `\EMAC'.
+Generating RTLIL representation for module `\TEMAC'.
+Generating RTLIL representation for module `\TEMAC_SINGLE'.
+Generating RTLIL representation for module `\CMAC'.
+Generating RTLIL representation for module `\CMACE4'.
+Generating RTLIL representation for module `\MCB'.
+Generating RTLIL representation for module `\HBM_REF_CLK'.
+Generating RTLIL representation for module `\HBM_SNGLBLI_INTF_APB'.
+Generating RTLIL representation for module `\HBM_SNGLBLI_INTF_AXI'.
+Generating RTLIL representation for module `\HBM_ONE_STACK_INTF'.
+Generating RTLIL representation for module `\HBM_TWO_STACK_INTF'.
+Generating RTLIL representation for module `\PPC405_ADV'.
+Generating RTLIL representation for module `\PPC440'.
+Generating RTLIL representation for module `\PS7'.
+Generating RTLIL representation for module `\PS8'.
+Generating RTLIL representation for module `\ILKN'.
+Generating RTLIL representation for module `\ILKNE4'.
+Generating RTLIL representation for module `\VCU'.
+Generating RTLIL representation for module `\FE'.
+Successfully finished Verilog frontend.
+
+3.3. Executing HIERARCHY pass (managing design hierarchy).
+
+3.3.1. Analyzing design hierarchy..
+Top module:  \km_pmod_event_egress
+
+3.3.2. Analyzing design hierarchy..
+Top module:  \km_pmod_event_egress
+Removed 0 unused modules.
+
+3.4. Executing PROC pass (convert processes to netlists).
+
+3.4.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+3.4.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105 in module RAM64M.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985 in module RAM32M.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932 in module RAM128X1D.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895 in module RAM64X1D.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877 in module RAM32X1D_1.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847 in module RAM32X1D.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:815$796 in module FDPE_1.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:774$793 in module FDPE.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:736$778 in module FDCE_1.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:695$775 in module FDCE.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:592$760 in module FDSE_1.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:559$756 in module FDSE.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:527$738 in module FDRE_1.
+Marked 1 switch rules as full_case in process $proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:494$734 in module FDRE.
+Marked 6 switch rules as full_case in process $proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5 in module km_pmod_event_egress.
+Removed a total of 0 dead cases.
+
+3.4.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 1 redundant assignment.
+Promoted 69 assignments to connections.
+
+3.4.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `\SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2405$1234'.
+  Set init value: \r = 0
+Found init rule in `\SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2361$1227'.
+  Set init value: \r = 16'0000000000000000
+Found init rule in `\SRLC16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2329$1220'.
+  Set init value: \r = 16'0000000000000000
+Found init rule in `\SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2292$1217'.
+  Set init value: \r = 16'0000000000000000
+Found init rule in `\SRL16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2264$1210'.
+  Set init value: \r = 16'0000000000000000
+Found init rule in `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1980$1183'.
+  Set init value: \mem_d = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1979$1182'.
+  Set init value: \mem_c = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1978$1181'.
+  Set init value: \mem_b = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1977$1180'.
+  Set init value: \mem_a = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1806$1083'.
+  Set init value: \mem_d = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1805$1082'.
+  Set init value: \mem_c = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1804$1081'.
+  Set init value: \mem_b = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1803$1080'.
+  Set init value: \mem_a = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1712$962'.
+  Set init value: \mem = 128'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1607$925'.
+  Set init value: \mem = 64'0000000000000000000000000000000000000000000000000000000000000000
+Found init rule in `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1561$889'.
+  Set init value: \mem = 0
+Found init rule in `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1502$871'.
+  Set init value: \mem = 0
+Found init rule in `\FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$799'.
+  Set init value: \Q = 1'1
+Found init rule in `\FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$795'.
+  Set init value: \Q = 1'1
+Found init rule in `\FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$781'.
+  Set init value: \Q = 1'0
+Found init rule in `\FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$777'.
+  Set init value: \Q = 1'0
+Found init rule in `\FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$763'.
+  Set init value: \Q = 1'1
+Found init rule in `\FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$759'.
+  Set init value: \Q = 1'1
+Found init rule in `\FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$741'.
+  Set init value: \Q = 1'0
+Found init rule in `\FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$737'.
+  Set init value: \Q = 1'0
+
+3.4.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \PRE in `\FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:815$796'.
+Found async reset \PRE in `\FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:774$793'.
+Found async reset \CLR in `\FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:736$778'.
+Found async reset \CLR in `\FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:695$775'.
+Found async reset \rst_n in `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+
+3.4.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~27 debug messages>
+
+3.4.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2405$1234'.
+Creating decoders for process `\SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2413$1233'.
+     1/1: $0\r[31:0]
+Creating decoders for process `\SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2361$1227'.
+Creating decoders for process `\SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2369$1226'.
+     1/1: $0\r[15:0]
+Creating decoders for process `\SRLC16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2329$1220'.
+Creating decoders for process `\SRLC16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2332$1219'.
+Creating decoders for process `\SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2292$1217'.
+Creating decoders for process `\SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2299$1216'.
+     1/1: $0\r[15:0]
+Creating decoders for process `\SRL16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2264$1210'.
+Creating decoders for process `\SRL16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2266$1209'.
+Creating decoders for process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1980$1183'.
+Creating decoders for process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1979$1182'.
+Creating decoders for process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1978$1181'.
+Creating decoders for process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1977$1180'.
+Creating decoders for process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+     1/8: $1$lookahead\mem_d$1104[63:0]$1121
+     2/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1991$1095[5:0]$1117
+     3/8: $1$lookahead\mem_c$1103[63:0]$1120
+     4/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1990$1094[5:0]$1116
+     5/8: $1$lookahead\mem_b$1102[63:0]$1119
+     6/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1989$1093[5:0]$1115
+     7/8: $1$lookahead\mem_a$1101[63:0]$1118
+     8/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1988$1092[5:0]$1114
+Creating decoders for process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1806$1083'.
+Creating decoders for process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1805$1082'.
+Creating decoders for process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1804$1081'.
+Creating decoders for process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1803$1080'.
+Creating decoders for process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+     1/8: $1$lookahead\mem_d$984[63:0]$1001
+     2/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1817$967[31:0]$997
+     3/8: $1$lookahead\mem_c$983[63:0]$1000
+     4/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1816$966[31:0]$996
+     5/8: $1$lookahead\mem_b$982[63:0]$999
+     6/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1815$965[31:0]$995
+     7/8: $1$lookahead\mem_a$981[63:0]$998
+     8/8: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1814$964[31:0]$994
+Creating decoders for process `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1712$962'.
+Creating decoders for process `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932'.
+     1/2: $1$lookahead\mem$931[127:0]$936
+     2/2: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$927[6:0]$935
+Creating decoders for process `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1607$925'.
+Creating decoders for process `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895'.
+     1/2: $1$lookahead\mem$894[63:0]$899
+     2/2: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$890[5:0]$898
+Creating decoders for process `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1561$889'.
+Creating decoders for process `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877'.
+     1/2: $1$lookahead\mem$876[31:0]$881
+     2/2: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$872[4:0]$880
+Creating decoders for process `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1502$871'.
+Creating decoders for process `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847'.
+     1/2: $1$lookahead\mem$846[31:0]$851
+     2/2: $1$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$842[4:0]$850
+Creating decoders for process `\FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$799'.
+Creating decoders for process `\FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:815$796'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$795'.
+Creating decoders for process `\FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:774$793'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$781'.
+Creating decoders for process `\FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:736$778'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$777'.
+Creating decoders for process `\FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:695$775'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$763'.
+Creating decoders for process `\FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:592$760'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$759'.
+Creating decoders for process `\FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:559$756'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$741'.
+Creating decoders for process `\FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:527$738'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$737'.
+Creating decoders for process `\FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:494$734'.
+     1/1: $0\Q[0:0]
+Creating decoders for process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+Creating decoders for process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+     1/15: $0\event_start_o[0:0]
+     2/15: $0\byte_cnt_q[2:0]
+     3/15: $0\bit_cnt_q[5:0]
+     4/15: $0\shift_reg_q[63:0]
+     5/15: $0\state_q[2:0]
+     6/15: $0\drop_count_o[31:0]
+     7/15: $0\tx_count_o[31:0]
+     8/15: $0\ready_o[0:0]
+     9/15: $0\busy_o[0:0]
+    10/15: $0\par_data_o[7:0]
+    11/15: $0\par_clk_o[0:0]
+    12/15: $0\par_valid_o[0:0]
+    13/15: $0\spi_mosi_o[0:0]
+    14/15: $0\spi_sck_o[0:0]
+    15/15: $0\spi_cs_n_o[0:0]
+
+3.4.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\km_pmod_event_egress.\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$2.$result' from process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+No latch inferred for signal `\km_pmod_event_egress.\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$3.$result' from process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+No latch inferred for signal `\km_pmod_event_egress.\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$3.data_in' from process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+No latch inferred for signal `\km_pmod_event_egress.\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$3.i' from process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+No latch inferred for signal `\km_pmod_event_egress.\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$3.crc' from process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+No latch inferred for signal `\km_pmod_event_egress.\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$3.fb' from process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+
+3.4.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\SRLC32E.\r' using process `\SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2413$1233'.
+  created $dff cell `$procdff$1531' with positive edge clock.
+Creating register for signal `\SRLC16E.\r' using process `\SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2369$1226'.
+  created $dff cell `$procdff$1532' with positive edge clock.
+Creating register for signal `\SRLC16.\r' using process `\SRLC16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2332$1219'.
+  created $dff cell `$procdff$1533' with positive edge clock.
+Creating register for signal `\SRL16E.\r' using process `\SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2299$1216'.
+  created $dff cell `$procdff$1534' with positive edge clock.
+Creating register for signal `\SRL16.\r' using process `\SRL16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2266$1209'.
+  created $dff cell `$procdff$1535' with positive edge clock.
+Creating register for signal `\RAM64M.\mem_a' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1536' with positive edge clock.
+Creating register for signal `\RAM64M.\mem_b' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1537' with positive edge clock.
+Creating register for signal `\RAM64M.\mem_c' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1538' with positive edge clock.
+Creating register for signal `\RAM64M.\mem_d' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1539' with positive edge clock.
+Creating register for signal `\RAM64M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1988$1092' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1540' with positive edge clock.
+Creating register for signal `\RAM64M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1989$1093' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1541' with positive edge clock.
+Creating register for signal `\RAM64M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1990$1094' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1542' with positive edge clock.
+Creating register for signal `\RAM64M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1991$1095' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1543' with positive edge clock.
+Creating register for signal `\RAM64M.$lookahead\mem_a$1101' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1544' with positive edge clock.
+Creating register for signal `\RAM64M.$lookahead\mem_b$1102' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1545' with positive edge clock.
+Creating register for signal `\RAM64M.$lookahead\mem_c$1103' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1546' with positive edge clock.
+Creating register for signal `\RAM64M.$lookahead\mem_d$1104' using process `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+  created $dff cell `$procdff$1547' with positive edge clock.
+Creating register for signal `\RAM32M.\mem_a' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1548' with positive edge clock.
+Creating register for signal `\RAM32M.\mem_b' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1549' with positive edge clock.
+Creating register for signal `\RAM32M.\mem_c' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1550' with positive edge clock.
+Creating register for signal `\RAM32M.\mem_d' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1551' with positive edge clock.
+Creating register for signal `\RAM32M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1814$964' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1552' with positive edge clock.
+Creating register for signal `\RAM32M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1815$965' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1553' with positive edge clock.
+Creating register for signal `\RAM32M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1816$966' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1554' with positive edge clock.
+Creating register for signal `\RAM32M.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1817$967' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1555' with positive edge clock.
+Creating register for signal `\RAM32M.$lookahead\mem_a$981' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1556' with positive edge clock.
+Creating register for signal `\RAM32M.$lookahead\mem_b$982' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1557' with positive edge clock.
+Creating register for signal `\RAM32M.$lookahead\mem_c$983' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1558' with positive edge clock.
+Creating register for signal `\RAM32M.$lookahead\mem_d$984' using process `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+  created $dff cell `$procdff$1559' with positive edge clock.
+Creating register for signal `\RAM128X1D.\mem' using process `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932'.
+  created $dff cell `$procdff$1560' with positive edge clock.
+Creating register for signal `\RAM128X1D.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$927' using process `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932'.
+  created $dff cell `$procdff$1561' with positive edge clock.
+Creating register for signal `\RAM128X1D.$lookahead\mem$931' using process `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932'.
+  created $dff cell `$procdff$1562' with positive edge clock.
+Creating register for signal `\RAM64X1D.\mem' using process `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895'.
+  created $dff cell `$procdff$1563' with positive edge clock.
+Creating register for signal `\RAM64X1D.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$890' using process `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895'.
+  created $dff cell `$procdff$1564' with positive edge clock.
+Creating register for signal `\RAM64X1D.$lookahead\mem$894' using process `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895'.
+  created $dff cell `$procdff$1565' with positive edge clock.
+Creating register for signal `\RAM32X1D_1.\mem' using process `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877'.
+  created $dff cell `$procdff$1566' with negative edge clock.
+Creating register for signal `\RAM32X1D_1.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$872' using process `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877'.
+  created $dff cell `$procdff$1567' with negative edge clock.
+Creating register for signal `\RAM32X1D_1.$lookahead\mem$876' using process `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877'.
+  created $dff cell `$procdff$1568' with negative edge clock.
+Creating register for signal `\RAM32X1D.\mem' using process `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847'.
+  created $dff cell `$procdff$1569' with positive edge clock.
+Creating register for signal `\RAM32X1D.$bitselwrite$pos$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$842' using process `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847'.
+  created $dff cell `$procdff$1570' with positive edge clock.
+Creating register for signal `\RAM32X1D.$lookahead\mem$846' using process `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847'.
+  created $dff cell `$procdff$1571' with positive edge clock.
+Creating register for signal `\FDPE_1.\Q' using process `\FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:815$796'.
+  created $adff cell `$procdff$1574' with negative edge clock and positive level reset.
+Creating register for signal `\FDPE.\Q' using process `\FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:774$793'.
+  created $adff cell `$procdff$1577' with positive edge clock and positive level reset.
+Creating register for signal `\FDCE_1.\Q' using process `\FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:736$778'.
+  created $adff cell `$procdff$1580' with negative edge clock and positive level reset.
+Creating register for signal `\FDCE.\Q' using process `\FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:695$775'.
+  created $adff cell `$procdff$1583' with positive edge clock and positive level reset.
+Creating register for signal `\FDSE_1.\Q' using process `\FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:592$760'.
+  created $dff cell `$procdff$1584' with negative edge clock.
+Creating register for signal `\FDSE.\Q' using process `\FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:559$756'.
+  created $dff cell `$procdff$1585' with positive edge clock.
+Creating register for signal `\FDRE_1.\Q' using process `\FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:527$738'.
+  created $dff cell `$procdff$1586' with negative edge clock.
+Creating register for signal `\FDRE.\Q' using process `\FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:494$734'.
+  created $dff cell `$procdff$1587' with positive edge clock.
+Creating register for signal `\km_pmod_event_egress.\event_start_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1592' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\spi_cs_n_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1597' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\spi_sck_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1602' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\spi_mosi_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1607' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\par_valid_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1612' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\par_clk_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1617' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\par_data_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1622' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\busy_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1627' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\ready_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1632' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\tx_count_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1637' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\drop_count_o' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1642' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\state_q' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1647' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\shift_reg_q' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1652' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\bit_cnt_q' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1657' with positive edge clock and positive level reset.
+Creating register for signal `\km_pmod_event_egress.\byte_cnt_q' using process `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+  created $adff cell `$procdff$1662' with positive edge clock and positive level reset.
+
+3.4.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+3.4.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2405$1234'.
+Found and cleaned up 1 empty switch in `\SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2413$1233'.
+Removing empty process `SRLC32E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2413$1233'.
+Removing empty process `SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2361$1227'.
+Found and cleaned up 1 empty switch in `\SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2369$1226'.
+Removing empty process `SRLC16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2369$1226'.
+Removing empty process `SRLC16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2329$1220'.
+Removing empty process `SRLC16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2332$1219'.
+Removing empty process `SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2292$1217'.
+Found and cleaned up 1 empty switch in `\SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2299$1216'.
+Removing empty process `SRL16E.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2299$1216'.
+Removing empty process `SRL16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2264$1210'.
+Removing empty process `SRL16.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:2266$1209'.
+Removing empty process `RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1980$1183'.
+Removing empty process `RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1979$1182'.
+Removing empty process `RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1978$1181'.
+Removing empty process `RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1977$1180'.
+Found and cleaned up 1 empty switch in `\RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+Removing empty process `RAM64M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1986$1105'.
+Removing empty process `RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1806$1083'.
+Removing empty process `RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1805$1082'.
+Removing empty process `RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1804$1081'.
+Removing empty process `RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1803$1080'.
+Found and cleaned up 1 empty switch in `\RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+Removing empty process `RAM32M.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1812$985'.
+Removing empty process `RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1712$962'.
+Found and cleaned up 1 empty switch in `\RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932'.
+Removing empty process `RAM128X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1716$932'.
+Removing empty process `RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1607$925'.
+Found and cleaned up 1 empty switch in `\RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895'.
+Removing empty process `RAM64X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1611$895'.
+Removing empty process `RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1561$889'.
+Found and cleaned up 1 empty switch in `\RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877'.
+Removing empty process `RAM32X1D_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1565$877'.
+Removing empty process `RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1502$871'.
+Found and cleaned up 1 empty switch in `\RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847'.
+Removing empty process `RAM32X1D.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:1506$847'.
+Removing empty process `FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$799'.
+Found and cleaned up 1 empty switch in `\FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:815$796'.
+Removing empty process `FDPE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:815$796'.
+Removing empty process `FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$795'.
+Found and cleaned up 1 empty switch in `\FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:774$793'.
+Removing empty process `FDPE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:774$793'.
+Removing empty process `FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$781'.
+Found and cleaned up 1 empty switch in `\FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:736$778'.
+Removing empty process `FDCE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:736$778'.
+Removing empty process `FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$777'.
+Found and cleaned up 1 empty switch in `\FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:695$775'.
+Removing empty process `FDCE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:695$775'.
+Removing empty process `FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$763'.
+Found and cleaned up 2 empty switches in `\FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:592$760'.
+Removing empty process `FDSE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:592$760'.
+Removing empty process `FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$759'.
+Found and cleaned up 2 empty switches in `\FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:559$756'.
+Removing empty process `FDSE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:559$756'.
+Removing empty process `FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$741'.
+Found and cleaned up 2 empty switches in `\FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:527$738'.
+Removing empty process `FDRE_1.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:527$738'.
+Removing empty process `FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:0$737'.
+Found and cleaned up 2 empty switches in `\FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:494$734'.
+Removing empty process `FDRE.$proc$/usr/bin/../share/yosys/xilinx/cells_sim.v:494$734'.
+Removing empty process `km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:0$16'.
+Found and cleaned up 6 empty switches in `\km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+Removing empty process `km_pmod_event_egress.$proc$Engineering/hw/rtl/io/km_pmod_event_egress.sv:95$5'.
+Cleaned up 27 empty switches.
+
+3.4.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~53 debug messages>
+
+3.5. Executing TRIBUF pass.
+
+3.6. Executing DEMINOUT pass (demote inout ports to input or output).
+
+3.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 16 unused cells and 78 unused wires.
+<suppressed ~17 debug messages>
+
+3.9. Executing CHECK pass (checking for obvious problems).
+Checking module km_pmod_event_egress...
+Found and reported 0 problems.
+
+3.10. Executing OPT pass (performing simple optimizations).
+
+3.10.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.10.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+<suppressed ~108 debug messages>
+Removed a total of 36 cells.
+
+3.10.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~69 debug messages>
+
+3.10.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+    New ctrl vector for $pmux cell $procmux$1468: $auto$opt_reduce.cc:137:opt_pmux$1666
+    New ctrl vector for $pmux cell $procmux$1472: { $procmux$1404_CMP $auto$opt_reduce.cc:137:opt_pmux$1668 }
+    New ctrl vector for $pmux cell $procmux$1480: { $procmux$1404_CMP $auto$opt_reduce.cc:137:opt_pmux$1670 }
+    New ctrl vector for $pmux cell $procmux$1494: { $procmux$1411_CMP $auto$opt_reduce.cc:137:opt_pmux$1672 }
+    New ctrl vector for $pmux cell $procmux$1500: { $procmux$1404_CMP $auto$opt_reduce.cc:137:opt_pmux$1674 }
+    New ctrl vector for $pmux cell $procmux$1509: { $procmux$1457_CMP $auto$opt_reduce.cc:137:opt_pmux$1676 }
+    New ctrl vector for $pmux cell $procmux$1517: { $procmux$1425_CMP $auto$opt_reduce.cc:137:opt_pmux$1678 }
+    New ctrl vector for $pmux cell $procmux$1526: { $procmux$1404_CMP $auto$opt_reduce.cc:137:opt_pmux$1680 }
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 8 changes.
+
+3.10.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+<suppressed ~9 debug messages>
+Removed a total of 3 cells.
+
+3.10.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.10.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 0 unused cells and 39 unused wires.
+<suppressed ~1 debug messages>
+
+3.10.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.10.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.10.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~70 debug messages>
+
+3.10.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.10.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.10.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.10.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.10.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.10.16. Finished OPT passes. (There is nothing left to do.)
+
+3.11. Executing FSM pass (extract and optimize FSM).
+
+3.11.1. Executing FSM_DETECT pass (finding FSMs in design).
+Not marking km_pmod_event_egress.state_q as FSM state register:
+    Users of register don't seem to benefit from recoding.
+    Circuit seems to be self-resetting.
+
+3.11.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+
+3.11.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+3.11.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.11.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+3.11.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+
+3.11.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+3.11.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+
+3.12. Executing OPT pass (performing simple optimizations).
+
+3.12.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.12.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.12.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~70 debug messages>
+
+3.12.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.12.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.12.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding EN signal on $procdff$1662 ($adff) from module km_pmod_event_egress (D = $0\byte_cnt_q[2:0], Q = \byte_cnt_q).
+Adding EN signal on $procdff$1657 ($adff) from module km_pmod_event_egress (D = $0\bit_cnt_q[5:0], Q = \bit_cnt_q).
+Adding EN signal on $procdff$1652 ($adff) from module km_pmod_event_egress (D = $0\shift_reg_q[63:0], Q = \shift_reg_q).
+Adding EN signal on $procdff$1647 ($adff) from module km_pmod_event_egress (D = $0\state_q[2:0], Q = \state_q).
+Adding EN signal on $procdff$1642 ($adff) from module km_pmod_event_egress (D = $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:118$9_Y, Q = \drop_count_o).
+Adding EN signal on $procdff$1637 ($adff) from module km_pmod_event_egress (D = $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:175$12_Y, Q = \tx_count_o).
+Adding EN signal on $procdff$1632 ($adff) from module km_pmod_event_egress (D = $0\ready_o[0:0], Q = \ready_o).
+Adding EN signal on $procdff$1627 ($adff) from module km_pmod_event_egress (D = $0\busy_o[0:0], Q = \busy_o).
+Adding EN signal on $procdff$1622 ($adff) from module km_pmod_event_egress (D = $0\par_data_o[7:0], Q = \par_data_o).
+Adding EN signal on $procdff$1617 ($adff) from module km_pmod_event_egress (D = $0\par_clk_o[0:0], Q = \par_clk_o).
+Adding EN signal on $procdff$1612 ($adff) from module km_pmod_event_egress (D = $0\par_valid_o[0:0], Q = \par_valid_o).
+Adding EN signal on $procdff$1607 ($adff) from module km_pmod_event_egress (D = $0\spi_mosi_o[0:0], Q = \spi_mosi_o).
+Adding EN signal on $procdff$1602 ($adff) from module km_pmod_event_egress (D = $0\spi_sck_o[0:0], Q = \spi_sck_o).
+Adding EN signal on $procdff$1597 ($adff) from module km_pmod_event_egress (D = $0\spi_cs_n_o[0:0], Q = \spi_cs_n_o).
+
+3.12.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 2 unused cells and 2 unused wires.
+<suppressed ~3 debug messages>
+
+3.12.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~11 debug messages>
+
+3.12.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.12.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~68 debug messages>
+
+3.12.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.12.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+<suppressed ~18 debug messages>
+Removed a total of 6 cells.
+
+3.12.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.12.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 0 unused cells and 6 unused wires.
+<suppressed ~1 debug messages>
+
+3.12.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.12.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.12.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~68 debug messages>
+
+3.12.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.12.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.12.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.12.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.12.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.12.23. Finished OPT passes. (There is nothing left to do.)
+
+3.13. Executing WREDUCE pass (reducing word size of cells).
+Removed top 31 bits (of 32) from port B of cell km_pmod_event_egress.$add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:118$9 ($add).
+Removed top 5 bits (of 6) from port B of cell km_pmod_event_egress.$add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:166$11 ($add).
+Removed top 31 bits (of 32) from port B of cell km_pmod_event_egress.$add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:175$12 ($add).
+Removed top 2 bits (of 3) from port B of cell km_pmod_event_egress.$add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:198$14 ($add).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$30 ($mux).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$33 ($mux).
+Removed top 3 bits (of 8) from port A of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$34 ($xor).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$34 ($xor).
+Removed top 3 bits (of 8) from port Y of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$34 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$36 ($mux).
+Removed top 2 bits (of 8) from port A of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$37 ($xor).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$37 ($xor).
+Removed top 2 bits (of 8) from port Y of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$37 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$39 ($mux).
+Removed top 1 bits (of 8) from port A of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$40 ($xor).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$40 ($xor).
+Removed top 1 bits (of 8) from port Y of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$40 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$42 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$43 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$45 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$46 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$48 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$49 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$51 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$52 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$54 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$55 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$57 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$58 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$60 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$61 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$63 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$64 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$66 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$67 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$69 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$70 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$72 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$73 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$75 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$76 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$78 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$79 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$81 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$82 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$84 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$85 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$87 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$88 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$90 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$91 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$93 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$94 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$96 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$97 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$99 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$100 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$102 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$103 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$105 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$106 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$108 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$109 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$111 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$112 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$114 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$115 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$117 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$118 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$120 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$121 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$123 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$124 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$126 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$127 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$129 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$130 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$132 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$133 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$135 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$136 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$138 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$139 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$141 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$142 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$144 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$145 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$147 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$148 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$150 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$151 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$153 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$154 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$156 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$157 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$159 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$160 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$162 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$163 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$165 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$166 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$168 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$169 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$171 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$172 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$174 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$175 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$177 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$178 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$180 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$181 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$183 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$184 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$186 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$187 ($xor).
+Removed top 5 bits (of 8) from mux cell km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$189 ($mux).
+Removed top 5 bits (of 8) from port B of cell km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$190 ($xor).
+Removed top 1 bits (of 3) from port B of cell km_pmod_event_egress.$procmux$1425_CMP0 ($eq).
+Removed top 1 bits (of 3) from mux cell km_pmod_event_egress.$procmux$1448 ($mux).
+Removed top 1 bits (of 3) from mux cell km_pmod_event_egress.$procmux$1454 ($mux).
+Removed top 2 bits (of 3) from port B of cell km_pmod_event_egress.$procmux$1457_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell km_pmod_event_egress.$procmux$1470_CMP0 ($eq).
+Removed top 1 bits (of 3) from wire km_pmod_event_egress.$procmux$1448_Y.
+Removed top 1 bits (of 3) from wire km_pmod_event_egress.$procmux$1454_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$102_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$105_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$108_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$111_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$114_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$117_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$120_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$123_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$126_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$129_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$132_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$135_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$138_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$141_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$144_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$147_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$150_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$153_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$156_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$159_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$162_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$165_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$168_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$171_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$174_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$177_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$180_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$183_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$186_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$189_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$30_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$33_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$36_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$39_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$42_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$45_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$48_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$51_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$54_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$57_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$60_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$63_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$66_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$69_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$72_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$75_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$78_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$81_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$84_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$87_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$90_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$93_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$96_Y.
+Removed top 5 bits (of 8) from wire km_pmod_event_egress.$ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$99_Y.
+Removed top 3 bits (of 8) from wire km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$34_Y.
+Removed top 2 bits (of 8) from wire km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$37_Y.
+Removed top 1 bits (of 8) from wire km_pmod_event_egress.$xor$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$40_Y.
+Removed top 2 bits (of 56) from wire km_pmod_event_egress.frame_payload.
+
+3.14. Executing PEEPOPT pass (run peephole optimizers).
+
+3.15. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 0 unused cells and 60 unused wires.
+<suppressed ~1 debug messages>
+
+3.16. Executing PMUX2SHIFTX pass.
+Inspecting $pmux cell km_pmod_event_egress/$procmux$1435.
+  data width: 64 (next power-of-2 = 64, log2 = 6)
+  checking ctrl signal \state_q
+    best permutation: \state_q
+    best xor mask: 3'000
+      0: 3'101 -> 3'101 -> 3'101: $procmux$1433_Y
+      1: 3'010 -> 3'010 -> 3'010: $procmux$1438_Y
+      2: 3'000 -> 3'000 -> 3'000: $procmux$1442_Y
+    choices: 3
+    min choice: 0
+    max choice: 5
+    range density: 50%
+    absolute density: 50%
+    full density: 37%
+    full case: false
+    created $shiftx cell $auto$pmux2shiftx.cc:712:execute$1802.
+Inspecting $pmux cell km_pmod_event_egress/$procmux$1450.
+  data width: 3 (next power-of-2 = 4, log2 = 2)
+  checking ctrl signal \state_q
+    best permutation: \state_q
+    best xor mask: 3'000
+      0: 3'101 -> 3'101 -> 3'101: { 1'1 $auto$wreduce.cc:514:run$1739 [1:0] }
+      1: 3'100 -> 3'100 -> 3'100: 3'101
+      2: 3'010 -> 3'010 -> 3'010: { 1'0 $auto$wreduce.cc:514:run$1740 [1:0] }
+      3: 3'001 -> 3'001 -> 3'001: 3'010
+      4: 3'000 -> 3'000 -> 3'000: $procmux$1462_Y
+    choices: 5
+    min choice: 0
+    max choice: 5
+    range density: 83%
+    absolute density: 83%
+    full density: 62%
+    update to full case.
+    new min choice: 0
+    new max choice: 7
+    full case: true
+    created $shiftx cell $auto$pmux2shiftx.cc:712:execute$1804.
+
+3.17. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+3.18. Executing TECHMAP pass (map to technology primitives).
+
+3.18.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/mul2dsp.v
+Parsing Verilog input from `/usr/bin/../share/yosys/mul2dsp.v' to AST representation.
+Generating RTLIL representation for module `\_80_mul'.
+Generating RTLIL representation for module `\_90_soft_mul'.
+Successfully finished Verilog frontend.
+
+3.18.2. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/xc7_dsp_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/xc7_dsp_map.v' to AST representation.
+Generating RTLIL representation for module `\$__MUL25X18'.
+Successfully finished Verilog frontend.
+
+3.18.3. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~5 debug messages>
+
+3.19. Executing OPT_EXPR pass (perform const folding).
+
+3.20. Executing WREDUCE pass (reducing word size of cells).
+
+3.21. Executing XILINX_DSP pass (pack resources into DSPs).
+
+3.22. Executing TECHMAP pass (map to technology primitives).
+
+3.22.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/cmp2lut.v
+Parsing Verilog input from `/usr/bin/../share/yosys/cmp2lut.v' to AST representation.
+Generating RTLIL representation for module `\_90_lut_cmp_'.
+Successfully finished Verilog frontend.
+
+3.22.2. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/cmp2lcu.v
+Parsing Verilog input from `/usr/bin/../share/yosys/cmp2lcu.v' to AST representation.
+Generating RTLIL representation for module `\_80_lcu_cmp_'.
+Generating RTLIL representation for module `\$__CMP2LCU'.
+Successfully finished Verilog frontend.
+
+3.22.3. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~7 debug messages>
+
+3.23. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module km_pmod_event_egress:
+  creating $macc model for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:118$9 ($add).
+  creating $macc model for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:166$11 ($add).
+  creating $macc model for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:175$12 ($add).
+  creating $macc model for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:198$14 ($add).
+  creating $alu model for $macc $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:198$14.
+  creating $alu model for $macc $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:175$12.
+  creating $alu model for $macc $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:166$11.
+  creating $alu model for $macc $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:118$9.
+  creating $alu cell for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:118$9: $auto$alumacc.cc:495:replace_alu$1807
+  creating $alu cell for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:166$11: $auto$alumacc.cc:495:replace_alu$1810
+  creating $alu cell for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:175$12: $auto$alumacc.cc:495:replace_alu$1813
+  creating $alu cell for $add$Engineering/hw/rtl/io/km_pmod_event_egress.sv:198$14: $auto$alumacc.cc:495:replace_alu$1816
+  created 4 $alu and 0 $macc cells.
+
+3.24. Executing SHARE pass (SAT-based resource sharing).
+
+3.25. Executing OPT pass (performing simple optimizations).
+
+3.25.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~4 debug messages>
+
+3.25.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.25.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 1/5 on $pmux $procmux$1435.
+    dead port 2/5 on $pmux $procmux$1435.
+    dead port 3/5 on $pmux $procmux$1435.
+    dead port 1/7 on $pmux $procmux$1450.
+    dead port 2/7 on $pmux $procmux$1450.
+    dead port 3/7 on $pmux $procmux$1450.
+    dead port 4/7 on $pmux $procmux$1450.
+    dead port 5/7 on $pmux $procmux$1450.
+    dead port 7/7 on $pmux $procmux$1450.
+Removed 9 multiplexer ports.
+<suppressed ~74 debug messages>
+
+3.25.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.25.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.25.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.25.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 0 unused cells and 5 unused wires.
+<suppressed ~1 debug messages>
+
+3.25.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.25.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.25.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~73 debug messages>
+
+3.25.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.25.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.25.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.25.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.25.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.25.16. Finished OPT passes. (There is nothing left to do.)
+
+3.26. Executing MEMORY pass.
+
+3.26.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+3.26.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+3.26.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+3.26.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+3.26.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+3.26.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.26.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+3.26.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+3.26.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.26.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+3.27. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.28. Executing MEMORY_LIBMAP pass (mapping memories to cells).
+
+3.29. Executing TECHMAP pass (map to technology primitives).
+
+3.29.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/lutrams_xc5v_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/lutrams_xc5v_map.v' to AST representation.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_SP_'.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_DP_'.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_QP_'.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_OP_'.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_SDP_'.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_64X8SW_'.
+Generating RTLIL representation for module `\$__XILINX_LUTRAM_32X16DR8_'.
+Successfully finished Verilog frontend.
+
+3.29.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~9 debug messages>
+
+3.30. Executing TECHMAP pass (map to technology primitives).
+
+3.30.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/brams_xc6v_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/brams_xc6v_map.v' to AST representation.
+Generating RTLIL representation for module `\$__XILINX_BLOCKRAM_TDP_'.
+Generating RTLIL representation for module `\$__XILINX_BLOCKRAM_SDP_'.
+Successfully finished Verilog frontend.
+
+3.30.2. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~4 debug messages>
+
+3.31. Executing OPT pass (performing simple optimizations).
+
+3.31.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~299 debug messages>
+
+3.31.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.31.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.31.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 2 unused cells and 70 unused wires.
+<suppressed ~3 debug messages>
+
+3.31.5. Finished fast OPT passes.
+
+3.32. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+3.33. Executing OPT pass (performing simple optimizations).
+
+3.33.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.33.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.33.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~62 debug messages>
+
+3.33.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+    Consolidated identical input bits for $mux cell $procmux$1448:
+      Old ports: A=2'00, B=2'10, Y=$auto$wreduce.cc:514:run$1739 [1:0]
+      New ports: A=1'0, B=1'1, Y=$auto$wreduce.cc:514:run$1739 [1]
+      New connections: $auto$wreduce.cc:514:run$1739 [0] = 1'0
+    Consolidated identical input bits for $mux cell $procmux$1454:
+      Old ports: A=2'01, B=2'11, Y=$auto$wreduce.cc:514:run$1740 [1:0]
+      New ports: A=1'0, B=1'1, Y=$auto$wreduce.cc:514:run$1740 [1]
+      New connections: $auto$wreduce.cc:514:run$1740 [0] = 1'1
+    Consolidated identical input bits for $mux cell $procmux$1460:
+      Old ports: A=3'001, B=3'100, Y=$procmux$1460_Y
+      New ports: A=2'01, B=2'10, Y={ $procmux$1460_Y [2] $procmux$1460_Y [0] }
+      New connections: $procmux$1460_Y [1] = 1'0
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$102:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1741 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2229 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2229 [5]
+      New connections: $auto$wreduce.cc:514:run$1741 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2229 [5] $auto$opt_expr.cc:205:group_cell_inputs$2229 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$105:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1742 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2232 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2232 [5]
+      New connections: $auto$wreduce.cc:514:run$1742 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2232 [5] $auto$opt_expr.cc:205:group_cell_inputs$2232 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$108:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1743 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2235 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2235 [5]
+      New connections: $auto$wreduce.cc:514:run$1743 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2235 [5] $auto$opt_expr.cc:205:group_cell_inputs$2235 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$111:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1744 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2238 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2238 [5]
+      New connections: $auto$wreduce.cc:514:run$1744 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2238 [5] $auto$opt_expr.cc:205:group_cell_inputs$2238 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$114:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1745 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2241 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2241 [5]
+      New connections: $auto$wreduce.cc:514:run$1745 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2241 [5] $auto$opt_expr.cc:205:group_cell_inputs$2241 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$117:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1746 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2244 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2244 [5]
+      New connections: $auto$wreduce.cc:514:run$1746 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2244 [5] $auto$opt_expr.cc:205:group_cell_inputs$2244 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$120:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1747 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2247 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2247 [5]
+      New connections: $auto$wreduce.cc:514:run$1747 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2247 [5] $auto$opt_expr.cc:205:group_cell_inputs$2247 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$123:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1748 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2250 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2250 [5]
+      New connections: $auto$wreduce.cc:514:run$1748 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2250 [5] $auto$opt_expr.cc:205:group_cell_inputs$2250 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$126:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1749 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2253 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2253 [5]
+      New connections: $auto$wreduce.cc:514:run$1749 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2253 [5] $auto$opt_expr.cc:205:group_cell_inputs$2253 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$129:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1750 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2256 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2256 [5]
+      New connections: $auto$wreduce.cc:514:run$1750 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2256 [5] $auto$opt_expr.cc:205:group_cell_inputs$2256 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$132:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1751 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2259 [0] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2259 [0]
+      New connections: $auto$wreduce.cc:514:run$1751 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2259 [0] $auto$opt_expr.cc:205:group_cell_inputs$2259 [0] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$135:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1752 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2262 [0] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2262 [0]
+      New connections: $auto$wreduce.cc:514:run$1752 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2262 [0] $auto$opt_expr.cc:205:group_cell_inputs$2262 [0] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$138:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1753 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2265 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2265 [5]
+      New connections: $auto$wreduce.cc:514:run$1753 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2265 [5] $auto$opt_expr.cc:205:group_cell_inputs$2265 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$141:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1754 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2268 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2268 [5]
+      New connections: $auto$wreduce.cc:514:run$1754 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2268 [5] $auto$opt_expr.cc:205:group_cell_inputs$2268 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$144:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1755 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2271 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2271 [5]
+      New connections: $auto$wreduce.cc:514:run$1755 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2271 [5] $auto$opt_expr.cc:205:group_cell_inputs$2271 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$147:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1756 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2274 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2274 [5]
+      New connections: $auto$wreduce.cc:514:run$1756 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2274 [5] $auto$opt_expr.cc:205:group_cell_inputs$2274 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$150:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1757 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2277 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2277 [5]
+      New connections: $auto$wreduce.cc:514:run$1757 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2277 [5] $auto$opt_expr.cc:205:group_cell_inputs$2277 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$153:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1758 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2280 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2280 [5]
+      New connections: $auto$wreduce.cc:514:run$1758 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2280 [5] $auto$opt_expr.cc:205:group_cell_inputs$2280 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$156:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1759 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2283 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2283 [5]
+      New connections: $auto$wreduce.cc:514:run$1759 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2283 [5] $auto$opt_expr.cc:205:group_cell_inputs$2283 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$159:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1760 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2286 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2286 [5]
+      New connections: $auto$wreduce.cc:514:run$1760 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2286 [5] $auto$opt_expr.cc:205:group_cell_inputs$2286 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$162:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1761 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2289 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2289 [5]
+      New connections: $auto$wreduce.cc:514:run$1761 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2289 [5] $auto$opt_expr.cc:205:group_cell_inputs$2289 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$165:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1762 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2292 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2292 [5]
+      New connections: $auto$wreduce.cc:514:run$1762 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2292 [5] $auto$opt_expr.cc:205:group_cell_inputs$2292 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$168:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1763 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2295 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2295 [5]
+      New connections: $auto$wreduce.cc:514:run$1763 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2295 [5] $auto$opt_expr.cc:205:group_cell_inputs$2295 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$171:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1764 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2298 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2298 [5]
+      New connections: $auto$wreduce.cc:514:run$1764 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2298 [5] $auto$opt_expr.cc:205:group_cell_inputs$2298 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$174:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1765 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2301 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2301 [5]
+      New connections: $auto$wreduce.cc:514:run$1765 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2301 [5] $auto$opt_expr.cc:205:group_cell_inputs$2301 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$177:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1766 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2304 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2304 [5]
+      New connections: $auto$wreduce.cc:514:run$1766 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2304 [5] $auto$opt_expr.cc:205:group_cell_inputs$2304 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$180:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1767 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2307 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2307 [5]
+      New connections: $auto$wreduce.cc:514:run$1767 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2307 [5] $auto$opt_expr.cc:205:group_cell_inputs$2307 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$183:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1768 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2310 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2310 [5]
+      New connections: $auto$wreduce.cc:514:run$1768 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2310 [5] $auto$opt_expr.cc:205:group_cell_inputs$2310 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$186:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1769 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2313 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2313 [5]
+      New connections: $auto$wreduce.cc:514:run$1769 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2313 [5] $auto$opt_expr.cc:205:group_cell_inputs$2313 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$189:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1770 [2:1] \calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$2.$result [0] }
+      New ports: A=1'0, B=1'1, Y=\calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$2.$result [0]
+      New connections: $auto$wreduce.cc:514:run$1770 [2:1] = { \calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$2.$result [0] \calc_crc8$func$Engineering/hw/rtl/io/km_pmod_event_egress.sv:79$2.$result [0] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$30:
+      Old ports: A=3'000, B=3'111, Y=$auto$wreduce.cc:514:run$1771 [2:0]
+      New ports: A=1'0, B=1'1, Y=$auto$wreduce.cc:514:run$1771 [0]
+      New connections: $auto$wreduce.cc:514:run$1771 [2:1] = { $auto$wreduce.cc:514:run$1771 [0] $auto$wreduce.cc:514:run$1771 [0] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$33:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1772 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2160 [0] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2160 [0]
+      New connections: $auto$wreduce.cc:514:run$1772 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2160 [0] $auto$opt_expr.cc:205:group_cell_inputs$2160 [0] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$36:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1773 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2163 [3] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2163 [3]
+      New connections: $auto$wreduce.cc:514:run$1773 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2163 [3] $auto$opt_expr.cc:205:group_cell_inputs$2163 [3] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$39:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1774 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2166 [4] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2166 [4]
+      New connections: $auto$wreduce.cc:514:run$1774 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2166 [4] $auto$opt_expr.cc:205:group_cell_inputs$2166 [4] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$42:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1775 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2169 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2169 [5]
+      New connections: $auto$wreduce.cc:514:run$1775 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2169 [5] $auto$opt_expr.cc:205:group_cell_inputs$2169 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$45:
+      Old ports: A=3'111, B=3'000, Y={ $auto$wreduce.cc:514:run$1776 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2172 [5] }
+      New ports: A=1'1, B=1'0, Y=$auto$opt_expr.cc:205:group_cell_inputs$2172 [5]
+      New connections: $auto$wreduce.cc:514:run$1776 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2172 [5] $auto$opt_expr.cc:205:group_cell_inputs$2172 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$48:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1777 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2175 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2175 [5]
+      New connections: $auto$wreduce.cc:514:run$1777 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2175 [5] $auto$opt_expr.cc:205:group_cell_inputs$2175 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$51:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1778 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2178 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2178 [5]
+      New connections: $auto$wreduce.cc:514:run$1778 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2178 [5] $auto$opt_expr.cc:205:group_cell_inputs$2178 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$54:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1779 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2181 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2181 [5]
+      New connections: $auto$wreduce.cc:514:run$1779 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2181 [5] $auto$opt_expr.cc:205:group_cell_inputs$2181 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$57:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1780 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2184 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2184 [5]
+      New connections: $auto$wreduce.cc:514:run$1780 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2184 [5] $auto$opt_expr.cc:205:group_cell_inputs$2184 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$60:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1781 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2187 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2187 [5]
+      New connections: $auto$wreduce.cc:514:run$1781 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2187 [5] $auto$opt_expr.cc:205:group_cell_inputs$2187 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$63:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1782 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2190 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2190 [5]
+      New connections: $auto$wreduce.cc:514:run$1782 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2190 [5] $auto$opt_expr.cc:205:group_cell_inputs$2190 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$66:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1783 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2193 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2193 [5]
+      New connections: $auto$wreduce.cc:514:run$1783 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2193 [5] $auto$opt_expr.cc:205:group_cell_inputs$2193 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$69:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1784 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2196 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2196 [5]
+      New connections: $auto$wreduce.cc:514:run$1784 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2196 [5] $auto$opt_expr.cc:205:group_cell_inputs$2196 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$72:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1785 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2199 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2199 [5]
+      New connections: $auto$wreduce.cc:514:run$1785 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2199 [5] $auto$opt_expr.cc:205:group_cell_inputs$2199 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$75:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1786 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2202 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2202 [5]
+      New connections: $auto$wreduce.cc:514:run$1786 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2202 [5] $auto$opt_expr.cc:205:group_cell_inputs$2202 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$78:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1787 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2205 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2205 [5]
+      New connections: $auto$wreduce.cc:514:run$1787 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2205 [5] $auto$opt_expr.cc:205:group_cell_inputs$2205 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$81:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1788 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2208 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2208 [5]
+      New connections: $auto$wreduce.cc:514:run$1788 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2208 [5] $auto$opt_expr.cc:205:group_cell_inputs$2208 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$84:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1789 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2211 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2211 [5]
+      New connections: $auto$wreduce.cc:514:run$1789 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2211 [5] $auto$opt_expr.cc:205:group_cell_inputs$2211 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$87:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1790 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2214 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2214 [5]
+      New connections: $auto$wreduce.cc:514:run$1790 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2214 [5] $auto$opt_expr.cc:205:group_cell_inputs$2214 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$90:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1791 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2217 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2217 [5]
+      New connections: $auto$wreduce.cc:514:run$1791 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2217 [5] $auto$opt_expr.cc:205:group_cell_inputs$2217 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$93:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1792 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2220 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2220 [5]
+      New connections: $auto$wreduce.cc:514:run$1792 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2220 [5] $auto$opt_expr.cc:205:group_cell_inputs$2220 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$96:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1793 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2223 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2223 [5]
+      New connections: $auto$wreduce.cc:514:run$1793 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2223 [5] $auto$opt_expr.cc:205:group_cell_inputs$2223 [5] }
+    Consolidated identical input bits for $mux cell $ternary$Engineering/hw/rtl/io/km_pmod_event_egress.sv:72$99:
+      Old ports: A=3'000, B=3'111, Y={ $auto$wreduce.cc:514:run$1794 [2:1] $auto$opt_expr.cc:205:group_cell_inputs$2226 [5] }
+      New ports: A=1'0, B=1'1, Y=$auto$opt_expr.cc:205:group_cell_inputs$2226 [5]
+      New connections: $auto$wreduce.cc:514:run$1794 [2:1] = { $auto$opt_expr.cc:205:group_cell_inputs$2226 [5] $auto$opt_expr.cc:205:group_cell_inputs$2226 [5] }
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 57 changes.
+
+3.33.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.33.6. Executing OPT_SHARE pass.
+
+3.33.7. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.33.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 0 unused cells and 53 unused wires.
+<suppressed ~1 debug messages>
+
+3.33.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~59 debug messages>
+
+3.33.10. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.33.11. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+3.33.12. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.33.13. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.33.14. Executing OPT_SHARE pass.
+
+3.33.15. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.33.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 0 unused cells and 56 unused wires.
+<suppressed ~1 debug messages>
+
+3.33.17. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.33.18. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.33.19. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \km_pmod_event_egress..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+3.33.20. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \km_pmod_event_egress.
+Performed a total of 0 changes.
+
+3.33.21. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+Removed a total of 0 cells.
+
+3.33.22. Executing OPT_SHARE pass.
+
+3.33.23. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.33.24. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+
+3.33.25. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+
+3.33.26. Finished OPT passes. (There is nothing left to do.)
+
+3.34. Executing XILINX_SRL pass (Xilinx shift register extraction).
+
+3.35. Executing TECHMAP pass (map to technology primitives).
+
+3.35.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/usr/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+3.35.2. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/arith_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/arith_map.v' to AST representation.
+Generating RTLIL representation for module `\_80_xilinx_lcu'.
+Generating RTLIL representation for module `\_80_xilinx_alu'.
+Successfully finished Verilog frontend.
+
+3.35.3. Continuing TECHMAP pass.
+Using extmapper simplemap for cells of type $xor.
+Using extmapper simplemap for cells of type $reduce_bool.
+Using extmapper simplemap for cells of type $logic_and.
+Using template $paramod$ae13820812ed2d6e563f4300a97bbe8fd093d401\_80_xilinx_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $eq.
+Using template $paramod$d735c1bd8e4aaeb55e846141d44dc1e2c1104582\_80_xilinx_alu for cells of type $alu.
+Using template $paramod$db8e6ecc9d55e30ac39e4a71c23a85841d46f485\_80_xilinx_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $ne.
+Using extmapper simplemap for cells of type $not.
+Using template $paramod$constmap:b12f50b3a1cee7c0ae6bd14e823e6be6ab05018b$paramod$aa634ebe329d6feb3355b968846af8c11496ceb7\_90_shift_shiftx for cells of type $shiftx.
+Using template $paramod$constmap:61f60aa87d99a1b3741361940942fa9fb731ac76$paramod$7a189d0d77ebf62589ee491bddc7a9edc613a506\_90_shift_shiftx for cells of type $shiftx.
+Using extmapper simplemap for cells of type $logic_not.
+Using extmapper simplemap for cells of type $and.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $reduce_and.
+Using extmapper simplemap for cells of type $or.
+Using extmapper simplemap for cells of type $reduce_or.
+Using extmapper simplemap for cells of type $adffe.
+Using extmapper simplemap for cells of type $adff.
+Using extmapper simplemap for cells of type $pos.
+No more expansions possible.
+<suppressed ~967 debug messages>
+
+3.36. Executing OPT pass (performing simple optimizations).
+
+3.36.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~301 debug messages>
+
+3.36.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\km_pmod_event_egress'.
+<suppressed ~813 debug messages>
+Removed a total of 271 cells.
+
+3.36.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+3.36.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \km_pmod_event_egress..
+Removed 582 unused cells and 152 unused wires.
+<suppressed ~583 debug messages>
+
+3.36.5. Finished fast OPT passes.
+
+3.37. Executing IOPADMAP pass (mapping inputs/outputs to IO-PAD cells).
+Mapping port km_pmod_event_egress.busy_o using OBUF.
+Mapping port km_pmod_event_egress.clk using IBUF.
+Mapping port km_pmod_event_egress.drop_count_o using OBUF.
+Mapping port km_pmod_event_egress.event_cid_i using IBUF.
+Mapping port km_pmod_event_egress.event_mask_i using IBUF.
+Mapping port km_pmod_event_egress.event_start_o using OBUF.
+Mapping port km_pmod_event_egress.event_state_i using IBUF.
+Mapping port km_pmod_event_egress.event_valid_i using IBUF.
+Mapping port km_pmod_event_egress.mode_par8_i using IBUF.
+Mapping port km_pmod_event_egress.par_clk_o using OBUF.
+Mapping port km_pmod_event_egress.par_data_o using OBUF.
+Mapping port km_pmod_event_egress.par_valid_o using OBUF.
+Mapping port km_pmod_event_egress.ready_o using OBUF.
+Mapping port km_pmod_event_egress.rst_n using IBUF.
+Mapping port km_pmod_event_egress.spi_cs_n_o using OBUF.
+Mapping port km_pmod_event_egress.spi_mosi_o using OBUF.
+Mapping port km_pmod_event_egress.spi_sck_o using OBUF.
+Mapping port km_pmod_event_egress.tx_count_o using OBUF.
+
+3.38. Executing TECHMAP pass (map to technology primitives).
+
+3.38.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/usr/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+3.38.2. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/cells_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/cells_map.v' to AST representation.
+Generating RTLIL representation for module `\$__SHREG_'.
+Generating RTLIL representation for module `\$__XILINX_SHREG_'.
+Generating RTLIL representation for module `\$__XILINX_MUXF78'.
+Successfully finished Verilog frontend.
+
+3.38.3. Continuing TECHMAP pass.
+No more expansions possible.
+<suppressed ~78 debug messages>
+Removed 0 unused cells and 3 unused wires.
+
+3.39. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+
+3.40. Executing OPT_EXPR pass (perform const folding).
+Optimizing module km_pmod_event_egress.
+<suppressed ~241 debug messages>
+
+3.41. Executing ABC pass (technology mapping using ABC).
+
+3.41.1. Extracting gate netlist of module `\km_pmod_event_egress' to `<abc-temp-dir>/input.blif'..
+Extracted 549 gates and 695 wires to a netlist network with 144 inputs and 265 outputs.
+
+3.41.1.1. Executing ABC.
+Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
+ABC: ABC command line: "source <abc-temp-dir>/abc.script".
+ABC:
+ABC: + read_blif <abc-temp-dir>/input.blif
+ABC: + read_lut <abc-temp-dir>/lutdefs.txt
+ABC: + strash
+ABC: + &get -n
+ABC: + &fraig -x
+ABC: + &put
+ABC: + scorr
+ABC: Warning: The network is combinational (run "fraig" or "fraig_sweep").
+ABC: + dc2
+ABC: + dretime
+ABC: + strash
+ABC: + dch -f
+ABC: + if
+ABC: + mfs2
+ABC: + write_blif <abc-temp-dir>/output.blif
+
+3.41.1.2. Re-integrating ABC results.
+ABC RESULTS:              $lut cells:      327
+ABC RESULTS:        internal signals:      286
+ABC RESULTS:           input signals:      144
+ABC RESULTS:          output signals:      265
+Removing temp directory.
+Removed 0 unused cells and 567 unused wires.
+
+3.42. Executing TECHMAP pass (map to technology primitives).
+
+3.42.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/ff_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/ff_map.v' to AST representation.
+Generating RTLIL representation for module `\$_DFFE_NP0P_'.
+Generating RTLIL representation for module `\$_DFFE_PP0P_'.
+Generating RTLIL representation for module `\$_DFFE_NP1P_'.
+Generating RTLIL representation for module `\$_DFFE_PP1P_'.
+Generating RTLIL representation for module `\$_DFFSRE_NPPP_'.
+Generating RTLIL representation for module `\$_DFFSRE_PPPP_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1P_'.
+Generating RTLIL representation for module `\$_DLATCH_NP0_'.
+Generating RTLIL representation for module `\$_DLATCH_PP0_'.
+Generating RTLIL representation for module `\$_DLATCH_NP1_'.
+Generating RTLIL representation for module `\$_DLATCH_PP1_'.
+Generating RTLIL representation for module `\$_DLATCH_NPP_'.
+Generating RTLIL representation for module `\$_DLATCH_PPP_'.
+Successfully finished Verilog frontend.
+
+3.42.2. Continuing TECHMAP pass.
+Using template $paramod\$_DFFE_PP0P_\_TECHMAP_WIREINIT_Q_=1'x for cells of type $_DFFE_PP0P_.
+Using template $paramod\$_DFFE_PP1P_\_TECHMAP_WIREINIT_Q_=1'x for cells of type $_DFFE_PP1P_.
+No more expansions possible.
+<suppressed ~196 debug messages>
+
+3.43. Executing XILINX_SRL pass (Xilinx shift register extraction).
+
+3.44. Executing TECHMAP pass (map to technology primitives).
+
+3.44.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/lut_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/lut_map.v' to AST representation.
+Generating RTLIL representation for module `\$lut'.
+Successfully finished Verilog frontend.
+
+3.44.2. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/xilinx/cells_map.v
+Parsing Verilog input from `/usr/bin/../share/yosys/xilinx/cells_map.v' to AST representation.
+Generating RTLIL representation for module `\$__SHREG_'.
+Generating RTLIL representation for module `\$__XILINX_SHREG_'.
+Generating RTLIL representation for module `\$__XILINX_MUXF78'.
+Successfully finished Verilog frontend.
+
+3.44.3. Continuing TECHMAP pass.
+Using template $paramod$de0cfbf042671e74ccda8afd309cd5db894ca1a6\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0001 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1000 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0100 for cells of type $lut.
+Using template $paramod$478e33feeac3aa53ff57d491aada044b8aedceae\$lut for cells of type $lut.
+Using template $paramod$973818279bc95792902f3c09371fd2407d04a2a5\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1011 for cells of type $lut.
+Using template $paramod$33e58adf67c6b686a154c9ce8ebbc4b04b8cabc5\$lut for cells of type $lut.
+Using template $paramod$6e238df02989b317f10820a22773676e71120644\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'01000000 for cells of type $lut.
+Using template $paramod$571404c0889eaf57f492cb5e37f8acb5df5852f9\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'01100000 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'01110000 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1110 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'00001101 for cells of type $lut.
+Using template $paramod$6c9f905fd8b10cf2d926045e96555e8f0d35d9d2\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'00001110 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000001\LUT=2'01 for cells of type $lut.
+Using template $paramod$e0bde73e598487237493c8a43ca52c95a3727354\$lut for cells of type $lut.
+Using template $paramod$48858a0cdda2de6934604a272e0a7e64a67fda48\$lut for cells of type $lut.
+Using template $paramod$f5c97e291c8b48d9f1b4239d871ab7639e5a24ac\$lut for cells of type $lut.
+Using template $paramod$4282def8dbd6df3d1248ad282c629bee684502c2\$lut for cells of type $lut.
+Using template $paramod$21a9cf1c7cffed4ea7970972274e8bcced7c7005\$lut for cells of type $lut.
+Using template $paramod$23953811f9a1e831a4c3afa54c7c0c00652edb7e\$lut for cells of type $lut.
+Using template $paramod$f05d4b8888c79762c43743d193b4196209b4613e\$lut for cells of type $lut.
+Using template $paramod$986bdc1b77bef3d2ca7cd5ade465cc0edaa7fc63\$lut for cells of type $lut.
+Using template $paramod$fd904e9e35cfd343a9df248824bd3f1408724879\$lut for cells of type $lut.
+Using template $paramod$6d23198eb2b8f79a41c7626605a61009695893b1\$lut for cells of type $lut.
+Using template $paramod$df0b68f8e63b2deb6710e23abd8b8ff0796d4897\$lut for cells of type $lut.
+Using template $paramod$16bdab3f7953f2bfcf671466ff721d67c2c2ea45\$lut for cells of type $lut.
+Using template $paramod$312059d12e99ad26c4134857f14060b4f4ff30f7\$lut for cells of type $lut.
+Using template $paramod$daac0483badf68e6d60490b93d420955d288a6ec\$lut for cells of type $lut.
+Using template $paramod$6ee681806faa3b620e525dcd9d5134c7daf970fc\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'01101001 for cells of type $lut.
+Using template $paramod$3dd6581cbca1f8945b988e16dcc7eab6613a3808\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10001111 for cells of type $lut.
+Using template $paramod$2de296c0f54c5ef532710b049108d6056e6152c5\$lut for cells of type $lut.
+Using template $paramod$b297295e19b03521716155b85537bbe86d6a9ae6\$lut for cells of type $lut.
+No more expansions possible.
+<suppressed ~834 debug messages>
+
+3.45. Executing XILINX_DFFOPT pass (optimize FF control signal usage).
+Optimizing FFs in km_pmod_event_egress.
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2876/byte_cnt_q (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2875/byte_cnt_q (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2894/$iopadmap$spi_cs_n_o (2 -> 3)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2895/$iopadmap$spi_sck_o (1 -> 3)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2896/$iopadmap$spi_mosi_o (4 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2897/$iopadmap$par_valid_o (3 -> 6)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2877/byte_cnt_q (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2900/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2901/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2902/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2903/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2904/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2905/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2899/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2908/$iopadmap$ready_o (1 -> 4)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2906/$iopadmap$par_data_o (2 -> 5)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2974/state_q (3 -> 6)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2973/state_q (4 -> 6)
+  Merging D + CE LUTs for $auto$ff.cc:266:slice$2975/state_q (4 -> 6)
+
+3.46. Executing OPT_LUT_INS pass (discard unused LUT inputs).
+Optimizing LUTs in km_pmod_event_egress.
+
+3.47. Executing CLKBUFMAP pass (inserting clock buffers).
+Inserting BUFG on km_pmod_event_egress.$iopadmap$clk[0].
+Removed 22 unused cells and 1644 unused wires.
+
+3.48. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `km_pmod_event_egress'. Setting top module to km_pmod_event_egress.
+
+3.48.1. Analyzing design hierarchy..
+Top module:  \km_pmod_event_egress
+
+3.48.2. Analyzing design hierarchy..
+Top module:  \km_pmod_event_egress
+Removed 0 unused modules.
+
+3.49. Printing statistics.
+
+=== km_pmod_event_egress ===
+
+   Number of wires:                292
+   Number of wire bits:           1207
+   Number of public wires:          29
+   Number of public wire bits:     446
+   Number of ports:                 18
+   Number of port bits:            154
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                661
+     BUFG                            1
+     CARRY4                         19
+     FDCE                          154
+     FDPE                            2
+     IBUF                           74
+     INV                           160
+     LUT2                           22
+     LUT3                            6
+     LUT4                           27
+     LUT5                           78
+     LUT6                           34
+     MUXF7                           4
+     OBUF                           80
+
+   Estimated number of LCs:        145
+
+3.50. Executing CHECK pass (checking for obvious problems).
+Checking module km_pmod_event_egress...
+Found and reported 0 problems.
+
+4. Printing statistics.
+
+=== km_pmod_event_egress ===
+
+   Number of wires:                292
+   Number of wire bits:           1207
+   Number of public wires:          29
+   Number of public wire bits:     446
+   Number of ports:                 18
+   Number of port bits:            154
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                661
+     BUFG                            1
+     CARRY4                         19
+     FDCE                          154
+     FDPE                            2
+     IBUF                           74
+     INV                           160
+     LUT2                           22
+     LUT3                            6
+     LUT4                           27
+     LUT5                           78
+     LUT6                           34
+     MUXF7                           4
+     OBUF                           80
+
+5. Executing CHECK pass (checking for obvious problems).
+Checking module km_pmod_event_egress...
+Found and reported 0 problems.
+
+End of script. Logfile hash: 01e65240d2, CPU: user 1.87s system 0.05s, MEM: 126.63 MB peak
+Yosys 0.52 (git sha1 fee39a3284c90249e1d9684cf6944ffbbcbb8f90)
+Time spent: 51% 19x read_verilog (1 sec), 10% 18x opt_clean (0 sec), ...

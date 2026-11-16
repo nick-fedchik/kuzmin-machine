@@ -1,0 +1,21 @@
+# cmd: python3 -m pytest -v Engineering/hw/tests/test_km_pmod_event_egress.py
+# timestamp: 2026-11-15T23:11:55+02:00
+# commit: 3c89b4e4fe35286e9c9b670553eccf2db5088835
+# host: AORUS-5-SE
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-230
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 6 items
+
+Engineering/hw/tests/test_km_pmod_event_egress.py::test_km_pmod_event_egress_simulation_and_python_crc_oracle PASSED [ 16%]
+Engineering/hw/tests/test_km_pmod_event_egress.py::test_km_pmod_event_egress_verilator_lint PASSED [ 33%]
+Engineering/hw/tests/test_km_pmod_event_egress.py::test_km_pmod_event_egress_yosys_synth_xilinx PASSED [ 50%]
+Engineering/hw/tests/test_km_pmod_event_egress.py::test_km_pmod_event_egress_mutant_negative_control[corrupt_crc_poly-crc = {crc[6:0], 1'b0} ^ (fb ? 8'h07 : 8'h00);-crc = {crc[6:0], 1'b0} ^ (fb ? 8'h05 : 8'h00);] PASSED [ 66%]
+Engineering/hw/tests/test_km_pmod_event_egress.py::test_km_pmod_event_egress_mutant_negative_control[corrupt_spi_shift_bit-shift_reg_q <= {shift_reg_q[62:0], 1'b0};-shift_reg_q <= {shift_reg_q[61:0], 2'b00};] PASSED [ 83%]
+Engineering/hw/tests/test_km_pmod_event_egress.py::test_km_pmod_event_egress_mutant_negative_control[corrupt_par8_byte_shift-shift_reg_q <= {shift_reg_q[55:0], 8'd0};-shift_reg_q <= {shift_reg_q[54:0], 9'd0};] PASSED [100%]
+
+============================== 6 passed in 2.03s ===============================
