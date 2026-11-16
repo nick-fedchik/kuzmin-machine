@@ -1,0 +1,117 @@
+{
+  "timestamp": "2026-11-16T12:16:30.831717+02:00",
+  "issues": [
+    237,
+    242
+  ],
+  "parameters": {
+    "NUM_CONCEPTS": 16,
+    "QUEUE_DEPTH": 16,
+    "DATA_WIDTH": 32,
+    "ADDR_WIDTH": 6
+  },
+  "platform": {
+    "node": "AORUS-5-SE",
+    "system": "Linux",
+    "release": "7.0.0-42-generic",
+    "machine": "x86_64"
+  },
+  "sha256": {
+    "kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6",
+    "km_concept_micro_engine.sv": "2e95ee6d45c5faeb3594a17b741658fd9345f6a451da88976e790255f23a5831",
+    "km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297",
+    "km_autonomous_sequencer.sv": "d85172abeb9ccf4e7c7c01fc20fab67d6f67f348164920dc279909a64b35d6c5",
+    "cme2_formal_n16_props.sv": "b16b1d83b69ecf7b76483b9b622b19c1c4e102d8b0ab5706deb6d18179f91569"
+  },
+  "verdict": "PASSED",
+  "rows": [
+    {
+      "design": "original (CFG-P N=16)",
+      "check": "P1_n16_ind",
+      "engine": "smtbmc z3 ind t=5",
+      "status": "PASSED",
+      "seconds": 1.103,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P N=16)",
+      "check": "P2_rank_step_n16",
+      "engine": "smtbmc z3 ind t=10",
+      "status": "PASSED",
+      "seconds": 0.172,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P N=16)",
+      "check": "P3_liveness_n16_ind",
+      "engine": "smtbmc z3 ind t=12",
+      "status": "PASSED",
+      "seconds": 54.011,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P N=16)",
+      "check": "cover_n16",
+      "engine": "smtbmc z3 cover t=42",
+      "status": "PASSED",
+      "seconds": 160.037,
+      "failed": "",
+      "reached": "C1_n16_cascade_4_commits;C2_n16_reject_reached;C3_n16_two_ext_triggers",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "M_bigdot_dual_pulse: simultaneous commit_pulse_o and reject_pulse_o",
+      "check": "safety_bmc",
+      "engine": "smtbmc z3 bmc t=15",
+      "status": "FAILED",
+      "seconds": 38.488,
+      "failed": "P_bigdot_mutex_pulse",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M_bigdot_dual_pulse.vcd"
+    },
+    {
+      "design": "M_we_on_reject: bram_b_we_o asserted on reject",
+      "check": "safety_bmc",
+      "engine": "smtbmc z3 bmc t=15",
+      "status": "FAILED",
+      "seconds": 23.797,
+      "failed": "P1a_no_we_on_reject",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M_we_on_reject.vcd"
+    },
+    {
+      "design": "M_cascade_on_reject: cascade subscription requested on reject",
+      "check": "safety_bmc",
+      "engine": "smtbmc z3 bmc t=15",
+      "status": "FAILED",
+      "seconds": 31.109,
+      "failed": "P1d_no_cascade_on_reject",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M_cascade_on_reject.vcd"
+    },
+    {
+      "design": "M_rank_violation_self_sub: backward cascade cid violates Lyapunov rank monotonicity",
+      "check": "rank_step_bmc",
+      "engine": "smtbmc z3 bmc t=15",
+      "status": "FAILED",
+      "seconds": 17.544,
+      "failed": "P2_rank_step_n16",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M_rank_violation_self_sub.vcd"
+    }
+  ]
+}
