@@ -37,21 +37,22 @@
 
 #define KM_WARP_SIZE          32u
 #define KM_MAX_WARPS_PER_BLK  16u
-#define KM_MAX_SUBSCRIBERS    512u
+#define KM_MAX_SUBSCRIBERS    1024u
 #define KM_MAX_BLOCKS         16u
+#define KM_SLOT_MASK_WORDS    16u
 #define KM_MASK_WORDS         (KM_MAX_SUBSCRIBERS / 32u)
 #define KM_TELEMETRY_CAP      10000u
 #define KM_BOOTSTRAP_ITERS    1000u
 #define KM_BOOTSTRAP_SEED     0x5EED22901234ULL
 
-/* --- Вхідна когерентна скринька подій: рівно одна 128-байтна лінія L2 --- */
+/* --- Вхідна когерентна скринька подій: рівно одна 128-байтна лінія L2 на слот SM --- */
 typedef struct __align__(128) {
-    uint32_t seq_id;                    /* [0..3]    Лічильник події (release/acquire) */
-    uint32_t stop_flag;                 /* [4..7]    1 = штатне завершення кернела */
-    int32_t  concept_val;               /* [8..11]   Стан концепту після коміту (•) */
-    uint32_t active_words;              /* [12..15]  Кількість слів маски (1..16) */
-    uint32_t event_mask[KM_MASK_WORDS]; /* [16..79]  512-бітний вектор підписок */
-    uint32_t reserved[12];              /* [80..127] Вирівнювання рівно до 128 Б */
+    uint32_t seq_id;                         /* [0..3]    Лічильник події (release/acquire) */
+    uint32_t stop_flag;                      /* [4..7]    1 = штатне завершення кернела */
+    int32_t  concept_val;                    /* [8..11]   Стан концепту після коміту (•) */
+    uint32_t active_words;                   /* [12..15]  Кількість слів маски у слоті (1..16) */
+    uint32_t event_mask[KM_SLOT_MASK_WORDS]; /* [16..79]  512-бітний вектор підписок слота */
+    uint32_t reserved[12];                   /* [80..127] Вирівнювання рівно до 128 Б */
 } km_event_ingress_t;
 
 static_assert(sizeof(km_event_ingress_t) == 128, "km_event_ingress_t must fit in one 128B L2 cache line");
@@ -142,7 +143,8 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
     const km_sub_state_t     * __restrict__ init_states,
     km_sub_state_t           * __restrict__ final_states,
     uint32_t                                sleep_ns,
-    uint32_t                                ack_isolated
+    uint32_t                                ack_isolated,
+    uint32_t                                ingress_partitioned
 ) {
     const uint32_t tid        = threadIdx.x;
     const uint32_t lane_id    = tid & 31u;
@@ -150,6 +152,7 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
     const uint32_t global_id  = blockIdx.x * blockDim.x + tid;
     const uint32_t mask_word  = global_id >> 5u;
     const bool     single_warp = (blockDim.x == KM_WARP_SIZE);
+    const km_event_ingress_t *my_in = (ingress_partitioned != 0u) ? &ingress[blockIdx.x] : &ingress[0];
 
     __shared__ uint32_t s_cur_seq;
     __shared__ uint32_t s_stop;
@@ -182,8 +185,8 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
         if (single_warp) {
             /* Шлях 1 варпа (32 нитки): обмін виключно через регістровий __shfl_sync */
             if (lane_id == 0u) {
-                cur_seq = km_ld_acquire_sys_u32(&ingress->seq_id);
-                stop    = *(const volatile uint32_t *)&ingress->stop_flag;
+                cur_seq = km_ld_acquire_sys_u32(&my_in->seq_id);
+                stop    = *(const volatile uint32_t *)&my_in->stop_flag;
             }
             cur_seq = __shfl_sync(0xFFFFFFFFu, cur_seq, 0);
             stop    = __shfl_sync(0xFFFFFFFFu, stop, 0);
@@ -199,8 +202,14 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
                 int32_t  c_val = 0;
                 uint32_t mask  = 0u;
                 if (lane_id == 0u) {
-                    c_val = *(const volatile int32_t *)&ingress->concept_val;
-                    mask  = *(const volatile uint32_t *)&ingress->event_mask[mask_word];
+                    c_val = *(const volatile int32_t *)&my_in->concept_val;
+                    if (ingress_partitioned != 0u) {
+                        mask = *(const volatile uint32_t *)&my_in->event_mask[0];
+                    } else {
+                        mask = (mask_word < KM_SLOT_MASK_WORDS)
+                            ? *(const volatile uint32_t *)&ingress[0].event_mask[mask_word]
+                            : *(const volatile uint32_t *)&ingress[1].event_mask[mask_word - KM_SLOT_MASK_WORDS];
+                    }
                 }
                 c_val = __shfl_sync(0xFFFFFFFFu, c_val, 0);
                 mask  = __shfl_sync(0xFFFFFFFFu, mask, 0);
@@ -258,11 +267,11 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
             }
         } else {
             /* Шлях 1 блока x 2..16 варпів (64..512 ниток на одному SM):
-             * ЛИШЕ tid == 0 опитує L2 під час очікування (0 зайвих звернень інших варпів),
+             * ЛИШЕ tid == 0 опитує власний слот L2 під час очікування,
              * а s_cval та s_masks читаються ПІСЛЯ acquire-бар'єра! */
             if (tid == 0u) {
-                s_cur_seq = km_ld_acquire_sys_u32(&ingress->seq_id);
-                s_stop    = *(const volatile uint32_t *)&ingress->stop_flag;
+                s_cur_seq = km_ld_acquire_sys_u32(&my_in->seq_id);
+                s_stop    = *(const volatile uint32_t *)&my_in->stop_flag;
             }
             __syncthreads();
 
@@ -278,10 +287,17 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
                 uint64_t t_e2e_g0 = km_read_globaltimer();
 
                 if (tid == 0u) {
-                    s_cval = *(const volatile int32_t *)&ingress->concept_val;
+                    s_cval = *(const volatile int32_t *)&my_in->concept_val;
                 }
                 if (tid < (blockDim.x >> 5u)) {
-                    s_masks[tid] = *(const volatile uint32_t *)&ingress->event_mask[(blockIdx.x * (blockDim.x >> 5u)) + tid];
+                    if (ingress_partitioned != 0u) {
+                        s_masks[tid] = *(const volatile uint32_t *)&my_in->event_mask[tid];
+                    } else {
+                        uint32_t gw = (blockIdx.x * (blockDim.x >> 5u)) + tid;
+                        s_masks[tid] = (gw < KM_SLOT_MASK_WORDS)
+                            ? *(const volatile uint32_t *)&ingress[0].event_mask[gw]
+                            : *(const volatile uint32_t *)&ingress[1].event_mask[gw - KM_SLOT_MASK_WORDS];
+                    }
                 }
                 __syncthreads();
 
@@ -549,11 +565,13 @@ int main(int argc, char **argv) {
     uint32_t       threads         = 32u;
     uint32_t       sleep_ns        = 0u;
     km_mask_mode_t mask_mode       = MASK_ALL;
-    const char    *mask_name       = "all";
-    const char    *ack_mode_name   = "isolated";
-    uint32_t       ack_isolated    = 1u;
-    bool           allow_attr_clk  = false;
-    const char    *json_out        = NULL;
+    const char    *mask_name        = "all";
+    const char    *ack_mode_name    = "isolated";
+    uint32_t       ack_isolated     = 1u;
+    const char    *ingress_mode_name = "partitioned";
+    uint32_t       ingress_part     = 1u;
+    bool           allow_attr_clk   = false;
+    const char    *json_out         = NULL;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--events") == 0 && i + 1 < argc) {
@@ -572,6 +590,16 @@ int main(int argc, char **argv) {
                 ack_isolated = 0u;
             } else {
                 fprintf(stderr, "[FATAL] Невідомий режим --ack-mode: %s (очікується isolated|packed)\n", ack_mode_name);
+                return 2;
+            }
+        } else if (strcmp(argv[i], "--ingress-mode") == 0 && i + 1 < argc) {
+            ingress_mode_name = argv[++i];
+            if (strcmp(ingress_mode_name, "partitioned") == 0) {
+                ingress_part = 1u;
+            } else if (strcmp(ingress_mode_name, "shared") == 0) {
+                ingress_part = 0u;
+            } else {
+                fprintf(stderr, "[FATAL] Невідомий режим --ingress-mode: %s (очікується partitioned|shared)\n", ingress_mode_name);
                 return 2;
             }
         } else if (strcmp(argv[i], "--allow-attr-clock") == 0) {
@@ -595,7 +623,7 @@ int main(int argc, char **argv) {
 
     uint32_t total_subs = num_blocks * threads;
     if (num_events == 0u || num_blocks == 0u || num_blocks > KM_MAX_BLOCKS ||
-        (threads % KM_WARP_SIZE) != 0u || threads > KM_MAX_SUBSCRIBERS ||
+        (threads % KM_WARP_SIZE) != 0u || threads > (KM_MAX_WARPS_PER_BLK * KM_WARP_SIZE) ||
         total_subs > KM_MAX_SUBSCRIBERS) {
         fprintf(stderr, "[FATAL] Некоректна геометрія: blocks=%u threads=%u total=%u\n",
                 num_blocks, threads, total_subs);
@@ -623,7 +651,8 @@ int main(int argc, char **argv) {
 
     km_event_ingress_t *h_ingress = NULL, *d_ingress = NULL;
     km_event_egress_t  *h_egress  = NULL, *d_egress  = NULL;
-    if (cudaHostAlloc((void **)&h_ingress, sizeof(km_event_ingress_t),
+    size_t ingress_alloc_bytes = KM_MAX_BLOCKS * sizeof(km_event_ingress_t);
+    if (cudaHostAlloc((void **)&h_ingress, ingress_alloc_bytes,
                       cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess ||
         cudaHostAlloc((void **)&h_egress, sizeof(km_event_egress_t),
                       cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess) {
@@ -632,7 +661,7 @@ int main(int argc, char **argv) {
     }
     cudaHostGetDevicePointer((void **)&d_ingress, h_ingress, 0);
     cudaHostGetDevicePointer((void **)&d_egress,  h_egress,  0);
-    memset(h_ingress, 0, sizeof(km_event_ingress_t));
+    memset(h_ingress, 0, ingress_alloc_bytes);
     memset(h_egress,  0, sizeof(km_event_egress_t));
 
     km_telemetry_t *d_telemetry = NULL;
@@ -666,7 +695,7 @@ int main(int argc, char **argv) {
     cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking);
 
     km_persistent_subscribers_kernel<<<num_blocks, threads, 0, stream>>>(
-        d_ingress, d_egress, d_telemetry, d_init, d_final, sleep_ns, ack_isolated
+        d_ingress, d_egress, d_telemetry, d_init, d_final, sleep_ns, ack_isolated, ingress_part
     );
     cudaError_t launch_err = cudaGetLastError();
     if (launch_err != cudaSuccess) {
@@ -682,21 +711,42 @@ int main(int argc, char **argv) {
     uint32_t  local_masks[KM_MASK_WORDS];
     memset(local_masks, 0, sizeof(local_masks));
 
+    uint32_t  warps_per_blk = threads >> 5u;
     uint32_t  mid_run_mismatches = 0u;
     uint64_t  t_wall_start = host_monotonic_raw_ns();
 
     for (uint32_t ev = 1u; ev <= num_events; ev++) {
         int32_t c_val = (int32_t)(25 + (ev % 15u));
         for (uint32_t w = 0; w < mask_words_used; w++) {
-            uint32_t mw = generate_mask_word(mask_mode, ev, w);
-            local_masks[w]           = mw;
-            h_ingress->event_mask[w] = mw;
+            local_masks[w] = generate_mask_word(mask_mode, ev, w);
         }
-        h_ingress->active_words = mask_words_used;
-        h_ingress->concept_val  = c_val;
 
-        uint64_t t0 = host_monotonic_raw_ns();
-        __atomic_store_n(&h_ingress->seq_id, ev, __ATOMIC_RELEASE);
+        uint64_t t0;
+        if (ingress_part != 0u) {
+            for (uint32_t b = 0; b < num_blocks; b++) {
+                h_ingress[b].concept_val  = c_val;
+                h_ingress[b].active_words = warps_per_blk;
+                for (uint32_t w = 0; w < warps_per_blk; w++) {
+                    h_ingress[b].event_mask[w] = local_masks[b * warps_per_blk + w];
+                }
+            }
+            t0 = host_monotonic_raw_ns();
+            for (uint32_t b = 0; b < num_blocks; b++) {
+                __atomic_store_n(&h_ingress[b].seq_id, ev, __ATOMIC_RELEASE);
+            }
+        } else {
+            h_ingress[0].concept_val  = c_val;
+            h_ingress[0].active_words = mask_words_used;
+            for (uint32_t w = 0; w < mask_words_used; w++) {
+                if (w < KM_SLOT_MASK_WORDS) {
+                    h_ingress[0].event_mask[w] = local_masks[w];
+                } else {
+                    h_ingress[1].event_mask[w - KM_SLOT_MASK_WORDS] = local_masks[w];
+                }
+            }
+            t0 = host_monotonic_raw_ns();
+            __atomic_store_n(&h_ingress[0].seq_id, ev, __ATOMIC_RELEASE);
+        }
 
         for (uint32_t b = 0; b < num_blocks; b++) {
             const volatile uint32_t *ack_ptr = (ack_isolated != 0u)
@@ -730,9 +780,11 @@ int main(int argc, char **argv) {
     uint64_t t_wall_end   = host_monotonic_raw_ns();
     uint64_t sysfs_cur_after = read_gpu_sysfs_freq_hz("cur_freq");
 
-    /* Штатна зупинка персистентного кернела */
-    __atomic_store_n(&h_ingress->stop_flag, 1u, __ATOMIC_RELAXED);
-    __atomic_store_n(&h_ingress->seq_id, num_events + 1u, __ATOMIC_RELEASE);
+    /* Штатна зупинка персистентного кернела на всіх вхідних слотах */
+    for (uint32_t b = 0; b < num_blocks; b++) {
+        __atomic_store_n(&h_ingress[b].stop_flag, 1u, __ATOMIC_RELAXED);
+        __atomic_store_n(&h_ingress[b].seq_id, num_events + 1u, __ATOMIC_RELEASE);
+    }
     cudaStreamSynchronize(stream);
 
     cudaMemcpy(h_telemetry, d_telemetry, sizeof(km_telemetry_t), cudaMemcpyDeviceToHost);
@@ -824,7 +876,7 @@ int main(int argc, char **argv) {
     printf("============================================================================\n");
     printf("  Пристрій GPU:                 %s (SM %d.%d)\n", prop.name, prop.major, prop.minor);
     printf("  Геометрія запуску:            %u блок(ів) x %u ниток = %u підписників\n", num_blocks, threads, total_subs);
-    printf("  Режим маски / ack / sleep_ns: %s / %s / %u нс\n", mask_name, ack_mode_name, sleep_ns);
+    printf("  Режим маски / in / ack / slp: %s / %s / %s / %u нс\n", mask_name, ingress_mode_name, ack_mode_name, sleep_ns);
     printf("  Кількість подій (вибірка SM): %u (%u)\n", num_events, n_samp);
     printf("  Розмір ingress / offset out:  %zu Б / %zu Б\n", sizeof(km_event_ingress_t), offsetof(km_event_egress_t, outputs));
     printf("  Частота GPU sysfs (до/під час/після, max): %.1f / %.1f / %.1f МГц (max %.1f МГц, CUDA attr %.1f МГц)\n",
@@ -878,7 +930,7 @@ int main(int argc, char **argv) {
             fprintf(jf,
                 "{\n"
                 "  \"blocks\": %u, \"threads\": %u, \"subscribers\": %u,\n"
-                "  \"mask\": \"%s\", \"ack_mode\": \"%s\", \"sleep_ns\": %u, \"events\": %u,\n"
+                "  \"mask\": \"%s\", \"ingress_mode\": \"%s\", \"ack_mode\": \"%s\", \"sleep_ns\": %u, \"events\": %u,\n"
                 "  \"sysfs_cur_freq_hz\": %" PRIu64 ", \"sysfs_max_freq_hz\": %" PRIu64 ",\n"
                 "  \"globaltimer_quantum_ns\": %" PRIu64 ", \"mid_run_mismatches\": %u, \"mismatches\": %u,\n"
                 "  \"bootstrap_iters\": %u, \"bootstrap_seed\": \"0x%llx\",\n"
@@ -891,7 +943,7 @@ int main(int argc, char **argv) {
                 "  \"host_rt_ns_mean\": %.3f, \"host_rt_ns_p50\": %" PRIu64 ", \"host_rt_ns_p99\": %" PRIu64 ", \"host_rt_ns_p99_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p99_ci95_hi\": %" PRIu64 ", \"host_rt_ns_p999\": %" PRIu64 ", \"host_rt_ns_p999_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p999_ci95_hi\": %" PRIu64 ", \"host_rt_ns_max\": %" PRIu64 ",\n"
                 "  \"per_block_e2e_sm_ns_mean\": [",
                 num_blocks, threads, total_subs,
-                mask_name, ack_mode_name, sleep_ns, num_events,
+                mask_name, ingress_mode_name, ack_mode_name, sleep_ns, num_events,
                 eff_freq_hz, sysfs_max_before,
                 h_gt_step, mid_run_mismatches, mismatches,
                 KM_BOOTSTRAP_ITERS, (unsigned long long)KM_BOOTSTRAP_SEED,

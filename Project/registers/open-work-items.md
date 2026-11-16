@@ -1,7 +1,7 @@
 # Відкриті роботи та рішення власника
 
-* **Версія:** 0.4.12
-* **Дата:** 2026-11-15
+* **Версія:** 0.4.13
+* **Дата:** 2026-11-16
 * **Тип WP:** Register
 * **Власник рішень:** Микола Федчик.
 * **База:** [знімок GitHub після оновлення](../assessments/ng-migration/raw/owner-status-decisions-20261112.json).
@@ -74,7 +74,12 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 | [#226 — EXP-GPU-01 (Фази 1–2, 4): RTL `PMOD Event Egress` і фізичне замикання `PYNQ-Z1 -> Jetson J501` із захватом `RP2040 PIO`](https://github.com/nick-fedchik/kuzmin-machine/issues/226) | Open | Todo | Міжплатний контур ПЛІС→GPU з узгодженням рівнів і зовнішньою цифровою метрологією `T_e2e`. |
 | [#227 — формальна верифікація `CFG-P` та каскадів `KPOL-CME-2` у SymbiYosys](https://github.com/nick-fedchik/kuzmin-machine/issues/227) | Open | Todo | BMC + `k`-індукція збереження `W0` при `Reject` і кінцевості ациклічних каскадів перед публікацією. |
 | [#229 — зауваження рецензії PR #228 щодо `EXP-GPU-01` Фази 3–4 (`F-1..F-5`)](https://github.com/nick-fedchik/kuzmin-machine/issues/229) | Open | In progress (PR #228) | $N=10000$ + 95% bootstrap CI, A/B `packed` vs `isolated` (`km_ack_line_t`), max по всіх блоках, `cu_sha256`/`nvcc` у логах, заборона тихого fallback `cudaDevAttrClockRate`, точні рядки `SASS`. |
-| [#230 — RTL-модуль `km_pmod_event_egress.sv` (`SPI` + 8-бітна шина) та верифікація XC7](https://github.com/nick-fedchik/kuzmin-machine/issues/230) | Open | Todo (sub-issue `#226`) | Експериментальний модуль виведення подій з `CFG-P` на PMOD JA для подальшого фізичного HIL у `#226`. |
+| [#230 — RTL-модуль `km_pmod_event_egress.sv` (`SPI` + 8-бітна шина) та верифікація XC7](https://github.com/nick-fedchik/kuzmin-machine/issues/230) | Open | In review ([PR #232](https://github.com/nick-fedchik/kuzmin-machine/pull/232), локально злито у `4929210`, sub-issue `#226`) | Експериментальний модуль виведення подій на PMOD JA; рецензія `claude-sonnet-5.5` — «Прийнято із зауваженнями» (залишок — [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234)). |
+| [#233 — знахідки рецензії PR #231 (`G-1..G-3`) щодо фронтенду `KPOL-AUTH`](https://github.com/nick-fedchik/kuzmin-machine/issues/233) | Open | Todo (sub-issue `#8`) | Уточнення мутанта парності дужок, поля «Рецензент» та одиниці `U07`. |
+| [#234 — знахідки рецензії PR #232 (`km_pmod_event_egress`)](https://github.com/nick-fedchik/kuzmin-machine/issues/234) | Open | Todo (sub-issue `#226`) | Обрамлення `CS`/`par_valid_o` у TB, додаткові мутанти, watchdog і граничні колізії. |
+| [#235 — декуплінг `L2 Read Snoop` (per-SM partitioned ingress до `1024` підписників) та `R-1..R-3` PR #228](https://github.com/nick-fedchik/kuzmin-machine/issues/235) | Open | In progress | Заміна монолітного `ingress` на per-SM 128-Б слоти `ingress[blockIdx.x]`, $2 \times 2$ факторіальний експеримент $N=10000$ (`9.63x` прискорення SM на `16x64 = 1024` підписники) та оновлення [звіту `0.3.0`](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md) і [ADR B6 `0.3.3`](../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md). |
+| [#237 — знахідки рецензії PR #236 щодо формальної моделі `CFG-P` / `KPOL-CME-2`](https://github.com/nick-fedchik/kuzmin-machine/issues/237) | Open | Todo | Шапка звіту та розширення покриття `P1d/P1e`, `P2`, `P3` на більшу параметризацію. |
+| [#238 — блокувальні помилки конверта WP (`check_wp_documents.py`) у двох документах коміту `4929210`](https://github.com/nick-fedchik/kuzmin-machine/issues/238) | Open | In progress (разом із `#235`) | Додано шапки WP, історію версій та глосарій у `kuzmin_machine_10_steps_development_chronicle.md` (`1.0.1`) та `EXP-GPU-01/report.md` (`1.0.1`). |
 
 Джерела рішень:
 [пропрієтарний режим](https://github.com/nick-fedchik/kuzmin-machine/issues/20#issuecomment-6829699920),
@@ -92,6 +97,7 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.4.13 | 2026-11-16 | #235, #238: реалізовано декуплінг `L2 Read Snoop` (per-SM partitioned 128-Б ingress до `1024` підписників, $2 \times 2$ факторіал $N=10000$), виправлено конверти WP у документах `4929210` (`#238`) та зареєстровано `#233–#238`. |
 | 0.4.12 | 2026-11-15 | #229: додано `#229` (виправлення `F-1..F-5` у PR #228) та `#230` (RTL `km_pmod_event_egress.sv`, sub-issue `#226`). |
 | 0.4.11 | 2026-11-15 | #225: зафіксовано злиття PR #221–#223 та `drafts#7` (`59c701f`; закрито `#216`, `#218`, `#219`, `#220`), додано `#224` і заплановану програму експериментів `#225`–`#227`. |
 | 0.4.10 | 2026-11-15 | #218, #220: зафіксовано злиття PR #217 (`#215` закрито) і `drafts#6` (`84812f6`), оновлено `#186` (часткові відповіді від 2026-11-15, п. 3 `RFC-017` та `RFC-016` досі відкриті), додано рядки `#218`, `#219`, `#220`. |

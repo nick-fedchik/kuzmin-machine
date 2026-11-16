@@ -58,6 +58,19 @@ EXPECTED_RAW_SHA256 = {
     "ab_8x32_isolated_10k.json": "80876be4a4443b96ec7a3c28abf5d7c313a9b9271ddfa18ff94b9326ae16ba2a",
     "ab_16x32_packed_10k.json": "2972f2c72d808dcbd772b9d37f230e0976158647a74709bbc2e9e93a7620cee5",
     "ab_16x32_isolated_10k.json": "552657a4e0e3c787abc13a18bdcd4a6bfdf357b9b0a0bf6da692a0bf1d8a8c68",
+    "sass-sm87-03.txt": "3446ad901d66a7120f4acca95d0f31107bff654232a871ae336adb1e10495136",
+    "run-04-l2-snoop-decoupling-10k.log": "d4ac9677d90ef13b5448f3fdcb6653c92939b34ba279124bef9e410e4b023d04",
+    "snoop_16x32_part_none_10k.json": "40ad287e8cae64c6362b7ea707f2d2a62e9f5146199cea917d4d651f92c069f0",
+    "snoop_16x32_part_rand_10k.json": "1d453404da1d2225a0ceafb336d9a74eee3913c5138eaf66d164c2ecc9976a2a",
+    "snoop_16x32_shared_none_10k.json": "7d7046d9953869d4938ac9035d108ada3384d667284dbd4317ed55d16e356627",
+    "snoop_16x32_shared_rand_10k.json": "c5e2276c7c06aaef33cb926b8207473c00be0599bf2591cf5d11a4ef15282df8",
+    "snoop_16x64_part_rand_10k.json": "62e0b6bfc6932fdfe75918fd052bd7a3c9b996e903bae2a22f66e4e8e081b4ec",
+    "snoop_16x64_shared_rand_10k.json": "a25dffa34820bcd29b384342006fa98962cffd12943c40a77c1d52812428dd65",
+    "snoop_2x512_part_rand_10k.json": "65aaefe66c2acd50b5bac5a813a5e0d97ad83acf7754a7b5311008645df53861",
+    "snoop_2x512_shared_rand_10k.json": "a838ede1941969754cd539a4a65d0be28b062af22f251a7b39145406125e168c",
+    "snoop_4x256_part_rand_10k.json": "72033b2e71e31b6675b1dbb57406dd3441536c18977bbf97fb772105041bf6ea",
+    "snoop_8x32_part_rand_10k.json": "60a9364b86b7ffabb814498d3913ec59be58c478b4a355338641140f21539820",
+    "snoop_8x32_shared_rand_10k.json": "17569fe83978bf4abab7f8626ce1504716d3ea8a341ccf964121c5a4a2b95e8a",
 }
 
 
@@ -115,6 +128,8 @@ def test_cu_source_contracts_and_no_hardcoded_clock():
     assert "static_assert(offsetof(km_event_egress_t, isolated_ack) == 128" in src
     assert "static_assert(offsetof(km_event_egress_t, outputs) == 128 + KM_MAX_BLOCKS * 128" in src
     assert "--ack-mode" in src
+    assert "--ingress-mode" in src
+    assert "KM_MAX_SUBSCRIBERS    1024u" in src
     assert "--allow-attr-clock" in src
     assert "%%globaltimer" in src
     assert "ld.global.acquire.sys.u32" in src
@@ -143,6 +158,17 @@ def test_raw_artifacts_sha256_and_provenance_headers():
         assert head[2].startswith("# host: jetson")
         assert re.match(r"^# cu_sha256: [0-9a-f]{64}$", head[3])
         assert head[4].startswith("# nvcc: ") and "-O3 -arch=sm_87 -lineinfo" in head[4]
+
+    for log_name in ("sass-sm87-03.txt", "run-04-l2-snoop-decoupling-10k.log"):
+        lines = (RAW_DIR / log_name).read_text(encoding="utf-8").splitlines()
+        head = lines[:6]
+        assert head[0].startswith("# cmd: ")
+        assert re.match(r"^# timestamp: \d{4}-\d{2}-\d{2}T", head[1])
+        assert head[2].startswith("# host: jetson")
+        assert head[3] == f"# cu_sha256: {hashlib.sha256(CU_FILE.read_bytes()).hexdigest()}"
+        assert head[4].startswith("# nvcc_version: ") and "-O3 -arch=sm_87 -lineinfo" in head[4]
+        assert head[5].startswith("# git_base_sha: ")
+        assert all(not ln.endswith(" ") and not ln.endswith("\t") for ln in lines)
 
 
 def test_sass_predicated_execution_and_locked_metrology():
@@ -210,6 +236,55 @@ def test_ab_ack_isolation_10k_and_bootstrap_ci():
     assert ab_16_iso["e2e_sm_ns_mean"] > 5.0 * single_sm["1x512"]["e2e_sm_ns_mean"]
 
 
+def validate_snoop_decoupling_factorial(
+    shared_rand: dict, shared_none: dict, part_rand: dict, part_none: dict
+) -> None:
+    """Validate 2x2 factorial proof that L2 Read Snoop (not outputs[] write) dominates."""
+    # Disabling outputs[] writes in shared mode must NOT eliminate the >8 us bottleneck
+    if shared_none["e2e_sm_ns_mean"] < 0.80 * shared_rand["e2e_sm_ns_mean"]:
+        raise ValueError("Outputs write unexpectedly dominated shared mode")
+    # Partitioning ingress per SM must cut SM e2e time by >= 3.0x and Host RT by >= 3.5x
+    if shared_rand["e2e_sm_ns_mean"] / part_rand["e2e_sm_ns_mean"] < 3.0:
+        raise ValueError("Per-SM partitioned ingress failed to achieve >=3.0x SM speedup")
+    if shared_rand["host_rt_ns_mean"] / part_rand["host_rt_ns_mean"] < 3.5:
+        raise ValueError("Per-SM partitioned ingress failed to achieve >=3.5x Host RT speedup")
+
+
+def test_per_sm_ingress_decoupling_factorial_and_1024_scaling():
+    """Issue #235: verify 2x2 L2 snoop decoupling factorial and 1024-subscriber scaling."""
+    sass3 = (RAW_DIR / "sass-sm87-03.txt").read_text(encoding="utf-8")
+    assert "SEL R" in sass3
+    assert re.search(r"@P\d+\s+STG\.E\s+\[R\d+\.64\+0x880\]", sass3)
+
+    sh_rand = json.loads((RAW_DIR / "snoop_16x32_shared_rand_10k.json").read_text(encoding="utf-8"))
+    sh_none = json.loads((RAW_DIR / "snoop_16x32_shared_none_10k.json").read_text(encoding="utf-8"))
+    pt_rand = json.loads((RAW_DIR / "snoop_16x32_part_rand_10k.json").read_text(encoding="utf-8"))
+    pt_none = json.loads((RAW_DIR / "snoop_16x32_part_none_10k.json").read_text(encoding="utf-8"))
+    for rec in (sh_rand, sh_none, pt_rand, pt_none):
+        validate_metrology_record(rec, max_clock_gt_rel_err=0.015)
+        assert rec["events"] == 10000 and rec["mid_run_mismatches"] == 0
+    validate_snoop_decoupling_factorial(sh_rand, sh_none, pt_rand, pt_none)
+
+    # 1024-subscriber verification across 16x64, 4x256, and 2x512
+    s16x64_sh = json.loads((RAW_DIR / "snoop_16x64_shared_rand_10k.json").read_text(encoding="utf-8"))
+    s16x64_pt = json.loads((RAW_DIR / "snoop_16x64_part_rand_10k.json").read_text(encoding="utf-8"))
+    s4x256_pt = json.loads((RAW_DIR / "snoop_4x256_part_rand_10k.json").read_text(encoding="utf-8"))
+    s2x512_pt = json.loads((RAW_DIR / "snoop_2x512_part_rand_10k.json").read_text(encoding="utf-8"))
+    for rec in (s16x64_sh, s16x64_pt, s4x256_pt, s2x512_pt):
+        validate_metrology_record(rec, max_clock_gt_rel_err=0.02)
+        assert rec["subscribers"] == 1024
+        assert rec["mismatches"] == 0 and rec["mid_run_mismatches"] == 0
+        assert rec["math_ns_mean"] <= 100.0
+
+    # 16x64 partitioned achieves >9x SM speedup over 16x64 shared
+    assert s16x64_sh["e2e_sm_ns_mean"] / s16x64_pt["e2e_sm_ns_mean"] > 9.0
+
+    # Negative-control mutant for factorial validator (AGENTS.md §4.1)
+    broken_part = {**pt_rand, "e2e_sm_ns_mean": sh_rand["e2e_sm_ns_mean"] * 0.8}
+    with pytest.raises(ValueError, match="failed to achieve >=3.0x SM speedup"):
+        validate_snoop_decoupling_factorial(sh_rand, sh_none, broken_part, pt_none)
+
+
 def test_negative_controls_catch_fake_clock_dvfs_and_divergence():
     """AGENTS.md §4.1: prove validators fail on fake clock, unlocked DVFS, and divergence."""
     valid_rec = json.loads((RAW_DIR / "mask_1x32_all.json").read_text(encoding="utf-8"))
@@ -268,15 +343,15 @@ def test_live_jetson_hil_sparse_and_single_sm_256():
             f"ssh -o StrictHostKeyChecking=no {JETSON_HOST} '"
             "/usr/local/cuda/bin/nvcc -O3 -arch=sm_87 /tmp/km_pytest_subs.cu -o /tmp/km_pytest_subs -lm && "
             "/tmp/km_pytest_subs --events 500 --blocks 1 --threads 32 --mask alt --json-out /tmp/km_pytest_alt.json >/dev/null && "
-            "/tmp/km_pytest_subs --events 500 --blocks 1 --threads 256 --mask rand --json-out /tmp/km_pytest_256.json >/dev/null && "
-            "cat /tmp/km_pytest_alt.json && echo ---SPLIT--- && cat /tmp/km_pytest_256.json && "
-            "rm -f /tmp/km_pytest_subs.cu /tmp/km_pytest_subs /tmp/km_pytest_alt.json /tmp/km_pytest_256.json'"
+            "/tmp/km_pytest_subs --events 500 --blocks 16 --threads 64 --ingress-mode partitioned --mask rand --json-out /tmp/km_pytest_1024.json >/dev/null && "
+            "cat /tmp/km_pytest_alt.json && echo ---SPLIT--- && cat /tmp/km_pytest_1024.json && "
+            "rm -f /tmp/km_pytest_subs.cu /tmp/km_pytest_subs /tmp/km_pytest_alt.json /tmp/km_pytest_1024.json'"
         ),
     ]
     res = subprocess.run(cmd, capture_output=True, text=True)
     assert res.returncode == 0, f"Live Jetson HIL failed: {res.stderr}\n{res.stdout}"
-    part_alt, part_256 = res.stdout.split("---SPLIT---")
+    part_alt, part_1024 = res.stdout.split("---SPLIT---")
     rec_alt = json.loads(part_alt.strip())
-    rec_256 = json.loads(part_256.strip())
+    rec_1024 = json.loads(part_1024.strip())
     assert rec_alt["mismatches"] == 0 and rec_alt["subscribers"] == 32
-    assert rec_256["mismatches"] == 0 and rec_256["subscribers"] == 256
+    assert rec_1024["mismatches"] == 0 and rec_1024["subscribers"] == 1024 and rec_1024["ingress_mode"] == "partitioned"
