@@ -23,7 +23,7 @@ XC7Z020. Серійний номер і фактичний стан конкре
 | Реалізація CFG-P | [Top](kpol_bram_pipeline_pynq_z1_top.v), [XDC](kpol_bram_pipeline.xdc). |
 | Збірка | [build_bram_pipeline.sh](build_bram_pipeline.sh), новий `BUILD_DIR`. |
 | Loader / HIL | [Runner](hil/hil_kpol_bram_pipeline.py); [контракт](../../../specifications/hw/kpol-image-loader-pipeline-contract.md). |
-| Стенд | [Комутування](hil-bench-wiring-guide.md), [План HIL-експериментів](hil-hardware-experiment-plan.md), [Pico](pico/). |
+| Стенд | [Комутування](hil-bench-wiring-guide.md), [План HIL-експериментів](hil-hardware-experiment-plan.md), [Інвентар обладнання](../../../../Project/registers/hardware-inventory.md), [Pico](pico/). |
 | Локальні перевірки | [Runbook](../../RUNBOOK.md). |
 
 Для CFG-P `sw[1:0]` вибирає CID 0–3. LD0/LD1 показують commit/reject,
