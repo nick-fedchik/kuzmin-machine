@@ -14,17 +14,31 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 EXP_DIR = Path(__file__).resolve().parents[1]
+if str(EXP_DIR) not in sys.path:
+    sys.path.insert(0, str(EXP_DIR))
+
+from summarize_repeatability_240 import (  # noqa: E402
+    REQUIRED_PUB_FIELDS,
+    compute_across_run_stats,
+    summarize_repeatability_dir,
+    validate_rep240_record,
+)
+
 STUDY_DIR = EXP_DIR.parents[1]
 CU_FILE = EXP_DIR / "persistent_subscribers.cu"
 RAW_DIR = STUDY_DIR / "data" / "exp-gpu-01-phase3"
+REP240_DIR = RAW_DIR / "repeatability-240"
 REPORT_FILE = EXP_DIR / "report-phase3-warp-scaling.md"
 
 JETSON_HOST = "mfedchyk@192.168.68.68"
@@ -71,6 +85,42 @@ EXPECTED_RAW_SHA256 = {
     "snoop_4x256_part_rand_10k.json": "72033b2e71e31b6675b1dbb57406dd3441536c18977bbf97fb772105041bf6ea",
     "snoop_8x32_part_rand_10k.json": "60a9364b86b7ffabb814498d3913ec59be58c478b4a355338641140f21539820",
     "snoop_8x32_shared_rand_10k.json": "17569fe83978bf4abab7f8626ce1504716d3ea8a341ccf964121c5a4a2b95e8a",
+}
+
+EXPECTED_REP240_SHA256 = {
+    "sass-sm87-04.txt": "9ddef87feb3f0a84cdd6f8b75add780eb85f938870ce9e96b0214097a08f6dfd",
+    "run-05-repeatability-240.log": "874c1354186e2b58abe03084ffcc2e122ae1a5f74cb1eb4c5db47dbfdf4288af",
+    "summary_repeatability_240.json": "45af46398b4af105644957e2afbe14009f4cbd1fdbef4d413c40a73f2e2dd0db",
+    "rep240_16x64_partitioned_none_r1.json": "b55f62da6f8d607be46d119cf083000847bdd2542c43339dd99bf42387056884",
+    "rep240_16x64_partitioned_none_r2.json": "25f6c1527f23ff53a7af84c30e15a18f6adb17a763255e76a49b0521675c28f8",
+    "rep240_16x64_partitioned_none_r3.json": "66f90583116b674ac220cd5939dc4544f6e07caac1903636e0c86f8ce29cead9",
+    "rep240_16x64_partitioned_none_r4.json": "1f1c60e411f64dc337e47ef1d5d9b1cdd537790ca0762b862d2c8952e3077d8d",
+    "rep240_16x64_partitioned_none_r5.json": "9249969435c58791e6813477603206654f87913a37ba4bbb3b7b7667ed50aa80",
+    "rep240_16x64_partitioned_rand_r1.json": "6621b5aa3ebd9008c7f5aa6e99f47b057792a413e7af56f4fd72eb4b6365aa7d",
+    "rep240_16x64_partitioned_rand_r2.json": "42924e58b8e8476dd9dc5bd10b0f877ea430ff39a26433b6e916a2e0506ca4fd",
+    "rep240_16x64_partitioned_rand_r3.json": "2dd18922434aa28eb5bb55a68162fc6af875b70ba63d5f7680956e79f21c959a",
+    "rep240_16x64_partitioned_rand_r4.json": "f8e4c4ab9eeb7a46eb100db9a3d0f536bcf835dc06cdcc5a2a53477f81e63742",
+    "rep240_16x64_partitioned_rand_r5.json": "0f84c313a6fd2a7e4c12fd56729972bea515fa82580987b38dd877e5869927f9",
+    "rep240_16x64_shared_1line_none_r1.json": "1dd40e482be658e305168f18dca5335a874744a27cf6d325fe90dd022b8aba95",
+    "rep240_16x64_shared_1line_none_r2.json": "544e284ec5bcfdc95ccb5e4aa7ca5a64eb0164c67fe519352f49dc9e531351d5",
+    "rep240_16x64_shared_1line_none_r3.json": "17054b313c3abe4bfa1e28b5eb929c6b9068fa8fc4e6f35b2676a5f9a1f8a70d",
+    "rep240_16x64_shared_1line_none_r4.json": "103ed3927fd67ce7a29c378d71a20efe9c3c2a41588e50b46d4e9a198273e29e",
+    "rep240_16x64_shared_1line_none_r5.json": "244e9d052c09068d9bed0d23040454ded9595f8f2db19b3a9d3c8bd239b4c9e8",
+    "rep240_16x64_shared_1line_rand_r1.json": "70a312dd7124b6024b7a49a8d7f093ec552bea3e53169a848eb23a006039de3a",
+    "rep240_16x64_shared_1line_rand_r2.json": "5a5bb5f11570ee7efd3babb8bda411896a6ae13954bcdcf47599cee14d57be60",
+    "rep240_16x64_shared_1line_rand_r3.json": "3fdb36a5a01739a59faba78fbfe99bda81afd38f743a6c725746faeb0d81098d",
+    "rep240_16x64_shared_1line_rand_r4.json": "4411cd49185d60169d2f2f7b8035895380d552b61d39ef161796e583e10b788f",
+    "rep240_16x64_shared_1line_rand_r5.json": "4fb9c0996b29b0c9d8cffbbc1a98b649899d00278bae165f825629ba097cbe7b",
+    "rep240_16x64_shared_2line_none_r1.json": "57617d7464762a633437951403fd0ed3aa555329f35a107697bfd32f5b0037d5",
+    "rep240_16x64_shared_2line_none_r2.json": "7138350ca900c52de795649bd143f5424ba44b781666d9e9bdcb2c9dad66768d",
+    "rep240_16x64_shared_2line_none_r3.json": "c5d66f1b7d4f8ce9a2bed8871543ac205f45f8eee85ad50e9c94bff0ea1c1efe",
+    "rep240_16x64_shared_2line_none_r4.json": "3ba72d5dd1d6e540db4c172db5b7fd37206328f526272305e1a7e42e77c0c2e8",
+    "rep240_16x64_shared_2line_none_r5.json": "e49ca955d73388ce9734990758a1d0d4bbabea4720c91b5923098feaa2c60451",
+    "rep240_16x64_shared_2line_rand_r1.json": "c56a5bde0effcf40d36da8609b18009ae7f8d4240a9023b5171c8e198aba1cfe",
+    "rep240_16x64_shared_2line_rand_r2.json": "4f70ec84f7cecfff6752752c7f17b186e02e27cfaed7b8827aa69206ec853528",
+    "rep240_16x64_shared_2line_rand_r3.json": "a7cbbb541d0b89edff0fe4d212b8c7f5e70400ec3bdce5c10f16975485951cae",
+    "rep240_16x64_shared_2line_rand_r4.json": "2b9eb9a77b1106a4aa73ac27b383a00bb7a351913c13de5e847f6c59931c175c",
+    "rep240_16x64_shared_2line_rand_r5.json": "783cc3c3b76fce4feea2dc1b0aa3d4bc3de528c702db2daa8a700f547df31e4a",
 }
 
 
@@ -129,6 +179,13 @@ def test_cu_source_contracts_and_no_hardcoded_clock():
     assert "static_assert(offsetof(km_event_egress_t, outputs) == 128 + KM_MAX_BLOCKS * 128" in src
     assert "--ack-mode" in src
     assert "--ingress-mode" in src
+    assert "--shared-ingress" in src
+    assert "--shared-1line" in src
+    assert "KM_INGRESS_SHARED_1LINE" in src
+    assert "KM_INGRESS_SHARED_2LINE" in src
+    assert "host_pub_ns_mean" in src
+    assert "host_wait_ack_ns_mean" in src
+    assert "mismatch_count" in src
     assert "KM_MAX_SUBSCRIBERS    1024u" in src
     assert "--allow-attr-clock" in src
     assert "%%globaltimer" in src
@@ -165,10 +222,31 @@ def test_raw_artifacts_sha256_and_provenance_headers():
         assert head[0].startswith("# cmd: ")
         assert re.match(r"^# timestamp: \d{4}-\d{2}-\d{2}T", head[1])
         assert head[2].startswith("# host: jetson")
+        assert head[3] == "# cu_sha256: 7c31ef547baad58d062889ca31a0a385a2575c56239adfdcd13ef48a64c62493"
+        assert head[4].startswith("# nvcc_version: ") and "-O3 -arch=sm_87 -lineinfo" in head[4]
+        assert head[5].startswith("# git_base_sha: ")
+        assert all(not ln.endswith(" ") and not ln.endswith("\t") for ln in lines)
+
+    for fname, expected_sha in EXPECTED_REP240_SHA256.items():
+        fpath = REP240_DIR / fname
+        assert fpath.exists(), f"Missing repeatability-240 artifact {fname}"
+        actual_sha = hashlib.sha256(fpath.read_bytes()).hexdigest()
+        assert actual_sha == expected_sha, f"SHA-256 mismatch for repeatability-240/{fname}"
+
+    for log_name in ("sass-sm87-04.txt", "run-05-repeatability-240.log"):
+        lines = (REP240_DIR / log_name).read_text(encoding="utf-8").splitlines()
+        head = lines[:6]
+        assert head[0].startswith("# cmd: ")
+        assert re.match(r"^# timestamp: \d{4}-\d{2}-\d{2}T", head[1])
+        assert head[2].startswith("# host: jetson")
         assert head[3] == f"# cu_sha256: {hashlib.sha256(CU_FILE.read_bytes()).hexdigest()}"
         assert head[4].startswith("# nvcc_version: ") and "-O3 -arch=sm_87 -lineinfo" in head[4]
         assert head[5].startswith("# git_base_sha: ")
         assert all(not ln.endswith(" ") and not ln.endswith("\t") for ln in lines)
+
+    run05_text = (REP240_DIR / "run-05-repeatability-240.log").read_text(encoding="utf-8")
+    assert "devfreq_hz_before: cur=816000000 min=816000000 max=816000000" in run05_text
+    assert "devfreq_hz_after: cur=816000000 min=816000000 max=816000000" in run05_text
 
 
 def test_sass_predicated_execution_and_locked_metrology():
@@ -321,6 +399,117 @@ def test_negative_controls_catch_fake_clock_dvfs_and_divergence():
     assert ref_active["out_val"] == 34 and ref_active["trigger_count"] == 1
 
 
+def test_repeatability_240_matrix_and_host_rt_decomposition():
+    """Issue #240: verify R=5 x 10k 3x2 matrix, SASS v4, Host RT decomposition, and report v0.4.0."""
+    sass4 = (REP240_DIR / "sass-sm87-04.txt").read_text(encoding="utf-8")
+    assert "SEL R" in sass4
+    assert re.search(r"@P\d+\s+STG\.E\s+\[R\d+\.64\+0x880\]", sass4)
+    assert "LDG.E.STRONG.SYS" in sass4
+    assert "STG.E.STRONG.SYS" in sass4
+    assert "SR_GLOBALTIMERLO" in sass4
+
+    # Independent hand-calculated check of across-run aggregator (ddof=1, AGENTS.md §4.3)
+    hand = compute_across_run_stats([10.0, 20.0, 30.0, 40.0, 50.0])
+    assert hand["runs"] == 5
+    assert hand["mean_of_means"] == pytest.approx(30.0)
+    assert hand["sd_across_runs"] == pytest.approx(math.sqrt(250.0))
+    assert hand["cv_pct"] == pytest.approx(math.sqrt(250.0) / 30.0 * 100.0)
+    assert hand["min"] == 10.0 and hand["max"] == 50.0
+
+    summary = summarize_repeatability_dir(REP240_DIR)
+    committed_summary = json.loads((REP240_DIR / "summary_repeatability_240.json").read_text(encoding="utf-8"))
+    assert summary == committed_summary
+    assert summary["total_runs"] == 30
+    assert summary["total_events"] == 300000
+    assert summary["all_mismatches_zero"] is True
+
+    cells = summary["cells"]
+    sh1_rand = cells["shared_1line__rand"]["metrics"]
+    sh2_rand = cells["shared_2line__rand"]["metrics"]
+    pt_rand = cells["partitioned__rand"]["metrics"]
+    sh1_none = cells["shared_1line__none"]["metrics"]
+    sh2_none = cells["shared_2line__none"]["metrics"]
+    pt_none = cells["partitioned__none"]["metrics"]
+
+    # Point 2 (#240): shared_1line (1x128B) and shared_2line (2x128B) agree within 5% on T_e2e_sm
+    assert abs(sh1_rand["e2e_sm_ns_mean"]["mean_of_means"] - sh2_rand["e2e_sm_ns_mean"]["mean_of_means"]) / sh2_rand["e2e_sm_ns_mean"]["mean_of_means"] < 0.05
+    assert abs(sh1_none["e2e_sm_ns_mean"]["mean_of_means"] - sh2_none["e2e_sm_ns_mean"]["mean_of_means"]) / sh2_none["e2e_sm_ns_mean"]["mean_of_means"] < 0.05
+
+    # Point 3 (#240): partitioned achieves >9x mean and >8x p99.9 SM speedup vs both shared topologies across R=5
+    assert sh1_rand["e2e_sm_ns_mean"]["mean_of_means"] / pt_rand["e2e_sm_ns_mean"]["mean_of_means"] > 9.0
+    assert sh2_rand["e2e_sm_ns_mean"]["mean_of_means"] / pt_rand["e2e_sm_ns_mean"]["mean_of_means"] > 9.0
+    assert sh1_rand["e2e_sm_ns_p999"]["mean_of_means"] / pt_rand["e2e_sm_ns_p999"]["mean_of_means"] > 8.0
+    for cell_data in cells.values():
+        assert cell_data["metrics"]["e2e_sm_ns_p999"]["cv_pct"] < 3.0
+        assert cell_data["metrics"]["math_ns_p999"]["mean_of_means"] <= 100.0
+
+    # Point 4 (#240): 16x stlr in partitioned increases T_host_pub vs 1x stlr, while T_wait_ack drops >4.5x
+    assert pt_rand["host_pub_ns_mean"]["mean_of_means"] > 5.0 * sh1_rand["host_pub_ns_mean"]["mean_of_means"]
+    assert pt_none["host_pub_ns_mean"]["mean_of_means"] > 5.0 * sh1_none["host_pub_ns_mean"]["mean_of_means"]
+    assert sh1_rand["host_wait_ack_ns_mean"]["mean_of_means"] / pt_rand["host_wait_ack_ns_mean"]["mean_of_means"] > 4.5
+    assert sh2_rand["host_wait_ack_ns_mean"]["mean_of_means"] / pt_rand["host_wait_ack_ns_mean"]["mean_of_means"] > 4.5
+
+    # Report v0.4.0 tone & structure guard (AGENTS.md §3: zero exclamation marks)
+    report_text = REPORT_FILE.read_text(encoding="utf-8")
+    assert "* **Версія:** 0.4.0" in report_text
+    assert "!" not in report_text, "Exclamation marks violate AGENTS.md §3 in report-phase3-warp-scaling.md"
+
+
+def test_repeatability_240_mutants_fail_on_tamper_and_mismatches():
+    """AGENTS.md §4.1: prove repeatability-240 validators catch mismatch_count != 0 and corrupted JSON."""
+    sample_path = REP240_DIR / "rep240_16x64_shared_1line_rand_r1.json"
+    valid_rec = json.loads(sample_path.read_text(encoding="utf-8"))
+    validate_rep240_record(valid_rec, expected_ingress="shared_1line", expected_mask="rand")
+
+    # Mutant 1: non-zero mismatch_count must fail
+    with pytest.raises(ValueError, match="Non-zero CPU oracle mismatch"):
+        validate_rep240_record({**valid_rec, "mismatch_count": 1}, "shared_1line", "rand")
+
+    # Mutant 2: missing host_pub_ns_* field must fail
+    for field in REQUIRED_PUB_FIELDS:
+        stripped = dict(valid_rec)
+        stripped.pop(field)
+        with pytest.raises(ValueError, match="Missing required host publication field"):
+            validate_rep240_record(stripped, "shared_1line", "rand")
+
+    # Mutant 3: broken Host RT = T_host_pub + T_wait_ack decomposition must fail
+    with pytest.raises(ValueError, match="Host RT decomposition mismatch"):
+        validate_rep240_record(
+            {**valid_rec, "host_pub_ns_mean": valid_rec["host_pub_ns_mean"] + 50.0},
+            "shared_1line",
+            "rand",
+        )
+
+    # Mutant 4: swapped ingress_mode label must fail
+    with pytest.raises(ValueError, match="Expected ingress_mode=shared_1line"):
+        validate_rep240_record({**valid_rec, "ingress_mode": "shared_2line"}, "shared_1line", "rand")
+
+    # Mutant 5: ddof=1 enforcement (<2 runs rejected; 2-run SD != population SD)
+    with pytest.raises(ValueError, match="requires at least 2 runs"):
+        compute_across_run_stats([42.0])
+    two_run = compute_across_run_stats([10.0, 20.0])
+    assert two_run["sd_across_runs"] == pytest.approx(math.sqrt(50.0))
+    assert two_run["sd_across_runs"] != pytest.approx(5.0)
+
+    # Mutant 6: directory-level detection of corrupted JSON and injected mismatch_count
+    scratch_dir = EXP_DIR / ".scratch_mutant_rep240"
+    try:
+        shutil.rmtree(scratch_dir, ignore_errors=True)
+        shutil.copytree(REP240_DIR, scratch_dir)
+        target_json = scratch_dir / "rep240_16x64_partitioned_rand_r3.json"
+        tampered = json.loads(target_json.read_text(encoding="utf-8"))
+        tampered["mismatch_count"] = 2
+        target_json.write_text(json.dumps(tampered), encoding="utf-8")
+        with pytest.raises(ValueError, match="Non-zero CPU oracle mismatch"):
+            summarize_repeatability_dir(scratch_dir)
+
+        target_json.write_text("{corrupted_json", encoding="utf-8")
+        with pytest.raises(json.JSONDecodeError):
+            summarize_repeatability_dir(scratch_dir)
+    finally:
+        shutil.rmtree(scratch_dir, ignore_errors=True)
+
+
 def _is_jetson_reachable() -> bool:
     if os.environ.get("KM_SKIP_LIVE_HIL") == "1":
         return False
@@ -339,19 +528,26 @@ def test_live_jetson_hil_sparse_and_single_sm_256():
         "flock", "-w", "120", "/tmp/km-bench.lock",
         "bash", "-c",
         (
-            f"scp -q {CU_FILE} {JETSON_HOST}:/tmp/km_pytest_subs.cu && "
+            f"ssh -o StrictHostKeyChecking=no {JETSON_HOST} 'mkdir -p $HOME/.km_pytest_240' && "
+            f"scp -q {CU_FILE} {JETSON_HOST}:~/.km_pytest_240/km_pytest_subs.cu && "
             f"ssh -o StrictHostKeyChecking=no {JETSON_HOST} '"
-            "/usr/local/cuda/bin/nvcc -O3 -arch=sm_87 /tmp/km_pytest_subs.cu -o /tmp/km_pytest_subs -lm && "
-            "/tmp/km_pytest_subs --events 500 --blocks 1 --threads 32 --mask alt --json-out /tmp/km_pytest_alt.json >/dev/null && "
-            "/tmp/km_pytest_subs --events 500 --blocks 16 --threads 64 --ingress-mode partitioned --mask rand --json-out /tmp/km_pytest_1024.json >/dev/null && "
-            "cat /tmp/km_pytest_alt.json && echo ---SPLIT--- && cat /tmp/km_pytest_1024.json && "
-            "rm -f /tmp/km_pytest_subs.cu /tmp/km_pytest_subs /tmp/km_pytest_alt.json /tmp/km_pytest_1024.json'"
+            "/usr/local/cuda/bin/nvcc -O3 -arch=sm_87 $HOME/.km_pytest_240/km_pytest_subs.cu -o $HOME/.km_pytest_240/km_pytest_subs -lm && "
+            "$HOME/.km_pytest_240/km_pytest_subs --events 500 --blocks 1 --threads 32 --mask alt --json-out $HOME/.km_pytest_240/km_pytest_alt.json >/dev/null && "
+            "$HOME/.km_pytest_240/km_pytest_subs --events 500 --blocks 16 --threads 64 --shared-1line --mask rand --json-out $HOME/.km_pytest_240/km_pytest_1line.json >/dev/null && "
+            "$HOME/.km_pytest_240/km_pytest_subs --events 500 --blocks 16 --threads 64 --ingress-mode partitioned --mask rand --json-out $HOME/.km_pytest_240/km_pytest_1024.json >/dev/null && "
+            "cat $HOME/.km_pytest_240/km_pytest_alt.json && echo ---SPLIT--- && "
+            "cat $HOME/.km_pytest_240/km_pytest_1line.json && echo ---SPLIT--- && "
+            "cat $HOME/.km_pytest_240/km_pytest_1024.json && "
+            "rm -rf $HOME/.km_pytest_240'"
         ),
     ]
     res = subprocess.run(cmd, capture_output=True, text=True)
     assert res.returncode == 0, f"Live Jetson HIL failed: {res.stderr}\n{res.stdout}"
-    part_alt, part_1024 = res.stdout.split("---SPLIT---")
+    part_alt, part_1line, part_1024 = res.stdout.split("---SPLIT---")
     rec_alt = json.loads(part_alt.strip())
+    rec_1line = json.loads(part_1line.strip())
     rec_1024 = json.loads(part_1024.strip())
     assert rec_alt["mismatches"] == 0 and rec_alt["subscribers"] == 32
-    assert rec_1024["mismatches"] == 0 and rec_1024["subscribers"] == 1024 and rec_1024["ingress_mode"] == "partitioned"
+    assert rec_1line["mismatch_count"] == 0 and rec_1line["subscribers"] == 1024 and rec_1line["ingress_mode"] == "shared_1line"
+    assert rec_1024["mismatch_count"] == 0 and rec_1024["subscribers"] == 1024 and rec_1024["ingress_mode"] == "partitioned"
+    assert "host_pub_ns_mean" in rec_1024 and "host_rt_us_mean" in rec_1024

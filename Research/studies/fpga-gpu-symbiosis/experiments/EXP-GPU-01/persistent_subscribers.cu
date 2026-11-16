@@ -1,7 +1,7 @@
 /* ============================================================================
  * Машина Кузьміна (Kuzmin Machine) — Гетерогенний симбіоз з GPU (ADR B6)
  * Файл: persistent_subscribers.cu
- * Issue: #225 (EXP-GPU-01 Фаза 3–4: метрологічна герметизація та масштабування)
+ * Issue: #225, #229, #235, #240 (EXP-GPU-01 Фаза 3–4: метрологія, L2 snoop та повторюваність)
  * Цільова платформа: Seeed Studio reServer Industrial J501 (Jetson AGX Orin 64GB)
  * Архітектура GPU: NVIDIA Ampere (GA10B, SM 8.7)
  *
@@ -133,6 +133,12 @@ __device__ __forceinline__ void km_st_release_sys_u32(uint32_t *ptr, uint32_t va
 #endif
 }
 
+typedef enum {
+    KM_INGRESS_PARTITIONED  = 0u,
+    KM_INGRESS_SHARED_2LINE = 1u,
+    KM_INGRESS_SHARED_1LINE = 2u
+} km_ingress_mode_t;
+
 /* ============================================================================
  * ПЕРСИСТЕНТНЕ ЯДРО GPU (1..16 варпів у блоці, 1..16 блоків)
  * ============================================================================ */
@@ -144,7 +150,7 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
     km_sub_state_t           * __restrict__ final_states,
     uint32_t                                sleep_ns,
     uint32_t                                ack_isolated,
-    uint32_t                                ingress_partitioned
+    uint32_t                                ingress_mode
 ) {
     const uint32_t tid        = threadIdx.x;
     const uint32_t lane_id    = tid & 31u;
@@ -152,7 +158,7 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
     const uint32_t global_id  = blockIdx.x * blockDim.x + tid;
     const uint32_t mask_word  = global_id >> 5u;
     const bool     single_warp = (blockDim.x == KM_WARP_SIZE);
-    const km_event_ingress_t *my_in = (ingress_partitioned != 0u) ? &ingress[blockIdx.x] : &ingress[0];
+    const km_event_ingress_t *my_in = (ingress_mode == KM_INGRESS_PARTITIONED) ? &ingress[blockIdx.x] : &ingress[0];
 
     __shared__ uint32_t s_cur_seq;
     __shared__ uint32_t s_stop;
@@ -203,8 +209,10 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
                 uint32_t mask  = 0u;
                 if (lane_id == 0u) {
                     c_val = *(const volatile int32_t *)&my_in->concept_val;
-                    if (ingress_partitioned != 0u) {
+                    if (ingress_mode == KM_INGRESS_PARTITIONED) {
                         mask = *(const volatile uint32_t *)&my_in->event_mask[0];
+                    } else if (ingress_mode == KM_INGRESS_SHARED_1LINE) {
+                        mask = *(const volatile uint32_t *)&ingress[0].event_mask[mask_word & 15u];
                     } else {
                         mask = (mask_word < KM_SLOT_MASK_WORDS)
                             ? *(const volatile uint32_t *)&ingress[0].event_mask[mask_word]
@@ -268,7 +276,7 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
         } else {
             /* Шлях 1 блока x 2..16 варпів (64..512 ниток на одному SM):
              * ЛИШЕ tid == 0 опитує власний слот L2 під час очікування,
-             * а s_cval та s_masks читаються ПІСЛЯ acquire-бар'єра! */
+             * а s_cval та s_masks читаються після acquire-бар'єра. */
             if (tid == 0u) {
                 s_cur_seq = km_ld_acquire_sys_u32(&my_in->seq_id);
                 s_stop    = *(const volatile uint32_t *)&my_in->stop_flag;
@@ -290,13 +298,17 @@ __global__ void __launch_bounds__(512, 1) km_persistent_subscribers_kernel(
                     s_cval = *(const volatile int32_t *)&my_in->concept_val;
                 }
                 if (tid < (blockDim.x >> 5u)) {
-                    if (ingress_partitioned != 0u) {
+                    if (ingress_mode == KM_INGRESS_PARTITIONED) {
                         s_masks[tid] = *(const volatile uint32_t *)&my_in->event_mask[tid];
                     } else {
                         uint32_t gw = (blockIdx.x * (blockDim.x >> 5u)) + tid;
-                        s_masks[tid] = (gw < KM_SLOT_MASK_WORDS)
-                            ? *(const volatile uint32_t *)&ingress[0].event_mask[gw]
-                            : *(const volatile uint32_t *)&ingress[1].event_mask[gw - KM_SLOT_MASK_WORDS];
+                        if (ingress_mode == KM_INGRESS_SHARED_1LINE) {
+                            s_masks[tid] = *(const volatile uint32_t *)&ingress[0].event_mask[gw & 15u];
+                        } else {
+                            s_masks[tid] = (gw < KM_SLOT_MASK_WORDS)
+                                ? *(const volatile uint32_t *)&ingress[0].event_mask[gw]
+                                : *(const volatile uint32_t *)&ingress[1].event_mask[gw - KM_SLOT_MASK_WORDS];
+                        }
                     }
                 }
                 __syncthreads();
@@ -569,7 +581,7 @@ int main(int argc, char **argv) {
     const char    *ack_mode_name    = "isolated";
     uint32_t       ack_isolated     = 1u;
     const char    *ingress_mode_name = "partitioned";
-    uint32_t       ingress_part     = 1u;
+    uint32_t       ingress_mode     = KM_INGRESS_PARTITIONED;
     bool           allow_attr_clk   = false;
     const char    *json_out         = NULL;
 
@@ -592,14 +604,28 @@ int main(int argc, char **argv) {
                 fprintf(stderr, "[FATAL] Невідомий режим --ack-mode: %s (очікується isolated|packed)\n", ack_mode_name);
                 return 2;
             }
+        } else if (strcmp(argv[i], "--shared-ingress") == 0) {
+            ingress_mode_name = "shared_2line";
+            ingress_mode      = KM_INGRESS_SHARED_2LINE;
+        } else if (strcmp(argv[i], "--shared-1line") == 0) {
+            ingress_mode_name = "shared_1line";
+            ingress_mode      = KM_INGRESS_SHARED_1LINE;
         } else if (strcmp(argv[i], "--ingress-mode") == 0 && i + 1 < argc) {
-            ingress_mode_name = argv[++i];
-            if (strcmp(ingress_mode_name, "partitioned") == 0) {
-                ingress_part = 1u;
-            } else if (strcmp(ingress_mode_name, "shared") == 0) {
-                ingress_part = 0u;
+            const char *arg_mode = argv[++i];
+            if (strcmp(arg_mode, "partitioned") == 0) {
+                ingress_mode_name = "partitioned";
+                ingress_mode      = KM_INGRESS_PARTITIONED;
+            } else if (strcmp(arg_mode, "shared") == 0 ||
+                       strcmp(arg_mode, "shared_2line") == 0 ||
+                       strcmp(arg_mode, "shared-2line") == 0) {
+                ingress_mode_name = "shared_2line";
+                ingress_mode      = KM_INGRESS_SHARED_2LINE;
+            } else if (strcmp(arg_mode, "shared_1line") == 0 ||
+                       strcmp(arg_mode, "shared-1line") == 0) {
+                ingress_mode_name = "shared_1line";
+                ingress_mode      = KM_INGRESS_SHARED_1LINE;
             } else {
-                fprintf(stderr, "[FATAL] Невідомий режим --ingress-mode: %s (очікується partitioned|shared)\n", ingress_mode_name);
+                fprintf(stderr, "[FATAL] Невідомий режим --ingress-mode: %s (очікується partitioned|shared_2line|shared_1line)\n", arg_mode);
                 return 2;
             }
         } else if (strcmp(argv[i], "--allow-attr-clock") == 0) {
@@ -695,7 +721,7 @@ int main(int argc, char **argv) {
     cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking);
 
     km_persistent_subscribers_kernel<<<num_blocks, threads, 0, stream>>>(
-        d_ingress, d_egress, d_telemetry, d_init, d_final, sleep_ns, ack_isolated, ingress_part
+        d_ingress, d_egress, d_telemetry, d_init, d_final, sleep_ns, ack_isolated, ingress_mode
     );
     cudaError_t launch_err = cudaGetLastError();
     if (launch_err != cudaSuccess) {
@@ -706,8 +732,10 @@ int main(int argc, char **argv) {
     usleep(30000); /* 30 мс на вихід SM у цикл очікування */
     uint64_t sysfs_cur_mid = read_gpu_sysfs_freq_hz("cur_freq");
 
-    uint64_t *host_rt_ns = (uint64_t *)calloc(num_events, sizeof(uint64_t));
-    uint32_t  mask_words_used = (total_subs + 31u) / 32u;
+    uint64_t *host_rt_ns       = (uint64_t *)calloc(num_events, sizeof(uint64_t));
+    uint64_t *host_pub_ns      = (uint64_t *)calloc(num_events, sizeof(uint64_t));
+    uint64_t *host_wait_ack_ns = (uint64_t *)calloc(num_events, sizeof(uint64_t));
+    uint32_t  mask_words_used  = (total_subs + 31u) / 32u;
     uint32_t  local_masks[KM_MASK_WORDS];
     memset(local_masks, 0, sizeof(local_masks));
 
@@ -717,12 +745,23 @@ int main(int argc, char **argv) {
 
     for (uint32_t ev = 1u; ev <= num_events; ev++) {
         int32_t c_val = (int32_t)(25 + (ev % 15u));
-        for (uint32_t w = 0; w < mask_words_used; w++) {
-            local_masks[w] = generate_mask_word(mask_mode, ev, w);
+        if (ingress_mode == KM_INGRESS_SHARED_1LINE) {
+            uint32_t nw1 = (mask_words_used < KM_SLOT_MASK_WORDS) ? mask_words_used : KM_SLOT_MASK_WORDS;
+            for (uint32_t w = 0; w < nw1; w++) {
+                local_masks[w] = generate_mask_word(mask_mode, ev, w);
+            }
+            for (uint32_t w = nw1; w < mask_words_used; w++) {
+                local_masks[w] = local_masks[w & 15u];
+            }
+        } else {
+            for (uint32_t w = 0; w < mask_words_used; w++) {
+                local_masks[w] = generate_mask_word(mask_mode, ev, w);
+            }
         }
 
-        uint64_t t0;
-        if (ingress_part != 0u) {
+        uint64_t t_pub0, t_pub1;
+        if (ingress_mode == KM_INGRESS_PARTITIONED) {
+            t_pub0 = host_monotonic_raw_ns();
             for (uint32_t b = 0; b < num_blocks; b++) {
                 h_ingress[b].concept_val  = c_val;
                 h_ingress[b].active_words = warps_per_blk;
@@ -730,11 +769,22 @@ int main(int argc, char **argv) {
                     h_ingress[b].event_mask[w] = local_masks[b * warps_per_blk + w];
                 }
             }
-            t0 = host_monotonic_raw_ns();
             for (uint32_t b = 0; b < num_blocks; b++) {
                 __atomic_store_n(&h_ingress[b].seq_id, ev, __ATOMIC_RELEASE);
             }
+            t_pub1 = host_monotonic_raw_ns();
+        } else if (ingress_mode == KM_INGRESS_SHARED_1LINE) {
+            uint32_t nw1 = (mask_words_used < KM_SLOT_MASK_WORDS) ? mask_words_used : KM_SLOT_MASK_WORDS;
+            t_pub0 = host_monotonic_raw_ns();
+            h_ingress[0].concept_val  = c_val;
+            h_ingress[0].active_words = nw1;
+            for (uint32_t w = 0; w < nw1; w++) {
+                h_ingress[0].event_mask[w] = local_masks[w];
+            }
+            __atomic_store_n(&h_ingress[0].seq_id, ev, __ATOMIC_RELEASE);
+            t_pub1 = host_monotonic_raw_ns();
         } else {
+            t_pub0 = host_monotonic_raw_ns();
             h_ingress[0].concept_val  = c_val;
             h_ingress[0].active_words = mask_words_used;
             for (uint32_t w = 0; w < mask_words_used; w++) {
@@ -744,8 +794,8 @@ int main(int argc, char **argv) {
                     h_ingress[1].event_mask[w - KM_SLOT_MASK_WORDS] = local_masks[w];
                 }
             }
-            t0 = host_monotonic_raw_ns();
             __atomic_store_n(&h_ingress[0].seq_id, ev, __ATOMIC_RELEASE);
+            t_pub1 = host_monotonic_raw_ns();
         }
 
         for (uint32_t b = 0; b < num_blocks; b++) {
@@ -759,7 +809,9 @@ int main(int argc, char **argv) {
             }
         }
         uint64_t t1 = host_monotonic_raw_ns();
-        host_rt_ns[ev - 1u] = t1 - t0;
+        host_pub_ns[ev - 1u]      = t_pub1 - t_pub0;
+        host_wait_ack_ns[ev - 1u] = t1 - t_pub1;
+        host_rt_ns[ev - 1u]       = t1 - t_pub0;
 
         if (ev == (num_events / 2u)) {
             uint64_t f_sample = read_gpu_sysfs_freq_hz("cur_freq");
@@ -780,8 +832,9 @@ int main(int argc, char **argv) {
     uint64_t t_wall_end   = host_monotonic_raw_ns();
     uint64_t sysfs_cur_after = read_gpu_sysfs_freq_hz("cur_freq");
 
-    /* Штатна зупинка персистентного кернела на всіх вхідних слотах */
-    for (uint32_t b = 0; b < num_blocks; b++) {
+    /* Штатна зупинка персистентного кернела на активних вхідних слотах */
+    uint32_t stop_slots = (ingress_mode == KM_INGRESS_PARTITIONED) ? num_blocks : 1u;
+    for (uint32_t b = 0; b < stop_slots; b++) {
         __atomic_store_n(&h_ingress[b].stop_flag, 1u, __ATOMIC_RELAXED);
         __atomic_store_n(&h_ingress[b].seq_id, num_events + 1u, __ATOMIC_RELEASE);
     }
@@ -816,6 +869,8 @@ int main(int argc, char **argv) {
         cudaFreeHost(h_egress);
         free(h_telemetry);
         free(host_rt_ns);
+        free(host_pub_ns);
+        free(host_wait_ack_ns);
         return 3;
     }
 
@@ -864,15 +919,17 @@ int main(int argc, char **argv) {
         }
     }
 
-    km_stats_t st_math_cyc  = compute_stats(max_math_cyc, n_samp, false);
-    km_stats_t st_e2e_cyc   = compute_stats(max_e2e_cyc,  n_samp, true);
-    km_stats_t st_math_gt   = compute_stats(max_math_gt,  n_samp, false);
-    km_stats_t st_e2e_gt    = compute_stats(max_e2e_gt,   n_samp, true);
+    km_stats_t st_math_cyc  = compute_stats(max_math_cyc,     n_samp,     false);
+    km_stats_t st_e2e_cyc   = compute_stats(max_e2e_cyc,      n_samp,     true);
+    km_stats_t st_math_gt   = compute_stats(max_math_gt,      n_samp,     false);
+    km_stats_t st_e2e_gt    = compute_stats(max_e2e_gt,       n_samp,     true);
     km_stats_t st_e2e_b0    = compute_stats(h_telemetry->t_e2e_cycles[0], n_samp, false);
-    km_stats_t st_host_rt   = compute_stats(host_rt_ns,   num_events, true);
+    km_stats_t st_host_pub  = compute_stats(host_pub_ns,      num_events, false);
+    km_stats_t st_host_wait = compute_stats(host_wait_ack_ns, num_events, false);
+    km_stats_t st_host_rt   = compute_stats(host_rt_ns,       num_events, true);
 
     printf("============================================================================\n");
-    printf(" МАШИНА КУЗЬМІНА: PERSISTENT GPU SUBSCRIBERS (ISSUE #225 / #229 / ADR B6)\n");
+    printf(" МАШИНА КУЗЬМІНА: PERSISTENT GPU SUBSCRIBERS (ISSUE #225 / #235 / #240 / ADR B6)\n");
     printf("============================================================================\n");
     printf("  Пристрій GPU:                 %s (SM %d.%d)\n", prop.name, prop.major, prop.minor);
     printf("  Геометрія запуску:            %u блок(ів) x %u ниток = %u підписників\n", num_blocks, threads, total_subs);
@@ -917,6 +974,10 @@ int main(int argc, char **argv) {
            st_e2e_gt.max);
     printf("  --------------------------------------------------------------------------\n");
     printf("  3. НАСКРІЗНИЙ ROUND-TRIP HOST CPU -> L2 -> SM -> L2 -> HOST CPU (CLOCK_MONOTONIC_RAW):\n");
+    printf("     Pub нс:   mean=%.1f sigma=%.1f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " p99.9=%" PRIu64 " max=%" PRIu64 "\n",
+           st_host_pub.mean, st_host_pub.stddev, st_host_pub.min, st_host_pub.p50, st_host_pub.p99, st_host_pub.p999, st_host_pub.max);
+    printf("     Wait нс:  mean=%.1f sigma=%.1f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " p99.9=%" PRIu64 " max=%" PRIu64 "\n",
+           st_host_wait.mean, st_host_wait.stddev, st_host_wait.min, st_host_wait.p50, st_host_wait.p99, st_host_wait.p999, st_host_wait.max);
     printf("     Фіз. нс:  mean=%.1f sigma=%.1f | min=%" PRIu64 " p50=%" PRIu64 " p99=%" PRIu64 " [%" PRIu64 "..%" PRIu64 "] p99.9=%" PRIu64 " [%" PRIu64 "..%" PRIu64 "] max=%" PRIu64 " (wall=%.2f мс)\n",
            st_host_rt.mean, st_host_rt.stddev, st_host_rt.min, st_host_rt.p50,
            st_host_rt.p99, st_host_rt.p99_ci_lo, st_host_rt.p99_ci_hi,
@@ -932,7 +993,7 @@ int main(int argc, char **argv) {
                 "  \"blocks\": %u, \"threads\": %u, \"subscribers\": %u,\n"
                 "  \"mask\": \"%s\", \"ingress_mode\": \"%s\", \"ack_mode\": \"%s\", \"sleep_ns\": %u, \"events\": %u,\n"
                 "  \"sysfs_cur_freq_hz\": %" PRIu64 ", \"sysfs_max_freq_hz\": %" PRIu64 ",\n"
-                "  \"globaltimer_quantum_ns\": %" PRIu64 ", \"mid_run_mismatches\": %u, \"mismatches\": %u,\n"
+                "  \"globaltimer_quantum_ns\": %" PRIu64 ", \"mid_run_mismatches\": %u, \"mismatches\": %u, \"mismatch_count\": %u,\n"
                 "  \"bootstrap_iters\": %u, \"bootstrap_seed\": \"0x%llx\",\n"
                 "  \"math_cycles_mean\": %.3f, \"math_cycles_sigma\": %.3f, \"math_cycles_p50\": %" PRIu64 ", \"math_cycles_p999\": %" PRIu64 ", \"math_cycles_max\": %" PRIu64 ",\n"
                 "  \"math_ns_mean\": %.3f, \"math_ns_p999\": %.3f,\n"
@@ -940,12 +1001,15 @@ int main(int argc, char **argv) {
                 "  \"e2e_sm_ns_mean\": %.3f, \"e2e_sm_ns_p50\": %.3f, \"e2e_sm_ns_p99\": %.3f, \"e2e_sm_ns_p99_ci95_lo\": %.3f, \"e2e_sm_ns_p99_ci95_hi\": %.3f, \"e2e_sm_ns_p999\": %.3f, \"e2e_sm_ns_p999_ci95_lo\": %.3f, \"e2e_sm_ns_p999_ci95_hi\": %.3f, \"e2e_sm_ns_max\": %.3f,\n"
                 "  \"e2e_sm_b0_ns_mean\": %.3f, \"e2e_sm_b0_ns_p999\": %.3f,\n"
                 "  \"e2e_gt_ns_mean\": %.3f, \"e2e_gt_ns_p50\": %" PRIu64 ", \"e2e_gt_ns_p99\": %" PRIu64 ", \"e2e_gt_ns_p99_ci95_lo\": %" PRIu64 ", \"e2e_gt_ns_p99_ci95_hi\": %" PRIu64 ", \"e2e_gt_ns_p999\": %" PRIu64 ", \"e2e_gt_ns_p999_ci95_lo\": %" PRIu64 ", \"e2e_gt_ns_p999_ci95_hi\": %" PRIu64 ", \"e2e_gt_ns_max\": %" PRIu64 ",\n"
-                "  \"host_rt_ns_mean\": %.3f, \"host_rt_ns_p50\": %" PRIu64 ", \"host_rt_ns_p99\": %" PRIu64 ", \"host_rt_ns_p99_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p99_ci95_hi\": %" PRIu64 ", \"host_rt_ns_p999\": %" PRIu64 ", \"host_rt_ns_p999_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p999_ci95_hi\": %" PRIu64 ", \"host_rt_ns_max\": %" PRIu64 ",\n"
+                "  \"host_pub_ns_mean\": %.3f, \"host_pub_ns_sigma\": %.3f, \"host_pub_ns_p50\": %" PRIu64 ", \"host_pub_ns_p99\": %" PRIu64 ", \"host_pub_ns_p999\": %" PRIu64 ", \"host_pub_ns_max\": %" PRIu64 ",\n"
+                "  \"host_wait_ack_ns_mean\": %.3f, \"host_wait_ack_ns_sigma\": %.3f, \"host_wait_ack_ns_p50\": %" PRIu64 ", \"host_wait_ack_ns_p99\": %" PRIu64 ", \"host_wait_ack_ns_p999\": %" PRIu64 ", \"host_wait_ack_ns_max\": %" PRIu64 ",\n"
+                "  \"host_rt_ns_mean\": %.3f, \"host_rt_ns_sigma\": %.3f, \"host_rt_ns_p50\": %" PRIu64 ", \"host_rt_ns_p99\": %" PRIu64 ", \"host_rt_ns_p99_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p99_ci95_hi\": %" PRIu64 ", \"host_rt_ns_p999\": %" PRIu64 ", \"host_rt_ns_p999_ci95_lo\": %" PRIu64 ", \"host_rt_ns_p999_ci95_hi\": %" PRIu64 ", \"host_rt_ns_max\": %" PRIu64 ",\n"
+                "  \"host_rt_us_mean\": %.4f, \"host_rt_us_sigma\": %.4f, \"host_rt_us_p50\": %.4f, \"host_rt_us_p99\": %.4f, \"host_rt_us_p999\": %.4f, \"host_rt_us_max\": %.4f,\n"
                 "  \"per_block_e2e_sm_ns_mean\": [",
                 num_blocks, threads, total_subs,
                 mask_name, ingress_mode_name, ack_mode_name, sleep_ns, num_events,
                 eff_freq_hz, sysfs_max_before,
-                h_gt_step, mid_run_mismatches, mismatches,
+                h_gt_step, mid_run_mismatches, mismatches, mismatches,
                 KM_BOOTSTRAP_ITERS, (unsigned long long)KM_BOOTSTRAP_SEED,
                 st_math_cyc.mean, st_math_cyc.stddev, st_math_cyc.p50, st_math_cyc.p999, st_math_cyc.max,
                 st_math_cyc.mean * ns_per_cyc_actual, st_math_cyc.p999 * ns_per_cyc_actual,
@@ -959,10 +1023,15 @@ int main(int argc, char **argv) {
                 st_e2e_gt.p99, st_e2e_gt.p99_ci_lo, st_e2e_gt.p99_ci_hi,
                 st_e2e_gt.p999, st_e2e_gt.p999_ci_lo, st_e2e_gt.p999_ci_hi,
                 st_e2e_gt.max,
-                st_host_rt.mean, st_host_rt.p50,
+                st_host_pub.mean, st_host_pub.stddev, st_host_pub.p50, st_host_pub.p99, st_host_pub.p999, st_host_pub.max,
+                st_host_wait.mean, st_host_wait.stddev, st_host_wait.p50, st_host_wait.p99, st_host_wait.p999, st_host_wait.max,
+                st_host_rt.mean, st_host_rt.stddev, st_host_rt.p50,
                 st_host_rt.p99, st_host_rt.p99_ci_lo, st_host_rt.p99_ci_hi,
                 st_host_rt.p999, st_host_rt.p999_ci_lo, st_host_rt.p999_ci_hi,
-                st_host_rt.max
+                st_host_rt.max,
+                st_host_rt.mean / 1000.0, st_host_rt.stddev / 1000.0,
+                (double)st_host_rt.p50 / 1000.0, (double)st_host_rt.p99 / 1000.0,
+                (double)st_host_rt.p999 / 1000.0, (double)st_host_rt.max / 1000.0
             );
             for (uint32_t b = 0u; b < num_blocks; b++) {
                 fprintf(jf, "%s%.3f", (b > 0u) ? ", " : "", per_blk_e2e_ns_mean[b]);
@@ -984,6 +1053,8 @@ int main(int argc, char **argv) {
     cudaFreeHost(h_egress);
     free(h_telemetry);
     free(host_rt_ns);
+    free(host_pub_ns);
+    free(host_wait_ack_ns);
 
     return (mismatches == 0u) ? 0 : 1;
 }
