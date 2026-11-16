@@ -1,9 +1,9 @@
 # Пакет апаратного HIL-експерименту EXP-GPU-01: Симбіоз ПЛІС та GPU
 
-* **Версія:** 0.2.0
-* **Дата:** 2026-11-14
+* **Версія:** 0.3.0
+* **Дата:** 2026-11-15
 * **Тип WP:** Guide
-* **Статус:** Заплановано (Planned; очікує реалізації модуля `PMOD Event Egress` та узгодження рівнів).
+* **Статус:** Частково виконано (Фаза 3–4 GPU верифікована в [#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225); фізичний тракт Фаз 1–2/4 запланований у [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)).
 * **Власник:** Микола Федчик; автор експерименту — Микола Федчик.
 
 ## Призначення та навігація
@@ -15,6 +15,8 @@
 | [protocol.md](protocol.md) | Protocol | Нормативний протокол випробувань: вимірювані метрики, часові допуски, покроковий регламент вимірювань, критерії Pass/Fail. |
 | [plan.md](plan.md) | Plan | Операційний план підготовки стенду, монтаж з'єднувального шлейфу DuPont, розподіл пінів та календарний графік 4 фаз. |
 | [j501-hardware-interface.md](j501-hardware-interface.md) | Specification | Інженерний аналіз несучої плати Seeed Studio reServer Industrial J501 (схемотехніка DI/DO/CAN, оптрони SFH690BT, часовий бюджет). |
+| [report-phase3-warp-scaling.md](report-phase3-warp-scaling.md) | Report | Емпіричний звіт Фази 3–4 на Jetson AGX Orin (#225): 128-Б L2 mailbox, `clock64` + `%globaltimer`, `SASS`, розріджені маски та масштабування `32..512` підписників. |
+| [persistent_subscribers.cu](persistent_subscribers.cu) | Code | Реалізація персистентного кернела підписників CUDA (`SM 8.7`) із незалежною еталонною CPU-моделлю. |
 | [Експеримент EXP-GPU-02](../EXP-GPU-02/README.md) | Guide | Наступний HIL-експеримент: динамічне оновлення правил у BRAM на льоту (Zero-Downtime Rule Injection). |
 | [Пакет дослідження](../../README.md) | Guide | Загальний дослідницький пакет: постановка проблеми, аналітична модель, загальний протокол та аналітичний звіт. |
 | [Рішення B6](../../../../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md) | Decision | Архітектурне рішення (ADR B6): концепція Persistent Mega-Kernel для усунення Callback Bottleneck. |
@@ -30,6 +32,7 @@
 
 | Версія | Дата | Автор | Зміни |
 |---|---|---|---|
+| 0.3.0 | 2026-11-15 | GitHub Copilot CLI (`gemini-4-carbon`) | #225: додано `persistent_subscribers.cu`, тести та звіт Фази 3–4 (`report-phase3-warp-scaling.md`); фізичне замикання з PYNQ-Z1 винесено в #226. |
 | 0.2.0 | 2026-11-14 | Микола Федчик, Copilot CLI | #166: уточнено цифровий режим `RP2040 PIO`, передумову `PMOD Event Egress` та ієрархію пам'яті `Event Mailbox + Shared Memory`. |
 | 0.1.0 | 2026-11-12 | Микола Федчик | Початкова редакція навігаційного посібника експерименту EXP-GPU-01 у складі Research/studies/fpga-gpu-symbiosis/. |
 

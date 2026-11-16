@@ -1,0 +1,12 @@
+{
+  "blocks": 8, "threads": 32, "subscribers": 256,
+  "mask": "rand", "sleep_ns": 0, "events": 2000,
+  "sysfs_cur_freq_hz": 816000000, "sysfs_max_freq_hz": 816000000,
+  "globaltimer_quantum_ns": 32, "mismatches": 0,
+  "math_cycles_mean": 37.000, "math_cycles_sigma": 0.000, "math_cycles_p50": 37, "math_cycles_p999": 37, "math_cycles_max": 37,
+  "math_ns_mean": 45.343, "math_ns_p999": 45.343,
+  "e2e_sm_cycles_mean": 4965.734, "e2e_sm_cycles_sigma": 236.426, "e2e_sm_cycles_p50": 5106, "e2e_sm_cycles_p999": 5439, "e2e_sm_cycles_max": 5529,
+  "e2e_sm_ns_mean": 6085.458, "e2e_sm_ns_p50": 6257.353, "e2e_sm_ns_p99": 6545.343, "e2e_sm_ns_p999": 6665.441, "e2e_sm_ns_max": 6775.735,
+  "e2e_gt_ns_mean": 6085.776, "e2e_gt_ns_p50": 6240, "e2e_gt_ns_p99": 6560, "e2e_gt_ns_p999": 6688, "e2e_gt_ns_max": 6784,
+  "host_rt_ns_mean": 22135.600, "host_rt_ns_p50": 22144, "host_rt_ns_p99": 22944, "host_rt_ns_p999": 26144, "host_rt_ns_max": 26880
+}
