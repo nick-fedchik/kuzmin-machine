@@ -1,0 +1,24 @@
+# cmd: flock -w 600 /tmp/km-bench.lock ssh xilinx@192.168.68.69 '/tmp/km_base254/km_c99_cascade_bench --bench 100000 10000'
+# timestamp: 2026-11-16T22:58:36+02:00
+
+{
+  "mlockall_succeeded": true,
+  "online_cpus": 2,
+  "n_direct": 100000,
+  "n_os_eventfd": 10000,
+  "sanity": {
+    "reject_bench_commits": 0,
+    "reject_bench_rejects": 100000,
+    "cascade4_bench_commits": 400000,
+    "cascade4_bench_rejects": 0,
+    "cascade4_final_c3": 9900000,
+    "os_eventfd_total_commits": 40800,
+    "os_eventfd_total_rejects": 0
+  },
+  "clock_monotonic_raw_floor_ns": {"mean": 1185.576, "sigma": 597.097, "min": 1169, "p50": 1176, "p99": 1212, "p99_9": 1225, "max": 149896},
+  "c99_o3_reject_1concept_ns": {"amortized_mean": 97.960, "mean": 1280.328, "sigma": 427.969, "min": 1261, "p50": 1280, "p99": 1293, "p99_9": 1311, "max": 76763},
+  "c99_o3_cascade_4concepts_ns": {"amortized_mean": 534.119, "mean": 1730.476, "sigma": 373.381, "min": 1716, "p50": 1723, "p99": 1730, "p99_9": 1772, "max": 40203},
+  "c99_o3_rule_update_ram_ns": {"amortized_4concepts_mean": 63.115, "amortized_64concepts_mean": 481.915, "mean": 1272.125, "sigma": 237.346, "min": 1236, "p50": 1268, "p99": 1323, "p99_9": 1335, "max": 31870},
+  "linux_eventfd_poll_crosscpu_cascade4_ns": {"mean": 33327.112, "sigma": 1345.424, "min": 31963, "p50": 33206, "p99": 35421, "p99_9": 55471, "max": 65803},
+  "linux_eventfd_poll_samecpu_cascade4_ns": {"mean": 28837.613, "sigma": 2633.175, "min": 23348, "p50": 29772, "p99": 32800, "p99_9": 55729, "max": 68387}
+}

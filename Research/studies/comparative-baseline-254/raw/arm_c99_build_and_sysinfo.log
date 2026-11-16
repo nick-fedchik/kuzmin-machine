@@ -1,0 +1,29 @@
+# cmd: flock -w 600 /tmp/km-bench.lock ssh xilinx@192.168.68.69 'mkdir -p /tmp/km_base254 && gcc -std=gnu99 -O3 -mcpu=cortex-a9 -mfpu=neon -Wall -Wextra -Werror c99_cascade_bench.c -o km_c99_cascade_bench -lpthread -lm && objdump -d km_c99_cascade_bench && ./km_c99_cascade_bench --bench 100000 10000 && rm -rf /tmp/km_base254'
+# timestamp: 2026-11-16T22:58:36+02:00
+
+=== SYSINFO ===
+Linux pynq-2 6.6.10-xilinx-v2024.1-g916a1f7c7222 #1 SMP PREEMPT Sat Apr 27 05:22:24 UTC 2024 armv7l armv7l armv7l GNU/Linux
+gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0
+GNU objdump (GNU Binutils for Ubuntu) 2.38
+65536
+processor	: 0
+model name	: ARMv7 Processor rev 0 (v7l)
+BogoMIPS	: 325.00
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x3
+CPU part	: 0xc09
+CPU revision	: 0
+processor	: 1
+model name	: ARMv7 Processor rev 0 (v7l)
+BogoMIPS	: 325.00
+CPU implementer	: 0x41
+CPU architecture: 7
+CPU variant	: 0x3
+CPU part	: 0xc09
+CPU revision	: 0
+Hardware	: Xilinx Zynq Platform
+=== COMPILE ===
+-rwxrwxr-x 1 xilinx xilinx 22440 Nov 16 20:58 km_c99_cascade_bench
+ce152e93c695a9a665db39992def0aa388505d6d587a1f6752233cee2da3d83f  c99_cascade_bench.c
+cd5d730d9476cf39f12c814e80b00e9e09591afc647cbca73dcb02802ceaaa65  km_c99_cascade_bench
