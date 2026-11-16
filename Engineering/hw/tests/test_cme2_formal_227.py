@@ -15,7 +15,7 @@ PROPS_PATH = FORMAL_DIR / "scripts" / "cme2_formal_props.sv"
 RAW_DIR = FORMAL_DIR / "raw"
 N16_SCRIPT_PATH = FORMAL_DIR / "scripts" / "run_cme2_formal_n16.py"
 N16_PROPS_PATH = FORMAL_DIR / "scripts" / "cme2_formal_n16_props.sv"
-N16_RAW_DIR = RAW_DIR / "n16_compositional"
+N16_RAW_DIR = RAW_DIR / "n16_compositional_v2"
 RTL_DIR = REPO_ROOT / "Engineering" / "hw" / "rtl" / "core"
 
 
@@ -148,12 +148,21 @@ def test_cme2_formal_n16_committed_artifacts():
         "C3_n16_two_ext_triggers",
     } <= reached
 
+    # R1 guard: FORMAL_INDUCTION block must contain ONLY assert statements, ZERO assume
+    props_src = N16_PROPS_PATH.read_text(encoding="utf-8")
+    ind_block = props_src.split("`ifdef FORMAL_INDUCTION", 1)[1].split("`endif", 1)[0]
+    for line in ind_block.splitlines():
+        stripped = line.split("//", 1)[0].strip()
+        assert "assume" not in stripped, f"Prohibited assume in FORMAL_INDUCTION: {line}"
+    assert "INV_state_range:" in ind_block and "P1f_cfg_words_immutable:" in props_src
+
     by_design_prefix = {r["design"].split(":")[0]: r for r in rows}
     expected_mutants = {
         "M_bigdot_dual_pulse": "P_bigdot_mutex_pulse",
         "M_we_on_reject": "P1a_no_we_on_reject",
         "M_cascade_on_reject": "P1d_no_cascade_on_reject",
         "M_rank_violation_self_sub": "P2_rank_step_n16",
+        "M_p3_early_eval_skip": "P3_first_tx_no_early",
     }
     for mid, expected_prop in expected_mutants.items():
         row = by_design_prefix[mid]
@@ -194,6 +203,7 @@ def test_cme2_formal_n16_live_induction_and_mutants(tmp_path):
         ("M_we_on_reject", "safety_bmc"),
         ("M_cascade_on_reject", "safety_bmc"),
         ("M_rank_violation_self_sub", "rank_step_bmc"),
+        ("M_p3_early_eval_skip", "liveness_bmc"),
     ):
         assert statuses[f"{mid}:{check_name}"] == "FAILED"
         assert (tmp_path / f"{mid}.vcd").is_file()

@@ -39,7 +39,7 @@ RTL_CME = os.path.join(RTL_DIR, "km_concept_micro_engine.sv")
 RTL_BRAM = os.path.join(RTL_DIR, "km_concept_bram.sv")
 RTL_SEQ = os.path.join(RTL_DIR, "km_autonomous_sequencer.sv")
 PROPS = os.path.join(HERE, "cme2_formal_n16_props.sv")
-DEFAULT_OUT = os.path.join(HERE, "..", "raw", "n16_compositional")
+DEFAULT_OUT = os.path.join(HERE, "..", "raw", "n16_compositional_v2")
 
 CONNECT_LINES = "\n".join([
     "cd cme2_formal_n16_props",
@@ -120,6 +120,18 @@ MUTANTS = [
         "                ST_CAP_W3_STROBE: begin\n"
         "                    // Mutant: backward/cyclic subscriber cid\n"
         "                    desc_w3_q       <= (active_cid_q > 6'd0) ? {26'd0, active_cid_q - 6'd1} : bram_b_rdata_i;",
+    ),
+    (
+        "M_p3_early_eval_skip",
+        "liveness_bmc",
+        ["FORMAL_LIVENESS"],
+        12,
+        False,
+        "skipping ST_WAIT_GATE violates exact 8-cycle transaction budget P3",
+        "                    cme_event_valid <= 1'b1;\n"
+        "                    state_q         <= ST_WAIT_GATE;",
+        "                    cme_event_valid <= 1'b1;\n"
+        "                    state_q         <= ST_EVAL_GATE;",
     ),
 ]
 

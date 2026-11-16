@@ -1,0 +1,17 @@
+# cmd: yosys-smtbmc -s z3 -t 12 --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-gemini-248-fix/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_p3_early_eval_skip.vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-gemini-248-fix/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/_work/M_p3_early_eval_skip.smt2
+# timestamp: 2026-11-16T12:40:47.619534+02:00
+##   0:00:00  Solver: z3
+##   0:00:00  Checking assertions in step 0..
+##   0:00:00  Checking assertions in step 1..
+##   0:00:00  Checking assertions in step 2..
+##   0:00:00  Checking assertions in step 3..
+##   0:00:00  Checking assertions in step 4..
+##   0:00:00  Checking assertions in step 5..
+##   0:00:00  Checking assertions in step 6..
+##   0:00:00  Checking assertions in step 7..
+##   0:00:00  Checking assertions in step 8..
+##   0:00:02  BMC failed!
+##   0:00:02  Assert failed in cme2_formal_n16_props: P3_first_tx_no_early
+##   0:00:02  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-gemini-248-fix/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_p3_early_eval_skip.vcd
+##   0:00:02  Status: FAILED
+ (2 seconds) /              

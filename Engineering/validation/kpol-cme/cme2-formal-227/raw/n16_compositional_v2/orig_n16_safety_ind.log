@@ -1,0 +1,8 @@
+# cmd: yosys-smtbmc -s z3 -i -t 5 /home/mfedchyk/GitHub/nick-fedchik/km-wt-gemini-248-fix/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/_work/orig_n16_safety_ind.smt2
+# timestamp: 2026-11-16T12:35:57.258318+02:00
+##   0:00:00  Solver: z3
+##   0:00:00  Trying induction in step 5..
+##   0:00:00  Trying induction in step 4..
+##   0:00:00  Trying induction in step 3..
+##   0:00:01  Temporal induction successful.
+##   0:00:01  Status: PASSED

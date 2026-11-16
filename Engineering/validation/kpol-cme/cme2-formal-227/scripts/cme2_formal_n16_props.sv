@@ -205,21 +205,28 @@ module cme2_formal_n16_props #(
     end
 
 `ifdef FORMAL_INDUCTION
-    // ---- Auxiliary Inductive Invariants of Reachable Sequencer States ----
+    // ---- Proved Auxiliary Inductive Invariants of Sequencer States (ALL assert, ZERO assume!) ----
     wire [3:0] wr_rd_sum_w = obs_fifo_rd_ptr_q + obs_fifo_count_q[3:0];
 
     always @(*) begin
         if (rst_n) begin
-            assume (obs_state_q <= 4'd7);
-            assume (obs_fifo_count_q <= QUEUE_DEPTH);
-            assume (wr_rd_sum_w == obs_fifo_wr_ptr_q);
-            assume (obs_cme_event_valid == (obs_state_q == 4'd6));
-            assume (!(obs_cme_committed && obs_cme_rejected));
-            assume (!(obs_cme_committed || obs_cme_rejected) || (obs_state_q == 4'd7));
-            assume (obs_active_cid_q < NUM_CONCEPTS);
-            assume (!obs_cascade_pending_valid_q || (obs_cascade_pending_cid_q < NUM_CONCEPTS));
+            INV_state_range:
+                assert (obs_state_q <= 4'd7);
+            INV_fifo_count:
+                assert (obs_fifo_count_q <= QUEUE_DEPTH);
+            INV_fifo_ptrs:
+                assert (wr_rd_sum_w == obs_fifo_wr_ptr_q);
+            INV_cme_ev_valid:
+                assert (obs_cme_event_valid == (obs_state_q == 4'd6));
+            INV_cme_mutex:
+                assert (!(obs_cme_committed && obs_cme_rejected));
+            INV_cme_gate_state:
+                assert (!(obs_cme_committed || obs_cme_rejected) || (obs_state_q == 4'd7));
+            INV_pending_state:
+                assert (!obs_cascade_pending_valid_q || ((obs_state_q == 4'd0) && (obs_fifo_count_q == QUEUE_DEPTH)));
             if (past_valid && p_rst_n) begin
-                assume (bram_b_we_o == p_commit_pulse);
+                INV_we_pulse:
+                    assert (bram_b_we_o == p_commit_pulse);
             end
         end
     end
@@ -264,6 +271,10 @@ module cme2_formal_n16_props #(
             P1e_idle_after_isolated_reject:
                 assert (!(p_reject_pulse && (obs_fifo_count_q == 5'd0) && !obs_cascade_pending_valid_q) ||
                         !busy_o);
+
+            // P1f (closes R2): Autonomous Port B writes ONLY target W0 (2'b00); W1..W3 config words are hardware-immutable
+            P1f_cfg_words_immutable:
+                assert (!bram_b_we_o || (bram_b_addr_o[1:0] == 2'b00));
         end
     end
 `endif
@@ -282,15 +293,16 @@ module cme2_formal_n16_props #(
         end
     end
 
-    wire [4:0] rank_active_w = 5'd15 - {1'b0, obs_active_cid_q[3:0]};
-    wire [4:0] rank_next_w   = 5'd15 - {1'b0, obs_cme_subscriber_cid[3:0]};
+    wire [5:0] rank_active_w = 6'd15 - obs_active_cid_q;
+    wire [5:0] rank_next_w   = 6'd15 - obs_cme_subscriber_cid[5:0];
 
     always @(*) begin
         if (past_valid && rst_n && p_rst_n) begin
             P2_rank_step_n16:
                 assert (!(obs_state_q == 4'd7) ||
                         !obs_cascade_req ||
-                        ((obs_cme_subscriber_cid[5:0] > obs_active_cid_q) &&
+                        ((obs_active_cid_q < NUM_CONCEPTS) &&
+                         (obs_cme_subscriber_cid[5:0] > obs_active_cid_q) &&
                          (obs_cme_subscriber_cid[5:0] < NUM_CONCEPTS) &&
                          (rank_next_w < rank_active_w)));
         end

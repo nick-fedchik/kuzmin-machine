@@ -1,0 +1,10 @@
+design,check,engine,status,seconds,failed,reached,unreached,vcd
+original (CFG-P N=16),P1_n16_ind,smtbmc z3 ind t=5,PASSED,1.103,,,,
+original (CFG-P N=16),P2_rank_step_n16,smtbmc z3 ind t=10,PASSED,0.273,,,,
+original (CFG-P N=16),P3_liveness_n16_ind,smtbmc z3 ind t=12,PASSED,13.122,,,,
+original (CFG-P N=16),cover_n16,smtbmc z3 cover t=42,PASSED,153.762,,C1_n16_cascade_4_commits;C2_n16_reject_reached;C3_n16_two_ext_triggers,,
+M_bigdot_dual_pulse: simultaneous commit_pulse_o and reject_pulse_o,safety_bmc,smtbmc z3 bmc t=15,FAILED,19.504,P_bigdot_mutex_pulse,,,M_bigdot_dual_pulse.vcd
+M_we_on_reject: bram_b_we_o asserted on reject,safety_bmc,smtbmc z3 bmc t=15,FAILED,41.4,P1a_no_we_on_reject,,,M_we_on_reject.vcd
+M_cascade_on_reject: cascade subscription requested on reject,safety_bmc,smtbmc z3 bmc t=15,FAILED,46.926,P1d_no_cascade_on_reject,,,M_cascade_on_reject.vcd
+M_rank_violation_self_sub: backward cascade cid violates Lyapunov rank monotonicity,rank_step_bmc,smtbmc z3 bmc t=15,FAILED,8.47,P2_rank_step_n16,,,M_rank_violation_self_sub.vcd
+M_p3_early_eval_skip: skipping ST_WAIT_GATE violates exact 8-cycle transaction budget P3,liveness_bmc,smtbmc z3 bmc t=12,FAILED,2.739,P3_first_tx_no_early,,,M_p3_early_eval_skip.vcd
