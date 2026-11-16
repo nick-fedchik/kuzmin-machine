@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-11-16T20:38:46.186825+02:00",
+  "issue": 252,
+  "experiment": "EXP-GPU-02",
+  "evidence_kind": "formal_smt_z3_verification",
+  "parameters": {
+    "NUM_CONCEPTS": 4,
+    "QUEUE_DEPTH": 4,
+    "DATA_WIDTH": 32,
+    "ADDR_WIDTH": 4
+  },
+  "platform": {
+    "node": "AORUS-5-SE",
+    "system": "Linux",
+    "release": "7.0.0-42-generic",
+    "machine": "x86_64"
+  },
+  "sha256": {
+    "kpol_txn_gate_v2.sv": "8b2dd9fbe5636980c72812313cb45da7061fc2876c6ab74b592d69b2478065b6",
+    "km_concept_micro_engine.sv": "2e95ee6d45c5faeb3594a17b741658fd9345f6a451da88976e790255f23a5831",
+    "km_concept_bram.sv": "997a8eac1f54d0d932a41a6e6d3c388eeb0a42d8567d5f2419097cf4b0b58297",
+    "km_concept_bram_dual_ha.sv": "23120124540b8994612af97a8b8dc8dc3600e49dae359bc5c407dd6a226b075b",
+    "km_autonomous_sequencer.sv": "d85172abeb9ccf4e7c7c01fc20fab67d6f67f348164920dc279909a64b35d6c5",
+    "kpol_bram_pipeline_axi_ha.sv": "ff60c23962b4c5bae79069499ea09b9d37b4688a0d560207d711d314f5d9fcce",
+    "cfg_p_ha_formal_props.sv": "fcf737f85a9e826b0d0a0f80eae72f0a77a8bd478333caa25a65bba93088688a"
+  },
+  "verdict": "PASSED",
+  "rows": [
+    {
+      "design": "original (CFG-P-HA)",
+      "check": "H1_H6_base_bmc",
+      "engine": "smtbmc z3 bmc t=3",
+      "status": "PASSED",
+      "seconds": 0.569,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P-HA)",
+      "check": "H1_H6_safety_ind",
+      "engine": "smtbmc z3 ind t=2",
+      "status": "PASSED",
+      "seconds": 182.452,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P-HA)",
+      "check": "H1_H2_H4_H5_safety_bmc",
+      "engine": "smtbmc z3 bmc t=30",
+      "status": "PASSED",
+      "seconds": 14.662,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P-HA)",
+      "check": "H2_H3_safety_bmc",
+      "engine": "smtbmc z3 bmc t=30",
+      "status": "PASSED",
+      "seconds": 5.889,
+      "failed": "",
+      "reached": "",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "original (CFG-P-HA)",
+      "check": "cover_non_vacuity",
+      "engine": "smtbmc z3 cover t=30",
+      "status": "PASSED",
+      "seconds": 159.715,
+      "failed": "",
+      "reached": "C1_full_online_update_lifecycle;C2_swap_after_pending_wait;C3_back_to_back_events_across_swap",
+      "unreached": "",
+      "vcd": ""
+    },
+    {
+      "design": "M1_unsafe_immediate_swap: immediate bank swap on swap_req_i without waiting for seq_at_idle_boundary_i",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=18",
+      "status": "FAILED",
+      "seconds": 2.108,
+      "failed": "H3_no_torn_descriptor_read",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M1_unsafe_immediate_swap.vcd"
+    },
+    {
+      "design": "M2_write_active_bank_while_busy: hot write routed into active_bank_q instead of shadow bank ~active_bank_q",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=16",
+      "status": "FAILED",
+      "seconds": 1.751,
+      "failed": "H3_no_torn_descriptor_read",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M2_write_active_bank_while_busy.vcd"
+    },
+    {
+      "design": "M3_drop_w0_mirror: disabled Port B W0 mirroring into shadow bank loses live state across swap",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=20",
+      "status": "FAILED",
+      "seconds": 18.15,
+      "failed": "H6_live_state_preserved",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M3_drop_w0_mirror.vcd"
+    },
+    {
+      "design": "M4_block_trigger_on_shadow: shadow_we erroneously blocks external hw_trigger_ready_o during online rule update",
+      "check": "mutant_bmc",
+      "engine": "smtbmc z3 bmc t=10",
+      "status": "FAILED",
+      "seconds": 0.417,
+      "failed": "H4_zero_sequencer_stall",
+      "reached": "",
+      "unreached": "",
+      "vcd": "M4_block_trigger_on_shadow.vcd"
+    }
+  ]
+}

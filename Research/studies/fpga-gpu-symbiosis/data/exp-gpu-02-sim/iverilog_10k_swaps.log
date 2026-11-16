@@ -1,0 +1,5 @@
+# cmd: vvp -n /home/mfedchyk/.copilot/session-state/8533854a-7756-4530-afda-d6ff033f53b0/files/scratch/cfg_p_ha_tb.vvp +num_swaps=10000 +vcd_phases=/home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_phases1_4.vcd +timing_csv=/home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_timing.csv +summary_json=/home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_10k_swaps_summary.json
+# timestamp: 2026-11-16T16:46:59.491339+02:00
+VCD info: dumpfile /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_phases1_4.vcd opened for output.
+PASS: CFG-P-HA EXP-GPU-02 Phases 1-4 and 10000 hot bank swaps verified (43460 events, 0 torn-reads, 0 stalls, 0 collisions)
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Engineering/hw/tests/kpol_bram_pipeline_axi_ha_tb.sv:868: $finish called at 4685270000 (1ps)
