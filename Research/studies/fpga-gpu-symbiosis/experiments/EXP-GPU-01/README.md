@@ -1,9 +1,9 @@
 # Пакет апаратного HIL-експерименту EXP-GPU-01: Симбіоз ПЛІС та GPU
 
-* **Версія:** 0.3.0
-* **Дата:** 2026-11-15
+* **Версія:** 0.3.1
+* **Дата:** 2026-11-16
 * **Тип WP:** Guide
-* **Статус:** Частково виконано (Фаза 3–4 GPU верифікована в [#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225); фізичний тракт Фаз 1–2/4 запланований у [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)).
+* **Статус:** Частково виконано (Фаза 3–4 GPU верифікована в [#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225), [#229](https://github.com/nick-fedchik/kuzmin-machine/issues/229), [#235](https://github.com/nick-fedchik/kuzmin-machine/issues/235), [#240](https://github.com/nick-fedchik/kuzmin-machine/issues/240); фізичний тракт Фаз 1–2/4 запланований у [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)).
 * **Власник:** Микола Федчик; автор експерименту — Микола Федчик.
 
 ## Призначення та навігація
@@ -15,8 +15,9 @@
 | [protocol.md](protocol.md) | Protocol | Нормативний протокол випробувань: вимірювані метрики, часові допуски, покроковий регламент вимірювань, критерії Pass/Fail. |
 | [plan.md](plan.md) | Plan | Операційний план підготовки стенду, монтаж з'єднувального шлейфу DuPont, розподіл пінів та календарний графік 4 фаз. |
 | [j501-hardware-interface.md](j501-hardware-interface.md) | Specification | Інженерний аналіз несучої плати Seeed Studio reServer Industrial J501 (схемотехніка DI/DO/CAN, оптрони SFH690BT, часовий бюджет). |
-| [report-phase3-warp-scaling.md](report-phase3-warp-scaling.md) | Report | Емпіричний звіт Фази 3–4 на Jetson AGX Orin (#225): 128-Б L2 mailbox, `clock64` + `%globaltimer`, `SASS`, розріджені маски та масштабування `32..512` підписників. |
-| [persistent_subscribers.cu](persistent_subscribers.cu) | Code | Реалізація персистентного кернела підписників CUDA (`SM 8.7`) із незалежною еталонною CPU-моделлю. |
+| [report-phase3-warp-scaling.md](report-phase3-warp-scaling.md) | Report | Емпіричний звіт Фази 3–4 на Jetson AGX Orin (#225, #229, #235, #240): 128-Б L2 mailbox, декуплінг L2 Read Snoop, декомпозиція `Host RT` та міжпрогонна повторюваність $R=5$ для `32..1024` підписників. |
+| [persistent_subscribers.cu](persistent_subscribers.cu) | Code | Реалізація персистентного кернела підписників CUDA (`SM 8.7`) з режимами `partitioned` / `shared_2line` / `shared_1line` та незалежною CPU-моделлю. |
+| [summarize_repeatability_240.py](summarize_repeatability_240.py) | Code | Детермінований агрегатор міжпрогонної повторюваності ($R=5$, `ddof=1`, `CV%`, декомпозиція `Host RT`) для набору `repeatability-240`. |
 | [Експеримент EXP-GPU-02](../EXP-GPU-02/README.md) | Guide | Наступний HIL-експеримент: динамічне оновлення правил у BRAM на льоту (Zero-Downtime Rule Injection). |
 | [Пакет дослідження](../../README.md) | Guide | Загальний дослідницький пакет: постановка проблеми, аналітична модель, загальний протокол та аналітичний звіт. |
 | [Рішення B6](../../../../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md) | Decision | Архітектурне рішення (ADR B6): концепція Persistent Mega-Kernel для усунення Callback Bottleneck. |
@@ -32,6 +33,7 @@
 
 | Версія | Дата | Автор | Зміни |
 |---|---|---|---|
+| 0.3.1 | 2026-11-16 | GitHub Copilot CLI | #240: оновлено посилання на звіт `0.4.0` (`32..1024`, $R=5$) і додано `summarize_repeatability_240.py`. |
 | 0.3.0 | 2026-11-15 | GitHub Copilot CLI (`gemini-4-carbon`) | #225: додано `persistent_subscribers.cu`, тести та звіт Фази 3–4 (`report-phase3-warp-scaling.md`); фізичне замикання з PYNQ-Z1 винесено в #226. |
 | 0.2.0 | 2026-11-14 | Микола Федчик, Copilot CLI | #166: уточнено цифровий режим `RP2040 PIO`, передумову `PMOD Event Egress` та ієрархію пам'яті `Event Mailbox + Shared Memory`. |
 | 0.1.0 | 2026-11-12 | Микола Федчик | Початкова редакція навігаційного посібника експерименту EXP-GPU-01 у складі Research/studies/fpga-gpu-symbiosis/. |

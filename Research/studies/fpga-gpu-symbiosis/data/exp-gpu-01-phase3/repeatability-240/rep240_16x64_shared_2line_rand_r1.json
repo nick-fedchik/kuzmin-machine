@@ -1,0 +1,18 @@
+{
+  "blocks": 16, "threads": 64, "subscribers": 1024,
+  "mask": "rand", "ingress_mode": "shared_2line", "ack_mode": "isolated", "sleep_ns": 0, "events": 10000,
+  "sysfs_cur_freq_hz": 816000000, "sysfs_max_freq_hz": 816000000,
+  "globaltimer_quantum_ns": 32, "mid_run_mismatches": 0, "mismatches": 0, "mismatch_count": 0,
+  "bootstrap_iters": 1000, "bootstrap_seed": "0x5eed22901234",
+  "math_cycles_mean": 36.000, "math_cycles_sigma": 0.000, "math_cycles_p50": 36, "math_cycles_p999": 36, "math_cycles_max": 36,
+  "math_ns_mean": 44.118, "math_ns_p999": 44.118,
+  "e2e_sm_cycles_mean": 14401.258, "e2e_sm_cycles_sigma": 43567.206, "e2e_sm_cycles_p50": 13285, "e2e_sm_cycles_p99": 13739, "e2e_sm_cycles_p999": 14290, "e2e_sm_cycles_max": 2042777,
+  "e2e_sm_ns_mean": 17648.600, "e2e_sm_ns_p50": 16280.637, "e2e_sm_ns_p99": 16837.010, "e2e_sm_ns_p99_ci95_lo": 16823.529, "e2e_sm_ns_p99_ci95_hi": 16861.520, "e2e_sm_ns_p999": 17512.255, "e2e_sm_ns_p999_ci95_lo": 17256.127, "e2e_sm_ns_p999_ci95_hi": 1155529.412, "e2e_sm_ns_max": 2503403.186,
+  "e2e_sm_b0_ns_mean": 16312.769, "e2e_sm_b0_ns_p999": 16928.922,
+  "e2e_gt_ns_mean": 17680.154, "e2e_gt_ns_p50": 16288, "e2e_gt_ns_p99": 16896, "e2e_gt_ns_p99_ci95_lo": 16864, "e2e_gt_ns_p99_ci95_hi": 16928, "e2e_gt_ns_p999": 17504, "e2e_gt_ns_p999_ci95_lo": 17280, "e2e_gt_ns_p999_ci95_hi": 1174976, "e2e_gt_ns_max": 2548384,
+  "host_pub_ns_mean": 63.341, "host_pub_ns_sigma": 20.890, "host_pub_ns_p50": 64, "host_pub_ns_p99": 96, "host_pub_ns_p999": 96, "host_pub_ns_max": 448,
+  "host_wait_ack_ns_mean": 40359.837, "host_wait_ack_ns_sigma": 62139.412, "host_wait_ack_ns_p50": 38496, "host_wait_ack_ns_p99": 40640, "host_wait_ack_ns_p999": 75040, "host_wait_ack_ns_max": 2573088,
+  "host_rt_ns_mean": 40423.178, "host_rt_ns_sigma": 62139.241, "host_rt_ns_p50": 38560, "host_rt_ns_p99": 40704, "host_rt_ns_p99_ci95_lo": 40512, "host_rt_ns_p99_ci95_hi": 40960, "host_rt_ns_p999": 75104, "host_rt_ns_p999_ci95_lo": 43040, "host_rt_ns_p999_ci95_hi": 1198784, "host_rt_ns_max": 2573152,
+  "host_rt_us_mean": 40.4232, "host_rt_us_sigma": 62.1392, "host_rt_us_p50": 38.5600, "host_rt_us_p99": 40.7040, "host_rt_us_p999": 75.1040, "host_rt_us_max": 2573.1520,
+  "per_block_e2e_sm_ns_mean": [16312.769, 16181.462, 16429.607, 16179.298, 17175.232, 16446.000, 16948.088, 16131.966, 13433.620, 13820.311, 12789.579, 13568.606, 15002.561, 14281.747, 14404.116, 14287.778]
+}
