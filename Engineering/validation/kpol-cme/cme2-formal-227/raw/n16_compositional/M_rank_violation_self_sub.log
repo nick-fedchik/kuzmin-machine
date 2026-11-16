@@ -1,0 +1,18 @@
+# cmd: yosys-smtbmc -s z3 -t 15 --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-242/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_rank_violation_self_sub.vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-242/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/_work/M_rank_violation_self_sub.smt2
+# timestamp: 2026-11-16T12:16:30.751080+02:00
+##   0:00:00  Solver: z3
+##   0:00:00  Checking assertions in step 0..
+##   0:00:00  Checking assertions in step 1..
+##   0:00:00  Checking assertions in step 2..
+##   0:00:00  Checking assertions in step 3..
+##   0:00:00  Checking assertions in step 4..
+##   0:00:00  Checking assertions in step 5..
+##   0:00:00  Checking assertions in step 6..
+##   0:00:00  Checking assertions in step 7..
+##   0:00:00  Checking assertions in step 8..
+##   0:00:00  Checking assertions in step 9..
+##   0:00:17  BMC failed!
+##   0:00:17  Assert failed in cme2_formal_n16_props: P2_rank_step_n16
+##   0:00:17  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-242/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_rank_violation_self_sub.vcd
+##   0:00:17  Status: FAILED
+ (2 seconds) /-\|/               (3 seconds) -\|/-\|/-\               (4 seconds) |/-\|/-\|/               (5 seconds) -\|/-\|/-\               (6 seconds) |/-\|/-\|/               (7 seconds) -\|/-\|/-\               (8 seconds) |/-\|/-\|/               (9 seconds) -\|/-\|/-\               (10 seconds) |/-\|/-\|/                (11 seconds) -\|/-\|/-\                (12 seconds) |/-\|/-\|/                (13 seconds) -\|/-\|/-\                (14 seconds) |/-\|/-\|/                (15 seconds) -\|/-\|/-\                (16 seconds) |/-\|/-\|/                (17 seconds) -\|               

@@ -1,0 +1,45 @@
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-242/Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/_work/orig_n16_rank_ind.ys
+# timestamp: 2026-11-16T12:11:02.486216+02:00
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-242/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-gem-242/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_cid_q [5] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_cid_q [4] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_cid_q [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_cid_q [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_cid_q [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_cid_q [0] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_req is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_desc_w2_q [12] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cascade_pending_valid_q is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_rejected is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_committed is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_count_q [4] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_subscriber_cid [5] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_subscriber_cid [4] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_subscriber_cid [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_subscriber_cid [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_subscriber_cid [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_subscriber_cid [0] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_active_cid_q [5] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_active_cid_q [4] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_active_cid_q [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_active_cid_q [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_active_cid_q [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_active_cid_q [0] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_cme_event_valid is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_state_q [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_state_q [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_state_q [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_state_q [0] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_wr_ptr_q [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_wr_ptr_q [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_wr_ptr_q [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_wr_ptr_q [0] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_count_q [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_count_q [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_count_q [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_count_q [0] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_rd_ptr_q [3] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_rd_ptr_q [2] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_rd_ptr_q [1] is used but has no driver.
+Warning: Wire cme2_formal_n16_props.\obs_fifo_rd_ptr_q [0] is used but has no driver.
