@@ -1,0 +1,2622 @@
+{
+  "critical_paths": [
+    {
+      "from": "posedge clk",
+      "path": [
+        {
+          "delay": 0.3499999940395355,
+          "from": {
+            "cell": "$auto$ff.cc:337:slice$15383",
+            "loc": [
+              53,
+              63
+            ],
+            "port": "Q"
+          },
+          "to": {
+            "cell": "$auto$ff.cc:337:slice$15383",
+            "loc": [
+              53,
+              63
+            ],
+            "port": "Q"
+          },
+          "type": "clk-to-q"
+        },
+        {
+          "delay": 1.2489999532699585,
+          "from": {
+            "cell": "$auto$ff.cc:337:slice$15383",
+            "loc": [
+              53,
+              63
+            ],
+            "port": "Q"
+          },
+          "net": "$techmap214955$abc$213255$lut$aiger213254$5696.A[0]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5696",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A1"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5696",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A1"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5696",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5696",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap214956$abc$213255$lut$aiger213254$5697.A[0]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5697",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A4"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.15000000596046448,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5697",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A4"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5697",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O5"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.32899999618530273,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5697",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O5"
+          },
+          "net": "$techmap214957$abc$213255$lut$aiger213254$5700.A[2]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5700",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A3"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5700",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A3"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5700",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5700",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap214960$abc$213255$lut$aiger213254$5705.A[2]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5705",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A3"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5705",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "A3"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$5705",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.6880000233650208,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$5705",
+            "loc": [
+              63,
+              55
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap214961$auto$abc_ops_reintegrate.cc:611:reintegrate$213537.A[4]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213536",
+            "loc": [
+              63,
+              49
+            ],
+            "port": "A5"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213536",
+            "loc": [
+              63,
+              49
+            ],
+            "port": "A5"
+          },
+          "to": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213536",
+            "loc": [
+              63,
+              49
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.6320000290870667,
+          "from": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213536",
+            "loc": [
+              63,
+              49
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap218080$abc$213255$lut$aiger$o177.A[4]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$techmap218080$abc$213255$lut$aiger$o177.A[4]$LUT$$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1]",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "A1"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$techmap218080$abc$213255$lut$aiger$o177.A[4]$LUT$$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1]",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "A1"
+          },
+          "to": {
+            "cell": "$techmap218080$abc$213255$lut$aiger$o177.A[4]$LUT$$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1]",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0,
+          "from": {
+            "cell": "$techmap218080$abc$213255$lut$aiger$o177.A[4]$LUT$$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1]",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap218080$abc$213255$lut$aiger$o177.A[4]$legal$$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$$S[1]",
+          "sources": [],
+          "to": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "S1"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.5580000281333923,
+          "from": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "S1"
+          },
+          "to": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "O2"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5609999895095825,
+          "from": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy0$PACKED_CARRY4$",
+            "loc": [
+              70,
+              45
+            ],
+            "port": "O2"
+          },
+          "net": "$techmap217677$abc$213255$lut$aiger$o4937.A[2]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy2$PACKED_CARRY4$",
+            "loc": [
+              73,
+              45
+            ],
+            "port": "CYINIT"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.5099999904632568,
+          "from": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy2$PACKED_CARRY4$",
+            "loc": [
+              73,
+              45
+            ],
+            "port": "CYINIT"
+          },
+          "to": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy2$PACKED_CARRY4$",
+            "loc": [
+              73,
+              45
+            ],
+            "port": "O0"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 1.0160000324249268,
+          "from": {
+            "cell": "$auto$alumacc.cc:548:replace_alu$12873.genblk1.slice[0].genblk1.carry4$split$muxcy2$PACKED_CARRY4$",
+            "loc": [
+              73,
+              45
+            ],
+            "port": "O0"
+          },
+          "net": "$techmap215107$abc$213255$lut$aiger213254$6533.A[2]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6448",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "A3"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.15000000596046448,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6448",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "A3"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6448",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "O5"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6448",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "O5"
+          },
+          "net": "$techmap215162$abc$213255$lut$aiger213254$6566.A[1]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6566",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "A2"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6566",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "A2"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6566",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.8870000243186951,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6566",
+            "loc": [
+              74,
+              28
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215163$abc$213255$lut$aiger213254$6567.A[1]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6567",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "A4"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.15000000596046448,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6567",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "A4"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6567",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "O5"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5849999785423279,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6567",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "O5"
+          },
+          "net": "$techmap215164$abc$213255$lut$aiger213254$8896.A[2]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger$o7299",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger$o7299",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger$o7299",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 1.3289999961853027,
+          "from": {
+            "cell": "$abc$213255$lut$aiger$o7299",
+            "loc": [
+              74,
+              7
+            ],
+            "port": "O6"
+          },
+          "net": "pipeline_ha.bram_dual.dirty_next_w[18]",
+          "sources": [
+            "/home/mfedchyk/GitHub/nick-fedchik/km-wt-253-cfg-p-ha-pnr/Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv:208.29-208.41"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6652",
+            "loc": [
+              73,
+              39
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6652",
+            "loc": [
+              73,
+              39
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6652",
+            "loc": [
+              73,
+              39
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.3319999873638153,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6652",
+            "loc": [
+              73,
+              39
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215413$abc$213255$lut$aiger213254$6789.A[4]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6789",
+            "loc": [
+              73,
+              41
+            ],
+            "port": "A5"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6789",
+            "loc": [
+              73,
+              41
+            ],
+            "port": "A5"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6789",
+            "loc": [
+              73,
+              41
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.47099998593330383,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6789",
+            "loc": [
+              73,
+              41
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215461$abc$213255$lut$aiger213254$6912.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6912",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6912",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$6912",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.32899999618530273,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$6912",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215519$abc$213255$lut$aiger213254$7090.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7090",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7090",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7090",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.49900001287460327,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7090",
+            "loc": [
+              74,
+              44
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215552$abc$213255$lut$aiger213254$7193.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7193",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7193",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7193",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7193",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215594$abc$213255$lut$aiger213254$7289.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7289",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7289",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7289",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5889999866485596,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7289",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215636$abc$213255$lut$aiger213254$7382.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7382",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7382",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7382",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5839999914169312,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7382",
+            "loc": [
+              73,
+              48
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215704$abc$213255$lut$aiger213254$7528.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7528",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7528",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7528",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5070000290870667,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7528",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215764$abc$213255$lut$aiger213254$7673.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7673",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7673",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7673",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.32199999690055847,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7673",
+            "loc": [
+              74,
+              51
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215791$abc$213255$lut$aiger213254$7758.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7758",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7758",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7758",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.37599998712539673,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7758",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215817$abc$213255$lut$aiger213254$7840.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7840",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7840",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7840",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5059999823570251,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7840",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215850$abc$213255$lut$aiger213254$7937.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7937",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7937",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$7937",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5149999856948853,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$7937",
+            "loc": [
+              73,
+              51
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215877$abc$213255$lut$aiger213254$8016.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8016",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8016",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8016",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.37599998712539673,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8016",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215915$abc$213255$lut$aiger213254$8123.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8123",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8123",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8123",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5929999947547913,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8123",
+            "loc": [
+              74,
+              53
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215941$abc$213255$lut$aiger213254$8205.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8205",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8205",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8205",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.37599998712539673,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8205",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap215979$abc$213255$lut$aiger213254$8315.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8315",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8315",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8315",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.6549999713897705,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8315",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216011$abc$213255$lut$aiger213254$8407.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8407",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8407",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8407",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8407",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216043$abc$213255$lut$aiger213254$8498.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8498",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8498",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8498",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 1.1169999837875366,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8498",
+            "loc": [
+              74,
+              42
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216075$abc$213255$lut$aiger213254$8591.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8591",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8591",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8591",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.6940000057220459,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8591",
+            "loc": [
+              74,
+              48
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216105$abc$213255$lut$aiger213254$8703.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8703",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8703",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8703",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8703",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216117$abc$213255$lut$aiger213254$8773.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8773",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8773",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8773",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.37599998712539673,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8773",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216138$abc$213255$lut$aiger213254$8867.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8867",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8867",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8867",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.6769999861717224,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8867",
+            "loc": [
+              74,
+              40
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216151$abc$213255$lut$aiger213254$8949.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8949",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8949",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$8949",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5070000290870667,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$8949",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216163$abc$213255$lut$aiger213254$9023.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9023",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9023",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9023",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.46000000834465027,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9023",
+            "loc": [
+              77,
+              45
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216168$abc$213255$lut$aiger213254$9087.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9087",
+            "loc": [
+              77,
+              43
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9087",
+            "loc": [
+              77,
+              43
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9087",
+            "loc": [
+              77,
+              43
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.3310000002384186,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9087",
+            "loc": [
+              77,
+              43
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216183$abc$213255$lut$aiger213254$9162.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9162",
+            "loc": [
+              77,
+              41
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9162",
+            "loc": [
+              77,
+              41
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9162",
+            "loc": [
+              77,
+              41
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.4790000021457672,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9162",
+            "loc": [
+              77,
+              41
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216206$abc$213255$lut$aiger213254$9274.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9274",
+            "loc": [
+              77,
+              39
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9274",
+            "loc": [
+              77,
+              39
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9274",
+            "loc": [
+              77,
+              39
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.460999995470047,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9274",
+            "loc": [
+              77,
+              39
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216223$abc$213255$lut$aiger213254$9362.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9362",
+            "loc": [
+              77,
+              36
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9362",
+            "loc": [
+              77,
+              36
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9362",
+            "loc": [
+              77,
+              36
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.46000000834465027,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9362",
+            "loc": [
+              77,
+              36
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216240$abc$213255$lut$aiger213254$9449.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9449",
+            "loc": [
+              77,
+              34
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9449",
+            "loc": [
+              77,
+              34
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9449",
+            "loc": [
+              77,
+              34
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.4620000123977661,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9449",
+            "loc": [
+              77,
+              34
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216251$abc$213255$lut$aiger213254$9512.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9512",
+            "loc": [
+              77,
+              31
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9512",
+            "loc": [
+              77,
+              31
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9512",
+            "loc": [
+              77,
+              31
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.33500000834465027,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9512",
+            "loc": [
+              77,
+              31
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216268$abc$213255$lut$aiger213254$9601.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9601",
+            "loc": [
+              74,
+              30
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9601",
+            "loc": [
+              74,
+              30
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9601",
+            "loc": [
+              74,
+              30
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.4699999988079071,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9601",
+            "loc": [
+              74,
+              30
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216282$abc$213255$lut$aiger213254$9676.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9676",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9676",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9676",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.1979999989271164,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9676",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216294$abc$213255$lut$aiger213254$9736.A[4]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9736",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "A5"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9736",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "A5"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9736",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.49900001287460327,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9736",
+            "loc": [
+              77,
+              27
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216308$abc$213255$lut$aiger213254$9810.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9810",
+            "loc": [
+              74,
+              27
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9810",
+            "loc": [
+              74,
+              27
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9810",
+            "loc": [
+              74,
+              27
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.5109999775886536,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9810",
+            "loc": [
+              74,
+              27
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216322$abc$213255$lut$aiger213254$9885.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9885",
+            "loc": [
+              77,
+              33
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9885",
+            "loc": [
+              77,
+              33
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9885",
+            "loc": [
+              77,
+              33
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.32100000977516174,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9885",
+            "loc": [
+              77,
+              33
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216333$abc$213255$lut$aiger213254$9948.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9948",
+            "loc": [
+              74,
+              33
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9948",
+            "loc": [
+              74,
+              33
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$9948",
+            "loc": [
+              74,
+              33
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.597000002861023,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$9948",
+            "loc": [
+              74,
+              33
+            ],
+            "port": "O6"
+          },
+          "net": "$abc$213255$lut$aiger213254$10556.A[7]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10023",
+            "loc": [
+              73,
+              30
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10023",
+            "loc": [
+              73,
+              30
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10023",
+            "loc": [
+              73,
+              30
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.33000001311302185,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10023",
+            "loc": [
+              73,
+              30
+            ],
+            "port": "O6"
+          },
+          "net": "$abc$213255$lut$aiger213254$10549.A[7]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10492",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10492",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10492",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.37599998712539673,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10492",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "O6"
+          },
+          "net": "$techmap216526$abc$213255$lut$aiger213254$10542.A[4]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10590",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10590",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10590",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.46000000834465027,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10590",
+            "loc": [
+              73,
+              29
+            ],
+            "port": "O6"
+          },
+          "net": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213401.A[6]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10681",
+            "loc": [
+              73,
+              32
+            ],
+            "port": "A2"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.15000000596046448,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10681",
+            "loc": [
+              73,
+              32
+            ],
+            "port": "A2"
+          },
+          "to": {
+            "cell": "$abc$213255$lut$aiger213254$10681",
+            "loc": [
+              73,
+              32
+            ],
+            "port": "O5"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 1.0230000019073486,
+          "from": {
+            "cell": "$abc$213255$lut$aiger213254$10681",
+            "loc": [
+              73,
+              32
+            ],
+            "port": "O5"
+          },
+          "net": "$techmap216561$auto$abc_ops_reintegrate.cc:611:reintegrate$213458.A[5]",
+          "sources": [
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+          ],
+          "to": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213430",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "A6"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.125,
+          "from": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213430",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "A6"
+          },
+          "to": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213430",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "O6"
+          },
+          "type": "logic"
+        },
+        {
+          "delay": 0.019999999552965164,
+          "from": {
+            "cell": "$auto$abc_ops_reintegrate.cc:611:reintegrate$213430",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "O6"
+          },
+          "net": "$auto$pmux2shiftx.cc:714:execute$11064.A[10]",
+          "sources": [
+            "/home/mfedchyk/GitHub/nick-fedchik/km-wt-253-cfg-p-ha-pnr/Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv:307.20-307.20",
+            "/home/mfedchyk/GitHub/nick-fedchik/km-wt-253-cfg-p-ha-pnr/Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv:258.13-321.20",
+            "/home/mfedchyk/opt/openxc7/bin/../share/yosys/techmap.v:133.22-133.23"
+          ],
+          "to": {
+            "cell": "$auto$ff.cc:337:slice$15191",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "D"
+          },
+          "type": "routing"
+        },
+        {
+          "delay": 0.10000000149011612,
+          "from": {
+            "cell": "$auto$ff.cc:337:slice$15191",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "D"
+          },
+          "to": {
+            "cell": "$auto$ff.cc:337:slice$15191",
+            "loc": [
+              73,
+              28
+            ],
+            "port": "D"
+          },
+          "type": "setup"
+        }
+      ],
+      "to": "posedge clk"
+    }
+  ],
+  "fmax": {
+    "clk": {
+      "achieved": 28.859195709228516,
+      "constraint": 100
+    }
+  },
+  "utilization": {
+    "BSCAN": {
+      "available": 4,
+      "used": 0
+    },
+    "BUFG": {
+      "available": 32,
+      "used": 0
+    },
+    "BUFGCTRL": {
+      "available": 32,
+      "used": 1
+    },
+    "BUFHCE": {
+      "available": 72,
+      "used": 0
+    },
+    "BUFIO": {
+      "available": 16,
+      "used": 0
+    },
+    "CARRY4": {
+      "available": 13300,
+      "used": 178
+    },
+    "DCIRESET": {
+      "available": 1,
+      "used": 0
+    },
+    "DNA_PORT": {
+      "available": 1,
+      "used": 0
+    },
+    "DSP48E1": {
+      "available": 220,
+      "used": 0
+    },
+    "EFUSE_USR": {
+      "available": 1,
+      "used": 0
+    },
+    "FIFO18E1": {
+      "available": 140,
+      "used": 0
+    },
+    "FRAME_ECC": {
+      "available": 1,
+      "used": 0
+    },
+    "HARD0": {
+      "available": 1584,
+      "used": 0
+    },
+    "ICAP": {
+      "available": 2,
+      "used": 0
+    },
+    "IDELAYCTRL": {
+      "available": 4,
+      "used": 0
+    },
+    "IDELAYE2": {
+      "available": 200,
+      "used": 0
+    },
+    "ILOGICE2_IFF": {
+      "available": 200,
+      "used": 0
+    },
+    "ILOGICE3_IFF": {
+      "available": 200,
+      "used": 0
+    },
+    "ILOGICE3_ZHOLD_DELAY": {
+      "available": 200,
+      "used": 0
+    },
+    "INVERTER": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33M_INBUF_EN": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33M_OUTBUF": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33M_TERM_OVERRIDE": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33S_INBUF_EN": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33S_OUTBUF": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33S_TERM_OVERRIDE": {
+      "available": 96,
+      "used": 0
+    },
+    "IOB33_INBUF_EN": {
+      "available": 200,
+      "used": 7
+    },
+    "IOB33_OUTBUF": {
+      "available": 200,
+      "used": 13
+    },
+    "IOB33_TERM_OVERRIDE": {
+      "available": 200,
+      "used": 0
+    },
+    "ISERDESE2": {
+      "available": 200,
+      "used": 0
+    },
+    "MMCME2_ADV": {
+      "available": 4,
+      "used": 0
+    },
+    "OLOGICE2_MISR": {
+      "available": 200,
+      "used": 0
+    },
+    "OLOGICE2_OUTFF": {
+      "available": 200,
+      "used": 0
+    },
+    "OLOGICE2_TFF": {
+      "available": 200,
+      "used": 0
+    },
+    "OLOGICE3_MISR": {
+      "available": 200,
+      "used": 0
+    },
+    "OLOGICE3_OUTFF": {
+      "available": 200,
+      "used": 0
+    },
+    "OLOGICE3_TFF": {
+      "available": 200,
+      "used": 0
+    },
+    "OSERDESE2": {
+      "available": 200,
+      "used": 0
+    },
+    "PAD": {
+      "available": 392,
+      "used": 20
+    },
+    "PLLE2_ADV": {
+      "available": 4,
+      "used": 0
+    },
+    "PS7": {
+      "available": 1,
+      "used": 1
+    },
+    "PSEUDO_GND": {
+      "available": 1,
+      "used": 1
+    },
+    "PSEUDO_VCC": {
+      "available": 1,
+      "used": 1
+    },
+    "PULL_OR_KEEP1": {
+      "available": 392,
+      "used": 0
+    },
+    "RAMB18E1": {
+      "available": 280,
+      "used": 0
+    },
+    "RAMB36E1": {
+      "available": 140,
+      "used": 2
+    },
+    "RAMBFIFO36E1": {
+      "available": 140,
+      "used": 0
+    },
+    "SELMUX2_1": {
+      "available": 40700,
+      "used": 26
+    },
+    "SLICE_FFX": {
+      "available": 106400,
+      "used": 1935
+    },
+    "SLICE_LUTX": {
+      "available": 106400,
+      "used": 5934
+    },
+    "STARTUP": {
+      "available": 1,
+      "used": 0
+    },
+    "USR_ACCESS": {
+      "available": 1,
+      "used": 0
+    }
+  }
+}

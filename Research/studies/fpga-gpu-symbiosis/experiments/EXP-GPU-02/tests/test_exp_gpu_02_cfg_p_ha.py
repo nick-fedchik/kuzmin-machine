@@ -420,3 +420,156 @@ def test_live_formal_smt_z3_induction_and_mutants(tmp_path):
         "M5_skip_port_a_resync",
     ):
         assert (tmp_path / f"{mid}.vcd").is_file()
+
+
+def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
+    """Verifies OpenXC7 synthesis, Place & Route, STA, and bitstream artifacts for CFG-P-HA (#253)."""
+    board_dir = HW_DIR / "boards" / "pynq-z1"
+    top_v = board_dir / "kpol_bram_pipeline_pynq_z1_ha_top.v"
+    xdc_f = board_dir / "kpol_bram_pipeline_ha.xdc"
+    build_sh = board_dir / "build_bram_pipeline_ha.sh"
+
+    for p in (top_v, xdc_f, build_sh):
+        assert p.is_file(), f"Missing board file: {p}"
+
+    xdc_txt = xdc_f.read_text(encoding="utf-8")
+    for pin, port in (
+        ("W14", "jb1"),
+        ("Y14", "jb2"),
+        ("T11", "jb3"),
+        ("T10", "jb4"),
+        ("V16", "jb7"),
+        ("W16", "jb8"),
+    ):
+        assert f"LOC {pin} [get_ports {{{port}}}]" in xdc_txt
+
+    yosys_log = DATA_SIM_DIR / "openxc7_ha_yosys.log"
+    nextpnr_log = DATA_SIM_DIR / "openxc7_ha_nextpnr.log"
+    report_json = DATA_SIM_DIR / "openxc7_ha_nextpnr_report.json"
+    bit_sha_file = DATA_SIM_DIR / "openxc7_ha_bitstream.sha256"
+
+    for p in (yosys_log, nextpnr_log, report_json, bit_sha_file):
+        assert p.is_file(), f"Missing OpenXC7 P&R artifact: {p}"
+
+    for log_p in (yosys_log, nextpnr_log):
+        lines = log_p.read_text(encoding="utf-8").splitlines()
+        assert lines[0].startswith("# cmd: ")
+        assert lines[1].startswith("# timestamp: ")
+
+    yosys_txt = yosys_log.read_text(encoding="utf-8")
+    assert "=== kpol_bram_pipeline_pynq_z1_ha_top ===" in yosys_txt
+    assert "2   RAMB36E1" in yosys_txt
+    assert "1   PS7" in yosys_txt
+    assert "1   BUFG" in yosys_txt
+
+    rep = json.loads(report_json.read_text(encoding="utf-8"))
+    util = rep["utilization"]
+    assert util["RAMB36E1"]["used"] == 2
+    assert util["RAMB18E1"]["used"] == 0
+    assert util["PS7"]["used"] == 1
+    assert util["BUFGCTRL"]["used"] == 1
+    assert util["PAD"]["used"] == 20
+    assert util["SLICE_LUTX"]["used"] == 5934
+    assert util["SLICE_FFX"]["used"] == 1935
+    assert util["CARRY4"]["used"] == 178
+
+    fmax_clk = rep["fmax"]["clk"]
+    assert fmax_clk["constraint"] == 100
+    assert 20.0 <= float(fmax_clk["achieved"]) <= 150.0
+
+    sha_line = bit_sha_file.read_text(encoding="utf-8").strip()
+    sha_hex, bit_name = sha_line.split()
+    assert len(sha_hex) == 64
+    assert bit_name == "kpol_pynq_ha.bit"
+
+    opt_bit = Path("/home/mfedchyk/opt/openxc7-build/kuzmin-pynq-z1/kpol_pynq_ha.bit")
+    if opt_bit.is_file():
+        assert opt_bit.stat().st_size >= 4_000_000
+        assert hashlib.sha256(opt_bit.read_bytes()).hexdigest() == sha_hex
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_live_iverilog_ha_top_tb_and_pmod_jb_pin_mutants(tmp_path):
+    """Runs live Icarus Verilog simulation of kpol_bram_pipeline_pynq_z1_ha_top_tb.sv and PMOD JB pin mutants."""
+    board_dir = HW_DIR / "boards" / "pynq-z1"
+    top_v = board_dir / "kpol_bram_pipeline_pynq_z1_ha_top.v"
+    top_tb = HW_DIR / "tests" / "kpol_bram_pipeline_pynq_z1_ha_top_tb.sv"
+    rtl_sources = [
+        RTL_CORE / "kpol_txn_gate_v2.sv",
+        RTL_CORE / "km_concept_micro_engine.sv",
+        RTL_CORE / "km_concept_bram.sv",
+        RTL_CORE / "km_concept_bram_dual_ha.sv",
+        RTL_CORE / "km_autonomous_sequencer.sv",
+        RTL_BUS / "kpol_bram_pipeline_axi_ha.sv",
+        top_v,
+        top_tb,
+    ]
+    sim_ok = tmp_path / "ha_top_ok.vvp"
+    subprocess.run(
+        ["iverilog", "-g2012", "-s", "kpol_bram_pipeline_pynq_z1_ha_top_tb", "-o", str(sim_ok), *map(str, rtl_sources)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    run_ok = subprocess.run(
+        ["vvp", "-n", str(sim_ok)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert run_ok.returncode == 0, run_ok.stdout + run_ok.stderr
+    assert "PASS: kpol_bram_pipeline_pynq_z1_ha_top_tb verified JA1..JA4 and JB1..JB4,JB7,JB8" in run_ok.stdout
+
+    # Mutant negative controls on top-level PMOD JB pin mapping (AGENTS.md §4.1):
+    #   1) Stuck-at-0 jb2 (`assign jb2 = 1'b0;`)
+    #   2) Swapped jb1 and jb2 (`assign jb1 = bank_swap_commit; assign jb2 = inject_strobe;`)
+    #   3) Stuck-at-0 jb8 (`assign jb8 = 1'b0;`)
+    orig_top = top_v.read_text(encoding="utf-8")
+    mutants = {
+        "stuck_jb2_zero": (
+            "    assign jb2 = bank_swap_commit;",
+            "    assign jb2 = 1'b0;",
+        ),
+        "swapped_jb1_jb2": (
+            "    assign jb1 = inject_strobe;\n    assign jb2 = bank_swap_commit;",
+            "    assign jb1 = bank_swap_commit;\n    assign jb2 = inject_strobe;",
+        ),
+        "stuck_jb8_zero": (
+            "    assign jb8 = active_bank_top_q;",
+            "    assign jb8 = 1'b0;",
+        ),
+    }
+    for mname, (old_snippet, new_snippet) in mutants.items():
+        assert orig_top.count(old_snippet) == 1, f"Snippet not unique for mutant {mname}"
+        mut_top = tmp_path / f"top_{mname}.v"
+        mut_top.write_text(orig_top.replace(old_snippet, new_snippet), encoding="utf-8")
+        mut_sources = [mut_top if p == top_v else p for p in rtl_sources]
+        sim_mut = tmp_path / f"ha_top_{mname}.vvp"
+        subprocess.run(
+            [
+                "iverilog",
+                "-g2012",
+                "-s",
+                "kpol_bram_pipeline_pynq_z1_ha_top_tb",
+                "-o",
+                str(sim_mut),
+                *map(str, mut_sources),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        run_mut = subprocess.run(
+            ["vvp", "-n", str(sim_mut)],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        combined = run_mut.stdout + run_mut.stderr
+        assert run_mut.returncode != 0 or "[FAIL]" in combined, (
+            f"Top-level mutant {mname} was NOT caught by kpol_bram_pipeline_pynq_z1_ha_top_tb.sv"
+        )
+        assert "[FAIL]" in combined
