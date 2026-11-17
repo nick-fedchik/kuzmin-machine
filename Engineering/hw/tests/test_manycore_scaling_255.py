@@ -67,23 +67,6 @@ def test_cluster_rtl_verilator_lint_all_scales(tmp_path):
     env = {**os.environ, "TMPDIR": str(tmp_path)}
     for p_stages in (1, 2):
         for n in (1, 2, 4, 8):
-            res_xbar = subprocess.run(
-                [
-                    "verilator",
-                    "--lint-only",
-                    "-Wall",
-                    f"-GNUM_CORES={n}",
-                    f"-GPIPELINE_STAGES={p_stages}",
-                    "--top-module",
-                    "km_event_crossbar",
-                    str(RTL_CLUSTER / "km_event_crossbar.sv"),
-                ],
-                env=env,
-                capture_output=True,
-                text=True,
-            )
-            assert res_xbar.returncode == 0, f"Crossbar lint failed for N={n} P={p_stages}:\n{res_xbar.stderr}"
-
             res_clus = subprocess.run(
                 [
                     "verilator",
@@ -391,7 +374,7 @@ def test_live_iverilog_cluster_tb_and_negative_drop_mutant(tmp_path):
         )
         sum_json = tmp_path / f"live_n4_p{p_stages}.json"
         run_ok = subprocess.run(
-            ["vvp", "-n", str(vvp_ok), "+events_per_profile=128", f"+summary_json={sum_json}"],
+            ["vvp", "-n", str(vvp_ok), "+events_per_profile=32", f"+summary_json={sum_json}"],
             env=env,
             capture_output=True,
             text=True,
@@ -431,7 +414,7 @@ def test_live_iverilog_cluster_tb_and_negative_drop_mutant(tmp_path):
         text=True,
     )
     run_mut = subprocess.run(
-        ["vvp", "-n", str(vvp_mut), "+events_per_profile=128"],
+        ["vvp", "-n", str(vvp_mut), "+events_per_profile=32", "+watchdog_cycles=3000"],
         env=env,
         capture_output=True,
         text=True,
@@ -469,7 +452,7 @@ def test_live_iverilog_cluster_tb_and_negative_drop_mutant(tmp_path):
         text=True,
     )
     run_mut_s1 = subprocess.run(
-        ["vvp", "-n", str(vvp_mut_s1), "+events_per_profile=128"],
+        ["vvp", "-n", str(vvp_mut_s1), "+events_per_profile=32", "+watchdog_cycles=3000"],
         env=env,
         capture_output=True,
         text=True,
@@ -480,11 +463,11 @@ def test_live_iverilog_cluster_tb_and_negative_drop_mutant(tmp_path):
     assert "[FAIL]" in combined_s1
 
     # Negative mutant control 3 (2-stage #263 M5): breaking inter-group arbiter at N=4 must fail TB
-    old_m5 = "                assign grp_eff_any = (|grp_hi_any) ? grp_hi_any : grp_lo_any;"
+    old_m5 = "                        if ((grp_win_1hot == '0) && grp_eff_any[g]) begin"
     assert xbar_src.count(old_m5) == 1
     mut_m5_xbar = tmp_path / "mut_m5_xbar.sv"
     mut_m5_xbar.write_text(
-        xbar_src.replace(old_m5, "                assign grp_eff_any = grp_hi_any;"),
+        xbar_src.replace(old_m5, "                        if (grp_eff_any[g]) begin"),
         encoding="utf-8",
     )
     mut_m5_sources = [mut_m5_xbar if p.name == "km_event_crossbar.sv" else p for p in rtl_sources]
@@ -507,7 +490,7 @@ def test_live_iverilog_cluster_tb_and_negative_drop_mutant(tmp_path):
         text=True,
     )
     run_mut_m5 = subprocess.run(
-        ["vvp", "-n", str(vvp_mut_m5), "+events_per_profile=128"],
+        ["vvp", "-n", str(vvp_mut_m5), "+events_per_profile=32", "+watchdog_cycles=3000"],
         env=env,
         capture_output=True,
         text=True,

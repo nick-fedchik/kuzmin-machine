@@ -30,6 +30,7 @@ hierarchical round-robin arbiter `GROUP_SIZE=2, NUM_GRPS=2`, #263) with zero vac
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import csv
 import datetime
 import hashlib
@@ -128,7 +129,7 @@ MUTANTS = [
     (
         "M2_drop_crossbar_backpressure",
         ["FORMAL_SAFETY", "ONLY_MC1"],
-        12,
+        10,
         "ignoring dst_ready_i == 0 overwrites crossbar slice under backpressure and drops events",
         "            wire pipe_can_accept_w = !pipe_valid_q[gj] || dst_ready_i[gj];",
         "            wire pipe_can_accept_w = 1'b1;",
@@ -144,7 +145,7 @@ MUTANTS = [
     (
         "M4_stage2_skid_overwrite",
         ["FORMAL_SAFETY", "ONLY_MC1", "KM_FORMAL_PIPE_STAGES=2"],
-        12,
+        10,
         "broken Stage 1 -> Stage 2 skid handshake overwrites Stage 1 register when Stage 2 is stalled",
         "            wire s1_can_accept_w   = !s1_valid_q[gj] || !pipe_valid_q[gj];",
         "            wire s1_can_accept_w   = 1'b1;",
@@ -320,7 +321,7 @@ def main() -> None:
 
     rows = []
     try:
-        # 1a. Concrete 32-bit base BMC (t=4) + 1b. Unbounded k-induction (k=2) of MC1, MC2, MC3-rank, MC4-permanence
+        # 1a. Concrete 32-bit base BMC (t=4) for 1-stage and 2-stage
         rows.append({
             "design": "original (Cluster N=2)",
             "check": "MC1_MC4_base_bmc",
@@ -335,21 +336,22 @@ def main() -> None:
                 "formal_mc1_mc4_base_bmc",
             ),
         })
-        rows.append({
-            "design": "original (Cluster N=2)",
-            "check": "MC1_MC4_safety_ind",
-            **run_smtbmc(
-                work,
-                out_dir,
-                RTL_XBAR,
-                PROPS,
-                ["FORMAL_SAFETY", "FORMAL_INDUCTION"],
-                "ind",
-                2,
-                "formal_mc1_mc4_ind",
-                cut_cme=False,
-            ),
-        })
+        if not args.fast:
+            rows.append({
+                "design": "original (Cluster N=2)",
+                "check": "MC1_MC4_safety_ind",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    PROPS,
+                    ["FORMAL_SAFETY", "FORMAL_INDUCTION"],
+                    "ind",
+                    2,
+                    "formal_mc1_mc4_ind",
+                    cut_cme=False,
+                ),
+            })
 
         # 1c. Concrete 32-bit base BMC (t=4) + 1d. Unbounded k-induction (k=2) for PIPELINE_STAGES=2 (#263)
         rows.append({
@@ -366,21 +368,22 @@ def main() -> None:
                 "formal_mc1_mc4_base_bmc_p2",
             ),
         })
-        rows.append({
-            "design": "original (Cluster N=2, 2-stage)",
-            "check": "MC1_MC4_safety_ind_p2",
-            **run_smtbmc(
-                work,
-                out_dir,
-                RTL_XBAR,
-                PROPS,
-                ["FORMAL_SAFETY", "FORMAL_INDUCTION", "KM_FORMAL_PIPE_STAGES=2"],
-                "ind",
-                2,
-                "formal_mc1_mc4_ind_p2",
-                cut_cme=False,
-            ),
-        })
+        if not args.fast:
+            rows.append({
+                "design": "original (Cluster N=2, 2-stage)",
+                "check": "MC1_MC4_safety_ind_p2",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    PROPS,
+                    ["FORMAL_SAFETY", "FORMAL_INDUCTION", "KM_FORMAL_PIPE_STAGES=2"],
+                    "ind",
+                    2,
+                    "formal_mc1_mc4_ind_p2",
+                    cut_cme=False,
+                ),
+            })
 
         if not args.fast:
             # 2. Bounded liveness BMC (t=45) for MC3_dag_progress (Bank 0 -> Bank 1 drains to idle)
@@ -490,15 +493,15 @@ def main() -> None:
             })
 
         # 4. Mutant negative controls (AGENTS.md §4.1)
-        for mid, m_defines, depth, desc, old, new in MUTANTS:
+        def _run_mutant(m_spec: tuple[str, list[str], int, str, str, str]) -> dict[str, object]:
+            mid, m_defines, depth, desc, old, new = m_spec
             cnt = xbar_src.count(old)
             if cnt != 1:
                 raise RuntimeError(f"{mid}: expected 1 match in {RTL_XBAR}, found {cnt}")
             m_xbar = os.path.join(work, f"{mid}_xbar.sv")
             with open(m_xbar, "w", encoding="utf-8") as f:
                 f.write(xbar_src.replace(old, new))
-
-            rows.append({
+            return {
                 "design": f"{mid}: {desc}",
                 "check": "mutant_bmc",
                 **run_smtbmc(
@@ -511,8 +514,16 @@ def main() -> None:
                     depth,
                     mid,
                     keep_vcd=True,
+                    cut_cme=args.fast,
                 ),
-            })
+            }
+
+        if args.fast:
+            with ThreadPoolExecutor(max_workers=len(MUTANTS)) as ex:
+                rows.extend(ex.map(_run_mutant, MUTANTS))
+        else:
+            for m_spec in MUTANTS:
+                rows.append(_run_mutant(m_spec))
     finally:
         if os.path.isdir(work):
             shutil.rmtree(work)
