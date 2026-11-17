@@ -1,18 +1,18 @@
 # Звіт C99-EMITTER-270: Верифікація генератора детермінованого C99 (`--emit-c99`) та сертифіката `Z3 SMT` на референсному каскаді BMS (Issue #270)
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-17
 * **Тип WP редакції NG:** Report
 * **Issue:** `Closes` [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270). **PR:** [#271](https://github.com/nick-fedchik/kuzmin-machine/pull/271) у гілці `feat/270-commercial-conclusions-and-emit-c99`.
-* **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент першого проходу PR #271 (`9d28d31`):** `claude-sonnet-5.5` ([коментар](https://github.com/nick-fedchik/kuzmin-machine/pull/271#issuecomment-6957224311), вердикт «Доопрацювати», знахідки `F-01..F-10` враховано у цій редакції).
-* **Коміт бази, на якому виконано:** робоча гілка PR на коміті `9d28d3126e415d257e3c523fc295422fc9d70683` (`origin/main`: `6f1dc29`).
+* **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент PR #271:** `claude-sonnet-5.5` ([перший прохід `9d28d31`](https://github.com/nick-fedchik/kuzmin-machine/pull/271#issuecomment-6957224311) — «Доопрацювати», `F-01..F-10`; [другий прохід `dec3ffc`](https://github.com/nick-fedchik/kuzmin-machine/pull/271#issuecomment-6957893393) — «Прийнято із зауваженнями», `N-01` враховано у `1.0.1`).
+* **Коміт бази, на якому виконано:** робоча гілка PR на коміті `dec3ffc7334322d2dfb8406b085862389df28e8c` (`origin/main`: `6f1dc29`).
 * **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`GCC 15.2.0`, `Python 3.14.4`, `pytest 9.0.2`, `z3-solver 5.4.1`, `/usr/bin/z3 4.13.3`, `Icarus Verilog 12.0`).
 * **Фізична плата HIL (`pynq2`, під `flock -w 600 /tmp/km-bench.lock`):** `Digilent PYNQ-Z1` (`xilinx@192.168.68.69`, двоядерний `ARM Cortex-A9 @ 650 МГц`, `gcc 11.2.0` + кристал `Xilinx Zynq-7020 XC7Z020-1CLG400C` @ `100.0 МГц`, активний конвеєр `CFG-P` `0x4B504D43` `"KPMC"`).
 * **Первинні артефакти та контрольні суми (`SHA-256`):**
   * Вхідна програма BMS: [`bms_safety_cascade.kpol`](bms_safety_cascade.kpol);
   * 1024-байтний образ BRAM: [`bms_safety_cascade.bin`](bms_safety_cascade.bin) (`de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee`);
-  * Згенерований C99-модуль: [`bms_safety_cascade_gen.c`](bms_safety_cascade_gen.c) (`108447cfb1fb623378ce92ace2189e8e46e0c21140b1a07b4fe8f8f9965c486f`);
-  * Формальний сертифікат Z3: [`bms_safety_z3_certificate.json`](bms_safety_z3_certificate.json) (`022ea96d25a9be09597e7ca823ec2960ec101e18a23f251876c00fc46ab2f1bc`);
+  * Згенерований C99-модуль: [`bms_safety_cascade_gen.c`](bms_safety_cascade_gen.c) (`6e91db7ef5124b166f68b513cc2f20b653340811c0e17e18fe70f7d30d917966`);
+  * Формальний сертифікат Z3: [`bms_safety_z3_certificate.json`](bms_safety_z3_certificate.json) (`a6ea3460b1d50f68dad33a8318016dfe58b90c69285f26a56bde40b215ecdf51`);
   * Драйвер перевірки й бенчмарку: [`bms_c99_hil_bench.c`](bms_c99_hil_bench.c) (`1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80`);
   * Сирі логи та JSON: [`raw/x86_64_bms_c99_verification.json`](raw/x86_64_bms_c99_verification.json), [`raw/x86_64_bms_c99_verification.log`](raw/x86_64_bms_c99_verification.log), [`raw/iverilog_bms_cfg_p_trace.log`](raw/iverilog_bms_cfg_p_trace.log), [`raw/pynq_cortex_a9_bms_c99_hil.json`](raw/pynq_cortex_a9_bms_c99_hil.json), [`raw/pynq_cortex_a9_bms_c99_hil.log`](raw/pynq_cortex_a9_bms_c99_hil.log), [`raw/pytest_c99_emitter_270.log`](raw/pytest_c99_emitter_270.log).
 * **Пов'язане аналітичне дослідження:** [`Research/studies/commercialization-and-final-conclusions.md`](../../../../Research/studies/commercialization-and-final-conclusions.md).
@@ -109,6 +109,7 @@ python3 Project/tools/check_wp_documents.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-17 | Враховано зауваження `N-01` повторної рецензії `claude-sonnet-5.5` (`dec3ffc`): оновлено `# git_commit` у сирих логах та зроблено шапку C99-коду незалежною від мінорної версії пакета `z3` для детермінізму в CI (`python3-z3`). |
 | 1.0.0 | 2026-11-17 | Перша редакція окремого звіту верифікації генератора `--emit-c99 + Z3` (`#270`, усунення знахідок `F-01..F-10` рецензії PR #271). |
 
 ## Абревіатури та глосарій

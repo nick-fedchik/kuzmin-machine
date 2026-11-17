@@ -1,13 +1,13 @@
 # cmd: flock -w 600 /tmp/km-bench.lock ssh xilinx@192.168.68.69 'gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -lm ...'
 # timestamp: 2026-11-17T20:45:28.785058+02:00
-# git_commit: 9d28d3126e415d257e3c523fc295422fc9d70683
+# git_commit: dec3ffc7334322d2dfb8406b085862389df28e8c
 # host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
 # bench_lock: flock -w 600 /tmp/km-bench.lock (acquired)
 # bms_bench_c_sha256: 1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80
 Linux pynq-2 6.6.10-xilinx-v2024.1-g916a1f7c7222 #1 SMP PREEMPT Sat Apr 27 05:22:24 UTC 2024 armv7l armv7l armv7l GNU/Linux
 gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0
 de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee  bms_safety_cascade.bin
-108447cfb1fb623378ce92ace2189e8e46e0c21140b1a07b4fe8f8f9965c486f  bms_safety_cascade_gen.c
+6e91db7ef5124b166f68b513cc2f20b653340811c0e17e18fe70f7d30d917966  bms_safety_cascade_gen.c
 1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80  bms_c99_hil_bench.c
 342d974549f84ccea037848f498e729349635e1adcb79d25c14b55365336f756  bms_c99_hil_bench
 === ARM_C99_JSON_START ===

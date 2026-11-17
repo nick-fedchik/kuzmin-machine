@@ -256,7 +256,7 @@ def _render_c99_source(
     module_name: str,
     image_sha256: str,
     verdict_label: str = "VERIFIED",
-    solver_label: str = "Z3 SMT",
+    solver_label: str = "Z3 SMT QF_LIA + QF_BV BitVec32",
 ) -> str:
     """Render clean production C99 source without any mutant #ifdef blocks."""
     active_cids = list(topo_order)
@@ -868,29 +868,46 @@ def parse_emitted_c99_source(c99_source: str) -> ParsedC99SafetyModule:
 
 
 def _run_z3_cli_smt2(smt2_script: str) -> tuple[str, str]:
-    """Run system `z3 -in -smt2` binary on an SMT-LIB2 script and return (verdict, raw_stdout)."""
+    """Run system `z3 -in -smt2` binary (or z3.Solver.from_string if CLI binary is absent) on SMT-LIB2."""
     z3_bin = shutil.which("z3")
-    if z3_bin is None:
-        raise RuntimeError("Z3 solver is required: neither z3-solver Python package nor 'z3' binary is installed")
-    res = subprocess.run(
-        [z3_bin, "-in", "-smt2"],
-        input=smt2_script,
-        capture_output=True,
-        text=True,
-        timeout=60,
-    )
-    if res.returncode != 0 and "unsat" not in res.stdout and "sat" not in res.stdout:
-        raise RuntimeError(f"z3 CLI failed (rc={res.returncode}): {res.stderr.strip() or res.stdout.strip()}")
-    first_line = next((line.strip() for line in res.stdout.splitlines() if line.strip() in {"sat", "unsat", "unknown"}), "unknown")
-    return first_line, res.stdout.strip()
+    if z3_bin is not None:
+        res = subprocess.run(
+            [z3_bin, "-in", "-smt2"],
+            input=smt2_script,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if res.returncode != 0 and "unsat" not in res.stdout and "sat" not in res.stdout:
+            raise RuntimeError(f"z3 CLI failed (rc={res.returncode}): {res.stderr.strip() or res.stdout.strip()}")
+        first_line = next(
+            (line.strip() for line in res.stdout.splitlines() if line.strip() in {"sat", "unsat", "unknown"}),
+            "unknown",
+        )
+        return first_line, res.stdout.strip()
+    if z3 is not None:
+        s = z3.Solver()
+        clean_smt2 = "\n".join(
+            line for line in smt2_script.splitlines() if line.strip() != "(check-sat)"
+        )
+        s.from_string(clean_smt2)
+        r = s.check()
+        if r == z3.sat:
+            return "sat", str(s.model())
+        if r == z3.unsat:
+            return "unsat", "unsat"
+        return "unknown", "unknown"
+    raise RuntimeError("Z3 solver is required: neither z3-solver Python package nor 'z3' binary is installed")
 
 
 def _detect_z3_cli_version() -> str:
     z3_bin = shutil.which("z3")
-    if z3_bin is None:
-        raise RuntimeError("Z3 solver is required: neither z3-solver Python package nor 'z3' binary is installed")
-    res = subprocess.run([z3_bin, "--version"], capture_output=True, text=True, check=True)
-    return f"z3-cli ({res.stdout.strip()})"
+    if z3_bin is not None:
+        res = subprocess.run([z3_bin, "--version"], capture_output=True, text=True, check=True)
+        return f"z3-cli ({res.stdout.strip()})"
+    if z3 is not None:
+        return f"z3-smt2-parser ({z3.get_version_string()})"
+    raise RuntimeError("Z3 solver is required: neither z3-solver Python package nor 'z3' binary is installed")
 
 
 def _build_smt2_rtl_and_parsed_c99_defs(parsed: ParsedC99SafetyModule) -> str:
@@ -1088,7 +1105,6 @@ def prove_c99_descriptor_safety_z3(
             topo_order,
             module_name=module_name,
             image_sha256=image_sha256,
-            solver_label=solver_version,
         )
 
     parsed_c99 = parse_emitted_c99_source(c99_source)
@@ -1389,18 +1405,16 @@ def emit_c99_safety_module(
             raise C99EmitterError(f"C99-Z3-REJECTED: {err}") from err
         topo_order = list(active_cids)
 
-    solver_label = (
-        f"z3-solver {z3.get_version_string()}"
-        if (HAS_Z3_PYTHON and z3 is not None)
-        else _detect_z3_cli_version()
-    )
+    # Ensure Z3 is available before emitting C99
+    if not (HAS_Z3_PYTHON and z3 is not None):
+        _detect_z3_cli_version()
+
     c_source = _render_c99_source(
         descriptors,
         topo_order,
         module_name=module_name,
         image_sha256=image_sha256,
         verdict_label="VERIFIED",
-        solver_label=solver_label,
     )
 
     cert = (

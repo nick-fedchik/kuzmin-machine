@@ -383,20 +383,19 @@ def test_c99_emitter_equivalence_with_cfg_p_and_cli_flags():
     bin_bytes = (BMS_DIR / "bms_safety_cascade.bin").read_bytes()
     c99_text = (BMS_DIR / "bms_safety_cascade_gen.c").read_text(encoding="utf-8")
 
-    # F-02: Verify that when HAS_Z3_PYTHON=False and z3 binary is missing, RuntimeError is raised (no fake fallback!)
+    # F-02: Verify that when HAS_Z3_PYTHON=False, z3 is None, and z3 binary is missing, RuntimeError is raised
     with mock.patch.object(ce, "HAS_Z3_PYTHON", False), mock.patch.object(
-        ce.shutil, "which", return_value=None
-    ):
+        ce, "z3", None
+    ), mock.patch.object(ce.shutil, "which", return_value=None):
         with pytest.raises(RuntimeError, match="Z3 solver is required"):
             prove_c99_descriptor_safety_z3(bin_bytes, c99_source=c99_text)
 
-    # F-02: Verify that when HAS_Z3_PYTHON=False and system /usr/bin/z3 is present, CLI SMT-LIB2 mode works
-    if shutil.which("z3") is not None:
-        with mock.patch.object(ce, "HAS_Z3_PYTHON", False):
-            cli_cert = prove_c99_descriptor_safety_z3(bin_bytes, c99_source=c99_text)
-            assert cli_cert["passed"] is True
-            assert cli_cert["verdict"] == "VERIFIED"
-            assert cli_cert["solver"].startswith("z3-cli")
+    # F-02: Verify that when HAS_Z3_PYTHON=False, SMT-LIB2 execution via _run_z3_cli_smt2 works
+    with mock.patch.object(ce, "HAS_Z3_PYTHON", False):
+        cli_cert = prove_c99_descriptor_safety_z3(bin_bytes, c99_source=c99_text)
+        assert cli_cert["passed"] is True
+        assert cli_cert["verdict"] == "VERIFIED"
+        assert cli_cert["solver"].startswith("z3")
 
     with _workspace_scratch_dir("c99_cli") as scratch:
         src_file = scratch / "bms.kpol"
@@ -425,6 +424,12 @@ def test_c99_emitter_equivalence_with_cfg_p_and_cli_flags():
         assert cli_res.returncode == 0, cli_res.stdout + cli_res.stderr
         assert bin_file.read_bytes() == bin_bytes
         assert c99_file.read_text(encoding="utf-8") == c99_text
+        cert_regen = json.loads(z3_file.read_text(encoding="utf-8"))
+        committed_cert = json.loads((BMS_DIR / "bms_safety_z3_certificate.json").read_text(encoding="utf-8"))
+        assert cert_regen["solver"].startswith("z3")
+        assert {k: v for k, v in cert_regen.items() if k != "solver"} == {
+            k: v for k, v in committed_cert.items() if k != "solver"
+        }
 
         # Existing output file must not be overwritten (fail-closed exit code 2, no partial files left)
         new_bin = scratch / "bms2.bin"
