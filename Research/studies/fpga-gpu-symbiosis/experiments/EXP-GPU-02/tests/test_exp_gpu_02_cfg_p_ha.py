@@ -17,6 +17,8 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
+import re
 import shutil
 import subprocess
 import sys
@@ -433,6 +435,23 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
         assert p.is_file(), f"Missing board file: {p}"
 
     xdc_txt = xdc_f.read_text(encoding="utf-8")
+    loc_matches = re.findall(r"^set_property\s+LOC\s+(\S+)\s+\[get_ports\s+\{([^}]+)\}\]", xdc_txt, re.MULTILINE)
+    iostd_matches = re.findall(
+        r"^set_property\s+IOSTANDARD\s+(\S+)\s+\[get_ports\s+\{([^}]+)\}\]", xdc_txt, re.MULTILINE
+    )
+    assert len(loc_matches) == 20
+    assert len(iostd_matches) == 20
+
+    pins_seen = [pin for pin, _ in loc_matches]
+    ports_seen = [port for _, port in loc_matches]
+    assert len(set(pins_seen)) == 20, f"Duplicate LOC pins in XDC: {pins_seen}"
+    assert len(set(ports_seen)) == 20, f"Duplicate port LOC constraints in XDC: {ports_seen}"
+
+    iostd_by_port = {port: std for std, port in iostd_matches}
+    assert set(iostd_by_port.keys()) == set(ports_seen)
+    assert all(std == "LVCMOS33" for std in iostd_by_port.values())
+
+    loc_by_port = {port: pin for pin, port in loc_matches}
     for pin, port in (
         ("W14", "jb1"),
         ("Y14", "jb2"),
@@ -441,7 +460,8 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
         ("V16", "jb7"),
         ("W16", "jb8"),
     ):
-        assert f"LOC {pin} [get_ports {{{port}}}]" in xdc_txt
+        assert loc_by_port.get(port) == pin
+        assert iostd_by_port.get(port) == "LVCMOS33"
 
     yosys_log = DATA_SIM_DIR / "openxc7_ha_yosys.log"
     nextpnr_log = DATA_SIM_DIR / "openxc7_ha_nextpnr.log"
@@ -462,6 +482,9 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
     assert "1   PS7" in yosys_txt
     assert "1   BUFG" in yosys_txt
 
+    nextpnr_txt = nextpnr_log.read_text(encoding="utf-8")
+    assert "7.99 ns logic, 26.66 ns routing" in nextpnr_txt
+
     rep = json.loads(report_json.read_text(encoding="utf-8"))
     util = rep["utilization"]
     assert util["RAMB36E1"]["used"] == 2
@@ -475,16 +498,21 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
 
     fmax_clk = rep["fmax"]["clk"]
     assert fmax_clk["constraint"] == 100
-    assert 20.0 <= float(fmax_clk["achieved"]) <= 150.0
+    assert float(fmax_clk["achieved"]) == pytest.approx(28.86, abs=0.05)
 
     sha_line = bit_sha_file.read_text(encoding="utf-8").strip()
     sha_hex, bit_name = sha_line.split()
     assert len(sha_hex) == 64
     assert bit_name == "kpol_pynq_ha.bit"
 
-    opt_bit = Path("/home/mfedchyk/opt/openxc7-build/kuzmin-pynq-z1/kpol_pynq_ha.bit")
+    opt_bit = Path(
+        os.environ.get(
+            "KM_OPENXC7_HA_BIT",
+            "/home/mfedchyk/opt/openxc7-build/kuzmin-pynq-z1/kpol_pynq_ha.bit",
+        )
+    )
     if opt_bit.is_file():
-        assert opt_bit.stat().st_size >= 4_000_000
+        assert opt_bit.stat().st_size == 4_045_751
         assert hashlib.sha256(opt_bit.read_bytes()).hexdigest() == sha_hex
 
 
@@ -523,10 +551,13 @@ def test_live_iverilog_ha_top_tb_and_pmod_jb_pin_mutants(tmp_path):
     assert run_ok.returncode == 0, run_ok.stdout + run_ok.stderr
     assert "PASS: kpol_bram_pipeline_pynq_z1_ha_top_tb verified JA1..JA4 and JB1..JB4,JB7,JB8" in run_ok.stdout
 
-    # Mutant negative controls on top-level PMOD JB pin mapping (AGENTS.md §4.1):
+    # Mutant negative controls on top-level PMOD JB pin mapping covering all 6 output lines
+    # jb1, jb2, jb3, jb4, jb7, jb8 (AGENTS.md §4.1):
     #   1) Stuck-at-0 jb2 (`assign jb2 = 1'b0;`)
     #   2) Swapped jb1 and jb2 (`assign jb1 = bank_swap_commit; assign jb2 = inject_strobe;`)
-    #   3) Stuck-at-0 jb8 (`assign jb8 = 1'b0;`)
+    #   3) Swapped jb3 and jb4 (`assign jb3 = reaction_out; assign jb4 = stimulus_accepted;`)
+    #   4) Stuck-at-0 jb7 (`assign jb7 = 1'b0;`)
+    #   5) Stuck-at-0 jb8 (`assign jb8 = 1'b0;`)
     orig_top = top_v.read_text(encoding="utf-8")
     mutants = {
         "stuck_jb2_zero": (
@@ -536,6 +567,14 @@ def test_live_iverilog_ha_top_tb_and_pmod_jb_pin_mutants(tmp_path):
         "swapped_jb1_jb2": (
             "    assign jb1 = inject_strobe;\n    assign jb2 = bank_swap_commit;",
             "    assign jb1 = bank_swap_commit;\n    assign jb2 = inject_strobe;",
+        ),
+        "swapped_jb3_jb4": (
+            "    assign jb3 = stimulus_accepted;\n    assign jb4 = reaction_out;",
+            "    assign jb3 = reaction_out;\n    assign jb4 = stimulus_accepted;",
+        ),
+        "stuck_jb7_zero": (
+            "    assign jb7 = seq_cycle_done;",
+            "    assign jb7 = 1'b0;",
         ),
         "stuck_jb8_zero": (
             "    assign jb8 = active_bank_top_q;",

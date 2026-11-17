@@ -31,7 +31,7 @@ set_property IOSTANDARD LVCMOS33 [get_ports {ja4}]
 # JB3 (T11, Pin 3) = stimulus_accepted_o (GP2: STIMULUS_EVENT)
 # JB4 (T10, Pin 4) = reaction_out_o      (GP3: REACTION_OUT)
 # JB7 (V16, Pin 7) = seq_cycle_done_o    (GP4: SEQ_CYCLE_DONE)
-# JB8 (W16, Pin 8) = active_bank_o       (Active Bank 0/1 visual monitor)
+# JB8 (W16, Pin 8) = active_bank_top_q   (Active Bank 0/1 visual monitor; top-wrapper FF toggled by bank_swap_commit_o)
 set_property LOC W14 [get_ports {jb1}]
 set_property IOSTANDARD LVCMOS33 [get_ports {jb1}]
 set_property LOC Y14 [get_ports {jb2}]

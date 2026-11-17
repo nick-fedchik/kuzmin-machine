@@ -233,11 +233,18 @@ module kpol_bram_pipeline_pynq_z1_ha_top_tb;
                 jb7_high_run <= 0;
             end
 
-            // Verify jb8 (active_bank_o) toggles if and only if jb2 (BANK_SWAP_COMMIT) fired on the previous edge
+            // Verify jb8 (active_bank_top_q) matches internal core active_bank_o on every steady-state cycle
+            // (during the 1-cycle jb2 BANK_SWAP_COMMIT pulse, active_bank_o has just toggled while
+            // active_bank_top_q toggles on the clock edge of jb2==1, so jb8 == ~active_bank_o during jb2==1
+            // and jb8 == active_bank_o on all cycles with jb2==0)
+            if (!jb2 && (jb8 !== dut.pipeline_ha.bram_dual.active_bank_o)) begin
+                $fatal(1, "[FAIL] jb8 (active_bank_top_q=%b) diverged from dut.pipeline_ha.bram_dual.active_bank_o=%b at cyc=%0d",
+                       jb8, dut.pipeline_ha.bram_dual.active_bank_o, cycle_cnt);
+            end
             if (jb8 !== jb8_prev) begin
                 jb8_toggles <= jb8_toggles + 1;
                 if (last_jb2_cyc != (cycle_cnt - 1)) begin
-                    $fatal(1, "[FAIL] jb8 (active_bank_o) toggled at cyc=%0d without preceding jb2 pulse (last_jb2=%0d)",
+                    $fatal(1, "[FAIL] jb8 (active_bank_top_q) toggled at cyc=%0d without preceding jb2 pulse (last_jb2=%0d)",
                            cycle_cnt, last_jb2_cyc);
                 end
             end

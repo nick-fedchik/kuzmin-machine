@@ -195,7 +195,9 @@ module kpol_bram_pipeline_pynq_z1_ha_top #(
         .busy(axi_busy)
     );
 
-    // Track active bank level (0/1) in top module synchronously on each bank_swap_commit_o pulse
+    // Track active bank level (0/1) via top-wrapper register active_bank_top_q:
+    // kpol_bram_pipeline_axi_ha exposes active_bank via MMIO register 0x038[0], so the top wrapper
+    // maintains active_bank_top_q toggled synchronously by bank_swap_commit_o under shared rst_n.
     reg active_bank_top_q;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -205,7 +207,7 @@ module kpol_bram_pipeline_pynq_z1_ha_top #(
         end
     end
 
-    // Direct 1-cycle (10 ns) unstretched outputs on PMOD JB for RP2040 PIO (GP0..GP4) + active_bank
+    // Direct 1-cycle (10 ns) unstretched outputs on PMOD JB for RP2040 PIO (GP0..GP4) + active_bank_top_q
     assign jb1 = inject_strobe;
     assign jb2 = bank_swap_commit;
     assign jb3 = stimulus_accepted;
