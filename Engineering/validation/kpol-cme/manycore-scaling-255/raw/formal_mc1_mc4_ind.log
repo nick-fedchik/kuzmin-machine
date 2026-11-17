@@ -1,5 +1,5 @@
 # cmd: yosys-smtbmc --noprogress -s z3 -i -t 2 /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/formal_mc1_mc4_ind.smt2
-# timestamp: 2026-11-17T14:08:31.960377+02:00
+# timestamp: 2026-11-17T14:43:06.095586+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Trying induction in step 2..
 ##   0:00:00  Trying induction in step 1..

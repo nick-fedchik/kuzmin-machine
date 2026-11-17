@@ -180,6 +180,7 @@ def test_committed_formal_smt_n2_artifacts_and_no_vacuous_assumes():
         "M2_drop_crossbar_backpressure": "MC1_event_conservation",
         "M3_duplicate_broadcast": "MC1_event_conservation",
         "M4_stage2_skid_overwrite": "MC1_event_conservation",
+        "M5_multigroup_arbiter_fault": "MC1_event_conservation",
     }
     for mid, exp_prop in expected_mutants.items():
         r = by_mut[mid]
@@ -194,7 +195,7 @@ def test_committed_formal_smt_n2_artifacts_and_no_vacuous_assumes():
     reason="Потрібні yosys, yosys-smtbmc і z3",
 )
 def test_live_formal_smt_n2_induction_and_mutants(tmp_path):
-    """Runs live Z3 k-induction (1-stage & 2-stage) + all 4 crossbar mutants in --fast mode."""
+    """Runs live Z3 k-induction (1-stage & 2-stage) + all 5 crossbar mutants in --fast mode."""
     env = {**os.environ, "TMPDIR": str(tmp_path)}
     res = subprocess.run(
         [sys.executable, str(SCRIPTS_DIR / "run_manycore_formal.py"), "--out-dir", str(tmp_path), "--fast"],
@@ -210,6 +211,7 @@ def test_live_formal_smt_n2_induction_and_mutants(tmp_path):
         "M2_drop_crossbar_backpressure",
         "M3_duplicate_broadcast",
         "M4_stage2_skid_overwrite",
+        "M5_multigroup_arbiter_fault",
     ):
         assert (tmp_path / f"{mid}.vcd").is_file()
 
@@ -476,3 +478,41 @@ def test_live_iverilog_cluster_tb_and_negative_drop_mutant(tmp_path):
     combined_s1 = run_mut_s1.stdout + run_mut_s1.stderr
     assert run_mut_s1.returncode != 0 or "[FAIL]" in combined_s1
     assert "[FAIL]" in combined_s1
+
+    # Negative mutant control 3 (2-stage #263 M5): breaking inter-group arbiter at N=4 must fail TB
+    old_m5 = "                assign grp_eff_any = (|grp_hi_any) ? grp_hi_any : grp_lo_any;"
+    assert xbar_src.count(old_m5) == 1
+    mut_m5_xbar = tmp_path / "mut_m5_xbar.sv"
+    mut_m5_xbar.write_text(
+        xbar_src.replace(old_m5, "                assign grp_eff_any = grp_hi_any;"),
+        encoding="utf-8",
+    )
+    mut_m5_sources = [mut_m5_xbar if p.name == "km_event_crossbar.sv" else p for p in rtl_sources]
+    vvp_mut_m5 = tmp_path / "cluster_mut_m5.vvp"
+    subprocess.run(
+        [
+            "iverilog",
+            "-g2012",
+            "-Pkm_manycore_cluster_tb.NUM_CORES=4",
+            "-Pkm_manycore_cluster_tb.PIPELINE_STAGES=2",
+            "-s",
+            "km_manycore_cluster_tb",
+            "-o",
+            str(vvp_mut_m5),
+            *map(str, mut_m5_sources),
+        ],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    run_mut_m5 = subprocess.run(
+        ["vvp", "-n", str(vvp_mut_m5), "+events_per_profile=128"],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    combined_m5 = run_mut_m5.stdout + run_mut_m5.stderr
+    assert run_mut_m5.returncode != 0 or "[FAIL]" in combined_m5
+    assert "[FAIL]" in combined_m5

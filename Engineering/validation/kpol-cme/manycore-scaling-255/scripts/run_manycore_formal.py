@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
-"""Issue #255: Formal SMT verification of 2-core CFG-P cluster & crossbar via Yosys + Z3.
+"""Issue #255 & #263: Formal SMT verification of 2-core CFG-P cluster & crossbar via Yosys + Z3.
 
 Verifies `km_manycore_cluster` + `km_event_crossbar` at `NUM_CORES=2, NUM_EXT_PORTS=2,
-QUEUE_DEPTH=4, NUM_CONCEPTS=4, DATA_WIDTH=32, ADDR_WIDTH=4` with zero vacuous internal
+QUEUE_DEPTH=4, NUM_CONCEPTS=4, DATA_WIDTH=32, ADDR_WIDTH=4` across both `PIPELINE_STAGES=1`
+(1-stage baseline, #255) and `PIPELINE_STAGES=2` (2-stage pipelined crossbar with 2-group
+hierarchical round-robin arbiter `GROUP_SIZE=2, NUM_GRPS=2`, #263) with zero vacuous internal
 `assume` statements inside `FORMAL_INDUCTION`:
-  * Concrete base BMC (`yosys-smtbmc -s z3 -t 4`) + unbounded k-induction (`ind t=2`):
-      - MC1_event_conservation (exact crossbar + tx buffer + node queue conservation);
-      - MC2_rr_fairness (round-robin starvation freedom, <= 3 bypassed grants per bank);
+  * Concrete base BMC (`yosys-smtbmc -s z3 -t 4`) + unbounded k-induction (`ind t=2`) for
+    both `PIPELINE_STAGES=1` and `PIPELINE_STAGES=2` (`GROUP_SIZE=2, NUM_GRPS=2`):
+      - MC1_event_conservation (exact Stage 1 + Stage 2 crossbar + tx buffer + node queue conservation);
+      - MC2_rr_fairness (round-robin starvation freedom across groups, <= 3 bypassed grants per bank);
       - MC3_dag_lyapunov_rank_n0/n1 (strict lexicographic rank decrease for DAG profiles);
       - MC4_deadlock_permanence (inductive permanence once mutual cyclic trap is entered).
-  * Bounded liveness BMC (`yosys-smtbmc -s z3 --noincr -t 0:45:45` with sound CME cutpoints):
-      - MC3_dag_progress (arbitrary Bank 0 -> Bank 1 DAG + concurrent 2-port burst
-        deterministically drains all queues and transitions to `!cluster_busy_o`).
+  * Bounded liveness BMC (`yosys-smtbmc -s z3 --noincr` with sound CME cutpoints):
+      - MC3_dag_progress (`t=45` for 1-stage, `t=49` for 2-stage: arbitrary Bank 0 -> Bank 1 DAG +
+        concurrent 2-port burst deterministically drains all queues and crossbar stages to `!cluster_busy_o`).
   * Constructive Cover witnesses (`yosys-smtbmc -s z3 -c`):
-      - C1_interbank_cascade_to_idle, C2_many_to_one_contention (`t=30`);
+      - C1_interbank_cascade_to_idle, C2_many_to_one_contention (`t=30` for 1-stage, `t=32` for 2-stage);
       - MC4_cyclic_deadlock_witness (`t=28` with dumped VCD witness proving mutual cyclic
         deadlock on `Bank 0 <-> Bank 1` when finite queues fill under `ready == 0`).
   * Mutant negative controls (AGENTS.md §4.1) with counterexample VCDs:
       - M1_fixed_priority_starvation -> caught by MC2_rr_fairness
       - M2_drop_crossbar_backpressure -> caught by MC1_event_conservation
       - M3_duplicate_broadcast        -> caught by MC1_event_conservation
+      - M4_stage2_skid_overwrite      -> caught by MC1_event_conservation (Stage 1 -> Stage 2 skid handshake)
+      - M5_multigroup_arbiter_fault   -> caught by MC1_event_conservation (inter-group arbiter collision g=0 vs g=1)
 """
 
 from __future__ import annotations
@@ -143,6 +148,14 @@ MUTANTS = [
         "broken Stage 1 -> Stage 2 skid handshake overwrites Stage 1 register when Stage 2 is stalled",
         "            wire s1_can_accept_w   = !s1_valid_q[gj] || !pipe_valid_q[gj];",
         "            wire s1_can_accept_w   = 1'b1;",
+    ),
+    (
+        "M5_multigroup_arbiter_fault",
+        ["FORMAL_SAFETY", "ONLY_MC1", "KM_FORMAL_PIPE_STAGES=2"],
+        6,
+        "broken inter-group wrap-around mux (grp_eff_any = grp_hi_any) corrupts multi-group grant handoff",
+        "                assign grp_eff_any = (|grp_hi_any) ? grp_hi_any : grp_lo_any;",
+        "                assign grp_eff_any = grp_hi_any;",
     ),
 ]
 

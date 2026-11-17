@@ -1,5 +1,5 @@
 # cmd: vvp -n /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_traffic_p2/cluster_tb_p2_n8.vvp +events_per_profile=1024 +summary_json=/home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_traffic_p2/traffic_p2_n8.json
-# timestamp: 2026-11-17T14:17:30.193395+02:00
+# timestamp: 2026-11-17T14:44:35.905125+02:00
 PROFILE N=8 profile=local primary=1024 total_ev=2048 loc_casc=1024 rem_casc=0 cycles=2051 mcps_100mhz=99.854 avg_lat_cyc=149.83 min_lat_cyc=11 max_lat_cyc=261 backpressure_stalls=1710 ext_port_wait_cyc=13680 dropped=0 w0_mismatches=0
 PROFILE N=8 profile=uniform primary=1024 total_ev=2048 loc_casc=576 rem_casc=448 cycles=2607 mcps_100mhz=78.558 avg_lat_cyc=186.95 min_lat_cyc=11 max_lat_cyc=545 backpressure_stalls=6479 ext_port_wait_cyc=17114 dropped=0 w0_mismatches=0
 PROFILE N=8 profile=hotspot primary=1024 total_ev=1280 loc_casc=144 rem_casc=112 cycles=7555 mcps_100mhz=16.942 avg_lat_cyc=160.10 min_lat_cyc=9 max_lat_cyc=277 backpressure_stalls=7341 ext_port_wait_cyc=55679 dropped=0 w0_mismatches=0

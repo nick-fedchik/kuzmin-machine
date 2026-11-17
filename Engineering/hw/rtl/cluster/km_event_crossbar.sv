@@ -16,7 +16,8 @@ module km_event_crossbar #(
     parameter int NUM_CORES       = 4,
     parameter int NUM_EXT_PORTS   = NUM_CORES,
     parameter int DATA_WIDTH      = 32,
-    parameter int PIPELINE_STAGES = 1
+    parameter int PIPELINE_STAGES = 1,
+    parameter int GROUP_SIZE      = 4
 )(
     input  logic                                clk,
     input  logic                                rst_n,
@@ -169,8 +170,12 @@ module km_event_crossbar #(
                     end
                 end
             end else begin : gen_stage2
-                localparam int NUM_GRPS = (NUM_SRCS > 4) ? ((NUM_SRCS + 3) / 4) : 1;
-                localparam int GRP_W    = (NUM_GRPS > 1) ? $clog2(NUM_GRPS) : 1;
+                localparam int EFF_GRP_SIZE = (GROUP_SIZE >= 2) ? GROUP_SIZE : 2;
+                localparam int NUM_GRPS     = (NUM_SRCS > EFF_GRP_SIZE)
+                                            ? ((NUM_SRCS + EFF_GRP_SIZE - 1) / EFF_GRP_SIZE)
+                                            : 1;
+                localparam int GRP_W        = (NUM_GRPS > 1) ? $clog2(NUM_GRPS) : 1;
+                localparam int OFS_W        = (EFF_GRP_SIZE > 1) ? $clog2(EFF_GRP_SIZE) : 1;
 
                 logic [5:0]            s1_cid_q;
                 logic [DATA_WIDTH-1:0] s1_param_q;
@@ -181,21 +186,21 @@ module km_event_crossbar #(
                 logic [NUM_GRPS-1:0]   grp_win_1hot;
                 logic [GRP_W-1:0]      win_grp;
 
-                logic [1:0]            grp_ofs      [NUM_GRPS];
-                logic [3:0]            grp_ofs_1hot [NUM_GRPS];
-                logic [5:0]            grp_cid      [NUM_GRPS];
-                logic [DATA_WIDTH-1:0] grp_param    [NUM_GRPS];
+                logic [OFS_W-1:0]        grp_ofs      [NUM_GRPS];
+                logic [EFF_GRP_SIZE-1:0] grp_ofs_1hot [NUM_GRPS];
+                logic [5:0]              grp_cid      [NUM_GRPS];
+                logic [DATA_WIDTH-1:0]   grp_param    [NUM_GRPS];
 
                 for (gk = 0; gk < NUM_GRPS; gk = gk + 1) begin : gen_grp4
-                    localparam int BASE_S = gk * 4;
-                    logic [3:0] r_lo;
-                    logic [3:0] r_hi;
-                    logic [3:0] r_eff;
+                    localparam int BASE_S = gk * EFF_GRP_SIZE;
+                    logic [EFF_GRP_SIZE-1:0] r_lo;
+                    logic [EFF_GRP_SIZE-1:0] r_hi;
+                    logic [EFF_GRP_SIZE-1:0] r_eff;
 
                     always_comb begin
-                        r_lo = 4'b0000;
-                        r_hi = 4'b0000;
-                        for (int c = 0; c < 4; c = c + 1) begin
+                        r_lo = '0;
+                        r_hi = '0;
+                        for (int c = 0; c < EFF_GRP_SIZE; c = c + 1) begin
                             if ((BASE_S + c) < NUM_SRCS) begin
                                 r_lo[c] = req_vec[BASE_S + c];
                                 r_hi[c] = req_hi[BASE_S + c];
@@ -205,31 +210,26 @@ module km_event_crossbar #(
                         grp_lo_any[gk] = (|r_lo);
                         r_eff          = grp_hi_any[gk] ? r_hi : r_lo;
 
-                        if (r_eff[0]) begin
-                            grp_ofs[gk]      = 2'd0;
-                            grp_ofs_1hot[gk] = 4'b0001;
-                        end else if (r_eff[1]) begin
-                            grp_ofs[gk]      = 2'd1;
-                            grp_ofs_1hot[gk] = 4'b0010;
-                        end else if (r_eff[2]) begin
-                            grp_ofs[gk]      = 2'd2;
-                            grp_ofs_1hot[gk] = 4'b0100;
-                        end else begin
-                            grp_ofs[gk]      = 2'd3;
-                            grp_ofs_1hot[gk] = {r_eff[3], 3'b000};
+                        grp_ofs[gk]      = '0;
+                        grp_ofs_1hot[gk] = '0;
+                        for (int c = 0; c < EFF_GRP_SIZE; c = c + 1) begin
+                            if ((grp_ofs_1hot[gk] == '0) && r_eff[c]) begin
+                                grp_ofs[gk]         = c[OFS_W-1:0];
+                                grp_ofs_1hot[gk][c] = 1'b1;
+                            end
                         end
 
                         grp_cid[gk]   = '0;
                         grp_param[gk] = '0;
-                        for (int c = 0; c < 4; c = c + 1) begin
-                            if (((BASE_S + c) < NUM_SRCS) && (grp_ofs[gk] == c[1:0])) begin
+                        for (int c = 0; c < EFF_GRP_SIZE; c = c + 1) begin
+                            if (((BASE_S + c) < NUM_SRCS) && (grp_ofs[gk] == c[OFS_W-1:0])) begin
                                 grp_cid[gk]   = src_dst_cid[BASE_S + c];
                                 grp_param[gk] = src_param[BASE_S + c];
                             end
                         end
                     end
 
-                    for (genvar gc_s = 0; gc_s < 4; gc_s = gc_s + 1) begin : gen_gvec
+                    for (genvar gc_s = 0; gc_s < EFF_GRP_SIZE; gc_s = gc_s + 1) begin : gen_gvec
                         if ((BASE_S + gc_s) < NUM_SRCS) begin : gen_valid_s
                             assign grant_vec[BASE_S + gc_s] = grp_win_1hot[gk] && grp_ofs_1hot[gk][gc_s];
                         end
@@ -250,7 +250,7 @@ module km_event_crossbar #(
                     end
                 end
 
-                if (NUM_SRCS <= 4) begin : gen_win_le4
+                if (NUM_GRPS == 1) begin : gen_win_le4
                     assign win_idx = grp_ofs[0][SRC_W-1:0];
                 end else begin : gen_win_gt4
                     assign win_idx = {win_grp, grp_ofs[win_grp]};

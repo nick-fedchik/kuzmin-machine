@@ -484,7 +484,8 @@ module km_manycore_cluster #(
     parameter int NUM_CONCEPTS    = 64,
     parameter int DATA_WIDTH      = 32,
     parameter int ADDR_WIDTH      = 8,
-    parameter int PIPELINE_STAGES = 1
+    parameter int PIPELINE_STAGES = 1,
+    parameter int GROUP_SIZE      = 4
 )(
     input  logic                                clk,
     input  logic                                rst_n,
@@ -559,7 +560,8 @@ module km_manycore_cluster #(
         .NUM_CORES(NUM_CORES),
         .NUM_EXT_PORTS(NUM_EXT_PORTS),
         .DATA_WIDTH(DATA_WIDTH),
-        .PIPELINE_STAGES(PIPELINE_STAGES)
+        .PIPELINE_STAGES(PIPELINE_STAGES),
+        .GROUP_SIZE(GROUP_SIZE)
     ) xbar_inst (
         .clk(clk),
         .rst_n(rst_n),

@@ -26,6 +26,10 @@
 `define KM_FORMAL_PIPE_STAGES 1
 `endif
 
+`ifndef KM_FORMAL_GROUP_SIZE
+`define KM_FORMAL_GROUP_SIZE 2
+`endif
+
 module manycore_formal_props #(
     parameter int NUM_CORES       = 2,
     parameter int NUM_EXT_PORTS   = 2,
@@ -33,7 +37,8 @@ module manycore_formal_props #(
     parameter int NUM_CONCEPTS    = 4,
     parameter int DATA_WIDTH      = 32,
     parameter int ADDR_WIDTH      = 4,
-    parameter int PIPELINE_STAGES = `KM_FORMAL_PIPE_STAGES
+    parameter int PIPELINE_STAGES = `KM_FORMAL_PIPE_STAGES,
+    parameter int GROUP_SIZE      = `KM_FORMAL_GROUP_SIZE
 )(
     input  logic                                clk,
     input  logic                                rst_n,
@@ -77,7 +82,8 @@ module manycore_formal_props #(
         .NUM_CONCEPTS(NUM_CONCEPTS),
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH),
-        .PIPELINE_STAGES(PIPELINE_STAGES)
+        .PIPELINE_STAGES(PIPELINE_STAGES),
+        .GROUP_SIZE(GROUP_SIZE)
     ) dut (
         .clk(clk),
         .rst_n(rst_n),
