@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "module_name": "BmsSafetyCascade",
+  "generator": "Engineering/sw/kpol-ref/c99_emitter.py",
+  "solver": "z3-solver 5.4.1",
+  "verdict": "VERIFIED",
+  "passed": true,
+  "descriptor_table_sha256": "de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee",
+  "active_concepts_count": 4,
+  "active_cids": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "cascade_edges": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "topological_order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "lyapunov_rank": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3
+  },
+  "wcet_max_cascade_steps": 4,
+  "checks": {
+    "P1_dag_lyapunov_acyclicity": {
+      "status": "SAT_RANKING_FOUND",
+      "passed": true,
+      "edges_checked": 3,
+      "lyapunov_rank": {
+        "0": 0,
+        "1": 1,
+        "2": 2,
+        "3": 3
+      },
+      "topological_order": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "P2_invariant_preservation_all_bv32": {
+      "status": "UNSAT",
+      "passed": true,
+      "active_concepts_verified": 4,
+      "quantified_domain": "forall cur_state, ev_param in BitVec(32)"
+    },
+    "P3_no_commit_on_invalid_param_or_state": {
+      "status": "UNSAT",
+      "passed": true,
+      "property": "(!param_valid || !concept_valid) => (!commit && next_state == cur_state && fault_propagations_inc == 1)"
+    },
+    "P4_c99_rtl_bitvec32_miter_equivalence": {
+      "status": "UNSAT",
+      "passed": true,
+      "quantified_domain": "forall cur_state, ev_param, operand in BitVec(32), pred_op, action_op, guard_flags, hazard_limit in BitVec(8)"
+    }
+  },
+  "failures": []
+}

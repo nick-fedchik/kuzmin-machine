@@ -1,7 +1,7 @@
 # Дослідження
 
-* **Версія:** 0.6.0
-* **Дата:** 2026-11-13
+* **Версія:** 0.7.0
+* **Дата:** 2026-11-17
 * **Тип WP:** Guide
 * **Супровід:** власник проєкту; оновлення за результатом дослідження.
 
@@ -21,6 +21,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 | [Попередній рівень техніки](studies/prior-art/README.md) | [Аналіз](studies/prior-art/report.md) | Представницькі аналоги, аналіз когнітивних ієрархій та патентний ландшафт (CII). | #82 |
 | [Гіпотези застосувань](studies/application-hypotheses/README.md) | [Мемо](studies/application-hypotheses/report.md) | Передумови й спростовні тести; користь на замовнику не перевірено. | Дослідницькі пропозиції |
 | [Симбіоз ПЛІС і GPU](studies/fpga-gpu-symbiosis/README.md) | [Звіт](studies/fpga-gpu-symbiosis/report.md) | Persistent Mega-Kernel для підписників; підготовка HIL-експериментів [EXP-GPU-01](studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/README.md) та [EXP-GPU-02](studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/README.md). | Авторська пропозиція М. Федчика |
+| [Комерціалізація та підсумкові висновки](studies/commercialization-and-final-conclusions.md) | [Звіт 1.0.0](studies/commercialization-and-final-conclusions.md) | Закриття неперспективних напрямів (`$0`), 3 інженерні активи (`CFG-P-HA`, `Z3 + LogicTracer`, `Persistent GPU`), 3 B2B-ніші та верифікація `--emit-c99 + Z3` на BMS (`x86_64`, `ARM Cortex-A9`, `Zynq-7020 PL`). | #270 |
 
 Спільні [джерела](sources/README.md) не дублюються в пакетах.
 [Цілі та зв'язки](../Project/registers/goals-needs-work-items.md)
@@ -37,6 +38,7 @@ Problem, Model, Protocol, Report і Data як документи, розділи
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.7.0 | 2026-11-17 | #270: додано підсумковий інженерно-комерційний висновок `studies/commercialization-and-final-conclusions.md` та результати верифікації `--emit-c99 + Z3`. |
 | 0.6.0 | 2026-11-13 | #159: аналіз окремого фрагмента про типізовані Min/Max. |
 | 0.5.0 | 2026-11-13 | #157: окрема оцінка редакції Static та переданих уточнень, без закриття повної семантики. |
 | 0.4.0 | 2026-11-13 | #155: новий Source і зіставлення авторського синтаксису з KPOL. |

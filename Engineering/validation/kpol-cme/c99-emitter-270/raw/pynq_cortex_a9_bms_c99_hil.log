@@ -1,0 +1,31 @@
+# cmd: ssh xilinx@192.168.68.69 'gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c ...'
+# timestamp: 2026-11-17T20:05:38.966291+02:00
+Linux pynq-2 6.6.10-xilinx-v2024.1-g916a1f7c7222 #1 SMP PREEMPT Sat Apr 27 05:22:24 UTC 2024 armv7l armv7l armv7l GNU/Linux
+gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0
+=== ARM_C99_JSON_START ===
+{
+  "verdict": "PASS",
+  "hw_trace_final_state": [4, 4, 0, 0],
+  "hw_trace_events": 18,
+  "hw_trace_commits": 12,
+  "hw_trace_rejects": 6,
+  "hw_trace_fault_propagations": 0,
+  "fault_trace_commits": 6,
+  "fault_trace_rejects": 3,
+  "fault_trace_fault_propagations": 3,
+  "bench_iterations": 200000,
+  "ns_per_single_reject": 266.88,
+  "ns_per_fault_reject": 215.17,
+  "ns_per_full_4stage_cascade": 1031.47,
+  "ns_per_cascade_concept_step": 257.87
+}
+=== ARM_C99_JSON_END ===
+=== ZYNQ_PL_JSON_START ===
+{
+  "fpga_id_hex": "0x4B504D43",
+  "pl_final_state": [4, 4, 0, 0],
+  "pl_events_delta": 18,
+  "pl_commits_delta": 12,
+  "pl_rejects_delta": 6
+}
+=== ZYNQ_PL_JSON_END ===

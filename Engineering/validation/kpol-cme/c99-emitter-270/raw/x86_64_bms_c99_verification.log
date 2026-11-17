@@ -1,0 +1,18 @@
+# cmd: gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c && ./bms_c99_hil_bench_x86
+# timestamp: 2026-11-17T20:08:40.605099+02:00
+{
+  "verdict": "PASS",
+  "hw_trace_final_state": [4, 4, 0, 0],
+  "hw_trace_events": 18,
+  "hw_trace_commits": 12,
+  "hw_trace_rejects": 6,
+  "hw_trace_fault_propagations": 0,
+  "fault_trace_commits": 6,
+  "fault_trace_rejects": 3,
+  "fault_trace_fault_propagations": 3,
+  "bench_iterations": 200000,
+  "ns_per_single_reject": 16.55,
+  "ns_per_fault_reject": 13.36,
+  "ns_per_full_4stage_cascade": 45.05,
+  "ns_per_cascade_concept_step": 11.26
+}

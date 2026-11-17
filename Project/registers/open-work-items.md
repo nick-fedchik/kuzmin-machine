@@ -1,6 +1,6 @@
 # Відкриті роботи та рішення власника
 
-* **Версія:** 0.5.2
+* **Версія:** 0.6.0
 * **Дата:** 2026-11-17
 * **Тип WP:** Register
 * **Власник рішень:** Микола Федчик.
@@ -94,6 +94,7 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 | [#256 — EXP-GPU-03: предикатна диспетчеризація гетерогенних підписників у варпі GPU та ізоляція витіснень TSG / профіль MAXN на Jetson Orin](https://github.com/nick-fedchik/kuzmin-machine/issues/256) | Closed, completed | Done ([PR #260](https://github.com/nick-fedchik/kuzmin-machine/pull/260)) | Кернел 4 гетерогенних операторів (`heterogeneous_subscribers.cu`), серія $5 \times (R=5 \times 10\,000)$ у `MODE_50W` (`816 МГц`) та `MAXN` (`1300.5 МГц`) на Jetson AGX Orin: прискорення математики у `grouped_warp` в `2.03×` (`529.4 -> 261.0 нс` і `163.8 нс` у `MAXN`), межа `L2/SCF` (`p99.9 = 1.93..2.01 мкс`) і runlist-квантування `nvgpu` TSG (`~2.17 мс`) ([звіт](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-03/report.md)). |
 | [#257 — finding(docs): узгодити формулювання про `ASIL D / ISO 26262` у `hil-hardware-experiment-plan.md` із `standards-position.md` та оновити `open-work-items.md`](https://github.com/nick-fedchik/kuzmin-machine/issues/257) | Closed, completed | Done ([PR #261](https://github.com/nick-fedchik/kuzmin-machine/pull/261)) | Заміна сертифікаційно-подібних згадок у [плані HIL-експериментів](../../Engineering/hw/boards/pynq-z1/hil-hardware-experiment-plan.md) (`1.0.1`) та синхронізація реєстру (`0.4.14`). |
 | [#259 — finding(#252/PR #258): мутант досинхронізації `dirty/SYNC`, docstring параметрів SMT і документація `DECERR` на `0x03C..0x044`](https://github.com/nick-fedchik/kuzmin-machine/issues/259) | Closed, completed | Done ([PR #262](https://github.com/nick-fedchik/kuzmin-machine/pull/262)) | Додано інваріант `H7_multi_patch_rule_persistence` і мутант `M5_skip_port_a_resync`, свідок `C4_b_we_at_swap`, лічильник у TB та уточнення `DECERR` / затримки читання під час `sync_busy` у [звіті `EXP-GPU-02`](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/report-stage1-2-cfg-p-ha.md) (`0.1.1`). |
+| [#270 — підсумковий інженерно-комерційний висновок проєкту МК та генератор детермінованого C99 (`--emit-c99` + Z3 сертифікат)](https://github.com/nick-fedchik/kuzmin-machine/issues/270) | Open (закривається цим PR) | Done | Зафіксовано [підсумковий інженерно-комерційний висновок](../../Research/studies/commercialization-and-final-conclusions.md) (`1.0.0`: закриття загальноцільової мови `KPOL` та заміни CPU як `$0`, 3 побудовані інженерні активи, 3 B2B-кейси) та реалізовано генератор [`c99_emitter.py`](../../Engineering/sw/kpol-ref/c99_emitter.py) (`--emit-c99`, `--emit-z3-cert` у [`compile_kpol_bram_image.py`](../../Engineering/hw/scripts/compile_kpol_bram_image.py)), верифікований на 4-рівневому каскаді BMS (`x86_64`, `ARM Cortex-A9 @ 650 МГц` та `Zynq-7020 PL` на `pynq2`, [`test_c99_emitter_270.py`](../../Engineering/sw/tests/test_c99_emitter_270.py) з мутантами `M1..M4`). |
 
 Джерела рішень:
 [пропрієтарний режим](https://github.com/nick-fedchik/kuzmin-machine/issues/20#issuecomment-6829699920),
@@ -111,6 +112,7 @@ Todo/In progress/Postponed/Done. Відкладення або закриття 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-17 | #270: зареєстровано підсумковий інженерно-комерційний висновок `commercialization-and-final-conclusions.md` (`1.0.0`) та реалізацію генератора детермінованого C99 (`--emit-c99` + `--emit-z3-cert`, `c99_emitter.py`, `test_c99_emitter_270.py`). |
 | 0.5.2 | 2026-11-17 | #253: зафіксовано оптимізацію `km_concept_bram_dual_ha.sv` до $F_{\max} = 100.69\text{ МГц}$ (`PASS at 100.00 MHz`) в `OpenXC7` та повне закриття `#253` натурними HIL-вимірюваннями на `PYNQ-Z1` (`pynq2`, `10 003` перемикань, `40 011` подій) + `LOGICTRACER_PICO_0.5.0` (`report-stage1-2-cfg-p-ha.md` `1.0.0`). |
 | 0.5.1 | 2026-11-17 | #226: зафіксовано виконання фізичного P&R `pipeline_egress.bit` (`101.67 МГц PASS`), живої перевірки на `pynq2 + RP2040 PIO` (`340 нс`) та міжплатного контуру `PYNQ-Z1 -> GbE -> Jetson AGX Orin J501` ($R = 5 \times 1\,000$ подій, `report-phase1-2-4-crossboard-egress.md`, `ADR B6` `0.5.0`) із перевіркою Попперівського критерію фальсифікації. |
 | 0.5.0 | 2026-11-17 | #8: зафіксовано злиття `PR #260, #261, #262` (закрито `#254, #255, #256, #257, #259`) та консолідоване закриття інженерного епіка S5 `#8` (`s5-compiler-8/report.md`, `test_s5_compiler_acceptance_8.py`) зі збереженням відкритих меж `#186` та `ADR B7`. |

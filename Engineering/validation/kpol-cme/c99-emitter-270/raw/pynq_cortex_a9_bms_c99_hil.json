@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-11-17T20:05:38.966740+02:00",
+  "issue": 270,
+  "evidence_kind": "physical_hil_pynq_z1_cortex_a9_and_zynq7020_pl",
+  "board": "Digilent PYNQ-Z1 (xilinx@192.168.68.69, Dual ARM Cortex-A9 @ 650 MHz + XC7Z020 PL @ 100 MHz)",
+  "gcc_flags": "-std=c99 -O2 -Wall -Wextra -Werror -pedantic",
+  "bms_bin_sha256": "de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee",
+  "arm_cortex_a9_c99": {
+    "verdict": "PASS",
+    "hw_trace_final_state": [
+      4,
+      4,
+      0,
+      0
+    ],
+    "hw_trace_events": 18,
+    "hw_trace_commits": 12,
+    "hw_trace_rejects": 6,
+    "hw_trace_fault_propagations": 0,
+    "fault_trace_commits": 6,
+    "fault_trace_rejects": 3,
+    "fault_trace_fault_propagations": 3,
+    "bench_iterations": 200000,
+    "ns_per_single_reject": 266.88,
+    "ns_per_fault_reject": 215.17,
+    "ns_per_full_4stage_cascade": 1031.47,
+    "ns_per_cascade_concept_step": 257.87
+  },
+  "zynq_7020_pl_cfg_p": {
+    "fpga_id_hex": "0x4B504D43",
+    "pl_final_state": [
+      4,
+      4,
+      0,
+      0
+    ],
+    "pl_events_delta": 18,
+    "pl_commits_delta": 12,
+    "pl_rejects_delta": 6
+  },
+  "bit_exact_match_c99_vs_pl_vs_model": true
+}
