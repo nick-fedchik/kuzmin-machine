@@ -183,6 +183,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/boards/pynq-z1/hil/burst_egress_trig.c",
+      "direction": "engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/boards/pynq-z1/hil/hil_io_trigger.py",
       "direction": "Engineering",
       "wp_type": "Source Code",

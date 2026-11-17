@@ -314,3 +314,44 @@ def test_pynq_z1_egress_top_yosys_synth_xilinx(tmp_path):
         text=True,
     )
     assert res.returncode == 0, res.stdout + res.stderr
+
+
+def test_egress_frame_crc8_bytewise_and_tag_mutants_on_crossboard_runs():
+    """Розширений негативний контроль CRC-8 та тегу (F-8) по всіх 8 байтах кадрів із r1..r5."""
+    import json
+    import sys
+
+    exp_dir = HW.parents[1] / "Research" / "studies" / "fpga-gpu-symbiosis" / "experiments" / "EXP-GPU-01"
+    data_cb = HW.parents[1] / "Research" / "studies" / "fpga-gpu-symbiosis" / "data" / "exp-gpu-01-crossboard"
+    if str(exp_dir) not in sys.path:
+        sys.path.insert(0, str(exp_dir))
+    import crossboard_frame as cbf
+
+    run_files = sorted(data_cb.glob("crossboard_r*.json"))
+    assert len(run_files) == 5
+    for rf in run_files:
+        rdata = json.loads(rf.read_text(encoding="utf-8"))
+        frame64 = int(rdata["last_frame64_hex"], 16)
+        raw8 = frame64.to_bytes(8, byteorder="big")
+        unpacked = cbf.verify_and_unpack_egress_bytes(raw8)
+        assert unpacked["tag"] == 0b01
+        assert unpacked["cid"] == 3
+
+        # Побайтова та побітова інверсія кожного з 8 байтів кадра
+        for byte_idx in range(8):
+            for bit_idx in range(8):
+                corrupted = bytearray(raw8)
+                corrupted[byte_idx] ^= 1 << bit_idx
+                with pytest.raises(cbf.EgressFrameError):
+                    cbf.verify_and_unpack_egress_bytes(bytes(corrupted))
+
+        # Невалідні 2-бітні теги формату (0b00, 0b10, 0b11) із валідним перерахованим CRC-8
+        for bad_tag in (0b00, 0b10, 0b11):
+            bad_bytes = cbf.encode_egress_frame_bytes(
+                cid=unpacked["cid"],
+                mask16=unpacked["mask16"],
+                state=unpacked["state"],
+                tag=bad_tag,
+            )
+            with pytest.raises(cbf.EgressFrameError, match="Invalid frame tag"):
+                cbf.verify_and_unpack_egress_bytes(bad_bytes)

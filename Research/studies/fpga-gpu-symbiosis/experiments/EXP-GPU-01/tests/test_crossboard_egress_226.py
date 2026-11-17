@@ -95,7 +95,15 @@ def test_pynq2_silicon_cascade_and_logictracer_100mhz_capture():
     ch2 = cap_json["capture"]["channels"][1]
     assert ch2["name"] == "JA2_COMMIT"
     assert ch2["samples"] == 32000
-    assert round(ch2["max_pulse_width_us"] * 1000.0) == expected_cascade_pw_ns
+    assert ch2["pulse_count_high"] == 200
+    assert ch2["pulse_count_low"] == 199
+    assert ch2["rising_edges"] == 200
+    assert ch2["falling_edges"] == 200
+    assert ch2["transitions"] == 400
+    assert round(ch2["high_pulse_width_us"]["min"] * 1000.0) == expected_cascade_pw_ns
+    assert round(ch2["high_pulse_width_us"]["max"] * 1000.0) == expected_cascade_pw_ns
+    assert round(ch2["low_pulse_width_us"]["min"] * 1000.0) == 250
+    assert (REPO_ROOT / "Engineering" / "hw" / "boards" / "pynq-z1" / "hil" / "burst_egress_trig.c").is_file()
     assert (DATA_CB_DIR / "logictracer_egress_ja2_100mhz.vcd").stat().st_size > 1000
 
 
@@ -192,6 +200,18 @@ def test_crossboard_5x1000_runs_and_popper_falsification_verdict():
     recomputed = cbf.summarize_crossboard_runs(run_paths)
     recorded = json.loads((DATA_CB_DIR / "summary_crossboard_226.json").read_text(encoding="utf-8"))
     assert recomputed == recorded
+
+    # Перевірка по-подієвої декомпозиції (F-3, F-4): сума середніх складових == середнє RTT
+    mean_sum = (
+        recomputed["pooled_pl_mmio_us"]["mean_us"]
+        + recomputed["pooled_net_rtt_us"]["mean_us"]
+        + recomputed["pooled_jetson_host_us"]["mean_us"]
+    )
+    assert abs(mean_sum - recomputed["pooled_rtt_us"]["mean_us"]) < 1e-3
+    assert recomputed["pooled_net_oneway_est_us"]["max_us"] == 471.858
+    assert recomputed["pooled_net_oneway_est_us"]["p99_9_us"] == 443.4975
+    assert recomputed["pooled_rtt_net_plus_pynq_mmio_us"]["max_us"] == 945.851
+    assert recomputed["pooled_jetson_host_us"]["p99_9_us"] == 2471.488
 
     # Перевірка Попперівського критерію фальсифікації (#226) на реальних даних GbE без PCIe
     popper_oneway = recomputed["popper_oneway_evaluation"]

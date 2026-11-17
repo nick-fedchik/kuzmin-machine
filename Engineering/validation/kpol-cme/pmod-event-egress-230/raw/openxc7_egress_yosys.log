@@ -4530,22 +4530,22 @@ Extracted 15180 AND gates and 42670 wires from module `kpol_bram_pipeline_pynq_z
 8.46.17.5. Executing ABC9.
 Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
 ABC: ======== ABC command line "source <abc-temp-dir>/abc.script"
-ABC: + read_lut <abc-temp-dir>/input.lut 
-ABC: + read_box <abc-temp-dir>/input.box 
-ABC: + &read <abc-temp-dir>/input.xaig 
-ABC: + &ps 
+ABC: + read_lut <abc-temp-dir>/input.lut
+ABC: + read_box <abc-temp-dir>/input.box
+ABC: + &read <abc-temp-dir>/input.xaig
+ABC: + &ps
 ABC: <abc-temp-dir>/input : i/o =   1751/   2547  and =   13425  lev =   46 (2.94)  mem = 0.31 MB  box = 1186  bb = 1032
 ABC: Warning: AIG with boxes has internal fanout in 0 complex flops and 50 carries.
-ABC: + &scorr 
+ABC: + &scorr
 ABC: Warning: The network is combinational.
-ABC: + &sweep 
-ABC: + &dc2 
-ABC: + &dch -f -r 
-ABC: + &ps 
+ABC: + &sweep
+ABC: + &dc2
+ABC: + &dch -f -r
+ABC: + &ps
 ABC: <abc-temp-dir>/input : i/o =   1751/   2547  and =   20981  lev =   30 (2.53)  mem = 0.39 MB  ch = 3211  box = 1177  bb = 1032
 ABC: cst =       0  cls =   3069  lit =    3211  unused =   18644  proof =     0
 ABC: Warning: AIG with boxes has internal fanout in 0 complex flops and 50 carries.
-ABC: + &if -W 300 -v 
+ABC: + &if -W 300 -v
 ABC: K = 8. Memory (bytes): Truth =    0. Cut =   80. Obj =  160. Set =  816. CutMin = no
 ABC: Node =   20981.  Ch =  3069.  Total mem =    5.18 MB. Peak cut mem =    0.17 MB.
 ABC: P:  Del = 5661.00.  Ar =   13434.0.  Edge =    15385.  Cut =   336708.  T =     0.06 sec
@@ -4555,8 +4555,8 @@ ABC: F:  Del = 5661.00.  Ar =    8214.0.  Edge =    11323.  Cut =   460336.  T =
 ABC: A:  Del = 5661.00.  Ar =    7931.0.  Edge =    10336.  Cut =   484767.  T =     0.10 sec
 ABC: A:  Del = 5661.00.  Ar =    7916.0.  Edge =    10328.  Cut =   484536.  T =     0.10 sec
 ABC: Total time =     0.48 sec
-ABC: + &write -n <abc-temp-dir>/output.aig 
-ABC: + &mfs 
+ABC: + &write -n <abc-temp-dir>/output.aig
+ABC: + &mfs
 ABC: yosys-abc: /home/mfedchyk/opt/openxc7-build/yosys/abc/src/misc/util/abc_global.h:312: int abc::Abc_LitIsCompl(int): Assertion `Lit >= 0' failed.
 ABC: Aborted (core dumped)
 Warning: ABC: execution of command ""/home/mfedchyk/opt/openxc7/bin/yosys-abc" -s -f /tmp/yosys-abc-5Xe2j3/abc.script 2>&1" failed: return code 134.
@@ -5105,7 +5105,7 @@ Removed 0 unused modules.
 === kpol_bram_pipeline_pynq_z1_egress_top ===
 
         +----------Local Count, excluding submodules.
-        | 
+        |
      3242 wires
     11403 wire bits
       192 public wires
@@ -5139,11 +5139,11 @@ Removed 0 unused modules.
 === design hierarchy ===
 
         +----------Count including submodules.
-        | 
+        |
      2743 kpol_bram_pipeline_pynq_z1_egress_top
 
         +----------Count including submodules.
-        | 
+        |
      3242 wires
     11403 wire bits
       192 public wires
@@ -5186,7 +5186,7 @@ Found and reported 0 problems.
 === kpol_bram_pipeline_pynq_z1_egress_top ===
 
         +----------Local Count, excluding submodules.
-        | 
+        |
      3242 wires
     11403 wire bits
       192 public wires

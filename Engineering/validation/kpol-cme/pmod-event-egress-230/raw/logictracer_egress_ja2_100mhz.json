@@ -1,7 +1,7 @@
 {
   "attempts": 1,
   "capture": {
-    "captured_at_utc": "2026-11-17T13:36:36Z",
+    "captured_at_utc": "2026-11-17T14:13:17Z",
     "channels": [
       {
         "channel": 1,
@@ -1056,7 +1056,7 @@
     "serial_number": "E66118604B78A622",
     "version": "LOGICTRACER_PICO_0.5.0"
   },
-  "elapsed_ms": 941,
+  "elapsed_ms": 891,
   "outputs": {
     "json": "/home/mfedchyk/GitHub/nick-fedchik/km-wt-226-egress-e2e/Engineering/validation/kpol-cme/pmod-event-egress-230/raw/logictracer_egress_ja2_100mhz.json",
     "vcd": "/home/mfedchyk/GitHub/nick-fedchik/km-wt-226-egress-e2e/Engineering/validation/kpol-cme/pmod-event-egress-230/raw/logictracer_egress_ja2_100mhz.vcd"

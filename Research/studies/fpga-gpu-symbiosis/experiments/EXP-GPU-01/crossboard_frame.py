@@ -153,6 +153,9 @@ def summarize_crossboard_runs(run_paths: list[Path]) -> dict[str, Any]:
     all_oneway_us: list[float] = []
     all_pl_mmio_us: list[float] = []
     all_jetson_host_us: list[float] = []
+    all_net_rtt_us: list[float] = []
+    all_net_oneway_est_us: list[float] = []
+    all_rtt_net_plus_pynq_mmio_us: list[float] = []
     all_gpu_math_ns: list[float] = []
     all_gpu_e2e_sm_ns: list[float] = []
     per_run_summaries: list[dict[str, Any]] = []
@@ -163,10 +166,25 @@ def summarize_crossboard_runs(run_paths: list[Path]) -> dict[str, Any]:
         oneway_us = [float(x) for x in data["samples_oneway_est_us"]]
         pl_mmio_us = [float(x) for x in data["samples_pl_mmio_us"]]
         j_host_us = [float(x) for x in data["samples_jetson_host_us"]]
+        net_rtt_us = [
+            round(max(0.0, r - p - j), 4)
+            for r, p, j in zip(rtt_us, pl_mmio_us, j_host_us)
+        ]
+        net_oneway_est_us = [
+            round(max(0.0, (r - p - j) / 2.0), 4)
+            for r, p, j in zip(rtt_us, pl_mmio_us, j_host_us)
+        ]
+        rtt_net_plus_pynq_us = [
+            round(max(0.0, r - j), 4)
+            for r, j in zip(rtt_us, j_host_us)
+        ]
         all_rtt_us.extend(rtt_us)
         all_oneway_us.extend(oneway_us)
         all_pl_mmio_us.extend(pl_mmio_us)
         all_jetson_host_us.extend(j_host_us)
+        all_net_rtt_us.extend(net_rtt_us)
+        all_net_oneway_est_us.extend(net_oneway_est_us)
+        all_rtt_net_plus_pynq_mmio_us.extend(rtt_net_plus_pynq_us)
         gpu_rep = data.get("jetson_gpu_report", {})
         if "gpu_math_gt_ns_p50" in gpu_rep:
             all_gpu_math_ns.append(float(gpu_rep["gpu_math_gt_ns_p50"]))
@@ -192,6 +210,9 @@ def summarize_crossboard_runs(run_paths: list[Path]) -> dict[str, Any]:
     pooled_oneway = compute_distribution_stats(all_oneway_us)
     pooled_pl_mmio = compute_distribution_stats(all_pl_mmio_us)
     pooled_jetson_host = compute_distribution_stats(all_jetson_host_us)
+    pooled_net_rtt = compute_distribution_stats(all_net_rtt_us)
+    pooled_net_oneway_est = compute_distribution_stats(all_net_oneway_est_us)
+    pooled_rtt_net_plus_pynq = compute_distribution_stats(all_rtt_net_plus_pynq_mmio_us)
 
     return {
         "runs_count": len(run_paths),
@@ -204,6 +225,9 @@ def summarize_crossboard_runs(run_paths: list[Path]) -> dict[str, Any]:
         "pooled_oneway_est_us": pooled_oneway,
         "pooled_pl_mmio_us": pooled_pl_mmio,
         "pooled_jetson_host_us": pooled_jetson_host,
+        "pooled_net_rtt_us": pooled_net_rtt,
+        "pooled_net_oneway_est_us": pooled_net_oneway_est,
+        "pooled_rtt_net_plus_pynq_mmio_us": pooled_rtt_net_plus_pynq,
         "popper_rtt_evaluation": evaluate_popper_criterion_226(pooled_rtt),
         "popper_oneway_evaluation": evaluate_popper_criterion_226(pooled_oneway),
         "per_run": per_run_summaries,

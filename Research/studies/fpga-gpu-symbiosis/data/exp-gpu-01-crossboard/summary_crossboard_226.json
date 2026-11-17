@@ -45,6 +45,36 @@
     "mean_us": 32.6009,
     "sigma_us": 195.7514
   },
+  "pooled_net_rtt_us": {
+    "count": 5000,
+    "min_us": 119.694,
+    "p50_us": 661.213,
+    "p99_us": 742.384,
+    "p99_9_us": 886.995,
+    "max_us": 943.716,
+    "mean_us": 656.7101,
+    "sigma_us": 70.1664
+  },
+  "pooled_net_oneway_est_us": {
+    "count": 5000,
+    "min_us": 59.847,
+    "p50_us": 330.6065,
+    "p99_us": 371.192,
+    "p99_9_us": 443.4975,
+    "max_us": 471.858,
+    "mean_us": 328.355,
+    "sigma_us": 35.0832
+  },
+  "pooled_rtt_net_plus_pynq_mmio_us": {
+    "count": 5000,
+    "min_us": 121.872,
+    "p50_us": 663.354,
+    "p99_us": 744.445,
+    "p99_9_us": 889.081,
+    "max_us": 945.851,
+    "mean_us": 658.8876,
+    "sigma_us": 70.1825
+  },
   "popper_rtt_evaluation": {
     "threshold_p99_9_us": 15.0,
     "threshold_sigma_us": 2.0,
