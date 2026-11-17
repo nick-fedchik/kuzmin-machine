@@ -1,9 +1,9 @@
 # Звіт #230 / #241: RTL-модуль `km_pmod_event_egress.sv`, інтеграція в PYNQ-Z1 egress top та закриття #234
 
-* **Версія:** 0.2.0
-* **Дата:** 2026-11-16
+* **Версія:** 0.2.1
+* **Дата:** 2026-11-17
 * **Тип WP:** Report
-* **Issue:** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230), [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234), [#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241) (sub-issue [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226); не закриває `#226`). **PR:** у гілці `feat/241-pmod-top-egress-integration`.
+* **Issue:** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230), [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234), [#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241), [#247](https://github.com/nick-fedchik/kuzmin-machine/issues/247) (sub-issue [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226); не закриває `#226`). **PR:** у гілці `fix/247-level-shifter-and-commit-cid-test`.
 * **Виконавець:** GitHub Copilot CLI (`gemini-4-hydrogen`). **Рецензент:** не призначений (очікує перехресної рецензії моделлю іншої родини).
 * **Коміт коду, на якому знято `*-02.log`:** `0e01996d4eb35858e9479e5cf8ec88dbfc65a94d` (базовий зріз `0.1.0`: `3c89b4e4fe35286e9c9b670553eccf2db5088835`). **Хост / плата:** Linux x86_64 (`AORUS-5-SE`); фізична плата FPGA / GPU не залучалася. **Бітстрім (SHA-256):** не генерувався.
 * **Критерії успіху (зафіксовано до виконання):** [#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230), [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234), [#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241) та перша інженерна передумова протоколу [EXP-GPU-01](../../../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md).
@@ -13,7 +13,7 @@
 ## 1. Що не вдалося і обмеження
 
 * **Лише симуляція (mock `PS7` / `BUFG`), лінт і логічний синтез XC7:** усі перевірки у цьому пакеті виконані в симуляції (`iverilog -g2012` + `vvp` із поведінковими моделями `PS7` та `BUFG`), статичному лінті (`verilator --lint-only -Wall`) та логічному синтезі `yosys synth_xilinx` (без P&R `nextpnr-xilinx`, без генерації бітстріму і без статичного таймінгового аналізу на кристалі).
-* **Фізичний HIL-захват очікує монтажу перетворювача рівнів (`#226` залишається відкритою):** фізичний HIL-захват `RP2040 PIO` між PYNQ-Z1 (`3.3V LVCMOS`) і Jetson J501 (`1.8V`) очікує монтажу спрямованого перетворювача рівнів у межах [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226).
+* **Фізичний HIL-захват та перевірка перетворювача рівнів (`#226` залишається відкритою):** фізичний HIL-захват `RP2040 PIO` між PYNQ-Z1 (`3.3V LVCMOS`) і Jetson J501 (`1.8V`) очікує монтажу та осцилографування перетворювача рівнів у межах [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226). Вибір між наявним у лабораторії `TXS0108E` (при зниженій частоті SPI або в режимі `PAR8` з короткими провідниками) та буферизованим `SN74AVC8T245` сформульовано як інженерну гіпотезу та критерій перевірки для натурного HIL (#226), а не як апріорний факт до осцилографування (§2.4, [#247](https://github.com/nick-fedchik/kuzmin-machine/issues/247)).
 * **Обсяг поля маски події:** у 64-бітному кадрі передаються молодші 16 біт маски підписок `event_mask_i[15:0]`; старші 16 біт `event_mask_i[31:16]` у цій версії не пакуються в кадр (закладено в заголовок порту для майбутнього розширення без зміни інтерфейсу).
 * **Незмінність ядра та сумісність `CFG-P`:** файли в `Engineering/hw/rtl/core/`, базовий `kpol_bram_pipeline_pynq_z1_top.v`, `Engineering/hw/scripts/run_open_flow.sh`, `Project/registers/open-work-items.md` та попередні сирі логи `raw/*-01.log` не змінювалися. У `kpol_bram_pipeline_axi.sv` додано лише чисті діагностичні виходи `hw_commit_cid_o` та `hw_last_committed_state_o` без зміни логіки ядра чи існуючої поведінки AXI4-Lite.
 * **Межі `run_open_flow.sh` (уточнення #234 п. 5):** скрипт `Engineering/hw/scripts/run_open_flow.sh` виконує `pytest` для тестбенчів та `verilator`/`yosys` безпосередньо для `rtl/core` і `rtl/bus/kpol_bram_pipeline_axi.sv`, тоді як lint, логічний синтез XC7 та наскрізну E2E-симуляцію `km_pmod_event_egress` і `kpol_bram_pipeline_pynq_z1_egress_top` виконує pytest-обгортка [`test_km_pmod_event_egress.py`](../../../hw/tests/test_km_pmod_event_egress.py).
@@ -41,10 +41,21 @@
    * Розподіл пінів PMOD JA (`LVCMOS33`): `JA1..JA4` (`Y18, Y19, Y16, Y17`) — зовнішній тригер і статус конвеєра; `JA7` (`U18`, `egress_par8_mode_i` з `PULLDOWN` і 2-FF CDC) — вибір режиму `0=SPI / 1=PAR8`; `JA8..JA10` (`U19, W18, W19`) — `event_start_o`, `par_valid_o`, `par_clk_o`.
    * Розподіл пінів PMOD JB (`LVCMOS33`, стандарт Digilent PYNQ-Z1): `JB1..JB4` (`W14, Y14, T11, T10`) і `JB7..JB10` (`V16, W16, V12, W13`) передають `par_data_o[7:0]` у режимі PAR8 або `{2'b00, egress_drop_seen, egress_busy, egress_event_start, spi_sck, spi_mosi, spi_cs_n}` у режимі SPI; `led[3]` (`M14`) індикує `fifo_overflow | egress_drop_seen`.
    * Наскрізний тестбенч [`kpol_bram_pipeline_pynq_z1_egress_top_tb.sv`](../../../hw/tests/kpol_bram_pipeline_pynq_z1_egress_top_tb.sv) (mock `PS7`/`BUFG`) перевіряє запис правила в BRAM через AXI, тригер `ja1`, коміт у BRAM та декодування валідного 64-бітного кадра з CRC-8 на виходах PMOD JB у обох режимах (SPI та PAR8).
-4. **Електричне обґрунтування перетворювача рівнів `3.3V <-> 1.8V` для `50 МГц`:**
-   * PMOD-інтерфейси PYNQ-Z1 працюють на `3.3V LVCMOS`, тоді як заголовкові I/O Jetson J501 мають домен `1.8V`.
-   * Авто-двонаправлені перетворювачі з відкритим стоком (open-drain + внутрішні pull-up резистори `~10 кОм`, наприклад `TXS0108E`) на частоті `50 МГц` (період `20 нс`, півперіод `10 нс`) обмежені RC-постійною підтяжки: фронт наростання затягується понад `10–20 нс`, що руйнує цілісність сигналу та запас setup/hold на `spi_sck_o` і `par_clk_o`.
-   * Тому для міжплатного з'єднання `PYNQ-Z1 -> Jetson J501` на `50 МГц` рекомендовано **спрямований push-pull перетворювач рівнів** (`SN74AVC8T245` або `SN74LVC8T245`) із затримкою поширення `t_pd < 3 нс` та симетричними активними драйверами.
+4. **Паспортна характеристика `TXS0108E` (`SCES642I`) проти односпрямованого тракту `SN74AVC8T245` (`SCES172`) для `3.3V -> 1.8V` (#247):**
+   * PMOD-інтерфейси PYNQ-Z1 працюють у домені `3.3V LVCMOS`, тоді як лінії роз'єму розширення `Jetson AGX Orin J501` мають домен `1.8V`.
+   * За даташитом Texas Instruments `TXS0108E` (`SCES642I`, Table 6.6 / 6.7 *Switching Characteristics* для $V_{CCA} = 1.8\text{ V} \pm 0.15\text{ V}$, $V_{CCB} = 3.3\text{ V} \pm 0.3\text{ V}$, Push-Pull driving):
+     * максимальна паспортна швидкість передачі в режимі Push-Pull при трансляції $1.8\text{ V} \leftrightarrow 3.3\text{ V}$ становить **`60 Mbps`** (`30 МГц` тактової частоти з періодом `33.3 нс`; режим `110 Mbps` досягається лише при $V_{CCA} \ge 2.5\text{ V} \to 3.3\text{ V}$), а в режимі Open-Drain — `2 Mbps`;
+     * для **паралельного 8-бітного режиму `PAR8`** (де частота строба `par_valid` становить `50 МГц` / тривалість високого й низького рівнів по `10 нс`, тобто еквівалент `100 Mbps`, або з 2-тактовим утриманням — `25 МГц` / `50 Mbps`) робота на `TXS0108E` при $1.8\text{ В}$ лежить у межах або на межі паспортних `60 Mbps`;
+     * для **SPI `50 МГц` (`100 Mbps` по лінії `SCK`)** режим перевищує паспортний максимум `60 Mbps` для пари `1.8V/3.3V` і додатково чутливий до ємності макетних дротів через відсутність буферизації після закінчення імпульсу one-shot (`~10 нс` edge-rate accelerator + внутрішній `10 kΩ` pull-up);
+     * тому вибір між наявним у лабораторії `TXS0108E` (при зниженій частоті SPI або режимі `PAR8` з короткими провідниками) та буферизованим `SN74AVC8T245` формулюється як **інженерна гіпотеза та критерій перевірки для натурного HIL ([#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226))**, а не апріорний факт до осцилографування.
+   * **Схемотехнічний чекліст увімкнення `SN74AVC8T245` (`SCES172`) для односпрямованого тракту `3.3V -> 1.8V`:**
+
+| Сигнал / Шина | Підключення | Призначення та примітки |
+| :--- | :--- | :--- |
+| `VCCA` | `3.3V` (шини PMOD `JA/JB` плати `PYNQ-Z1`) | Живлення сторони A (вхідна сторона від ПЛІС Zynq-7000). |
+| `VCCB` | `1.8V` (шини GPIO роз'єму розширення `Jetson AGX Orin J501`) | Живлення сторони B (вихідна сторона до приймача). |
+| `DIR` (8 ліній `JB`) | `HIGH` (`VCCA = 3.3V`, жорстко на шині живлення) | Напрямок `A -> B` (`3.3V -> 1.8V`). Окремий пін ПЛІС для перемикання напрямку не потрібен, оскільки шина односпрямована від ПЛІС до GPU; для зворотного сигналу `ext_ready_i` (`1.8V -> 3.3V`) використовується окремий канал з `DIR = LOW (GND)` або одноканальний транслятор `SN74AVC1T45`. |
+| `/OE` (Output Enable, активний низький) | Підтяжка `10 kΩ` до `VCCA (3.3V)` під час подачі живлення; після стабілізації — `GND` (або опційний керуючий сигнал дозволу) | Гарантує стан `Hi-Z` під час power sequencing (`I_off` partial-power-down protection до встановлення обох напруг `VCCA` та `VCCB`). |
 
 ## 3. Результати
 
@@ -78,6 +89,7 @@ python3 Project/tools/check_wp_documents.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 0.2.1 | 2026-11-17 | Закрито знахідки [#247](https://github.com/nick-fedchik/kuzmin-machine/issues/247): уточнено паспортні характеристики `TXS0108E` (`SCES642I`, `60 Mbps` Push-Pull для `1.8V <-> 3.3V`, `110 Mbps` лише при $V_{CCA} \ge 2.5\text{ V}$) як інженерну гіпотезу до HIL ([#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)), додано табличний чекліст увімкнення `SN74AVC8T245` (`DIR`, `/OE`, `VCCA/VCCB`, power sequencing) та ізольований unit-тест із мутантним контролем для `hw_commit_cid_o` у `kpol_bram_pipeline_axi_tb.sv` / `test_kpol_bram_pipeline.py`. |
 | 0.2.0 | 2026-11-16 | Закрито 5 знахідок [#234](https://github.com/nick-fedchik/kuzmin-machine/issues/234) (посилений TB, 8 мутантів, `watchdog`, провенанс `*-02.log`, уточнення `run_open_flow.sh`), інтегровано `kpol_bram_pipeline_pynq_z1_egress_top.v` + `kpol_bram_pipeline_egress.xdc` та обґрунтування перетворювача рівнів `3.3V <-> 1.8V` ([#241](https://github.com/nick-fedchik/kuzmin-machine/issues/241)). |
 | 0.1.0 | 2026-11-15 | Перша редакція звіту реалізації та верифікації симуляцією/синтезом XC7 модуля `km_pmod_event_egress.sv` ([#230](https://github.com/nick-fedchik/kuzmin-machine/issues/230)). |
 

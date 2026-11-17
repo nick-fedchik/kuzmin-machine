@@ -1,9 +1,31 @@
 # ============================================================================
-# PYNQ-Z1 XDC Constraints for KPOL BRAM Pipeline + PMOD Event Egress (#241)
+# PYNQ-Z1 XDC Constraints for KPOL BRAM Pipeline + PMOD Event Egress (#241, #247)
 # Target Device: xc7z020clg400-1
 # Standards: Digilent PYNQ-Z1 Reference Manual, LVCMOS33 (3.3V)
-# Note: Inter-board connection to Jetson J501 (1.8V) requires an external
-# directional push-pull level shifter (SN74AVC8T245 / SN74LVC8T245) for 50 MHz.
+#
+# Inter-board Level Shifting (3.3V LVCMOS <-> 1.8V Jetson AGX Orin J501):
+# 1. TI TXS0108E (SCES642I, Table 6.6 / 6.7 Switching Characteristics for
+#    VCCA = 1.8V +/- 0.15V, VCCB = 3.3V +/- 0.3V):
+#    - Maximum data rate in Push-Pull mode (1.8V <-> 3.3V): 60 Mbps (30 MHz
+#      clock, 33.3 ns period; 110 Mbps applies only to VCCA >= 2.5V -> 3.3V);
+#      Open-Drain mode: 2 Mbps.
+#    - PAR8 mode (par_valid strobe 50 MHz / 10 ns half-period = 100 Mbps, or
+#      2-cycle hold = 25 MHz / 50 Mbps) lies within or at the 60 Mbps limit;
+#      SPI 50 MHz (100 Mbps on SCK) exceeds the 60 Mbps rating for 1.8V/3.3V
+#      and is sensitive to jumper wire capacitance after the ~10 ns one-shot
+#      edge-rate accelerator pulse ends (unbuffered ~10 kOhm pull-up).
+#    - Choice between laboratory TXS0108E (at reduced SPI clock or PAR8 with
+#      short leads) and buffered SN74AVC8T245 is formulated as an engineering
+#      hypothesis and verification criterion for physical HIL (#226).
+# 2. Buffered SN74AVC8T245 (SCES172) Hardware Checklist:
+#    - VCCA = 3.3V (PYNQ-Z1 PMOD JA/JB rail), VCCB = 1.8V (Jetson J501 rail).
+#    - 8-bit JB egress bus (A -> B, 3.3V -> 1.8V): tie DIR = HIGH (VCCA = 3.3V)
+#      directly on the power rail (no FPGA GPIO needed for direction control;
+#      for reverse ext_ready_i 1.8V -> 3.3V use a separate channel with
+#      DIR = LOW (GND) or single-bit SN74AVC1T45).
+#    - /OE (active-low): 10 kOhm pull-up to VCCA (3.3V) for guaranteed Hi-Z
+#      during power-up (I_off partial-power-down protection until both VCCA
+#      and VCCB stabilize), then tied to GND (or optional enable signal).
 # ============================================================================
 
 # Green User LEDs LD0..LD3
