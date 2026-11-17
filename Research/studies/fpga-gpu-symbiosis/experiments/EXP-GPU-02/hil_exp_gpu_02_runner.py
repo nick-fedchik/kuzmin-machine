@@ -597,7 +597,11 @@ def validate_hil_summary(summary: dict) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--pynq-host", default="xilinx@192.168.68.69")
-    ap.add_argument("--pynq-pass", default="xilinx")
+    ap.add_argument(
+        "--pynq-pass",
+        default=os.environ.get("PYNQ_SUDO_PASS", ""),
+        help="SSH/sudo password for PYNQ board (defaults to $PYNQ_SUDO_PASS; if empty, uses SSH key + sudo -n)",
+    )
     ap.add_argument("--stress-swaps", type=int, default=10000)
     ap.add_argument("--out-json", required=True)
     ap.add_argument("--out-csv", required=True)
@@ -612,24 +616,42 @@ def main() -> int:
     for pkt in (pkt_ge100, pkt_ge40, pkt_c5_ge40, pkt_ovr500):
         ri.verify_and_unpack_packet(pkt)
 
+    sudo_prefix = "sudo -S" if args.pynq_pass else "sudo -n"
     remote_cmd = (
         "cat > /home/xilinx/exp_gpu_02_hil_harness.c << 'EOF_C'\n"
         + C99_HARNESS_SOURCE
         + "EOF_C\n"
         "gcc -O2 -std=c99 -Wall -Wextra /home/xilinx/exp_gpu_02_hil_harness.c -o /home/xilinx/exp_gpu_02_hil_harness && "
-        f"echo {args.pynq_pass} | sudo -S /home/xilinx/exp_gpu_02_hil_harness --stress-swaps {args.stress_swaps}"
+        f"{sudo_prefix} /home/xilinx/exp_gpu_02_hil_harness --stress-swaps {args.stress_swaps}"
     )
-    ssh_cmd = [
-        "sshpass",
-        "-p",
-        args.pynq_pass,
-        "ssh",
-        "-o",
-        "StrictHostKeyChecking=no",
-        args.pynq_host,
-        remote_cmd,
-    ]
-    res = subprocess.run(ssh_cmd, capture_output=True, text=True, check=True)
+    if args.pynq_pass:
+        ssh_cmd = [
+            "sshpass",
+            "-e",
+            "ssh",
+            "-o",
+            "StrictHostKeyChecking=no",
+            args.pynq_host,
+            remote_cmd,
+        ]
+        env = {**os.environ, "SSHPASS": args.pynq_pass}
+        res = subprocess.run(
+            ssh_cmd,
+            input=args.pynq_pass + "\n",
+            env=env,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    else:
+        ssh_cmd = [
+            "ssh",
+            "-o",
+            "StrictHostKeyChecking=no",
+            args.pynq_host,
+            remote_cmd,
+        ]
+        res = subprocess.run(ssh_cmd, capture_output=True, text=True, check=True)
     raw_json = json.loads(res.stdout)
 
     summary = {
@@ -639,6 +661,7 @@ def main() -> int:
         "evidence_kind": "physical_hil_pynq_z1",
         "not_physical_hil": False,
         "board": "Digilent PYNQ-Z1 (XC7Z020-1CLG400C, pynq2 @ 192.168.68.69)",
+        "pl_fclk0_mhz": 100.0,
         "bitstream_sha256": args.bitstream_sha256,
         "rule_packets_crc8": {
             "c0_ge_100_hex": pkt_ge100.hex(),

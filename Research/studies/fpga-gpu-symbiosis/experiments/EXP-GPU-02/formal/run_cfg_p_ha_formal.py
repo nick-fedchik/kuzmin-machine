@@ -25,6 +25,10 @@ assumptions on internal states:
       - M3_drop_w0_mirror              -> caught by H6_live_state_preserved
       - M4_block_trigger_on_shadow     -> caught by H4_zero_sequencer_stall
       - M5_skip_port_a_resync          -> caught by H7_multi_patch_rule_persistence
+      - M6_broken_tree_priority_encoder -> caught by INV_sync_has_dirty / H7_multi_patch_rule_persistence
+  * Combinational SMT miter equivalence check (`tree_equiv_256w_miter`) proving 100% boolean
+    identity between the 8-level binary tree priority encoder and the 256-iteration linear loop
+    for `WORDS_TOTAL = 256, ADDR_WIDTH = 8` (plus negative mutant control on the 256-bit miter).
 """
 
 import argparse
@@ -186,6 +190,19 @@ MUTANTS = [
         "                            sync_addr_q  <= next_dirty_addr_w;\n"
         "                        end",
         "                        dirty_word_q <= '0;",
+    ),
+    (
+        "M6_broken_tree_priority_encoder",
+        "dual",
+        ["FORMAL_SAFETY", "FORMAL_INDUCTION"],
+        8,
+        "corrupted binary tree priority encoder (right-child address picked when left child is valid)",
+        "                assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+        "                    ? tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+        "                    : tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH];",
+        "                assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+        "                    ? tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+        "                    : tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH];",
     ),
 ]
 
@@ -372,6 +389,89 @@ def run_smtbmc(
     }
 
 
+def run_tree_equiv_256w_miter(work, out_dir):
+    """Proves 100% combinational boolean identity between 8-level binary tree and 256-word linear loop in Z3."""
+    miter_sv = os.path.join(work, "tree_equiv_256w_miter.sv")
+    smt2 = os.path.join(work, "tree_equiv_256w_miter.smt2")
+    ys = os.path.join(work, "tree_equiv_256w_miter.ys")
+    with open(miter_sv, "w", encoding="utf-8") as f:
+        f.write(
+            "`timescale 1ns/1ps\n"
+            "module tree_equiv_256w_miter(\n"
+            "  input logic [255:0] dirty_search_mask_w\n"
+            ");\n"
+            "  localparam int WORDS_TOTAL = 256;\n"
+            "  localparam int ADDR_WIDTH  = 8;\n"
+            "  wire [WORDS_TOTAL-1:0]            tree_valid [0:ADDR_WIDTH];\n"
+            "  wire [WORDS_TOTAL*ADDR_WIDTH-1:0] tree_addr  [0:ADDR_WIDTH];\n"
+            "  genvar g_idx, g_lvl, g_k;\n"
+            "  generate\n"
+            "    for (g_idx = 0; g_idx < WORDS_TOTAL; g_idx = g_idx + 1) begin : gen_tree_leaf\n"
+            "      localparam logic [31:0] LEAF_IDX_U32 = g_idx;\n"
+            "      assign tree_valid[0][g_idx] = dirty_search_mask_w[g_idx];\n"
+            "      assign tree_addr[0][g_idx * ADDR_WIDTH +: ADDR_WIDTH] = LEAF_IDX_U32[ADDR_WIDTH-1:0];\n"
+            "    end\n"
+            "    for (g_lvl = 0; g_lvl < ADDR_WIDTH; g_lvl = g_lvl + 1) begin : gen_tree_lvl\n"
+            "      localparam int ACTIVE_NODES = (WORDS_TOTAL >> (g_lvl + 1));\n"
+            "      for (g_k = 0; g_k < ACTIVE_NODES; g_k = g_k + 1) begin : gen_tree_node\n"
+            "        assign tree_valid[g_lvl + 1][g_k] = tree_valid[g_lvl][2 * g_k] | tree_valid[g_lvl][2 * g_k + 1];\n"
+            "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+            "            ? tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+            "            : tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH];\n"
+            "      end\n"
+            "      for (g_k = ACTIVE_NODES; g_k < WORDS_TOTAL; g_k = g_k + 1) begin : gen_tree_pad\n"
+            "        assign tree_valid[g_lvl + 1][g_k] = 1'b0;\n"
+            "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = '0;\n"
+            "      end\n"
+            "    end\n"
+            "  endgenerate\n"
+            "  wire tree_has_dirty_w = tree_valid[ADDR_WIDTH][0];\n"
+            "  wire [ADDR_WIDTH-1:0] tree_dirty_addr_w = tree_valid[ADDR_WIDTH][0]\n"
+            "      ? tree_addr[ADDR_WIDTH][0 +: ADDR_WIDTH] : '0;\n"
+            "  logic lin_has_dirty_w;\n"
+            "  logic [ADDR_WIDTH-1:0] lin_dirty_addr_w;\n"
+            "  always_comb begin\n"
+            "    lin_has_dirty_w  = 1'b0;\n"
+            "    lin_dirty_addr_w = '0;\n"
+            "    for (int idx = 0; idx < WORDS_TOTAL; idx = idx + 1) begin\n"
+            "      if (!lin_has_dirty_w && dirty_search_mask_w[idx]) begin\n"
+            "        lin_has_dirty_w  = 1'b1;\n"
+            "        lin_dirty_addr_w = idx[ADDR_WIDTH-1:0];\n"
+            "      end\n"
+            "    end\n"
+            "  end\n"
+            "  always @(*) begin\n"
+            "    EQ_256w_tree_vs_linear:\n"
+            "      assert ((tree_has_dirty_w == lin_has_dirty_w) && (tree_dirty_addr_w == lin_dirty_addr_w));\n"
+            "  end\n"
+            "endmodule\n"
+        )
+    with open(ys, "w", encoding="utf-8") as f:
+        f.write(
+            f"read_verilog -sv -formal {miter_sv}\n"
+            "prep -top tree_equiv_256w_miter\n"
+            f"write_smt2 -wires {smt2}\n"
+        )
+    rc, log, _ = sh(["yosys", "-q", ys], work, os.path.join(out_dir, "tree_equiv_256w_miter.yosys.log"))
+    if rc != 0:
+        raise RuntimeError(f"yosys failed for tree_equiv_256w_miter:\n{log}")
+    cmd = ["yosys-smtbmc", "--noprogress", "-s", "z3", "-t", "1", smt2]
+    rc, out, dt = sh(cmd, work, os.path.join(out_dir, "tree_equiv_256w_miter.log"))
+    m = re.findall(r"Status: (\w+)", out)
+    status = m[-1] if m else "ERROR"
+    return {
+        "design": "original (CFG-P-HA)",
+        "check": "tree_equiv_256w_miter",
+        "engine": "smtbmc z3 bmc t=1",
+        "status": status,
+        "seconds": round(dt, 3),
+        "failed": ";".join(sorted(set(re.findall(r"Assert failed in \S+: (\w+)", out)))),
+        "reached": "",
+        "unreached": "",
+        "vcd": "",
+    }
+
+
 def run_sim_c4_counter(work, out_dir):
     tb_path = os.path.join(REPO_ROOT, "Engineering", "hw", "tests", "kpol_bram_pipeline_axi_ha_tb.sv")
     if shutil.which("iverilog") is None or shutil.which("vvp") is None or not os.path.isfile(tb_path):
@@ -501,6 +601,7 @@ def main():
                 "orig_h1_h6_ind",
             ),
         })
+        rows.append(run_tree_equiv_256w_miter(work, out_dir))
 
         if not args.fast:
             # 2a. Full 30-step BMC (t=30) of H1, H2, H4, H5 via sound CME over-approximation
@@ -616,6 +717,7 @@ def main():
         "timestamp": datetime.datetime.now().astimezone().isoformat(),
         "issue": 252,
         "followup_issue": 259,
+        "hil_and_pnr_issue": 253,
         "experiment": "EXP-GPU-02",
         "evidence_kind": "formal_smt_z3_verification",
         "parameters": {"NUM_CONCEPTS": 4, "QUEUE_DEPTH": 4, "DATA_WIDTH": 32, "ADDR_WIDTH": 4},

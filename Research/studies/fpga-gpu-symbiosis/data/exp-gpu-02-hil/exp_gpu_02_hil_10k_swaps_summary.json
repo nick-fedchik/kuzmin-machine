@@ -5,6 +5,7 @@
   "evidence_kind": "physical_hil_pynq_z1",
   "not_physical_hil": false,
   "board": "Digilent PYNQ-Z1 (XC7Z020-1CLG400C, pynq2 @ 192.168.68.69)",
+  "pl_fclk0_mhz": 100.0,
   "bitstream_sha256": "b5f455aad296364ea66c2462cdbecf56e7b8657d220903ed83f173287cbd683b",
   "rule_packets_crc8": {
     "c0_ge_100_hex": "4b02009e64000000040b0001ffffffff",

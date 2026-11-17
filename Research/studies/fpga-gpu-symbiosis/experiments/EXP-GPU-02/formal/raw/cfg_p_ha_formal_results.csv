@@ -1,11 +1,13 @@
 design,check,engine,status,seconds,failed,reached,unreached,vcd
-original (CFG-P-HA),H1_H6_base_bmc,smtbmc z3 bmc t=3,PASSED,0.172,,,,
-original (CFG-P-HA),H1_H6_safety_ind,smtbmc z3 ind t=2,PASSED,20.929,,,,
-original (CFG-P-HA),H1_H2_H4_H5_safety_bmc,smtbmc z3 bmc t=30,PASSED,2.072,,,,
-original (CFG-P-HA),H2_H3_safety_bmc,smtbmc z3 bmc t=30,PASSED,1.35,,,,
-original (CFG-P-HA),cover_non_vacuity,smtbmc z3 cover t=30,PASSED,32.479,,C1_full_online_update_lifecycle;C2_swap_after_pending_wait;C3_back_to_back_events_across_swap;C4_b_we_at_swap,,
-M1_unsafe_immediate_swap: immediate bank swap on swap_req_i without waiting for seq_at_idle_boundary_i,mutant_bmc,smtbmc z3 bmc t=18,FAILED,0.822,H3_no_torn_descriptor_read,,,M1_unsafe_immediate_swap.vcd
-M2_write_active_bank_while_busy: hot write routed into active_bank_q instead of shadow bank ~active_bank_q,mutant_bmc,smtbmc z3 bmc t=16,FAILED,0.685,H3_no_torn_descriptor_read,,,M2_write_active_bank_while_busy.vcd
-M3_drop_w0_mirror: disabled Port B W0 mirroring into shadow bank loses live state across swap,mutant_bmc,smtbmc z3 bmc t=20,FAILED,7.199,H6_live_state_preserved,,,M3_drop_w0_mirror.vcd
-M4_block_trigger_on_shadow: shadow_we erroneously blocks external hw_trigger_ready_o during online rule update,mutant_bmc,smtbmc z3 bmc t=10,FAILED,0.206,H4_zero_sequencer_stall,,,M4_block_trigger_on_shadow.vcd
-M5_skip_port_a_resync: broken Port-A dirty_word_q resync after swap leaves stale rule from patch 1 on partial patch 2,mutant_bmc,smtbmc z3 bmc t=20,FAILED,2.524,H7_multi_patch_rule_persistence,,,M5_skip_port_a_resync.vcd
+original (CFG-P-HA),H1_H6_base_bmc,smtbmc z3 bmc t=3,PASSED,0.167,,,,
+original (CFG-P-HA),H1_H6_safety_ind,smtbmc z3 ind t=2,PASSED,20.137,,,,
+original (CFG-P-HA),tree_equiv_256w_miter,smtbmc z3 bmc t=1,PASSED,0.181,,,,
+original (CFG-P-HA),H1_H2_H4_H5_safety_bmc,smtbmc z3 bmc t=30,PASSED,2.048,,,,
+original (CFG-P-HA),H2_H3_safety_bmc,smtbmc z3 bmc t=30,PASSED,1.432,,,,
+original (CFG-P-HA),cover_non_vacuity,smtbmc z3 cover t=30,PASSED,32.245,,C1_full_online_update_lifecycle;C2_swap_after_pending_wait;C3_back_to_back_events_across_swap;C4_b_we_at_swap,,
+M1_unsafe_immediate_swap: immediate bank swap on swap_req_i without waiting for seq_at_idle_boundary_i,mutant_bmc,smtbmc z3 bmc t=18,FAILED,0.797,H3_no_torn_descriptor_read,,,M1_unsafe_immediate_swap.vcd
+M2_write_active_bank_while_busy: hot write routed into active_bank_q instead of shadow bank ~active_bank_q,mutant_bmc,smtbmc z3 bmc t=16,FAILED,0.676,H3_no_torn_descriptor_read,,,M2_write_active_bank_while_busy.vcd
+M3_drop_w0_mirror: disabled Port B W0 mirroring into shadow bank loses live state across swap,mutant_bmc,smtbmc z3 bmc t=20,FAILED,7.2,H6_live_state_preserved,,,M3_drop_w0_mirror.vcd
+M4_block_trigger_on_shadow: shadow_we erroneously blocks external hw_trigger_ready_o during online rule update,mutant_bmc,smtbmc z3 bmc t=10,FAILED,0.208,H4_zero_sequencer_stall,,,M4_block_trigger_on_shadow.vcd
+M5_skip_port_a_resync: broken Port-A dirty_word_q resync after swap leaves stale rule from patch 1 on partial patch 2,mutant_bmc,smtbmc z3 bmc t=20,FAILED,2.52,H7_multi_patch_rule_persistence,,,M5_skip_port_a_resync.vcd
+M6_broken_tree_priority_encoder: corrupted binary tree priority encoder (right-child address picked when left child is valid),mutant_bmc,smtbmc z3 bmc t=8,FAILED,2.949,INV_sync_has_dirty,,,M6_broken_tree_priority_encoder.vcd

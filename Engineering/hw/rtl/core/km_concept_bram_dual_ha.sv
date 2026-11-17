@@ -213,16 +213,24 @@ module km_concept_bram_dual_ha #(
     //     біт b_addr_i (при повному записі Port B).
     // Оскільки у станах SYNC_READ / SYNC_WRITE ніколи не активні sync_load_accept та
     // hot_write_accept, з входу дерева пошуку виключено 256-бітний демультиплексор Port A,
-    // що скорочує і площу SLICE_LUTX, і критичний шлях без зміни індуктивних інваріантів!
+    // що скорочує і площу SLICE_LUTX, і критичний шлях без зміни індуктивних інваріантів.
     logic [WORDS_TOTAL-1:0] dirty_next_w;
     logic [WORDS_TOTAL-1:0] dirty_search_mask_w;
     logic                   next_has_dirty_w;
     logic [ADDR_WIDTH-1:0]  next_dirty_addr_w;
 
+    // Масиви рівнів дерева tree_valid[0..ADDR_WIDTH] та tree_addr[0..ADDR_WIDTH] утворюють
+    // строго ациклічний орієнтований граф від рівня g_lvl до g_lvl + 1 (жодної комбінаційної
+    // петлі немає), проте Verilator трактує масив дротів як єдиний векторний об'єкт
+    // і видає хибнопозитивне попередження UNOPTFLAT; верхні неактивні вузли рівнів
+    // g_lvl >= 1 ініціалізовані нулями (UNUSEDSIGNAL).
+    // Для сумісності зі старішими фронтендами Yosys у CI (які не підтримують 2D packed
+    // масиви [WORDS_TOTAL-1:0][ADDR_WIDTH-1:0]) адреси вузлів упаковані в 1D вектор
+    // ширини WORDS_TOTAL * ADDR_WIDTH на кожному рівні дерева.
     /* verilator lint_off UNUSEDSIGNAL */
     /* verilator lint_off UNOPTFLAT */
-    wire [WORDS_TOTAL-1:0]                 tree_valid [0:ADDR_WIDTH];
-    wire [WORDS_TOTAL-1:0][ADDR_WIDTH-1:0] tree_addr  [0:ADDR_WIDTH];
+    wire [WORDS_TOTAL-1:0]            tree_valid [0:ADDR_WIDTH];
+    wire [WORDS_TOTAL*ADDR_WIDTH-1:0] tree_addr  [0:ADDR_WIDTH];
     /* verilator lint_on UNOPTFLAT */
     /* verilator lint_on UNUSEDSIGNAL */
 
@@ -231,20 +239,20 @@ module km_concept_bram_dual_ha #(
         for (g_idx = 0; g_idx < WORDS_TOTAL; g_idx = g_idx + 1) begin : gen_tree_leaf
             localparam logic [31:0] LEAF_IDX_U32 = g_idx;
             assign tree_valid[0][g_idx] = dirty_search_mask_w[g_idx];
-            assign tree_addr[0][g_idx]  = LEAF_IDX_U32[ADDR_WIDTH-1:0];
+            assign tree_addr[0][g_idx * ADDR_WIDTH +: ADDR_WIDTH] = LEAF_IDX_U32[ADDR_WIDTH-1:0];
         end
 
         for (g_lvl = 0; g_lvl < ADDR_WIDTH; g_lvl = g_lvl + 1) begin : gen_tree_lvl
             localparam int ACTIVE_NODES = (WORDS_TOTAL >> (g_lvl + 1));
             for (g_k = 0; g_k < ACTIVE_NODES; g_k = g_k + 1) begin : gen_tree_node
                 assign tree_valid[g_lvl + 1][g_k] = tree_valid[g_lvl][2 * g_k] | tree_valid[g_lvl][2 * g_k + 1];
-                assign tree_addr[g_lvl + 1][g_k]  = tree_valid[g_lvl][2 * g_k]
-                                                  ? tree_addr[g_lvl][2 * g_k]
-                                                  : tree_addr[g_lvl][2 * g_k + 1];
+                assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]
+                    ? tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH]
+                    : tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH];
             end
             for (g_k = ACTIVE_NODES; g_k < WORDS_TOTAL; g_k = g_k + 1) begin : gen_tree_pad
                 assign tree_valid[g_lvl + 1][g_k] = 1'b0;
-                assign tree_addr[g_lvl + 1][g_k]  = '0;
+                assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = '0;
             end
         end
     endgenerate
@@ -270,7 +278,7 @@ module km_concept_bram_dual_ha #(
         end
 
         next_has_dirty_w  = tree_valid[ADDR_WIDTH][0];
-        next_dirty_addr_w = tree_valid[ADDR_WIDTH][0] ? tree_addr[ADDR_WIDTH][0] : '0;
+        next_dirty_addr_w = tree_valid[ADDR_WIDTH][0] ? tree_addr[ADDR_WIDTH][0 +: ADDR_WIDTH] : '0;
     end
 
     wire sync_read_b_same_addr = (sync_state_q == SYNC_READ) && b_we_i && (b_addr_i == sync_addr_q);

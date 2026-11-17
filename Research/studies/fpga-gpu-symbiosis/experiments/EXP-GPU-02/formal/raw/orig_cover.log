@@ -1,5 +1,5 @@
 # cmd: yosys-smtbmc --noprogress -s z3 -c -t 30 /home/mfedchyk/GitHub/nick-fedchik/km-wt-253-hil-complete/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_cover.smt2
-# timestamp: 2026-11-17T16:35:29.322476+02:00
+# timestamp: 2026-11-17T17:32:03.045641+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Checking cover reachability in step 0..
 ##   0:00:00  Checking cover reachability in step 1..
@@ -26,12 +26,12 @@
 ##   0:00:06  Checking cover reachability in step 16..
 ##   0:00:06  Checking cover reachability in step 17..
 ##   0:00:06  Checking cover reachability in step 18..
-##   0:00:07  Checking cover reachability in step 19..
+##   0:00:06  Checking cover reachability in step 19..
 ##   0:00:07  Checking cover reachability in step 20..
-##   0:00:08  Checking cover reachability in step 21..
+##   0:00:07  Checking cover reachability in step 21..
 ##   0:00:08  Checking cover reachability in step 22..
-##   0:00:10  Checking cover reachability in step 23..
-##   0:00:11  Checking cover reachability in step 24..
+##   0:00:09  Checking cover reachability in step 23..
+##   0:00:10  Checking cover reachability in step 24..
 ##   0:00:12  Checking cover reachability in step 25..
 ##   0:00:14  Checking cover reachability in step 26..
 ##   0:00:17  Checking cover reachability in step 27..

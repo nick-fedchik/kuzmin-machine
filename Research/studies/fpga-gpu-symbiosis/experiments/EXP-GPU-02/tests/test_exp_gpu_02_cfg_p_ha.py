@@ -350,6 +350,7 @@ def test_committed_formal_smt_z3_artifacts():
     for req_check in (
         "H1_H6_base_bmc",
         "H1_H6_safety_ind",
+        "tree_equiv_256w_miter",
         "H1_H2_H4_H5_safety_bmc",
         "H2_H3_safety_bmc",
         "cover_non_vacuity",
@@ -365,6 +366,7 @@ def test_committed_formal_smt_z3_artifacts():
     } <= reached
 
     assert prov.get("followup_issue") == 259
+    assert prov.get("hil_and_pnr_issue") == 253
     assert "1-bit per word" in prov.get("bmc_h3_slice_note", "")
     sim_c4 = prov["sim_c4_b_we_at_swap"]
     assert sim_c4["evidence_kind"] == "rtl_simulation_iverilog"
@@ -374,6 +376,7 @@ def test_committed_formal_smt_z3_artifacts():
     assert sim_c4["b_we_at_swap_no_override"] > 0
     assert sim_c4["b_we_at_swap_with_override"] > 0
     assert (FORMAL_RAW_DIR / "sim_c4_b_we_at_swap.log").is_file()
+    assert (FORMAL_RAW_DIR / "tree_equiv_256w_miter.log").is_file()
 
     by_mut = {r["design"].split(":")[0]: r for r in rows if not r["design"].startswith("original")}
     expected_mutants = {
@@ -382,6 +385,7 @@ def test_committed_formal_smt_z3_artifacts():
         "M3_drop_w0_mirror": "H6_live_state_preserved",
         "M4_block_trigger_on_shadow": "H4_zero_sequencer_stall",
         "M5_skip_port_a_resync": "H7_multi_patch_rule_persistence",
+        "M6_broken_tree_priority_encoder": "INV_sync_has_dirty",
     }
     for mid, expected_prop in expected_mutants.items():
         row = by_mut[mid]
@@ -422,6 +426,7 @@ def test_live_formal_smt_z3_induction_and_mutants(tmp_path):
         "M3_drop_w0_mirror",
         "M4_block_trigger_on_shadow",
         "M5_skip_port_a_resync",
+        "M6_broken_tree_priority_encoder",
     ):
         assert (tmp_path / f"{mid}.vcd").is_file()
 
@@ -507,6 +512,7 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
     sha_line = bit_sha_file.read_text(encoding="utf-8").strip()
     sha_hex, bit_name = sha_line.split()
     assert len(sha_hex) == 64
+    assert sha_hex == "b5f455aad296364ea66c2462cdbecf56e7b8657d220903ed83f173287cbd683b"
     assert bit_name == "kpol_pynq_ha.bit"
 
     opt_bit = Path(
@@ -615,8 +621,138 @@ def test_committed_physical_hil_pynq_z1_and_logictracer_artifacts_issue_253():
     for mname, mutate_fn in mut_cases:
         bad = json.loads(json.dumps(hil_sum))
         mutate_fn(bad)
-        with pytest.raises(ValueError), pytest.MonkeyPatch.context():
+        with pytest.raises(ValueError):
             hil_runner.validate_hil_summary(bad)
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_live_256w_tree_priority_encoder_equivalence_and_mutant(tmp_path):
+    """Verifies 256-word binary tree priority encoder equivalence against linear loop + mutant control (R1)."""
+    dual_src = (RTL_CORE / "km_concept_bram_dual_ha.sv").read_text(encoding="utf-8")
+    rtl_sources = [
+        RTL_CORE / "kpol_txn_gate_v2.sv",
+        RTL_CORE / "km_concept_micro_engine.sv",
+        RTL_CORE / "km_concept_bram.sv",
+        RTL_CORE / "km_concept_bram_dual_ha.sv",
+        RTL_CORE / "km_autonomous_sequencer.sv",
+        RTL_BUS / "kpol_bram_pipeline_axi_ha.sv",
+        HW_DIR / "tests" / "kpol_bram_pipeline_axi_ha_tb.sv",
+    ]
+
+    # 1. Negative mutant on binary tree priority encoder inside km_concept_bram_dual_ha.sv must fail TB
+    old_tree_root = "        next_has_dirty_w  = tree_valid[ADDR_WIDTH][0];"
+    new_tree_root = "        next_has_dirty_w  = 1'b0;"
+    assert dual_src.count(old_tree_root) == 1
+    mut_dual = tmp_path / "mut_tree_dual_ha.sv"
+    mut_dual.write_text(dual_src.replace(old_tree_root, new_tree_root), encoding="utf-8")
+    mut_sources = [mut_dual if p.name == "km_concept_bram_dual_ha.sv" else p for p in rtl_sources]
+    sim_mut = tmp_path / "tree_mut_tb.vvp"
+    subprocess.run(
+        ["iverilog", "-g2012", "-s", "kpol_bram_pipeline_axi_ha_tb", "-o", str(sim_mut), *map(str, mut_sources)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    run_mut = subprocess.run(
+        ["vvp", "-n", str(sim_mut), "+num_swaps=50"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    combined = run_mut.stdout + run_mut.stderr
+    assert run_mut.returncode != 0 or "[FAIL]" in combined, (
+        "Corrupted binary tree priority encoder was NOT caught by kpol_bram_pipeline_axi_ha_tb.sv"
+    )
+    assert "[FAIL]" in combined
+
+    # 2. Direct 256-bit combinational equivalence TB (walking-1, walking-2, dense & random patterns + mutant)
+    eq_tb = tmp_path / "tree_256w_equiv_tb.sv"
+    eq_tb.write_text(
+        "`timescale 1ns/1ps\n"
+        "module tree_256w_equiv_tb;\n"
+        "  localparam int WORDS_TOTAL = 256;\n"
+        "  localparam int ADDR_WIDTH  = 8;\n"
+        "  logic [255:0] dirty_search_mask_w;\n"
+        "  wire [WORDS_TOTAL-1:0]            tree_valid [0:ADDR_WIDTH];\n"
+        "  wire [WORDS_TOTAL*ADDR_WIDTH-1:0] tree_addr  [0:ADDR_WIDTH];\n"
+        "  genvar g_idx, g_lvl, g_k;\n"
+        "  generate\n"
+        "    for (g_idx = 0; g_idx < WORDS_TOTAL; g_idx = g_idx + 1) begin : gen_tree_leaf\n"
+        "      localparam logic [31:0] LEAF_IDX_U32 = g_idx;\n"
+        "      assign tree_valid[0][g_idx] = dirty_search_mask_w[g_idx];\n"
+        "      assign tree_addr[0][g_idx * ADDR_WIDTH +: ADDR_WIDTH] = LEAF_IDX_U32[ADDR_WIDTH-1:0];\n"
+        "    end\n"
+        "    for (g_lvl = 0; g_lvl < ADDR_WIDTH; g_lvl = g_lvl + 1) begin : gen_tree_lvl\n"
+        "      localparam int ACTIVE_NODES = (WORDS_TOTAL >> (g_lvl + 1));\n"
+        "      for (g_k = 0; g_k < ACTIVE_NODES; g_k = g_k + 1) begin : gen_tree_node\n"
+        "        assign tree_valid[g_lvl + 1][g_k] = tree_valid[g_lvl][2 * g_k] | tree_valid[g_lvl][2 * g_k + 1];\n"
+        "`ifdef MUTANT_SWAP_TREE_HALF\n"
+        "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+        "            ? tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+        "            : tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH];\n"
+        "`else\n"
+        "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+        "            ? tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+        "            : tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH];\n"
+        "`endif\n"
+        "      end\n"
+        "      for (g_k = ACTIVE_NODES; g_k < WORDS_TOTAL; g_k = g_k + 1) begin : gen_tree_pad\n"
+        "        assign tree_valid[g_lvl + 1][g_k] = 1'b0;\n"
+        "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = '0;\n"
+        "      end\n"
+        "    end\n"
+        "  endgenerate\n"
+        "  wire tree_has = tree_valid[ADDR_WIDTH][0];\n"
+        "  wire [ADDR_WIDTH-1:0] tree_out = tree_valid[ADDR_WIDTH][0] ? tree_addr[ADDR_WIDTH][0 +: ADDR_WIDTH] : '0;\n"
+        "  logic lin_has;\n"
+        "  logic [ADDR_WIDTH-1:0] lin_out;\n"
+        "  always_comb begin\n"
+        "    lin_has = 1'b0;\n"
+        "    lin_out = '0;\n"
+        "    for (int idx = 0; idx < WORDS_TOTAL; idx = idx + 1) begin\n"
+        "      if (!lin_has && dirty_search_mask_w[idx]) begin\n"
+        "        lin_has = 1'b1;\n"
+        "        lin_out = idx[ADDR_WIDTH-1:0];\n"
+        "      end\n"
+        "    end\n"
+        "  end\n"
+        "  task automatic check_mask(input [255:0] m);\n"
+        "    begin\n"
+        "      dirty_search_mask_w = m;\n"
+        "      #1;\n"
+        "      if ((tree_has !== lin_has) || (tree_out !== lin_out)) begin\n"
+        "        $display(\"[FAIL] tree=(%0b,%0d) != lin=(%0b,%0d)\", tree_has, tree_out, lin_has, lin_out);\n"
+        "        $fatal(1);\n"
+        "      end\n"
+        "    end\n"
+        "  endtask\n"
+        "  initial begin\n"
+        "    check_mask(256'd0);\n"
+        "    check_mask({256{1'b1}});\n"
+        "    for (int i = 0; i < 256; i = i + 1) begin\n"
+        "      check_mask(256'd1 << i);\n"
+        "      for (int j = i + 1; j < 256; j = j + 17) begin\n"
+        "        check_mask((256'd1 << i) | (256'd1 << j));\n"
+        "      end\n"
+        "    end\n"
+        "    $display(\"PASS: 256-word binary tree priority encoder matches linear encoder\");\n"
+        "    $finish;\n"
+        "  end\n"
+        "endmodule\n",
+        encoding="utf-8",
+    )
+    eq_ok = tmp_path / "eq_ok.vvp"
+    subprocess.run(["iverilog", "-g2012", "-o", str(eq_ok), str(eq_tb)], check=True)
+    res_eq_ok = subprocess.run(["vvp", "-n", str(eq_ok)], capture_output=True, text=True, check=True)
+    assert "PASS: 256-word binary tree priority encoder matches linear encoder" in res_eq_ok.stdout
+
+    eq_mut = tmp_path / "eq_mut.vvp"
+    subprocess.run(["iverilog", "-g2012", "-DMUTANT_SWAP_TREE_HALF", "-o", str(eq_mut), str(eq_tb)], check=True)
+    res_eq_mut = subprocess.run(["vvp", "-n", str(eq_mut)], capture_output=True, text=True)
+    assert res_eq_mut.returncode != 0 or "[FAIL]" in (res_eq_mut.stdout + res_eq_mut.stderr)
 
 
 @pytest.mark.skipif(

@@ -5007,6 +5007,24 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M6_broken_tree_priority_encoder.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M6_broken_tree_priority_encoder.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M6_broken_tree_priority_encoder.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/cfg_p_ha_formal_provenance.json",
       "direction": "Research",
       "wp_type": "Data",
@@ -5080,6 +5098,18 @@
     },
     {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/sim_c4_b_we_at_swap.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/tree_equiv_256w_miter.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/tree_equiv_256w_miter.yosys.log",
       "direction": "Research",
       "wp_type": "Data",
       "immutable_input": false
