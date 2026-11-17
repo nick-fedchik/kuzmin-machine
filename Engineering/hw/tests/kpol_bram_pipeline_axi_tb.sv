@@ -34,8 +34,8 @@ module kpol_bram_pipeline_axi_tb;
     logic commit_cid_audit_mode = 0;
     integer commit_cid_idx = 0;
     integer reject_pulse_cnt = 0;
-    logic [5:0] expected_commit_cids [0:2];
-    logic [31:0] expected_commit_states [0:2];
+    logic [5:0] expected_commit_cids [0:4];
+    logic [31:0] expected_commit_states [0:4];
 
     always #5 clk = ~clk;
     always @(posedge clk) begin
@@ -50,7 +50,7 @@ module kpol_bram_pipeline_axi_tb;
                 if (hw_commit_pulse_o && hw_reject_pulse_o)
                     $fatal(1, "[FAIL] commit_cid_audit: simultaneous commit and reject pulses");
                 if (hw_commit_pulse_o) begin
-                    if (commit_cid_idx >= 3)
+                    if (commit_cid_idx >= 5)
                         $fatal(1, "[FAIL] commit_cid_audit: unexpected extra commit pulse #%0d (cid=%0d)",
                                commit_cid_idx, hw_commit_cid_o);
                     if (hw_commit_cid_o !== expected_commit_cids[commit_cid_idx])
@@ -61,6 +61,9 @@ module kpol_bram_pipeline_axi_tb;
                 if (hw_reject_pulse_o) begin
                     if (hw_commit_pulse_o !== 1'b0)
                         $fatal(1, "[FAIL] commit_cid_audit: hw_commit_pulse_o != 0 during reject");
+                    if (hw_commit_cid_o !== 6'd57)
+                        $fatal(1, "[FAIL] commit_cid_audit: expected reject cid=57, got cid=%0d",
+                               hw_commit_cid_o);
                     reject_pulse_cnt = reject_pulse_cnt + 1;
                 end
             end
@@ -215,9 +218,13 @@ module kpol_bram_pipeline_axi_tb;
             expected_commit_cids[0] = 6'd3;
             expected_commit_cids[1] = 6'd19;
             expected_commit_cids[2] = 6'd42;
+            expected_commit_cids[3] = 6'd42;
+            expected_commit_cids[4] = 6'd19;
             expected_commit_states[0] = 32'd105;
             expected_commit_states[1] = 32'd305;
             expected_commit_states[2] = 32'd705;
+            expected_commit_states[3] = 32'd710;
+            expected_commit_states[4] = 32'd310;
             commit_cid_audit_mode = 1'b1;
             repeat (3) @(negedge clk);
             rst_n = 1;
@@ -239,13 +246,35 @@ module kpol_bram_pipeline_axi_tb;
                 $fatal(1, "[FAIL] commit_cid_audit: expected final state %0d, got %0d",
                        expected_commit_states[2], hw_last_committed_state_o);
 
-            // 2. Подаємо подію на CID = 57 -> відхилення інваріантом (hw_reject_pulse_o == 1, hw_commit_pulse_o == 0)
+            // 2. Подаємо подію на CID = 57 -> відхилення інваріантом (hw_reject_pulse_o == 1,
+            // hw_commit_pulse_o == 0, hw_commit_cid_o == 6'd57 у такт reject)
             send_hw_trigger(6'd57, 32'd1);
             if (commit_cid_idx !== 3 || reject_pulse_cnt !== 1)
                 $fatal(1, "[FAIL] commit_cid_audit: after reject expected 3 commits and 1 reject, got %0d / %0d",
                        commit_cid_idx, reject_pulse_cnt);
 
-            $display("PASS: axi commit_cid_audit (cids=3,19,42 reject_cid=57)");
+            // 3. Подаємо дві back-to-back тригеровані події в сусідніх тактах (CID = 42, потім CID = 19
+            // з вимкненою підпискою) для перевірки відсутності дублювання строба commit_pulse_o
+            write_descriptor(6'd19, 32'd305, 32'd5, 32'h0300_0300, 32'd0);
+            @(negedge clk);
+            ext_hw_trigger_cid_i   = 6'd42;
+            ext_hw_trigger_param_i = 32'd1;
+            ext_hw_trigger_valid_i = 1'b1;
+            @(negedge clk);
+            ext_hw_trigger_cid_i   = 6'd19;
+            ext_hw_trigger_param_i = 32'd1;
+            ext_hw_trigger_valid_i = 1'b1;
+            @(negedge clk);
+            ext_hw_trigger_valid_i = 1'b0;
+            wait_idle();
+            if (commit_cid_idx !== 5 || reject_pulse_cnt !== 1)
+                $fatal(1, "[FAIL] commit_cid_audit: after back-to-back expected 5 commits and 1 reject, got %0d / %0d",
+                       commit_cid_idx, reject_pulse_cnt);
+            if (hw_last_committed_state_o !== expected_commit_states[4])
+                $fatal(1, "[FAIL] commit_cid_audit: expected back-to-back final state %0d, got %0d",
+                       expected_commit_states[4], hw_last_committed_state_o);
+
+            $display("PASS: axi commit_cid_audit (cids=3,19,42,42,19 reject_cid=57)");
             $finish;
         end
         if ($test$plusargs("b4_race_audit")) begin

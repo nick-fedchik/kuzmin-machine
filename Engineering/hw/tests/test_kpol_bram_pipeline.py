@@ -737,7 +737,7 @@ def test_axi_hw_commit_cid_diagnostic_output(tmp_path):
     )
     out = result.stdout + result.stderr
     assert result.returncode == 0, out
-    assert "PASS: axi commit_cid_audit (cids=3,19,42 reject_cid=57)" in out, out
+    assert "PASS: axi commit_cid_audit (cids=3,19,42,42,19 reject_cid=57)" in out, out
 
 
 AXI_PYNQ_MUTANTS = [
