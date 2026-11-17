@@ -1,0 +1,72 @@
+{
+  "command": "detect",
+  "count": 1,
+  "devices": [
+    {
+      "description": "LogicTracer capture",
+      "device": {
+        "blast_frequency_hz": 200000000,
+        "board": "PICO",
+        "buffer_bytes": 131072,
+        "channels": 24,
+        "clock_domain": "async",
+        "edge_sensitive_trigger": true,
+        "firmware_family": "logictracer",
+        "firmware_version": "0.5.0",
+        "gpio_map": {
+          "1": 2,
+          "10": 11,
+          "11": 12,
+          "12": 13,
+          "13": 14,
+          "14": 15,
+          "15": 16,
+          "16": 17,
+          "17": 18,
+          "18": 19,
+          "19": 20,
+          "2": 3,
+          "20": 21,
+          "21": 22,
+          "22": 26,
+          "23": 27,
+          "24": 28,
+          "3": 4,
+          "4": 5,
+          "5": 6,
+          "6": 7,
+          "7": 8,
+          "8": 9,
+          "9": 10,
+          "ext_trigger": 1
+        },
+        "max_frequency_hz": 100000000,
+        "max_immediate_samples": {
+          "16ch": 65534,
+          "24ch": 32766,
+          "8ch": 131070
+        },
+        "max_samples": {
+          "16ch": 65536,
+          "24ch": 32768,
+          "8ch": 131072
+        },
+        "min_frequency_hz": 3051,
+        "port": "/dev/ttyACM0",
+        "protocol": "v6",
+        "segment_trigger_times": true,
+        "serial_number": "E66118604B78A622",
+        "version": "LOGICTRACER_PICO_0.5.0"
+      },
+      "manufacturer": "LogicTracer",
+      "port": "/dev/ttyACM0",
+      "responding": true,
+      "serial_number": "E66118604B78A622",
+      "usb_id": "1209:3020",
+      "vid_pid_match": true
+    }
+  ],
+  "schema_version": 1,
+  "status": "OK",
+  "warnings": []
+}

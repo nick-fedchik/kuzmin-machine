@@ -1,0 +1,9 @@
+phase,evidence_kind,active_bank,rule_threshold_ge,stimulus_x,expected_commit,observed_w0,commits_total,rejects_total,swap_wait_cycles,last_seq_exec_cycles,seq_anomaly_count
+Phase1_Event1_X50_Reject,physical_hil_pynq_z1,0,100,50,0,0,0,1,0,8,0
+Phase1_Event2_X120_Commit,physical_hil_pynq_z1,0,100,120,1,1,1,1,0,8,0
+Phase2_Event3_X50_PreSwap_Reject,physical_hil_pynq_z1,0,100,50,0,1,1,2,0,8,0
+Phase2_Event4_X120_PreSwap_Commit_Mirrored,physical_hil_pynq_z1,0,100,120,1,2,2,2,0,8,0
+Phase3_Atomic_Bank_Swap_Commit_0_to_1,physical_hil_pynq_z1,1,40,0,0,2,2,2,1,8,0
+Phase4_Event5_X50_PostSwap_Immediate_Commit,physical_hil_pynq_z1,1,40,50,1,3,3,2,1,8,0
+Phase4_Swap3_16B_Override_W0_500_Commit,physical_hil_pynq_z1,1,40,50,1,501,6,4,1,8,0
+Stress_10000_Swaps_40000_Events_Summary,physical_hil_pynq_z1,1,100,50,1,501,25000,15000,1,8,0

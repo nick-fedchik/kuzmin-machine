@@ -27,7 +27,7 @@ nextpnr-himbaechel \
   --chipdb "$CHIPDB" --device xc7z020clg400-1 \
   -o xdc="$SCRIPT_DIR/kpol_bram_pipeline_ha.xdc" \
   --json "$BUILD_DIR/pipeline_ha.json" -o fasm="$BUILD_DIR/pipeline_ha.fasm" \
-  --router router2 --seed 1 --freq 100 --timing-allow-fail --report "$BUILD_DIR/nextpnr-report.json" \
+  --router router2 --seed 8 --freq 100 --report "$BUILD_DIR/nextpnr-report.json" \
   --log "$BUILD_DIR/nextpnr.log"
 
 if command -v fpga-as >/dev/null 2>&1; then

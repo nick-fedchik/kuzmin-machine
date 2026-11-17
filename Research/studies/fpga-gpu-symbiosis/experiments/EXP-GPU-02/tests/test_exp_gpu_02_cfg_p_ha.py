@@ -33,6 +33,7 @@ HW_DIR = REPO_ROOT / "Engineering" / "hw"
 RTL_CORE = HW_DIR / "rtl" / "core"
 RTL_BUS = HW_DIR / "rtl" / "bus"
 DATA_SIM_DIR = REPO_ROOT / "Research" / "studies" / "fpga-gpu-symbiosis" / "data" / "exp-gpu-02-sim"
+DATA_HIL_DIR = REPO_ROOT / "Research" / "studies" / "fpga-gpu-symbiosis" / "data" / "exp-gpu-02-hil"
 FORMAL_DIR = EXP_DIR / "formal"
 FORMAL_RAW_DIR = FORMAL_DIR / "raw"
 CME2_PROV_PATH = (
@@ -40,6 +41,7 @@ CME2_PROV_PATH = (
 )
 
 sys.path.insert(0, str(EXP_DIR))
+import hil_exp_gpu_02_runner as hil_runner  # noqa: E402
 import rule_injector as ri  # noqa: E402
 
 EXPECTED_AXI_CFG_P_SHA256 = "99ccf4907785ad9e20509367ae1977fc64264cc73de4e34cc5cc71c55771a4e1"
@@ -234,7 +236,7 @@ def test_committed_10k_rtl_simulation_and_yosys_xc7_synthesis_artifacts():
     assert "RAMB36E1                        1" in synth_txt
     assert "RAMB36E1                        2" in synth_txt
     assert "Estimated number of LCs:       1750" in synth_txt
-    assert "Estimated number of LCs:       3867" in synth_txt
+    assert "Estimated number of LCs:       3587" in synth_txt
 
 
 @pytest.mark.skipif(
@@ -483,7 +485,8 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
     assert "1   BUFG" in yosys_txt
 
     nextpnr_txt = nextpnr_log.read_text(encoding="utf-8")
-    assert "7.99 ns logic, 26.66 ns routing" in nextpnr_txt
+    assert "3.10 ns logic, 6.83 ns routing" in nextpnr_txt
+    assert "PASS at 100.00 MHz" in nextpnr_txt
 
     rep = json.loads(report_json.read_text(encoding="utf-8"))
     util = rep["utilization"]
@@ -492,13 +495,14 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
     assert util["PS7"]["used"] == 1
     assert util["BUFGCTRL"]["used"] == 1
     assert util["PAD"]["used"] == 20
-    assert util["SLICE_LUTX"]["used"] == 5934
+    assert util["SLICE_LUTX"]["used"] == 5718
     assert util["SLICE_FFX"]["used"] == 1935
     assert util["CARRY4"]["used"] == 178
 
     fmax_clk = rep["fmax"]["clk"]
     assert fmax_clk["constraint"] == 100
-    assert float(fmax_clk["achieved"]) == pytest.approx(28.86, abs=0.05)
+    assert float(fmax_clk["achieved"]) >= 100.0
+    assert float(fmax_clk["achieved"]) == pytest.approx(100.69, abs=0.05)
 
     sha_line = bit_sha_file.read_text(encoding="utf-8").strip()
     sha_hex, bit_name = sha_line.split()
@@ -512,8 +516,107 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
         )
     )
     if opt_bit.is_file():
-        assert opt_bit.stat().st_size == 4_045_751
+        assert opt_bit.stat().st_size == 4_045_745
         assert hashlib.sha256(opt_bit.read_bytes()).hexdigest() == sha_hex
+
+
+def test_committed_physical_hil_pynq_z1_and_logictracer_artifacts_issue_253():
+    """Verifies physical Zynq-7020 HIL artifacts (10,003 swaps) and LogicTracer Pico captures + mutant controls."""
+    prog_json = DATA_HIL_DIR / "pynq2_program_pl.json"
+    detect_json = DATA_HIL_DIR / "logictracer_detect.json"
+    hil_sum_json = DATA_HIL_DIR / "exp_gpu_02_hil_10k_swaps_summary.json"
+    hil_csv = DATA_HIL_DIR / "exp_gpu_02_hil_timing.csv"
+    lt_100m_json = DATA_HIL_DIR / "logictracer_100mhz_ja2_commit.json"
+    lt_100m_vcd = DATA_HIL_DIR / "logictracer_100mhz_ja2_commit.vcd"
+    lt_100m_md = DATA_HIL_DIR / "logictracer_100mhz_ja2_commit_ai.md"
+    lt_seg_json = DATA_HIL_DIR / "logictracer_segmented_200mhz_blast_ts.json"
+    lt_seg_md = DATA_HIL_DIR / "logictracer_segmented_200mhz_blast_ts_ai.md"
+
+    for p in (
+        prog_json,
+        detect_json,
+        hil_sum_json,
+        hil_csv,
+        lt_100m_json,
+        lt_100m_vcd,
+        lt_100m_md,
+        lt_seg_json,
+        lt_seg_md,
+    ):
+        assert p.is_file(), f"Missing physical HIL artifact: {p}"
+
+    sha_hex = (DATA_SIM_DIR / "openxc7_ha_bitstream.sha256").read_text(encoding="utf-8").split()[0]
+    prog = json.loads(prog_json.read_text(encoding="utf-8"))
+    assert prog["fpga_state"] == "operating"
+    assert prog["part"] == "xc7z020clg400-1"
+    assert prog["sha256"] == sha_hex
+
+    det = json.loads(detect_json.read_text(encoding="utf-8"))
+    assert det["status"] == "OK"
+    dev = det["devices"][0]["device"]
+    assert dev["version"] == "LOGICTRACER_PICO_0.5.0"
+    assert dev["max_frequency_hz"] == 100_000_000
+    assert dev["blast_frequency_hz"] == 200_000_000
+
+    hil_sum = json.loads(hil_sum_json.read_text(encoding="utf-8"))
+    hil_runner.validate_hil_summary(hil_sum)
+    assert hil_sum["bitstream_sha256"] == sha_hex
+
+    with hil_csv.open("r", encoding="utf-8") as f:
+        csv_rows = list(csv.DictReader(f))
+    assert len(csv_rows) == 8
+    assert all(r["evidence_kind"] == "physical_hil_pynq_z1" for r in csv_rows)
+    assert all(int(r["last_seq_exec_cycles"]) == 8 for r in csv_rows)
+    assert all(int(r["seq_anomaly_count"]) == 0 for r in csv_rows)
+
+    # Verify 100 MS/s (10 ns) LogicTracer capture of JA2_COMMIT (CH2 = GP3)
+    cap100 = json.loads(lt_100m_json.read_text(encoding="utf-8"))
+    assert cap100["status"] == "OK"
+    assert cap100["capture"]["sample_rate_hz"] == 100_000_000
+    assert cap100["capture"]["sample_period_ns"] == 10.0
+    ch2_100 = cap100["capture"]["channels"][1]
+    assert ch2_100["name"] == "JA2_COMMIT"
+    assert ch2_100["gpio"] == 3
+    assert ch2_100["pulse_count_high"] == 7
+    edges_100 = ch2_100["edge_samples"]
+    assert len(edges_100) == 14
+    widths_100 = [edges_100[2 * i + 1] - edges_100[2 * i] for i in range(7)]
+    assert widths_100 == [10, 10, 10, 10, 10, 10, 10]
+
+    # Verify 7-segment capture with 200 MHz (5.0 ns) blast trigger timestamps
+    cap_seg = json.loads(lt_seg_json.read_text(encoding="utf-8"))
+    assert cap_seg["status"] == "OK"
+    assert cap_seg["device"]["blast_frequency_hz"] == 200_000_000
+    seg_layout = cap_seg["segments"]["layout"]
+    assert seg_layout["count"] == 7
+    assert seg_layout["trigger_time_resolution_ns"] == 5.0
+    assert len(seg_layout["trigger_times_us"]) == 7
+    ch2_seg = cap_seg["capture"]["channels"][1]
+    edges_seg = ch2_seg["edge_samples"]
+    assert len(edges_seg) == 14
+    widths_seg = [edges_seg[2 * i + 1] - edges_seg[2 * i] for i in range(7)]
+    assert all(10 <= w <= 11 for w in widths_seg)
+
+    # Negative / mutant controls on validate_hil_summary (AGENTS.md §4.1)
+    mut_cases = [
+        ("mock_label", lambda d: d.update({"evidence_kind": "rtl_simulation_iverilog"})),
+        ("not_physical_flag", lambda d: d.update({"not_physical_hil": True})),
+        ("wrong_hw_id", lambda d: d.update({"hw_id_hex": "0x4b504d43"})),
+        ("phase1_false_commit", lambda d: d["phases_1_4"].update({"p1_e1_x50_w0": 1})),
+        ("phase2_shadow_leak", lambda d: d["phases_1_4"].update({"p2_active_c0_w1_before_swap": 40})),
+        ("phase2_dropped_w0_mirror", lambda d: d["phases_1_4"].update({"p2_e4_x120_pre_swap_sh_w0": 1})),
+        ("phase4_stale_rule_after_swap", lambda d: d["phases_1_4"].update({"p4_e5_x50_post_swap_w0": 2})),
+        ("phase4_broken_w0_override", lambda d: d["phases_1_4"].update({"p4_post_override_w0": 6})),
+        ("stress_torn_read", lambda d: d["stress_10k"].update({"torn_read_errors": 1})),
+        ("stress_bram_collision", lambda d: d["stress_10k"].update({"bram_collision_count": 1})),
+        ("stress_seq_stall", lambda d: d["stress_10k"].update({"last_seq_exec_cycles": 9})),
+        ("stress_swap_wait_bound", lambda d: d["stress_10k"].update({"swap_wait_max_cycles": 9})),
+    ]
+    for mname, mutate_fn in mut_cases:
+        bad = json.loads(json.dumps(hil_sum))
+        mutate_fn(bad)
+        with pytest.raises(ValueError), pytest.MonkeyPatch.context():
+            hil_runner.validate_hil_summary(bad)
 
 
 @pytest.mark.skipif(

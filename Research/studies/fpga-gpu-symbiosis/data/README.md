@@ -1,9 +1,9 @@
 # Каталог первинних вимірювальних даних (Data)
 
-* **Версія:** 0.4.0
+* **Версія:** 0.4.1
 * **Дата:** 2026-11-17
 * **Тип WP:** Guide
-* **Статус:** Наповнено: збережено сирі дані GPU Фази 3–4 у [`exp-gpu-01-phase3/`](exp-gpu-01-phase3/) ([#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225)), натурні траси `LOGICTRACER_PICO_0.5.0` @ `100 МГц` і міжплатні серії `PYNQ-Z1 -> Jetson AGX Orin` ($R = 5 \times 1\,000$ подій) у [`exp-gpu-01-crossboard/`](exp-gpu-01-crossboard/) (`Part of` [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)), симуляційні/P&R артефакти `EXP-GPU-02` у [`exp-gpu-02-sim/`](exp-gpu-02-sim/) ([#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253)) та дані гетерогенних підписників у [`exp-gpu-03/`](exp-gpu-03/) ([#256](https://github.com/nick-fedchik/kuzmin-machine/issues/256)).
+* **Статус:** Наповнено: збережено сирі дані GPU Фази 3–4 у [`exp-gpu-01-phase3/`](exp-gpu-01-phase3/) ([#225](https://github.com/nick-fedchik/kuzmin-machine/issues/225)), натурні траси `LOGICTRACER_PICO_0.5.0` @ `100 МГц` і міжплатні серії `PYNQ-Z1 -> Jetson AGX Orin` ($R = 5 \times 1\,000$ подій) у [`exp-gpu-01-crossboard/`](exp-gpu-01-crossboard/) (`Part of` [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)), симуляційні/P&R артефакти `EXP-GPU-02` у [`exp-gpu-02-sim/`](exp-gpu-02-sim/) ([#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253)), натурні HIL-вимірювання `10 003` гарячих перемикань на `pynq2` та осцилограми `LOGICTRACER_PICO_0.5.0` у [`exp-gpu-02-hil/`](exp-gpu-02-hil/) (`Closes` [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253)) та дані гетерогенних підписників у [`exp-gpu-03/`](exp-gpu-03/) ([#256](https://github.com/nick-fedchik/kuzmin-machine/issues/256)).
 * **Власник:** Микола Федчик.
 
 ## Призначення каталогу
@@ -22,6 +22,7 @@
 
 | Версія | Дата | Автор | Зміни |
 |---|---|---|---|
+| 0.4.1 | 2026-11-17 | GitHub Copilot CLI | #253: зареєстровано підкаталог `exp-gpu-02-hil/` із натурними HIL-даними `10 003` гарячих перемикань `CFG-P-HA` на `PYNQ-Z1` (`pynq2`, `100.69 МГц` P&R) та осцилограмами `LOGICTRACER_PICO_0.5.0` (`100 MS/s` + 200-МГц blast-таймер). |
 | 0.4.0 | 2026-11-17 | GitHub Copilot CLI | #226: зареєстровано каталог `exp-gpu-01-crossboard/` із живими трасами `LOGICTRACER_PICO_0.5.0` (`100 МГц`, `.json`/`.vcd`) на `pynq2` та серією $R=5 \times 1\,000$ подій міжплатного контуру `PYNQ-Z1 -> GbE -> Jetson AGX Orin J501`. |
 | 0.3.2 | 2026-11-16 | GitHub Copilot CLI | #252: зареєстровано підкаталог `exp-gpu-02-sim/` (симуляційні траси `10 000` перемикань `CFG-P-HA` та лог синтезу `Yosys XC7`; явно відокремлено від натурного HIL у #253). |
 | 0.3.1 | 2026-11-15 | GitHub Copilot CLI (`gemini-4-hydrogen`) | #229: додано серію `run-03-ab-scaling-10k.log`, `sass-sm87-02.txt` та `ab_*_10k.json` (10 000 подій, 95% bootstrap CI, A/B `packed` vs `isolated`). |

@@ -204,37 +204,73 @@ module km_concept_bram_dual_ha #(
         .collision_detected_o(bank1_col)
     );
 
-    // Обчислення наступної бітової маски змінених слів та пошук першого dirty-слова
+    // Обчислення наступної бітової маски змінених слів та пошук першого dirty-слова.
+    // Пошук першого зміненого слова реалізовано одним збалансованим бінарним деревом
+    // пріоритетного кодера глибини ADDR_WIDTH (log2(WORDS_TOTAL) = 8 рівнів 2:1 для 256 слів)
+    // над маскою dirty_search_mask_w:
+    //   - у стані SYNC_IDLE (при swap_commit_w) dirty_search_mask_w === dirty_word_q;
+    //   - у станах SYNC_READ / SYNC_WRITE скидається біт sync_addr_q (у SYNC_WRITE) та
+    //     біт b_addr_i (при повному записі Port B).
+    // Оскільки у станах SYNC_READ / SYNC_WRITE ніколи не активні sync_load_accept та
+    // hot_write_accept, з входу дерева пошуку виключено 256-бітний демультиплексор Port A,
+    // що скорочує і площу SLICE_LUTX, і критичний шлях без зміни індуктивних інваріантів!
     logic [WORDS_TOTAL-1:0] dirty_next_w;
+    logic [WORDS_TOTAL-1:0] dirty_search_mask_w;
     logic                   next_has_dirty_w;
     logic [ADDR_WIDTH-1:0]  next_dirty_addr_w;
 
-    always_comb begin
-        dirty_next_w = dirty_word_q;
+    /* verilator lint_off UNUSEDSIGNAL */
+    /* verilator lint_off UNOPTFLAT */
+    wire [WORDS_TOTAL-1:0]                 tree_valid [0:ADDR_WIDTH];
+    wire [WORDS_TOTAL-1:0][ADDR_WIDTH-1:0] tree_addr  [0:ADDR_WIDTH];
+    /* verilator lint_on UNOPTFLAT */
+    /* verilator lint_on UNUSEDSIGNAL */
 
+    genvar g_idx, g_lvl, g_k;
+    generate
+        for (g_idx = 0; g_idx < WORDS_TOTAL; g_idx = g_idx + 1) begin : gen_tree_leaf
+            localparam logic [31:0] LEAF_IDX_U32 = g_idx;
+            assign tree_valid[0][g_idx] = dirty_search_mask_w[g_idx];
+            assign tree_addr[0][g_idx]  = LEAF_IDX_U32[ADDR_WIDTH-1:0];
+        end
+
+        for (g_lvl = 0; g_lvl < ADDR_WIDTH; g_lvl = g_lvl + 1) begin : gen_tree_lvl
+            localparam int ACTIVE_NODES = (WORDS_TOTAL >> (g_lvl + 1));
+            for (g_k = 0; g_k < ACTIVE_NODES; g_k = g_k + 1) begin : gen_tree_node
+                assign tree_valid[g_lvl + 1][g_k] = tree_valid[g_lvl][2 * g_k] | tree_valid[g_lvl][2 * g_k + 1];
+                assign tree_addr[g_lvl + 1][g_k]  = tree_valid[g_lvl][2 * g_k]
+                                                  ? tree_addr[g_lvl][2 * g_k]
+                                                  : tree_addr[g_lvl][2 * g_k + 1];
+            end
+            for (g_k = ACTIVE_NODES; g_k < WORDS_TOTAL; g_k = g_k + 1) begin : gen_tree_pad
+                assign tree_valid[g_lvl + 1][g_k] = 1'b0;
+                assign tree_addr[g_lvl + 1][g_k]  = '0;
+            end
+        end
+    endgenerate
+
+    always_comb begin
+        dirty_search_mask_w = dirty_word_q;
+        if (sync_busy_w) begin
+            if (sync_state_q == SYNC_WRITE) begin
+                dirty_search_mask_w[sync_addr_q] = 1'b0;
+            end
+            if (b_we_i && (b_wstrb_i == 4'hf)) begin
+                dirty_search_mask_w[b_addr_i] = 1'b0;
+            end
+        end
+
+        dirty_next_w = dirty_search_mask_w;
         if (sync_load_accept) begin
             if (a_wstrb_i == 4'hf) begin
                 dirty_next_w[a_addr_i] = 1'b0;
             end
         end else if (hot_write_accept) begin
             dirty_next_w[a_addr_i] = 1'b1;
-        end else if (sync_busy_w) begin
-            if (sync_state_q == SYNC_WRITE) begin
-                dirty_next_w[sync_addr_q] = 1'b0;
-            end
-            if (b_we_i && (b_wstrb_i == 4'hf)) begin
-                dirty_next_w[b_addr_i] = 1'b0;
-            end
         end
 
-        next_has_dirty_w  = 1'b0;
-        next_dirty_addr_w = '0;
-        for (int idx = 0; idx < WORDS_TOTAL; idx = idx + 1) begin
-            if (!next_has_dirty_w && dirty_next_w[idx]) begin
-                next_has_dirty_w  = 1'b1;
-                next_dirty_addr_w = idx[ADDR_WIDTH-1:0];
-            end
-        end
+        next_has_dirty_w  = tree_valid[ADDR_WIDTH][0];
+        next_dirty_addr_w = tree_valid[ADDR_WIDTH][0] ? tree_addr[ADDR_WIDTH][0] : '0;
     end
 
     wire sync_read_b_same_addr = (sync_state_q == SYNC_READ) && b_we_i && (b_addr_i == sync_addr_q);

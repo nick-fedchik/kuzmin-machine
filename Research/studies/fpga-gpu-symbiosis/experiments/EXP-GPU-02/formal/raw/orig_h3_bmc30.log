@@ -1,5 +1,5 @@
-# cmd: yosys-smtbmc --noprogress -s z3 --noincr -S tactic.default_tactic=qfbv -t 0:30:30 /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_h3_bmc30.smt2
-# timestamp: 2026-11-16T22:38:59.258096+02:00
+# cmd: yosys-smtbmc --noprogress -s z3 --noincr -S tactic.default_tactic=qfbv -t 0:30:30 /home/mfedchyk/GitHub/nick-fedchik/km-wt-253-hil-complete/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_h3_bmc30.smt2
+# timestamp: 2026-11-17T16:34:54.916589+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Checking assertions in steps 0 to 29..
-##   0:00:07  Status: PASSED
+##   0:00:01  Status: PASSED
