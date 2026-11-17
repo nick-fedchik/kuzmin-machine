@@ -1149,11 +1149,13 @@ def test_s5_negative_and_mutant_controls_hmac_rtl_vm_and_cycles():
         # M2a: Mutate C0 action_opcode in W2[31:24] from INC (0x01) to DEC (0x02)
         mut_opcode_img = bytearray(raw_c4)
         assert mut_opcode_img[11] == 0x01  # CID 0, W2 byte 3 = action_opcode INC
-        mut_opcode_img[11] = 0x02          # Mutate to DEC
+        mut_opcode_img[11] = 0x02          # Mutate to DEC (10 - 1 = 9 -> C1 guard C0 > 10 rejects!)
         for vvp in (vvp_cfgp, vvp_cfgp_ha):
             rtl_m2a = _run_axi_rtl_trace(vvp, scratch, bytes(mut_opcode_img), rtl_ops, "m2a_opc")
             assert rtl_m2a["slots"] != ref["slots"], "Mutant M2a (INC->DEC) must diverge from Interpreter"
-            assert rtl_m2a["slots"][0][0] == 9 and ref["slots"][0][0] == 11
+            assert [ref["slots"][i][0] for i in range(4)] == [11, 1, 1, 1]
+            assert [rtl_m2a["slots"][i][0] for i in range(4)] == [9, 0, 2, 0]
+            assert rtl_m2a["summary"]["commits"] == 1 and rtl_m2a["summary"]["rejects"] == 1
 
         # M2b: Mutate C1 threshold in W1 (offset 16 + 4 = 20) from GT 10 to GT 50
         mut_thresh_img = bytearray(raw_c4)
@@ -1162,7 +1164,9 @@ def test_s5_negative_and_mutant_controls_hmac_rtl_vm_and_cycles():
         for vvp in (vvp_cfgp, vvp_cfgp_ha):
             rtl_m2b = _run_axi_rtl_trace(vvp, scratch, bytes(mut_thresh_img), rtl_ops, "m2b_thr")
             assert rtl_m2b["slots"] != ref["slots"], "Mutant M2b (threshold 10->50) must diverge from Interpreter"
-            assert rtl_m2b["summary"]["rejects"] == 1 and ref["summary"]["rejects"] == 0
+            assert [rtl_m2b["slots"][i][0] for i in range(4)] == [11, 0, 2, 0]
+            assert rtl_m2b["summary"]["commits"] == 1 and rtl_m2b["summary"]["rejects"] == 1
+            assert ref["summary"]["commits"] == 4 and ref["summary"]["rejects"] == 0
 
         # --- Mutant M3: Do/Go bytecode mutations caught by ReferenceDoGoVM ---
         auth_art = ka.lower_document(THERMAL_GRAPH_SOURCE)
@@ -1172,7 +1176,11 @@ def test_s5_negative_and_mutant_controls_hmac_rtl_vm_and_cycles():
         corrupted_code[corrupted_code.index(add_word)] = sub_word
         vm_m3a = ReferenceDoGoVM(replace(auth_art, code_o=tuple(corrupted_code)))
         vm_m3a.trigger_external(0, 25)
+        # With ADD->SUB: 25 - ((25 - 20) * 5) = 0 < Lower=10 -> Heater aborts (retains 10),
+        # sets big_dot_ok[1]=1, and triggers OnAbort(Heater) -> Alarm=1, Fan=100
         assert vm_m3a.val_cur != [25, 50, 50, 0], "Mutant M3a (ADD->SUB) must diverge on ReferenceDoGoVM"
+        assert vm_m3a.val_cur == [25, 10, 100, 1]
+        assert vm_m3a.big_dot_ok == [0, 1, 0, 0]
 
         exit_word = lowering_mod.km_pack_instr(lowering_mod.KM_OPC_EXIT, 0, 0, 0)
         no_exit_code = list(auth_art.code_o)
@@ -1183,24 +1191,70 @@ def test_s5_negative_and_mutant_controls_hmac_rtl_vm_and_cycles():
         with pytest.raises(AssertionError, match="Unexpected opcode 0x0|missing KM_OPC_EXIT"):
             vm_m3b.trigger_external(0, 25)
 
-        # --- Mutant M4: Weakened cycle validator mutants in KPOL-AUTH ---
+        # --- Mutant M4: Partial / weakened cycle validator mutants in KPOL-AUTH ---
         self_loop_ast = ka.parse_kpol_auth("Concept(C0, 1)\nC0 • Assign(C0, C0 + 1)")
-        with mock.patch.object(lowering_mod, "_validate_bram_acyclic", lambda *a, **k: None):
-            # When validator is stubbed out, the cycle slips through (proving our test catches it)
-            slipped = ka.lower_document(self_loop_ast)
-            assert len(slipped.bram_image) == 1024
-        with pytest.raises(ka.KpolAuthLoweringError) as ctx_real:
-            ka.lower_document(self_loop_ast)
-        assert ctx_real.value.code == "KPOL-LOWER-CYCLE"
+        two_node_cycle_ast = ka.parse_kpol_auth(
+            "Concept(A, 0)\nConcept(B, 0)\nA • Assign(B, A + 1)\nB • Assign(A, B + 1)"
+        )
 
-        # --- Mutant M5: Weakened uncertainty gate in KPOL-AUTH ---
-        lexer_mod = sys.modules["kpol_auth.lexer"]
-        with mock.patch.object(lexer_mod, "emit_uncertainty", lambda *a, **k: None):
-            prog_slipped = ka.parse_kpol_auth("#legacy_comment")
-            assert prog_slipped.diagnostics == ()
-        with pytest.raises(ka.KpolAuthError) as ctx_u05:
-            ka.parse_kpol_auth("#legacy_comment")
-        assert ctx_u05.value.diagnostic.code == "KPOL-AUTH-U05"
+        # M4a: Weakened validator checks only distinct 2-node cycles (u != v) and misses self-loop u == v
+        def _defective_no_self_loop_check(edges):
+            edge_set = set(edges)
+            for u, v in edges:
+                if u != v and (v, u) in edge_set:
+                    raise ka.KpolAuthLoweringError("KPOL-LOWER-CYCLE", "2-node cycle only")
+
+        with mock.patch.object(lowering_mod, "_validate_bram_acyclic", _defective_no_self_loop_check):
+            # Still catches 2-node cycle A <-> B, but lets self-loop C0 -> C0 slip through
+            with pytest.raises(ka.KpolAuthLoweringError) as ctx_2node_ok:
+                ka.lower_document(two_node_cycle_ast)
+            assert ctx_2node_ok.value.code == "KPOL-LOWER-CYCLE"
+            slipped_self = ka.lower_document(self_loop_ast)
+            assert struct.unpack("<4I", slipped_self.bram_image[0:16])[3] == 0
+
+        # M4b: Weakened validator checks only self-loops (u == v) and misses 2-node cycle A <-> B
+        def _defective_self_loop_only_check(edges):
+            for u, v in edges:
+                if u == v:
+                    raise ka.KpolAuthLoweringError("KPOL-LOWER-CYCLE", "self-loop only")
+
+        with mock.patch.object(lowering_mod, "_validate_bram_acyclic", _defective_self_loop_only_check):
+            with pytest.raises(ka.KpolAuthLoweringError) as ctx_self_ok:
+                ka.lower_document(self_loop_ast)
+            assert ctx_self_ok.value.code == "KPOL-LOWER-CYCLE"
+            slipped_2node = ka.lower_document(two_node_cycle_ast)
+            assert struct.unpack("<4I", slipped_2node.bram_image[0:16])[3] == 1
+            assert struct.unpack("<4I", slipped_2node.bram_image[16:32])[3] == 0
+
+        for cyc_ast in (self_loop_ast, two_node_cycle_ast):
+            with pytest.raises(ka.KpolAuthLoweringError) as ctx_real:
+                ka.lower_document(cyc_ast)
+            assert ctx_real.value.code == "KPOL-LOWER-CYCLE"
+
+        # --- Mutant M5: Selective uncertainty policy weakening (record-diagnostic) vs fail-closed ---
+        uninit_expr_src = "Concept(A, 1)\nConcept(B, 2)\nA • Assign(B, _ + A)"
+        # Default fail-closed configuration blocks U10 in frontend parser
+        with pytest.raises(ka.KpolAuthError) as ctx_u10_default:
+            ka.parse_kpol_auth(uninit_expr_src)
+        assert ctx_u10_default.value.diagnostic.code == "KPOL-AUTH-U10"
+
+        # Weakening only U10 policy in AuthFrontendConfig allows parse_kpol_auth to succeed with
+        # a recorded diagnostic while keeping U01..U09, U11..U12 fail-closed:
+        weak_cfg = ka.AuthFrontendConfig(policies={"KPOL-AUTH-U10": "record-diagnostic"})
+        with pytest.raises(ka.KpolAuthError) as ctx_u05_still_closed:
+            ka.parse_kpol_auth("#legacy_comment", config=weak_cfg)
+        assert ctx_u05_still_closed.value.diagnostic.code == "KPOL-AUTH-U05"
+
+        prog_u10_recorded = ka.parse_kpol_auth(uninit_expr_src, config=weak_cfg)
+        assert [d.code for d in prog_u10_recorded.diagnostics] == ["KPOL-AUTH-U10"]
+        # Second-stage defense: lower_kpol_auth blocks recorded diagnostics with KPOL-LOWER-UNCERTAINTY
+        with pytest.raises(ka.KpolAuthLoweringError) as ctx_lower_u10:
+            ka.lower_kpol_auth(prog_u10_recorded)
+        assert ctx_lower_u10.value.code == "KPOL-LOWER-UNCERTAINTY"
+        # And if the diagnostics list is stripped, _emit_expr still rejects UninitCST:
+        with pytest.raises(ka.KpolAuthLoweringError) as ctx_lower_cst:
+            ka.lower_kpol_auth(replace(prog_u10_recorded, diagnostics=()))
+        assert ctx_lower_cst.value.code == "KPOL-LOWER-UNSUPPORTED-CST"
 
 
 def generate_acceptance_summary() -> dict:
@@ -1270,10 +1324,11 @@ def generate_acceptance_summary() -> dict:
             "M1_secure_boot_hmac_byte_tamper_and_replay",
             "M2a_bram_action_opcode_inc_to_dec_rtl_divergence",
             "M2b_bram_threshold_w1_10_to_50_rtl_divergence",
-            "M3a_dogo_opcode_add_to_sub_vm_divergence",
+            "M3a_dogo_opcode_add_to_sub_vm_exact_abort_vector",
             "M3b_dogo_missing_exit_opcode_vm_abort",
-            "M4_bram_cycle_validator_stub_caught",
-            "M5_uncertainty_gate_stub_caught",
+            "M4a_bram_cycle_validator_missing_self_loop_caught",
+            "M4b_bram_cycle_validator_missing_2node_cycle_caught",
+            "M5_uncertainty_policy_record_diagnostic_and_lowering_gate",
         ],
     }
 

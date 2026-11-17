@@ -1,7 +1,7 @@
 # Інвентар апаратного забезпечення лабораторного комплексу (Hardware Inventory)
 
-* **Версія:** 1.0.2
-* **Дата:** 2026-11-16
+* **Версія:** 1.0.3
+* **Дата:** 2026-11-17
 * **Тип WP:** Register
 * **Статус:** Дійсний (Approved Baseline)
 * **ASPICE 4.0 процеси:** `MAN.3` (Project Management), `HWE.1` (Hardware Requirements), `HWE.2` (Hardware Design), `HWE.4` (Hardware Integration), `SUP.8` (Configuration Management)
@@ -29,7 +29,7 @@
 | **`pynq1`** | **Digilent PYNQ-Z1**<br/>(Xilinx Zynq-7020 XC7Z020-1CLG400C,<br/>Dual Cortex-A9 @ 650 МГц, 512 МБ DDR3) | IP: `192.168.68.81`<br/>MAC: `9e:5c:1a:8a:bf:53`<br/>SSH порт: 22 (користувач `xilinx`) | Linux 6.6.10-xilinx (v2024.1),<br/>Python 3.10 PYNQ | `/lib/firmware/pipeline.bin`<br/>SHA-256: `095358e2b5ffa5cc...`<br/>Статус: **ACTIVE / VERIFIED** | **Об'єкт випробувань 1 / Генератор стимулів:**<br/>Фізичний апаратний конвеєр `CFG-P`, генерація асинхронних подій для експериментів `AV-05`, `AV-10`, `AV-11`. |
 | **`pynq2`** | **Digilent PYNQ-Z1**<br/>(Xilinx Zynq-7020 XC7Z020-1CLG400C,<br/>Dual Cortex-A9 @ 650 МГц, 512 МБ DDR3) | IP: `192.168.68.69`<br/>MAC: `b2:08:70:48:39:df`<br/>SSH порт: 22 (користувач `xilinx`) | Linux 6.6.10-xilinx (v2024.1),<br/>Python 3.10 PYNQ | `/lib/firmware/pipeline.bin`<br/>SHA-256: `095358e2b5ffa5cc...`<br/>Статус: **ACTIVE / VERIFIED** | **Еталонний об'єкт випробувань 2:**<br/>Базова апаратна перевірка 80-нс BRAM-каскаду `CFG-P`, комутація з HIL-стендом на PMOD JA. |
 | **`jetson` / `j501`** | **Seeed Studio reServer Industrial J501**<br/>(NVIDIA Jetson AGX Orin 64GB, 2048-core Ampere SM 8.7,<br/>12-core Cortex-A78AE, 64 ГБ LPDDR5) | IP: `192.168.68.68`<br/>MAC: `4c:bb:47:4b:a1:98` (eno1)<br/>MAC: `58:04:4f:20:d1:42` (wlan)<br/>SSH порт: 22 (користувач `mfedchyk`) | Ubuntu 22.04 LTS (JetPack 6.1),<br/>CUDA 12.6, SM 8.7,<br/>профіль `MODE_50W` (816 МГц) | Двійковий код `persistent_subscribers`<br/>Статус: **ACTIVE / VERIFIED** | **Масивний паралельний обчислювач:**<br/>Усунення Callback Bottleneck (ADR B6), виконання 1024 підписників подій за 1.69 мкс (чиста математика 41.67 нс). |
-| **`pico`** | **Raspberry Pi Pico (RP2040)**<br/>(Dual Cortex-M0+ @ 125 МГц,<br/>264 КБ SRAM, 2× PIO автомати) | USB CDC-ACM:<br/>`/dev/ttyACM0`<br/>(VID:PID `2e8a:000a`) | Прошивка `logicanalyzer` V6_6<br/>(відкритий рушій GusmanB) | Конфігурація 24-кан. 100 MS/s<br/>Статус: **ACTIVE / VERIFIED** | **Незалежна цифрова метрологія:**<br/>Апаратне захоплення часових трас (VCD) без затримок ОС, фіксація наносекундних інтервалів реакції. |
+| **`pico`** | **Raspberry Pi Pico (RP2040)**<br/>(Dual Cortex-M0+ @ 125 МГц,<br/>264 КБ SRAM, 2× PIO автомати) | USB CDC-ACM:<br/>`/dev/ttyACM0`<br/>(`VID:PID` `1209:3020`,<br/>S/N `E66118604B78A622`) | Прошивка `LogicTracer 0.5.0`<br/>(`LOGICTRACER_PICO_0.5.0`,<br/>`firmware_family: "logictracer"`,<br/>`segment_trigger_times: true`) | Конфігурація 24-кан.,<br/>`max 100 МГц` (`blast 200 МГц`)<br/>Статус: **ACTIVE / VERIFIED** | **Незалежна цифрова метрологія:**<br/>Апаратне захоплення часових трас (VCD) і міток тригерів сегментів без затримок ОС, фіксація наносекундних інтервалів реакції. |
 
 ---
 
@@ -84,6 +84,7 @@
 
 | Версія | Дата | Автор | Зміни |
 | :--- | :--- | :--- | :--- |
+| 1.0.3 | 2026-11-17 | Gemini 4 Argon | Оновлено запис фізичного логічного аналізатора `pico` (`/dev/ttyACM0`) у §2 після прошивання `LOGICTRACER_PICO_0.5.0`: `VID:PID 1209:3020`, серійний номер `E66118604B78A622`, прошивка `LogicTracer 0.5.0` (`firmware_family: "logictracer"`, `segment_trigger_times: true`, `max_frequency_hz: 100000000`, `blast_frequency_hz: 200000000`). |
 | 1.0.2 | 2026-11-16 | Pro Architect | Виправлено кількість макетних плат у §3 (1 шт. BB-102 замість помилкових двох). Повністю синхронізовано перелік та кількісні показники компонентів і модулів у §4 з первинними накладними замовлень Prom №439014159 та «РАДІОМАГ-Львів» (внесено MX1508, RP2040-Zero, WH148, кнопки, джампери, уточнено штуки герконів, магнітів, транзисторів і рівнезсувача). |
 | 1.0.1 | 2026-11-16 | Pro Architect | Виправлено перелік паяльного обладнання в §3: вилучено старі побутові паяльники 40 Вт і 100 Вт, внесено фактично закуплену паяльну станцію для мікросхем Zhongdi ZD-8906L (із тонким прецизійним жалом C1-2 0,5 мм для IC/SMD), оптичний монтажний комплекс «Третя рука» ZD-11M-4, флюс-гель RMA-223 та припій Cynel. |
 | 1.0.0 | 2026-11-16 | Pro Architect | Первинна редакція офіційного реєстру апаратного забезпечення лабораторного комплексу Машини Кузьміна. Включено верифіковані платформи `pynq1`, `pynq2`, `jetson`, `pico`, датчики, силовий привід та комутацію. |

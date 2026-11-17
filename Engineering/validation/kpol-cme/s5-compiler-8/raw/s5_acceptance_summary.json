@@ -65,9 +65,10 @@
     "M1_secure_boot_hmac_byte_tamper_and_replay",
     "M2a_bram_action_opcode_inc_to_dec_rtl_divergence",
     "M2b_bram_threshold_w1_10_to_50_rtl_divergence",
-    "M3a_dogo_opcode_add_to_sub_vm_divergence",
+    "M3a_dogo_opcode_add_to_sub_vm_exact_abort_vector",
     "M3b_dogo_missing_exit_opcode_vm_abort",
-    "M4_bram_cycle_validator_stub_caught",
-    "M5_uncertainty_gate_stub_caught"
+    "M4a_bram_cycle_validator_missing_self_loop_caught",
+    "M4b_bram_cycle_validator_missing_2node_cycle_caught",
+    "M5_uncertainty_policy_record_diagnostic_and_lowering_gate"
   ]
 }

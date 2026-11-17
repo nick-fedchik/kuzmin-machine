@@ -1,6 +1,6 @@
 # cmd: python3 -m pytest -v Engineering/sw/tests/test_s5_compiler_acceptance_8.py -k "not recorded_acceptance_artifacts" Engineering/sw/kpol-ref/tests/test_kpol_reference.py Engineering/sw/kpol-auth/tests/
-# timestamp: 2026-11-17T12:39:36+02:00
-# git_base_sha: 467cd4e13c2812d5fe3b1be004110864e11448ba
+# timestamp: 2026-11-17T14:03:27+02:00
+# git_base_sha: 7c4b1ad269ca24810b6ed358bb7bf623e996f7ab (origin/main: 467cd4e13c2812d5fe3b1be004110864e11448ba)
 # host: Linux 7.0.0-42-generic x86_64
 ============================= test session starts ==============================
 platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
