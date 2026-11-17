@@ -1,0 +1,29 @@
+# cmd: yosys-smtbmc --noprogress -s z3 -c -t 30 /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/formal_c1_c2_cover.smt2
+# timestamp: 2026-11-16T23:28:41.512522+02:00
+##   0:00:00  Solver: z3
+##   0:00:00  Checking cover reachability in step 0..
+##   0:00:00  Checking cover reachability in step 1..
+##   0:00:00  Checking cover reachability in step 2..
+##   0:00:00  Checking cover reachability in step 3..
+##   0:00:00  Checking cover reachability in step 4..
+##   0:00:00  Checking cover reachability in step 5..
+##   0:00:00  Checking cover reachability in step 6..
+##   0:00:00  Checking cover reachability in step 7..
+##   0:00:00  Checking cover reachability in step 8..
+##   0:00:00  Checking cover reachability in step 9..
+##   0:00:00  Checking cover reachability in step 10..
+##   0:00:00  Checking cover reachability in step 11..
+##   0:00:00  Checking cover reachability in step 12..
+##   0:00:01  Checking cover reachability in step 13..
+##   0:00:01  Checking cover reachability in step 14..
+##   0:00:01  Checking cover reachability in step 15..
+##   0:00:02  Checking cover reachability in step 16..
+##   0:00:02  Checking cover reachability in step 17..
+##   0:00:03  Checking cover reachability in step 18..
+##   0:00:05  Checking cover reachability in step 19..
+##   0:00:07  Checking cover reachability in step 20..
+##   0:00:09  Checking cover reachability in step 21..
+##   0:00:24  Reached cover statement in step 21 at manycore_formal_props: C1_interbank_cascade_to_idle
+##   0:00:24  Checking cover reachability in step 21..
+##   0:00:33  Reached cover statement in step 21 at manycore_formal_props: C2_many_to_one_contention
+##   0:00:33  Status: PASSED

@@ -1,4 +1,4 @@
-# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_ctrl_bmc30.ys
-# timestamp: 2026-11-16T20:34:55.744357+02:00
-Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
-Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-252-exp-gpu-02/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/orig_ctrl_bmc30.ys
+# timestamp: 2026-11-16T22:38:35.420219+02:00
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236

@@ -1,11 +1,11 @@
 # Звіт EXP-GPU-02 (Етапи 1–2, Issue #252): Двобанковий RTL CFG-P-HA без torn-read, формальна SMT-верифікація та програмний інжектор правил
 
-* **Версія:** 0.1.0
+* **Версія:** 0.1.1
 * **Дата:** 2026-11-16
 * **Тип WP редакції NG:** Report
-* **Issue:** [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252) (наступний натурний крок Етапу 3: [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253); пов'язаний стендовий захват: [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)). **PR:** у гілці `exp/252-cfg-p-ha-online-rule-update`.
-* **Виконавець:** GitHub Copilot CLI; незалежна рецензія очікується за правилом `AGENTS.md §2.5`.
-* **Базовий коміт:** `41ac644e8da44a7463983a205012c1feea234728` (`origin/main`). **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`Icarus Verilog 12.0`, `Verilator 5.032`, `Yosys 0.52`, `Z3 4.13.3`, `Python 3.14.4`). **Бітстрім (SHA-256):** не генерувався (роботи Етапів 1–2 обмежені RTL-симуляцією, формальним SMT-доказом та логічним синтезом XC7 без підключення до фізичної плати `PYNQ-Z1`).
+* **Issue:** [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), доопрацювання за зауваженнями `N1..N4` рецензії PR [#258](https://github.com/nick-fedchik/kuzmin-machine/pull/258): [#259](https://github.com/nick-fedchik/kuzmin-machine/issues/259) (наступний натурний крок Етапу 3: [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253); пов'язаний стендовий захват: [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226)). **PR:** [#258](https://github.com/nick-fedchik/kuzmin-machine/pull/258) (`0.1.0`), оновлення `0.1.1` у гілці `exp/255-manycore-scaling-and-259`.
+* **Виконавець:** GitHub Copilot CLI (`0.1.0`, `0.1.1`). **Рецензент `0.1.0`:** `claude-sonnet-5.5` у [PR #258](https://github.com/nick-fedchik/kuzmin-machine/pull/258#issuecomment-6926646753) («Прийняти з зауваженнями», неблокувальні `N1..N5`).
+* **Базовий коміт:** `4079aa4` (`origin/main`; `0.1.0` виконано на `41ac644e8da44a7463983a205012c1feea234728`). **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`Icarus Verilog 12.0`, `Verilator 5.032`, `Yosys 0.52`, `Z3 4.13.3`, `Python 3.14.4`). **Бітстрім (SHA-256):** не генерувався (роботи Етапів 1–2 обмежені RTL-симуляцією, формальним SMT-доказом та логічним синтезом XC7 без підключення до фізичної плати `PYNQ-Z1`).
 * **Критерії приймання (зафіксовані до виконання):** розділ 3 в [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [протокол EXP-GPU-02](protocol.md) та [план EXP-GPU-02](plan.md). Зафіксоване розмежування етапів: натурні вимірювання на платі `PYNQ-Z1` та логічному аналізаторі `RP2040 PIO` винесені в окрему задачу [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253) через зайнятість фізичного стенда роботами [#226](https://github.com/nick-fedchik/kuzmin-machine/issues/226).
 
 ---
@@ -16,10 +16,14 @@
    * Усі результати цього звіту отримані методами потактової RTL-симуляції (`Icarus Verilog 12.0`), формальної верифікації (`yosys-smtbmc + Z3 4.13.3`) та логічного синтезу (`Yosys 0.52 synth_xilinx -arch xc7`). Фізичне трасування (Place-and-Route), перевірка статичного замикання таймінгу на частоті `100 МГц`, завантаження бітстріму на `XC7Z020` та зовнішній захват стробів на лініях `PMOD` аналізатором `RP2040 PIO` не виконувалися і винесені в окрему задачу [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253) згідно з обмеженням ізоляції стенда (`AGENTS.md §4.2`).
 2. **Подвоєння Block RAM та зростання логічної площі відносно однобанкового `CFG-P`:**
    * За журналом синтезу [`yosys_xc7_cfg_p_ha.log`](../../data/exp-gpu-02-sim/yosys_xc7_cfg_p_ha.log) перехід від однобанкового `kpol_bram_pipeline_axi` (`CFG-P`) до двобанкового `kpol_bram_pipeline_axi_ha` (`CFG-P-HA`) збільшує використання блоків `RAMB36E1` із `1` (`0.71%` кристала `XC7Z020`) до `2` (`1.43%`), кількість тригерів `FDCE + FDRE` — із `1363` (`1.28%`) до `1897` (`1.78%`, приріст `+534` тригери за рахунок 256-бітної маски `dirty_word_q`, 64-бітної маски `shadow_w0_override_q` та регістрів `0x030..0x044`), а показник `Estimated number of LCs` — із `1750` (`3.29%`) до `3867` (`7.27%`). Базовий `CFG-P` збережено без змін.
-3. **Кінцеве вікно фонової досинхронізації між двома сусідніми гарячими патчами (`sync_busy_o == 1`):**
+3. **Кінцеве вікно фонової досинхронізації між двома сусідніми гарячими патчами (`sync_busy_o == 1`) та поведінка AXI4-Lite під час `sync_busy` (`#259`, `N4`):**
    * Перемикання активного банку (`bank_swap_commit_o`) не додає жодного такту затримки до 8-тактового секвенсера подій (`0` stall-тактів), проте після перемикання фоновий автомат `Port A` копіює змінені слова з нового активного банку в новий тіньовий банк за `2 * K` тактів (`6` тактів = `60 нс` при оновленні правил `W1..W3`, `8` тактів = `80 нс` при оновленні `W0..W3`). Протягом інтервалу `swap_pending_o || sync_busy_o` нові транзакції запису на `0x030..0x038` повертають `AXI_RESP_SLVERR`; програмний інжектор має опитувати біти `[2:1]` регістра `0x038` перед відправленням наступного пакета.
-4. **Параметричний масштаб формальної SMT-моделі:**
-   * Формальний доказ `Z3` (`H1..H6`, `C1..C3`, мутанти `M1..M4`) виконано на параметризованій конфігурації того самого RTL-модуля верхнього рівня `kpol_bram_pipeline_axi_ha` за `NUM_CONCEPTS = 4, QUEUE_DEPTH = 4, DATA_WIDTH = 32, ADDR_WIDTH = 4` (`16` слів на банк) для скінченної розмірності простору станів солвера. Повнорозмірна конфігурація `NUM_CONCEPTS = 64, QUEUE_DEPTH = 16, ADDR_WIDTH = 8` (`256` слів на банк) перевірена статичним лінтом `Verilator`, синтезом `Yosys XC7` та симуляцією `10 003` перемикань (`43 460` подій) у `Icarus Verilog`.
+   * Спроба запису з повним стробом (`wstrb == 4'hf`) у read-only регістри телеметрії `0x03C` (`SWAP_COUNT`), `0x040` (`LAST_SWAP_WAIT_CYCLES`) та `0x044` (`SEQ_EXEC_MONITOR`) потрапляє в гілку `default` декодера запису й повертає `AXI_RESP_DECERR` (`2'b11`) без зміни стану; будь-який запис із неповним байтовим стробом (`wstrb != 4'hf`) на будь-яку адресу повертає `AXI_RESP_SLVERR` (`2'b10`).
+   * Читання (`arvalid`) регістрів даних Block RAM `0x008` (`BRAM_DATA`) або `0x034` (`SHADOW_DATA`) під час `sync_busy_o == 1` приймає адресу в `read_pending`, але утримує `rvalid == 0` до звільнення `Port A` (`!sync_busy && !bram_we && !shadow_we`), затримуючи відповідь читання до `2 * K` тактів (`K <= 256` брудних слів, максимум `512` тактів = `5.12 мкс` @ `100 МГц`, без внутрішнього апаратного таймауту). Натомість читання статусних і телеметричних регістрів (`0x000`, `0x014..0x030`, `0x038..0x044`) не звертається до `Port A` і завершується за `1` такт навіть під час `sync_busy_o == 1`.
+4. **Параметричний масштаб формальної SMT-моделі та розрядність зрізу в 30-тактовому BMC `H3` (`#259`, `N2`):**
+   * Формальний доказ `Z3` (`H1..H7`, `C1..C4`, мутанти `M1..M5`) виконано на параметризованій конфігурації того самого RTL-модуля верхнього рівня `kpol_bram_pipeline_axi_ha` за `NUM_CONCEPTS = 4, QUEUE_DEPTH = 4, DATA_WIDTH = 32, ADDR_WIDTH = 4` (`16` слів на банк) для скінченної розмірності простору станів солвера.
+   * Повна 32-бітна розрядність даних дескриптора (`DATA_WIDTH = 32`, усі `128` біт `{W3, W2, W1, W0}` без `cutpoint`) у властивостях `H1..H7` та `H6b` доведена базою `bmc t=3` і необмеженою $k$-індукцією `ind t=2`. Окремий допоміжний 30-тактовий прогін `H2_H3_safety_bmc` (`bmc t=30`) виконується з `cutpoint` виходів `CME` на **1-бітному зрізі даних на слово** (`WOLPER_1BIT_SLICE`: перевіряється біт `[0]` кожного зі слів `W0..W3`, оскільки тракт комутації та читання `km_concept_bram_dual_ha` побітово симетричний і не виконує арифметичних чи міжбітових операцій над вмістом дескриптора).
+   * Повнорозмірна конфігурація `NUM_CONCEPTS = 64, QUEUE_DEPTH = 16, ADDR_WIDTH = 8` (`256` слів на банк) перевірена статичним лінтом `Verilator`, синтезом `Yosys XC7` та симуляцією `10 003` перемикань (`43 460` подій) у `Icarus Verilog`.
 
 ---
 
@@ -29,16 +33,16 @@
    * Інстанціює два незмінні екземпляри [`km_concept_bram.sv`](../../../../../Engineering/hw/rtl/core/km_concept_bram.sv) (`bank0` та `bank1`), не модифікуючи жодного з базових файлів `CFG-P`.
    * Початкове завантаження (`a_shadow_only_i == 0` при неактивному конвеєрі) синхронно записує слова в `Port A` обох банків.
    * Гаряча інжекція (`a_shadow_only_i == 1`, дозволена при `busy == 1`, коли `swap_pending_o == 0` і `sync_busy_o == 0`) пише лише в `Port A` тіньового банку та виставляє біт `dirty_word_q[a_addr_i]`. Якщо записуються лише правила `W1..W3`, біт `shadow_w0_override_q[cid]` залишається нульовим і всі коміти живого стану `W0` з `Port B` секвенсера дзеркалюються одночасно в обидва банки. Якщо хост явно записує `W0` (`a_addr_i[1:0] == 2'b00`), виставляється `shadow_w0_override_q[cid]`, що захищає підготовлене ініціалізаційне значення в тіньовому банку від перезапису старими подіями до моменту перемикання.
-   * Сигнал запису в `Port B` тіньового банку блокується при одночасному зверненні `Port A` тіньового банку до тієї самої адреси, що алгебраїчно унеможливлює міжпортову колізію (`collision_detected_o == 0`).
+   * Сигнал запису в `Port B` тіньового банку блокується при одночасному зверненні `Port A` тіньового банку до тієї самої адреси, що виключає на рівні логіки керування портами міжпортову колізію (`collision_detected_o == 0`).
    * Перемикання `active_bank_q` виконується строго у такт `seq_at_idle_boundary_i == 1` (`ST_IDLE`), коли всі чотири слова попередньої події вже вичитані зі старого банку, а адреса `W0` нової події буде засемпльована регістрами Block RAM на наступному фронті вже з нового активного банку. Після перемикання скінченний автомат `SYNC_READ -> SYNC_WRITE` на вільних портах `Port A` переносить змінені слова в новий тіньовий банк з урахуванням пріоритету свіжіших записів `Port B`.
 2. **Шинний інтегратор AXI4-Lite [`kpol_bram_pipeline_axi_ha.sv`](../../../../../Engineering/hw/rtl/bus/kpol_bram_pipeline_axi_ha.sv):**
    * Зберігає карту регістрів `0x000..0x02C` базового `CFG-P` (регістр `0x000` повертає `0x4B504841` — ASCII `"KPHA"`) і додає регістри онлайн-оновлення та внутрішньокристальної метрології:
      * `0x030` (`SHADOW_ADDR`) — адреса слова `0..255` у тіньовому банку (дозволено при `busy == 1`);
-     * `0x034` (`SHADOW_DATA`) — запис слова в тіньовий банк із автоінкрементом `shadow_addr` та діагностичне читання тіньового банку (дозволено при `busy == 1` без блокування `hw_trigger_ready_o`);
+     * `0x034` (`SHADOW_DATA`) — запис слова в тіньовий банк із автоінкрементом `shadow_addr` та діагностичне читання тіньового банку (дозволено при `busy == 1` без блокування `hw_trigger_ready_o`; при читанні під час `sync_busy == 1` очікує завершення фонового копіювання `Port A`);
      * `0x038` (`BANK_SWAP_CTRL`) — запит перемикання банку при записі `1` та читання статусу `{28'b0, collision_detected, sync_busy, swap_pending, active_bank}`;
-     * `0x03C` (`SWAP_COUNT`) — лічильник виконаних імпульсів `bank_swap_commit_o`;
-     * `0x040` (`LAST_SWAP_WAIT_CYCLES`) — кількість тактів очікування від прийняття `swap_req` до перемикання;
-     * `0x044` (`SEQ_EXEC_MONITOR`) — у `[15:0]` тривалість останньої події секвенсера в тактах (норма `8`), у `[31:16]` лічильник відхилень від `8` тактів (норма `0`).
+     * `0x03C` (`SWAP_COUNT`, read-only; запис повертає `DECERR`) — лічильник виконаних імпульсів `bank_swap_commit_o`;
+     * `0x040` (`LAST_SWAP_WAIT_CYCLES`, read-only; запис повертає `DECERR`) — кількість тактів очікування від прийняття `swap_req` до перемикання;
+     * `0x044` (`SEQ_EXEC_MONITOR`, read-only; запис повертає `DECERR`) — у `[15:0]` тривалість останньої події секвенсера в тактах (норма `8`), у `[31:16]` лічильник відхилень від `8` тактів (норма `0`).
    * Містить зовнішній 3-бітний lockstep-детектор фази секвенсера `seq_phase_q` та п'ять діагностичних виходів протоколу `EXP-GPU-02`: `inject_strobe_o`, `bank_swap_commit_o`, `stimulus_accepted_o`, `reaction_out_o`, `seq_cycle_done_o`.
 3. **Програмний інжектор правил [`rule_injector.py`](rule_injector.py):**
    * Формує 16-байтні кадри оновлення правил `W1..W3` (`4` байти заголовка з `CRC-8/CCITT` + `12` байтів корисного навантаження) або 20-байтні кадри повного дескриптора `W0..W3` (`4 + 16` байтів), перевіряє контрольну суму й допустимість опкодів CME, генерує послідовність транзакцій AXI4-Lite (`0x030`, `0x034`, `0x038`) і містить побітову еталонну модель `DualBankCfgPHAModel`.
@@ -64,29 +68,31 @@
 
 | Модель / перевірка | Формальний режим (`yosys-smtbmc + Z3`) | Статус | Час (`с`) | Спрацювання / досягнуті цілі |
 |---|---|---|---:|---|
-| `original (CFG-P-HA)`: `H1_H6_base_bmc` | Конкретна 32-бітна база індукції `bmc t=3` | `PASSED` | `0.569` | `H1..H6 + H6b + INV_*` |
-| `original (CFG-P-HA)`: `H1_H6_safety_ind` | Необмежена часова $k$-індукція `ind t=2` | `PASSED` | `182.452` | `H1..H6 + H6b` для всіх $t \ge 0$ |
-| `original (CFG-P-HA)`: `H1_H2_H4_H5_safety_bmc` | Повний 30-тактовий `bmc t=30` (з over-approximation CME) | `PASSED` | `14.662` | `H1, H2, H4, H5` |
-| `original (CFG-P-HA)`: `H2_H3_safety_bmc` | Повний 30-тактовий `bmc t=30` (симетрія даних Вольпера) | `PASSED` | `5.889` | `H2, H3_no_torn_descriptor_read` |
-| `original (CFG-P-HA)`: `cover_non_vacuity` | Пошук невакуумних свідків `cover t=30` | `PASSED` | `159.715` | `C1, C2, C3` досягнуто |
-| `M1_unsafe_immediate_swap` | Конкретний `bmc t=18` | `FAILED` | `2.108` | `H3_no_torn_descriptor_read` (`M1_unsafe_immediate_swap.vcd`) |
-| `M2_write_active_bank_while_busy` | Конкретний `bmc t=16` | `FAILED` | `1.751` | `H3_no_torn_descriptor_read` (`M2_write_active_bank_while_busy.vcd`) |
-| `M3_drop_w0_mirror` | Конкретний `bmc t=20` | `FAILED` | `18.150` | `H6_live_state_preserved` (`M3_drop_w0_mirror.vcd`) |
-| `M4_block_trigger_on_shadow` | Конкретний `bmc t=10` | `FAILED` | `0.417` | `H4_zero_sequencer_stall` (`M4_block_trigger_on_shadow.vcd`) |
+| `original (CFG-P-HA)`: `H1_H6_base_bmc` | Конкретна 32-бітна база індукції `bmc t=3` | `PASSED` | `0.540` | `H1..H7 + H6b + INV_*` |
+| `original (CFG-P-HA)`: `H1_H6_safety_ind` | Необмежена 32-бітна $k$-індукція `ind t=2` | `PASSED` | `131.466` | `H1..H7 + H6b` для всіх $t \ge 0$ |
+| `original (CFG-P-HA)`: `H1_H2_H4_H5_safety_bmc` | 30-тактовий `bmc t=30` (з `cutpoint` виходів CME) | `PASSED` | `10.509` | `H1, H2, H4, H5` |
+| `original (CFG-P-HA)`: `H2_H3_safety_bmc` | 30-тактовий `bmc t=30` (1-бітний зріз даних на слово `W0..W3`) | `PASSED` | `7.223` | `H2, H3_no_torn_descriptor_read` |
+| `original (CFG-P-HA)`: `cover_non_vacuity` | Пошук невакуумних свідків `cover t=30` | `PASSED` | `154.487` | `C1, C2, C3, C4_b_we_at_swap` досягнуто |
+| `M1_unsafe_immediate_swap` | Конкретний `bmc t=18` | `FAILED` | `2.737` | `H3_no_torn_descriptor_read` (`M1_unsafe_immediate_swap.vcd`) |
+| `M2_write_active_bank_while_busy` | Конкретний `bmc t=16` | `FAILED` | `1.559` | `H3_no_torn_descriptor_read` (`M2_write_active_bank_while_busy.vcd`) |
+| `M3_drop_w0_mirror` | Конкретний `bmc t=20` | `FAILED` | `29.655` | `H6_live_state_preserved` (`M3_drop_w0_mirror.vcd`) |
+| `M4_block_trigger_on_shadow` | Конкретний `bmc t=10` | `FAILED` | `0.644` | `H4_zero_sequencer_stall` (`M4_block_trigger_on_shadow.vcd`) |
+| `M5_skip_port_a_resync` | Конкретний `bmc t=20` | `FAILED` | `7.724` | `H7_multi_patch_rule_persistence` (`M5_skip_port_a_resync.vcd`) |
 
 * **Формально доведені властивості на незміненому `CFG-P-HA` (`Status: PASSED`):**
   * `H1_lockstep_phase` — зовнішній детектор `seq_phase_q` дорівнює `sequencer.state_q[2:0]` у кожному такті;
   * `H2_zero_bram_collision` — `collision_detected == 0` на обох банках за довільних одночасних AXI-записів, фонової досинхронізації та комітів `Port B`;
-  * `H3_no_torn_descriptor_read` — на такті оцінки `cme_event_valid` усі чотири слова дескриптора `{W3, W2, W1, W0}` збігаються з атомарним знімком одного банку на вході `ST_REQ_W0` і не змішують слова різних поколінь;
+  * `H3_no_torn_descriptor_read` — на такті оцінки `cme_event_valid` усі чотири слова дескриптора `{W3, W2, W1, W0}` збігаються з атомарним знімком одного банку на вході `ST_REQ_W0` і не змішують слова різних поколінь (повна 32-бітна версія доведена `bmc t=3` + `ind t=2`; 30-тактовий BMC виконано на 1-бітному зрізі біта `[0]` кожного слова `W0..W3`);
   * `H4_zero_sequencer_stall` — кожна подія триває рівно `8` тактів (`seq_anomaly_count_q == 0`), а `hw_trigger_ready_o` не блокується записами у тіньовий банк (`0x030..0x038`);
   * `H5_bounded_swap_latency` — час очікування від прийняття `swap_req` до імпульсу `bank_swap_commit_o` становить від `1` до `8` тактів;
-  * `H6_live_state_preserved` та `H6b_banks_identical_after_resync` — живі стани `W0` зберігаються під час перемикання банків, а після завершення фонової досинхронізації (`sync_busy_o == 0, dirty_word_q == 0`) обидва банки побітово тотожні на всіх `16` словах;
-  * Невакуумні свідки досяжності (`cover_non_vacuity`): досягнуто всі три цілі `C1_full_online_update_lifecycle` (крок `27`), `C2_swap_after_pending_wait` (крок `11`) та `C3_back_to_back_events_across_swap` (крок `3`).
-* **Перевірка чутливості на мутантах (`AGENTS.md §4.1`, усі чотири детерміновано відхилені солвером `Z3` зі збереженням `.vcd`):**
+  * `H6_live_state_preserved`, `H6b_banks_identical_after_resync` та `H7_multi_patch_rule_persistence` — живі стани `W0` зберігаються під час перемикання банків, після завершення фонової досинхронізації (`sync_busy_o == 0, dirty_word_q == 0`) обидва банки побітово тотожні на всіх `16` словах, а при серії послідовних часткових патчів різних концептів правила `W1..W3` попередніх патчів не втрачаються;
+  * Невакуумні свідки досяжності (`cover_non_vacuity`): досягнуто всі чотири цілі `C1_full_online_update_lifecycle` (крок `27`), `C2_swap_after_pending_wait` (крок `11`), `C3_back_to_back_events_across_swap` (крок `3`) та `C4_b_we_at_swap` (`obs_b_we && obs_swap_commit_w`, крок `14` у [`orig_cover.log`](formal/raw/orig_cover.log)). Примітка щодо фазування строба (`#259`, `N3`): фактичний запис `b_we == 1` і перемикання `active_bank_q <= ~active_bank_q` (`swap_commit_w == 1`) відбуваються на одному фронті такту в стані `ST_IDLE`, тоді як зовнішній вихід `bank_swap_commit_o` є однотактовим регістровим стробом `bank_swap_commit_q` після `ST_IDLE`, на якому `b_we` вже дорівнює `0` (доведено інваріантом `INV_swap_pulse_after_idle: !bank_swap_commit_o || !obs_b_we`).
+* **Перевірка чутливості на мутантах (`AGENTS.md §4.1`, усі п'ять відхилені солвером `Z3` зі збереженням `.vcd`):**
   * `M1_unsafe_immediate_swap` (негайне перемикання без очікування `seq_at_idle_boundary_i`) — `FAILED` на властивості `H3_no_torn_descriptor_read` ([`M1_unsafe_immediate_swap.vcd`](formal/raw/M1_unsafe_immediate_swap.vcd));
   * `M2_write_active_bank_while_busy` (спрямування гарячого запису в `active_bank_q` замість тіньового банку) — `FAILED` на властивості `H3_no_torn_descriptor_read` ([`M2_write_active_bank_while_busy.vcd`](formal/raw/M2_write_active_bank_while_busy.vcd));
   * `M3_drop_w0_mirror` (вимкнення дзеркалювання `b_we_i` у тіньовий банк) — `FAILED` на властивості `H6_live_state_preserved` ([`M3_drop_w0_mirror.vcd`](formal/raw/M3_drop_w0_mirror.vcd));
-  * `M4_block_trigger_on_shadow` (блокування `hw_trigger_ready_o` сигналом `shadow_we`) — `FAILED` на властивості `H4_zero_sequencer_stall` ([`M4_block_trigger_on_shadow.vcd`](formal/raw/M4_block_trigger_on_shadow.vcd)).
+  * `M4_block_trigger_on_shadow` (блокування `hw_trigger_ready_o` сигналом `shadow_we`) — `FAILED` на властивості `H4_zero_sequencer_stall` ([`M4_block_trigger_on_shadow.vcd`](formal/raw/M4_block_trigger_on_shadow.vcd));
+  * `M5_skip_port_a_resync` (`#259`, `N1`: очищення `dirty_word_q` на `swap_commit_w` без запуску `SYNC_READ -> SYNC_WRITE`) — `FAILED` на властивості `H7_multi_patch_rule_persistence` ([`M5_skip_port_a_resync.vcd`](formal/raw/M5_skip_port_a_resync.vcd): на другому частковому патчі іншого концепту активний банк повертається до застарілого правила з-перед першого патчу).
 
 ### 3.3. Потактова RTL-симуляція Фаз 1–4 та серії `10 000` гарячих перемикань (`Icarus Verilog`)
 
@@ -102,7 +108,8 @@
    * Розбіжностей із незалежною еталонною моделлю: `0` (`golden_mismatch_count = 0`, плюс фінальна звірка всіх `256` слів `bank0 == bank1 == golden`);
    * Додаткових тактів простою секвенсера: `0` (`seq_stall_anomaly_count = 0`, `last_seq_exec_cycles = 8`);
    * Колізій портів Block RAM та втрачених подій: `0` (`bram_collision_count = 0`, `events_dropped_count = 0`, `ready_drop_on_shadow_count = 0`);
-   * Розподіл часу очікування перемикання `LAST_SWAP_WAIT_CYCLES` на `10 000` стрес-перемиканнях: мінімум `1` такт, максимум `8` тактів, середнє `4.0083` такти (`40 083 / 10 000`), гістограма за тактами `1..8`: `{1: 2621, 2: 1004, 3: 751, 4: 1183, 5: 1247, 6: 1001, 7: 1316, 8: 877}`.
+   * Розподіл часу очікування перемикання `LAST_SWAP_WAIT_CYCLES` на `10 000` стрес-перемиканнях: мінімум `1` такт, максимум `8` тактів, середнє `4.0083` такти (`40 083 / 10 000`), гістограма за тактами `1..8`: `{1: 2621, 2: 1004, 3: 751, 4: 1183, 5: 1247, 6: 1001, 7: 1316, 8: 877}`;
+   * Лічильник одночасного запису `Port B` і перемикання банку в одному такті (`b_we && swap_commit_w`, `#259`, `N3`, журнал [`sim_c4_b_we_at_swap.log`](formal/raw/sim_c4_b_we_at_swap.log)): `4 678` збігів із `10 003` перемикань (`4 629` без `shadow_w0_override_q` із дзеркалюванням `W0` у обидва банки та `49` із активним `shadow_w0_override_q` із збереженням підготовленого `W0` у новому активному банку), `0` розбіжностей із еталонною моделлю.
 
 ---
 
@@ -115,7 +122,7 @@
 | Відсутність додаткових stall-тактів секвенсера та блокування `hw_trigger_ready_o` | Рівно `8` тактів на подію (`0` аномалій) | `8` тактів на всіх `43 460` подіях (`seq_stall_anomaly_count = 0`), доведено в `Z3` (`H4_zero_sequencer_stall`) | Підтверджено на рівні RTL/SMT |
 | Верхня межа очікування перемикання банку від `swap_req` | `1..8` тактів (`<= 80 нс` @ `100 МГц`) | Доведено в `Z3` (`H5_bounded_swap_latency`), у симуляції `10 000` перемикань діапазон `1..8` тактів (середнє `4.01`) | Підтверджено на рівні RTL/SMT |
 | Збереження живого стану `W0` через перемикання правил `W1..W3` | Без втрати лічильника `W0` | Доведено в `Z3` (`H6_live_state_preserved`), підтверджено на Фазі 4 (`W0: 3 -> 4`) та `10 003` перемиканнях | Підтверджено на рівні RTL/SMT |
-| Чутливість тестів до дефектів (`AGENTS.md §4.1`) | Відхилення мутантів солвером і тестбенчем | `4/4` мутанти `M1..M4` відхилені в `Z3` із `.vcd`; мутант негайного swap у `iverilog` та пошкоджені `CRC-8`/опкоди в `pytest` відхилені | Підтверджено |
+| Чутливість тестів до дефектів (`AGENTS.md §4.1`) | Відхилення мутантів солвером і тестбенчем | `5/5` мутантів `M1..M5` відхилені в `Z3` із `.vcd`; мутант негайного swap у `iverilog` та пошкоджені `CRC-8`/опкоди в `pytest` відхилені | Підтверджено |
 | Незмінність базового `CFG-P` та перевірка відкритим маршрутом XC7 | `0` байтів змін у базових RTL, `2 x RAMB36E1` у `CFG-P-HA` | SHA-256 базових файлів незмінні; `CFG-P-HA`: `2` `RAMB36E1`, `3867` `Estimated LCs` | Підтверджено |
 | Фізичний бітстрім на `PYNQ-Z1` та зовнішня осцилограма `RP2040 PIO` (`<= 1 LSB`) | Натурна HIL-перевірка Етапу 3 | Не виконувалося в межах `#252` через зайнятість стенда; перенесено в [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253) | Не перевірено на залізі (очікує #253) |
 
@@ -127,7 +134,7 @@
 # 1. Лінт Verilator та логічний синтез Yosys XC7 (CFG-P та CFG-P-HA)
 bash Engineering/hw/scripts/run_open_flow.sh
 
-# 2. Повна формальна SMT-верифікація Z3 (база, k-індукція, BMC t=30, Cover, мутанти M1..M4)
+# 2. Повна формальна SMT-верифікація Z3 (база, k-індукція, BMC t=30, Cover C1..C4, мутанти M1..M5)
 python3 Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/run_cfg_p_ha_formal.py
 
 # 3. Генерація пакета оновлення правила CID=5 (X >= 40) із CRC-8 та транзакцій AXI4-Lite
@@ -141,6 +148,7 @@ python3 -m pytest -v Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 0.1.1 | 2026-11-16 | Доопрацювання за неблокувальними знахідками `N1..N4` рецензії PR #258 ([#259](https://github.com/nick-fedchik/kuzmin-machine/issues/259)): додано мутант `M5_skip_port_a_resync` і властивість `H7_multi_patch_rule_persistence`, cover-ціль `C4_b_we_at_swap` та лічильник симуляції (`4 678 / 10 003`), уточнено docstring глибин SMT і 1-бітний зріз BMC `H3`, задокументовано `DECERR` на `0x03C..0x044` і очікування читання `0x008`/`0x034` під час `sync_busy`. |
 | 0.1.0 | 2026-11-16 | Перша редакція звіту Етапів 1–2 за Issue #252: двобанковий RTL `CFG-P-HA`, формальна верифікація `Z3`, синтез `Yosys XC7`, інжектор правил та симуляція `10 000` перемикань. |
 
 ## Абревіатури та глосарій

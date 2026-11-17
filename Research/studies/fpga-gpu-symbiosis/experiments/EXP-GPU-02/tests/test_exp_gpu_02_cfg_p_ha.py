@@ -8,8 +8,8 @@ Evidence classes covered (honestly labeled per AGENTS.md §4.2 — NOT physical 
      `Yosys synth_xilinx -arch xc7` synthesis logs (`CFG-P` vs `CFG-P-HA`).
   4. Live `iverilog` simulation of `kpol_bram_pipeline_axi_ha_tb.sv` + negative RTL mutant test proving
      the testbench deterministically fails on unsafe mid-event bank swap (`AGENTS.md §4.1`).
-  5. Recorded Z3 formal SMT verification artifacts (`k`-induction, BMC, non-vacuity cover, 4 mutants with VCDs)
-     + live Z3 `--fast` verification smoke run.
+  5. Recorded Z3 formal SMT verification artifacts (`k`-induction, BMC, non-vacuity cover C1..C4, 5 mutants
+     M1..M5 with VCDs, C4 simulation counter) + live Z3 `--fast` verification smoke run (#252, #259).
 """
 
 from __future__ import annotations
@@ -357,7 +357,19 @@ def test_committed_formal_smt_z3_artifacts():
         "C1_full_online_update_lifecycle",
         "C2_swap_after_pending_wait",
         "C3_back_to_back_events_across_swap",
+        "C4_b_we_at_swap",
     } <= reached
+
+    assert prov.get("followup_issue") == 259
+    assert "1-bit per word" in prov.get("bmc_h3_slice_note", "")
+    sim_c4 = prov["sim_c4_b_we_at_swap"]
+    assert sim_c4["evidence_kind"] == "rtl_simulation_iverilog"
+    assert sim_c4["not_physical_hil"] is True
+    assert sim_c4["total_bank_swaps"] == 10003
+    assert sim_c4["b_we_at_swap_total"] == sim_c4["b_we_at_swap_no_override"] + sim_c4["b_we_at_swap_with_override"]
+    assert sim_c4["b_we_at_swap_no_override"] > 0
+    assert sim_c4["b_we_at_swap_with_override"] > 0
+    assert (FORMAL_RAW_DIR / "sim_c4_b_we_at_swap.log").is_file()
 
     by_mut = {r["design"].split(":")[0]: r for r in rows if not r["design"].startswith("original")}
     expected_mutants = {
@@ -365,6 +377,7 @@ def test_committed_formal_smt_z3_artifacts():
         "M2_write_active_bank_while_busy": "H3_no_torn_descriptor_read",
         "M3_drop_w0_mirror": "H6_live_state_preserved",
         "M4_block_trigger_on_shadow": "H4_zero_sequencer_stall",
+        "M5_skip_port_a_resync": "H7_multi_patch_rule_persistence",
     }
     for mid, expected_prop in expected_mutants.items():
         row = by_mut[mid]
@@ -387,12 +400,12 @@ def test_committed_formal_smt_z3_artifacts():
     reason="Потрібні yosys, yosys-smtbmc і z3",
 )
 def test_live_formal_smt_z3_induction_and_mutants(tmp_path):
-    """Runs live Z3 unbounded k-induction + all 4 mutant negative controls in --fast mode."""
+    """Runs live Z3 unbounded k-induction + all 5 mutant negative controls in --fast mode."""
     res = subprocess.run(
         [sys.executable, str(FORMAL_DIR / "run_cfg_p_ha_formal.py"), "--out-dir", str(tmp_path), "--fast"],
         capture_output=True,
         text=True,
-        timeout=300,
+        timeout=360,
     )
     assert res.returncode == 0, res.stdout + res.stderr
     assert "VERDICT: PASSED" in res.stdout
@@ -404,5 +417,6 @@ def test_live_formal_smt_z3_induction_and_mutants(tmp_path):
         "M2_write_active_bank_while_busy",
         "M3_drop_w0_mirror",
         "M4_block_trigger_on_shadow",
+        "M5_skip_port_a_resync",
     ):
         assert (tmp_path / f"{mid}.vcd").is_file()

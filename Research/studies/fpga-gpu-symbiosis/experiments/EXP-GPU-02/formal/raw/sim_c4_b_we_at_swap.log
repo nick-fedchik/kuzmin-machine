@@ -1,0 +1,5 @@
+# cmd: vvp -n /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/c4_b_we_at_swap.vvp +num_swaps=10000
+# timestamp: 2026-11-16T22:43:27.566346+02:00
+PASS: CFG-P-HA EXP-GPU-02 Phases 1-4 and 10000 hot bank swaps verified (43460 events, 0 torn-reads, 0 stalls, 0 collisions)
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/hw/tests/kpol_bram_pipeline_axi_ha_tb.sv:868: $finish called at 4685270000 (1ps)
+C4_SIM_COUNT total=4678 no_override=4629 with_override=49 swaps=10003
