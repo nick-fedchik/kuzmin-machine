@@ -1,10 +1,10 @@
 # Вимоги KPOL: RFC та авторські поняття й синтаксис
 
-* **Версія:** 0.5.4
-* **Дата:** 2026-11-14
+* **Версія:** 0.6.0
+* **Дата:** 2026-11-17
 * **Тип WP:** Requirement / SYS / SW
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI, Auto.
-* **WI:** [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), [#151](https://github.com/nick-fedchik/kuzmin-machine/issues/151), [#155](https://github.com/nick-fedchik/kuzmin-machine/issues/155), [#157](https://github.com/nick-fedchik/kuzmin-machine/issues/157), [#159](https://github.com/nick-fedchik/kuzmin-machine/issues/159), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185), частини [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
+* **WI:** [#150](https://github.com/nick-fedchik/kuzmin-machine/issues/150), [#151](https://github.com/nick-fedchik/kuzmin-machine/issues/151), [#155](https://github.com/nick-fedchik/kuzmin-machine/issues/155), [#157](https://github.com/nick-fedchik/kuzmin-machine/issues/157), [#159](https://github.com/nick-fedchik/kuzmin-machine/issues/159), [#183](https://github.com/nick-fedchik/kuzmin-machine/issues/183), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185), [#218](https://github.com/nick-fedchik/kuzmin-machine/issues/218), [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#227](https://github.com/nick-fedchik/kuzmin-machine/issues/227), [#237](https://github.com/nick-fedchik/kuzmin-machine/issues/237), [#243](https://github.com/nick-fedchik/kuzmin-machine/issues/243), [#245](https://github.com/nick-fedchik/kuzmin-machine/issues/245), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#255](https://github.com/nick-fedchik/kuzmin-machine/issues/255), закриття S5 у [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8) (відкрита межа native RFC — [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)).
 * **Потреба:** G1/N1 — визначені правила; G1/N2 — текст KPOL → виконуваний образ.
 * **Підстава:** команди власника 2026-11-12 щодо RFC та 2026-11-13 щодо нового авторського матеріалу й релевантних WP.
 * **Погодження:** профіль KPOL-CME-1 — Decision B3-01; ця деталізація на рецензію, не прийнята системна baseline.
@@ -39,11 +39,11 @@
 | ID / походження | Формулювання та обґрунтування | Критерій / метод | Реалізація / стан |
 |---|---|---|---|
 | KPOL-SYS-01 / RFC-005 | При кожній адресації концепту виконавець повинен повторно перевіряти його події з урахуванням зайнятості підписки; порівняння не підміняється edge-фільтром. | Повторні адресації за істинного предиката; окремо busy до `•`. Потактовий/трасовий тест майбутнього виконавця. | Повна адресаційна модель поза KPOL-CME-1; референс перевіряє guard явних подій, не кожне читання. |
-| KPOL-SYS-02 / RFC-005 | Для підтримки `_` стан ініціалізації повинен бути відокремлений від числового значення; відомість guard не є станом ініціалізації концепту. | Визначити ABI біта й перевірити неініціалізоване/ініціалізоване значення та підписку `_`. | **Підготовлено проєкт контракту (Proposed CR #185):** [ADR B7 / `CME-RAW-2`](../decisions/cme-raw2-kpol-sys02.md) (`W1.state_valid`, [звіт #185](../validation/kpol-cme/cr-cme-raw2-185/report.md)); у чинному `CFG-P` (`CME-RAW-1`) `Unknown`-стан відхиляється компілятором і не кодується нулем, а семантика читання `_` очікує відповіді Автора на `RFC-017`. |
-| KPOL-SYS-03 / RFC-006; новий слайд 5 | Якщо підтримано авторський синтаксис, `@` повинен позначати формальні параметри підписки, а не автоматично оператор адреси/розіменування. | Новий Source дає явний локатор; узгодити повну граматику й незалежну очікувану трасу перед реалізацією. | Стекова/native граматика, `@` і вектори поза профілем; `SumA` не є приймальним прикладом. |
-| KPOL-SYS-04 / RFC-007 | При повній черзі породжувач повинен зберегти неприйняту подію до можливості прийняття, не замінювати очікування відкиданням з лічильником. | Повна черга, одночасні каскад/зовнішня подія, один вільний слот; рівно одне виконання збережених подій після розвантаження. | **Реалізовано в RTL для керованих джерел (#151, у симуляції).** [B5 v2.1](../specifications/hw/event-queue-ingress-specification.md), [Report #151](../validation/kpol-cme/queue-retention-151/report.md); фізичний edge-вхід PMOD без буфера і HIL залишаються окремими межами. |
-| KPOL-SYS-05 / RFC-007 | В описаному рандеву за зайнятого пулу ядер поточне ядро повинно брати ще не призначену залежну лінію на виконання. | Погодити атомарне захоплення; тест конкуренції не допускає подвійного виконавця. | Багатоядерний scheduler поза профілем; механізм ще не визначено. Не заявляється global deadlock freedom. |
-| KPOL-SYS-06 / RFC-008 | Результат зіставлення реалізацій повинен мати версії програм/форматів, початкові значення, вхідні події й спостережувану трасу. | Повторення конкретного сценарію з незалежним очікуванням; артефакти та права доступу ідентифіковані. | Історична розповідь про плати не замінює тестів CFG-P; авторський пакет не наданий цією відповіддю. |
+| KPOL-SYS-02 / RFC-005 | Для підтримки `_` стан ініціалізації повинен бути відокремлений від числового значення; відомість guard не є станом ініціалізації концепту. | Визначити ABI біта й перевірити неініціалізоване/ініціалізоване значення та підписку `_`. | **Прийнято ADR B7 за Варіантом А (#185, #215):** [ADR B7 / `CME-RAW-2`](../decisions/cme-raw2-kpol-sys02.md) (`W1.state_valid`, [звіт #185](../validation/kpol-cme/cr-cme-raw2-185/report.md)); у чинному `CFG-P` (`CME-RAW-1`) `Unknown`-стан відхиляється компілятором і не кодується нулем, а у `KPOL-AUTH` читання `_` у виразах заблоковано `KPOL-AUTH-U10` до відповіді Автора на `RFC-017` п. 3. |
+| KPOL-SYS-03 / RFC-006; новий слайд 5 | Якщо підтримано авторський синтаксис, `@` повинен позначати формальні параметри підписки, а не автоматично оператор адреси/розіменування. | Новий Source дає явний локатор; узгодити повну граматику й незалежну очікувану трасу перед реалізацією. | У прототипі [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) вузол `ParamCST` зберігає `@target` без підміни на MMIO-адресу і блокується у lowering (`KPOL-LOWER-UNSUPPORTED-CST` / `KPOL-AUTH-U04`); стекова граматика `@` поза `KPOL-CME-1`/`2`. |
+| KPOL-SYS-04 / RFC-007 | При повній черзі породжувач повинен зберегти неприйняту подію до можливості прийняття, не замінювати очікування відкиданням з лічильником. | Повна черга, одночасні каскад/зовнішня подія, один вільний слот; рівно одне виконання збережених подій після розвантаження. | **Реалізовано в RTL та формально доведено для керованих джерел (#151, #227/#237/#242 до $N=16$, #255 для міжбанкового кластера $N=1..8$).** [B5 v2.2.0](../specifications/hw/event-queue-ingress-specification.md), [Report #151](../validation/kpol-cme/queue-retention-151/report.md), [Report #227](../validation/kpol-cme/cme2-formal-227/report.md), [Report #255](../validation/kpol-cme/manycore-scaling-255/report.md); фізичний edge-вхід PMOD без буфера і HIL залишаються окремими межами. |
+| KPOL-SYS-05 / RFC-007 | В описаному рандеву за зайнятого пулу ядер поточне ядро повинно брати ще не призначену залежну лінію на виконання. | Погодити атомарне захоплення; тест конкуренції не допускає подвійного виконавця. | **Досліджено в межах багатоядерного кластера `CFG-P` ($N=1..8$, #255):** [Report #255](../validation/kpol-cme/manycore-scaling-255/report.md) реалізує міжбанковий комутатор `km_event_crossbar.sv` із round-robin арбітражем (`MC2_rr_fairness`) і доводить відсутність втрат (`MC1_event_conservation`) та завершення міжбанкових DAG (`MC3_dag_progress`), а також конструктивно фіксує межу взаємного блокування на циклічних графах `Bank 0 <-> Bank 1` (`MC4_cyclic_deadlock_witness`). Динамічний work-stealing рандеву залишається поза поточним RTL. |
+| KPOL-SYS-06 / RFC-008 | Результат зіставлення реалізацій повинен мати версії програм/форматів, початкові значення, вхідні події й спостережувану трасу. | Повторення конкретного сценарію з незалежним очікуванням; артефакти та права доступу ідентифіковані. | **Реалізовано у порівняльному Baseline (#254) та приймальному пакеті S5 (#8):** [Report #254](../../Research/studies/comparative-baseline-254/report.md) звіряє C99 (`-O3`), `eventfd`, регістровий RTL і `CFG-P` на тотожних трасах `KPOL-CME-2` ($K^* = 26\text{ SLICE\_LUTX}$); [Report S5 #8](../validation/kpol-cme/s5-compiler-8/report.md) звіряє `KPOL-CME-1`, `KPOL-CME-2` (`CFG-P` і двобанковий `CFG-P-HA` за #252) та `KPOL-AUTH`. |
 
 Це прийняті до опрацювання входи, не звіт про їх реалізацію.
 Для SYS-02/03/05 ще немає достатнього контракту для кодування.
@@ -101,7 +101,9 @@ Q-AUTH-01/02 залишаються відкритими, 03–05 уточнен
 Q-AUTH-02 також переведено до стану «частково уточнено» (`Size` замінено
 безіменним атрибутом розміру `Token`, а `Def` визначено як 8-бітну маску
 присутності елементів концепту; точний порядок 8 бітів і коди `Class`
-залишаються відкритими). Стан Q-AUTH-03–07 не змінено; вісім AUTH залишаються Proposed.
+залишаються відкритими). У картці [відповідей 2026-11-15](../../Research/sources/author/rfc-answers-2026-11-15.md) (#218)
+уточнено правило `Min=1, Max=15 → 1..16` (`RFC-009` п. 1), порядок бітів `Def` зліва молодший (`RFC-018` п. 1, де `Child` названо зайвим)
+та заглушковий статус `OpenBracket`/`CloseBracket` (`RFC-015`). На цій основі у пакетах [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#243](https://github.com/nick-fedchik/kuzmin-machine/issues/243) та [#245](https://github.com/nick-fedchik/kuzmin-machine/issues/245) реалізовано ізольований прототип [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) та специфікацію підмножини [`kpol-auth-subset-0.1.0.md`](../specifications/kpol/kpol-auth-subset-0.1.0.md) із детермінованим lowering у `Do/Go` і `CME-RAW-1` (`KPOL-LOWER-CYCLE`) та блокуванням 12 відкритих точок `KPOL-AUTH-U01..U12` (які залишаються в [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)).
 Відповідь RFC-012 про відсутність циклів не визначає рекурентну
 реалізацію, fan-out за один такт або відсутність усіх лічильників.
 
@@ -114,14 +116,16 @@ Q-AUTH-02 також переведено до стану «частково у�
 `test_profile_per_event_in_simulated_pipeline` → [Report #153](../validation/kpol-cme/behavior-153/report.md).
 Виправлення верифікатора `Proof`, інкрементного `change(...)` і базового lowering `>=`/`<=`/знакового `RANGE` у референсі (#183):
 `kpol_reference.py` → `KpolIssue183LanguageAndLoweringTests` → [Report #183](../validation/kpol-cme/verifier-lowering-183/report.md).
-Багатоконцептний профіль `KPOL-CME-2` на `CME-RAW-1` (#184):
-[специфікація `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile-0.1.0.md) → `KpolCme2ProfileTests` → [Report #184](../validation/kpol-cme/cme2-profile-184/report.md).
+Багатоконцептний профіль `KPOL-CME-2` на `CME-RAW-1` (#184) та формальна індукція до $N=16$ (#227/#237/#242/#249):
+[специфікація `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile-0.1.0.md) → `KpolCme2ProfileTests` → [Report #184](../validation/kpol-cme/cme2-profile-184/report.md) → [формальний доказ `Z3` на $N=4, 16$](../validation/kpol-cme/cme2-formal-227/report.md).
+Підмножинний фронтенд і lowering `KPOL-AUTH` (#219/#243/#245) та приймальне закриття S5 (#8):
+[специфікація `KPOL-AUTH`](../specifications/kpol/kpol-auth-subset-0.1.0.md) → `Engineering/sw/kpol-auth/` → [Report #219](../validation/kpol-cme/kpol-auth-frontend-219/report.md) → `test_s5_compiler_acceptance_8.py` → [Report S5 #8](../validation/kpol-cme/s5-compiler-8/report.md).
 Зворотний шлях задається ID й назвами перевірок у таблицях вище.
 Історичні REQ-SW-001–003 є входами, не дубльованими PASS.
 Новий шлях G1/N1–N2, G3/N4 → Source/слайд →
 KPOL-AUTH/Q-AUTH → [Compiler Design](../design/software/compiler.md) /
-Specification → Reports #155/#157/#159. Тестований нинішній профіль зберігає
-окремий шлях через B3-REQ і Reports #150/#153.
+Specification → Reports #155/#157/#159/#201/#219. Тестований нинішній профіль зберігає
+окремий шлях через B3-REQ і Reports #150/#153/#184/#8.
 
 * **Рецензія:** не проведена; автор не приймає власну роботу.
 * **Стан погодження системних деталей:** запропоновано для наступних контрактів.
@@ -131,6 +135,7 @@ Specification → Reports #155/#157/#159. Тестований нинішній 
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-17 | #8: актуалізовано статуси та трасування `KPOL-SYS-02..06` і `KPOL-AUTH` за результатами `#218/#219/#243/#245` (`kpol-auth-subset-0.1.0.md`), `#227/#237/#242` (формальна $k$-індукція до $N=16$), `#252` (`CFG-P-HA`), `#254` (порівняльний Baseline, $K^* = 26$), `#255` (багатоядерний кластер $N=1..8$) та звіту закриття кроку S5 (`s5-compiler-8/report.md`). |
 | 0.5.4 | 2026-11-14 | #185: зв'язано `KPOL-SYS-02` із запропонованим проєктом контракту [ADR B7 (`CME-RAW-2`)](../decisions/cme-raw2-kpol-sys02.md) та [Report #185](../validation/kpol-cme/cr-cme-raw2-185/report.md) без модифікації чинного `CFG-P`. |
 | 0.5.3 | 2026-11-14 | #184: додано трасування багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile-0.1.0.md` і `cme2-profile-184/report.md`) зі збереженням `KPOL-CME-1` без змін. |
 | 0.5.2 | 2026-11-14 | #183: інтегровано уточнення RFC-010 у KPOL-AUTH-01 / Q-AUTH-02 (безіменний атрибут розміру `Token`, 8-бітна маска `Def`) та додано трасування звіту виправлень верифікатора й lowering референсу. |

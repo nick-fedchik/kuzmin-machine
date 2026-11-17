@@ -1,0 +1,130 @@
+# cmd: python3 -m pytest -v Engineering/sw/tests/test_s5_compiler_acceptance_8.py -k "not recorded_acceptance_artifacts" Engineering/sw/kpol-ref/tests/test_kpol_reference.py Engineering/sw/kpol-auth/tests/
+# timestamp: 2026-11-17T14:03:27+02:00
+# git_base_sha: 7c4b1ad269ca24810b6ed358bb7bf623e996f7ab (origin/main: 467cd4e13c2812d5fe3b1be004110864e11448ba)
+# host: Linux 7.0.0-42-generic x86_64
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-8-s5-and-docs
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 94 items / 1 deselected / 93 selected
+
+Engineering/sw/tests/test_s5_compiler_acceptance_8.py::test_s5_kpol_cme1_cli_secure_boot_and_rtl_simulation_equivalence PASSED [  1%]
+Engineering/sw/tests/test_s5_compiler_acceptance_8.py::test_s5_kpol_cme2_cascade_rtl_simulation_cfg_p_and_cfg_p_ha_equivalence PASSED [  2%]
+Engineering/sw/tests/test_s5_compiler_acceptance_8.py::test_s5_kpol_auth_cli_dogo_vm_and_uncertainty_gates PASSED [  3%]
+Engineering/sw/tests/test_s5_compiler_acceptance_8.py::test_s5_negative_and_mutant_controls_hmac_rtl_vm_and_cycles PASSED [  4%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_all_documented_examples_parse_and_typecheck PASSED [  5%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_ascii_and_unicode_aliases_normalize_identically PASSED [  6%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_change_rule_runs_only_for_its_watched_state PASSED [  7%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_consolidated_example_proof_and_cme_pipeline PASSED [  8%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_default_hazard_policy_applies_to_run_and_proof PASSED [  9%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_euclid_properties_for_bounded_positive_inputs
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_euclid_properties_for_bounded_positive_inputs PASSED [ 10%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_invariant_failure_rolls_back_whole_transaction PASSED [ 11%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_default_nonce_is_random_across_updates PASSED [ 12%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_module_payload_is_cme_raw_1 PASSED [ 13%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_issue164_pre_auth_nonce_poisoning_blocked PASSED [ 15%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_meter_integrates_each_sample_with_units PASSED [ 16%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_meter_rejects_unknown_without_losing_accumulated_energy PASSED [ 17%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_missing_or_incorrect_hazard_implementation_is_rejected PASSED [ 18%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_nested_blocks_and_both_comment_forms PASSED [ 19%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_out_of_range_input_is_rejected_but_boundary_is_accepted PASSED [ 20%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_reactor_hazard_and_false_alarm_boundary PASSED [ 21%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_rejected_unknown_sensor_data_latches_fault PASSED [ 22%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_unit_mismatch_and_unresolved_names_are_rejected PASSED [ 23%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_unknown_guard_aborts_the_transaction PASSED [ 24%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_alert_observation_and_fail_closed_hazard PASSED [ 25%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_triad_detects_proof_assertion_failure PASSED [ 26%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_triad_problem_solution_proof_syntax_and_verification PASSED [ 27%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_triad_typecheck_errors_in_proof PASSED [ 29%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_codegen_rejects_undefined_abi
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_codegen_rejects_undefined_abi PASSED [ 30%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_invalid_input_and_overflow_without_commit
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_invalid_input_and_overflow_without_commit PASSED [ 31%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_out_of_range_literals
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_rejects_out_of_range_literals PASSED [ 32%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_values_and_arithmetic
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v02_u32_values_and_arithmetic PASSED [ 33%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v03_physical_time_units_and_pin_types PASSED [ 34%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v05_compiler_bram_binary_generation PASSED [ 35%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v05_compiler_c_header_and_verilog_generation PASSED [ 36%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v05_real_iverilog_interconnect_with_gate_v2 PASSED [ 37%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_corrupted_image_length_and_magic PASSED [ 38%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_hardware_capabilities_acl PASSED [ 39%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_secure_boot_signed_bram_image_success PASSED [ 40%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_security_acl_blocks_unauthorized_pin_compilation PASSED [ 41%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_security_anti_replay_and_key_enforcement PASSED [ 43%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_tamper_resistance_header_modification PASSED [ 44%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_tamper_resistance_payload_modification PASSED [ 45%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v06_wrong_secret_key PASSED [ 46%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v07_mutant_generation PASSED [ 47%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v07_popperian_falsification_anti_vacuum PASSED [ 48%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v07_popperian_falsification_perfect_score_and_corroboration PASSED [ 49%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v07_popperian_falsification_score_and_gate_failure PASSED [ 50%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v08_compile_axi_lite_wrapper PASSED [ 51%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v08_compile_baremetal_runtime PASSED [ 52%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v08_real_gcc_baremetal_runtime_compilation_and_execution PASSED [ 53%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v08_real_iverilog_axi_lite_slave_protocol PASSED [ 54%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v08_real_python_c_runtime_parity PASSED [ 55%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v09_link_modules_bram_limit_exceeded PASSED [ 56%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v09_link_modules_success PASSED [ 58%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v09_parse_triad_files_success PASSED [ 59%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v09_triad_cryptographic_independence_enforcement PASSED [ 60%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v10_cascade_to_cid0_sets_subscriber_enable_guard_flag PASSED [ 61%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_v10_concept_microcode_bram_generation PASSED [ 62%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolReferenceTests::test_valid_sample_clears_a_rejected_input_fault PASSED [ 63%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_checks_proof_before_emission PASSED [ 64%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_cli_rejects_before_output PASSED [ 65%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_encodes_guards_and_renaming PASSED [ 66%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCmeProfileTests::test_profile_rejects_unsupported_programs PASSED [ 67%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_cme_lowering_does_not_invert_rule_names_containing_not_or_negat
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_cme_lowering_does_not_invert_rule_names_containing_not_or_negat PASSED [ 68%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_cme_lowering_ge_le_and_signed_range_match_rtl_cme_simulation PASSED [ 69%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_cme_lowering_rejects_out_of_int16_or_inverted_range
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_cme_lowering_rejects_out_of_int16_or_inverted_range PASSED [ 70%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_incremental_run_and_proof_do_not_refire_unchanged_watch PASSED [ 72%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolIssue183LanguageAndLoweringTests::test_183_verify_module_rejects_vacuous_proof_and_unactivated_assert PASSED [ 73%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_64_concepts_boundary_and_mmio_cid0_plus_cid63_cascade PASSED [ 74%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_cli_preserves_cme1_default_and_rejects_invalid_cme2 PASSED [ 75%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_guard_action_matrix_and_chain3_rtl_equivalence
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_guard_action_matrix_and_chain3_rtl_equivalence PASSED [ 76%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_multiconcept_and_cascade_to_cid0_axi_rtl_equivalence PASSED [ 77%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_negative_controls_collision_range_guards_actions_and_proof PASSED [ 78%]
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades
+Engineering/sw/kpol-ref/tests/test_kpol_reference.py::KpolCme2ProfileTests::test_cme2_rejects_cycles_fanout_and_unsafe_cascades PASSED [ 79%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_all_uncertainty_points_default_to_fail_closed PASSED [ 80%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_author_corpus_examples_match_expected_cst_and_diagnostics PASSED [ 81%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_mutant_controls_catch_lexer_cst_and_uncertainty_defects PASSED [ 82%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_paired_brackets_and_negative_mismatch_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_paired_brackets_and_negative_mismatch_controls PASSED [ 83%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc009_min_max_bounds_and_negative_controls PASSED [ 84%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc015_open_close_bracket_stubs_and_negative_controls PASSED [ 86%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc016_hash_escaping_and_name_length_negative_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc016_hash_escaping_and_name_length_negative_controls PASSED [ 87%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc017_dot_subscription_not_negation_and_uninit_negative_controls PASSED [ 88%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc018_def_bit_order_and_child_uninit_negative_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_rfc018_def_bit_order_and_child_uninit_negative_controls PASSED [ 89%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_can_switch_all_uncertainties_to_record_diagnostic
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_can_switch_all_uncertainties_to_record_diagnostic PASSED [ 90%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_single_config_place_rejects_unknown_code_or_policy PASSED [ 91%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_u07_name_length_unit_is_configurable_for_multibyte_cyrillic PASSED [ 92%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_frontend.py::KpolAuthFrontendTests::test_utf8_byte_offsets_and_diagnostic_spans_for_cyrillic_and_symbols PASSED [ 93%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_bram_image_unpacking_matches_cme_raw_1_layout PASSED [ 94%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_cli_check_emit_and_fail_closed_negative_controls
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_cli_check_emit_and_fail_closed_negative_controls PASSED [ 95%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_fail_closed_negative_controls PASSED [ 96%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_mutant_controls_catch_opcode_exit_and_bram_cycle_defects PASSED [ 97%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_self_loop_positive_and_negative_controls_direct_and_ast
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_self_loop_positive_and_negative_controls_direct_and_ast PASSED [ 98%]
+Engineering/sw/kpol-auth/tests/test_kpol_auth_lowering.py::KpolAuthLoweringTests::test_thermal_graph_lowering_executes_identically_on_reference_vm PASSED [100%]
+
+============ 93 passed, 1 deselected, 391 subtests passed in 4.07s =============

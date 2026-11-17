@@ -1,6 +1,6 @@
 {
-  "version": "0.16.0",
-  "date": "2026-11-16",
+  "version": "0.17.0",
+  "date": "2026-11-17",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -171,6 +171,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/boards/pynq-z1/hil-hardware-experiment-plan.md",
+      "direction": "Engineering",
+      "wp_type": "Plan",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/boards/pynq-z1/hil/hil_io_trigger.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -183,9 +189,27 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/boards/pynq-z1/hil/test_bram_cascade_live.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/boards/pynq-z1/kpol_bram_pipeline.xdc",
       "direction": "Engineering",
       "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/kpol_bram_pipeline_egress.xdc",
+      "direction": "Engineering",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/kpol_bram_pipeline_pynq_z1_egress_top.v",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
@@ -249,6 +273,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/rtl/baseline/km_reg_configurable_cascade_axi.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -256,6 +286,18 @@
     },
     {
       "path": "Engineering/hw/rtl/bus/kpol_bram_pipeline_axi_ha.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/cluster/km_event_crossbar.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/rtl/cluster/km_manycore_cluster.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -297,6 +339,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/rtl/io/km_pmod_event_egress.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/scripts/compile_kpol_bram_image.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -333,7 +381,25 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/tb/km_pmod_event_egress_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/tb/kpol_txn_gate_v2_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/km_manycore_cluster_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/km_reg_configurable_cascade_axi_tb.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -363,6 +429,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/tests/kpol_bram_pipeline_pynq_z1_egress_top_tb.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/tests/kpol_bram_pipeline_pynq_z1_top_tb.sv",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -375,6 +447,30 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/tests/test_cme2_formal_227.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_comparative_baseline_254.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_km_pmod_event_egress.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_kpol_bram_cascade_hil.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/tests/test_kpol_bram_hil_runner.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -382,6 +478,12 @@
     },
     {
       "path": "Engineering/hw/tests/test_kpol_bram_pipeline.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/tests/test_manycore_scaling_255.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -567,6 +669,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/kpol-ref/tests/fixtures/cme1_single_ca9dbb3.bin",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/kpol-ref/tests/fixtures/kpol-v01-examples.md",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -574,6 +682,12 @@
     },
     {
       "path": "Engineering/sw/kpol-ref/tests/test_kpol_reference.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/runtime/gpu/tests/test_gpu_l2_snoop_decoupling.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -598,6 +712,18 @@
     },
     {
       "path": "Engineering/sw/runtime/pynq/tests/test_kpol_direct_mmio.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_exp_gpu_03_256.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_s5_compiler_acceptance_8.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -1377,7 +1503,445 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M1_we_on_reject.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M1_we_on_reject.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M1_we_on_reject.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M2_cascade_on_reject.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M2_cascade_on_reject.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M2_cascade_on_reject.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M3_cyclic_cascade.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M3_cyclic_cascade.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/M3_cyclic_cascade.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/cme2_provenance.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/cme2_results.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_bigdot_dual_pulse.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_bigdot_dual_pulse.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_bigdot_dual_pulse.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_cascade_on_reject.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_cascade_on_reject.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_cascade_on_reject.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_rank_violation_self_sub.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_rank_violation_self_sub.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_rank_violation_self_sub.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_we_on_reject.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_we_on_reject.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/M_we_on_reject.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/cme2_n16_provenance.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/cme2_n16_results.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_cover.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_liveness_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_liveness_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_rank_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_rank_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_safety_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional/orig_n16_safety_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_bigdot_dual_pulse.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_bigdot_dual_pulse.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_bigdot_dual_pulse.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_cascade_on_reject.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_cascade_on_reject.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_cascade_on_reject.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_p3_early_eval_skip.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_p3_early_eval_skip.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_p3_early_eval_skip.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_rank_violation_self_sub.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_rank_violation_self_sub.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_rank_violation_self_sub.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_we_on_reject.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_we_on_reject.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/M_we_on_reject.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/cme2_n16_provenance.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/cme2_n16_results.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_cover.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_liveness_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_liveness_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_rank_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_rank_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_safety_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/n16_compositional_v2/orig_n16_safety_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_cover.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_liveness_bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_liveness_bmc.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_safety_bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_safety_bmc.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_safety_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/raw/orig_safety_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/scripts/cme2_formal_n16_props.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/scripts/cme2_formal_props.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/scripts/run_cme2_formal.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-formal-227/scripts/run_cme2_formal_n16.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/cme2-tests-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/cme2-tests-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/cme2-tests-03.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -1396,6 +1960,18 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/final-verification-03.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/final-verification-04.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cme2-profile-184/raw/golden-mutation-01.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -1425,7 +2001,43 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/dual-bank-xc7-probe-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/final-verification-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/final-verification-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/final-verification-03.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/final-verification-04.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/verify-script-adr-tamper-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/raw/verify-script-cases-01.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -1449,6 +2061,18 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/cme_raw2_dual_bank_probe.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/docs-registers-169/raw/checks-01.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -1458,6 +2082,438 @@
       "path": "Engineering/validation/kpol-cme/docs-registers-169/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/full-verification-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/kpol-auth-tests-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/kpol-auth-tests-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/kpol-auth-tests-03.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/revision-0.1.1-full-verification.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/revision-0.1.1-kpol-auth-tests.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/revision-0.2.0-full-verification.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/raw/revision-0.2.0-kpol-auth-tests.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/kpol-auth-frontend-219/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M1_fixed_priority_starvation.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M1_fixed_priority_starvation.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M1_fixed_priority_starvation.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M2_drop_crossbar_backpressure.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M2_drop_crossbar_backpressure.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M2_drop_crossbar_backpressure.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/MC4_cyclic_deadlock_witness.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_c1_c2_cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_c1_c2_cover.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_base_bmc.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_base_bmc.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_ind.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_ind.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc3_dag_bmc45.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc3_dag_bmc45.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc4_deadlock_cover.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc4_deadlock_cover.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/iverilog_traffic_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/iverilog_traffic_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_formal_provenance.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_formal_results.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_pnr_scaling.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_pnr_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_traffic_profiles.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_traffic_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_n1.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_n2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n1.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n2.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n4.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n8.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_n1.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_n2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_n1.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_n2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/scripts/km_manycore_synth.xdc",
+      "direction": "Engineering",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/scripts/km_manycore_synth_top.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/scripts/manycore_formal_props.sv",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/scripts/run_manycore_formal.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/scripts/run_manycore_pnr.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/scripts/run_manycore_traffic.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/final-verification-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/final-verification-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/open-flow-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/open-flow-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/pytest-egress-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/pytest-egress-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/sim-iverilog-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/sim-iverilog-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/verilator-lint-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/yosys-synth-xc7-01.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/yosys-synth-xc7-02.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
       "immutable_input": false
     },
     {
@@ -1585,6 +2641,30 @@
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": true
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/report-179-spec-cme-report-wording.md",
+      "direction": "Engineering",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/s5-compiler-8/raw/s5_acceptance_run.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/s5-compiler-8/raw/s5_acceptance_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/s5-compiler-8/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
     },
     {
       "path": "Engineering/validation/kpol-cme/secure-boot-164/raw/full-pytest-01.log",
@@ -2025,6 +3105,12 @@
       "immutable_input": false
     },
     {
+      "path": "Project/patents/report-177-timing-dependent-claims.md",
+      "direction": "Project",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
       "path": "Project/plans/ng-transition.md",
       "direction": "Project",
       "wp_type": "Plan",
@@ -2080,6 +3166,12 @@
     },
     {
       "path": "Project/registers/goals-needs-work-items.md",
+      "direction": "Project",
+      "wp_type": "Register",
+      "immutable_input": false
+    },
+    {
+      "path": "Project/registers/hardware-inventory.md",
       "direction": "Project",
       "wp_type": "Register",
       "immutable_input": false
@@ -2379,6 +3471,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/sources/author/rfc-answers-2026-11-15.md",
+      "direction": "Research",
+      "wp_type": "Source",
+      "immutable_input": false
+    },
+    {
       "path": "Research/sources/author/Введение. Понятия. Группы. Синтаксис.pptx",
       "direction": "Research",
       "wp_type": "Source",
@@ -2511,6 +3609,90 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/freeze-and-negative-control-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/pilot-acceptance-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/prompt-inputs-snapshot.md",
+      "direction": "Research",
+      "wp_type": "Raw Data (знімок входів; не сира відповідь моделі)",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/repro-def01-def04-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/revision-0.1.1-acceptance-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/revision-0.1.1-check-links-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/revision-0.1.1-check-wp-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/revision-0.1.1-pytest-full-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/session-01-gemini-4-hydrogen.md",
+      "direction": "Research",
+      "wp_type": "Raw Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/session-02-claude-sonnet-5.5.md",
+      "direction": "Research",
+      "wp_type": "Raw Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/raw/session-03-gpt-5.3-codex.md",
+      "direction": "Research",
+      "wp_type": "Raw Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/repro_def01_def04.py",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/tasks_and_tests.py",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/author-semantics/data/q3-pilot-216/tests/test_q3_acceptance.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/author-semantics/formal-analysis.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
@@ -2535,6 +3717,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/author-semantics/q3-llm-pilot-216-report.md",
+      "direction": "Research",
+      "wp_type": "Experiment",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/author-semantics/report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
@@ -2544,6 +3732,144 @@
       "path": "Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/README.md",
+      "direction": "Research",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/c99_cascade_bench.c",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/arm_c99_and_eventfd_bench.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/arm_c99_and_eventfd_bench.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/arm_c99_build_and_sysinfo.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/arm_c99_o3_disasm.txt",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/baseline_254_summary.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_cfg_p_k64.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_cfg_p_k64_report.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_reg_k16.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_reg_k16_report.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_reg_k4.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_reg_k4_report.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_reg_k64.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/nextpnr_reg_k64_report.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/rtl_cycle_timing_sim.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/yosys_cfg_p_k64.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/yosys_reg_k16.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/yosys_reg_k4.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/yosys_reg_k64.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/raw/yosys_standalone_cores_stat.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/report.md",
+      "direction": "Research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/comparative-baseline-254/run_baseline_suite.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
@@ -2607,6 +3933,450 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_16x32_isolated_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_16x32_packed_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_8x32_isolated_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_8x32_packed_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_scale_1x128_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_scale_1x256_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_scale_1x32_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_scale_1x512_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/dvfs_unlocked_1x32.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/mask_1x32_all.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/mask_1x32_alt.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/mask_1x32_ends.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/mask_1x32_none.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/mask_1x32_one.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/mask_1x32_rand.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_none_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_none_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_none_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_none_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_none_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_rand_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_rand_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_rand_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_rand_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_partitioned_rand_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_none_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_none_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_none_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_none_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_none_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_rand_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_rand_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_rand_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_rand_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_1line_rand_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_none_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_none_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_none_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_none_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_none_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_rand_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_rand_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_rand_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_rand_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/rep240_16x64_shared_2line_rand_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/run-05-repeatability-240.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/sass-sm87-04.txt",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/repeatability-240/summary_repeatability_240.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/run-01-dvfs-unlocked-1x32.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/run-02-locked-matrix-01.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/run-03-ab-scaling-10k.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/run-04-l2-snoop-decoupling-10k.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/sass-sm87-01.txt",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/sass-sm87-02.txt",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/sass-sm87-03.txt",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_16x32.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_1x128.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_1x256.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_1x32.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_1x512.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_4x32.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/scale_8x32.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/sleep20_1x32.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_16x32_part_none_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_16x32_part_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_16x32_shared_none_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_16x32_shared_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_16x64_part_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_16x64_shared_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_2x512_part_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_2x512_shared_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_4x256_part_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_8x32_part_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/snoop_8x32_shared_rand_10k.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-sim/exp_gpu_02_sim_10k_swaps_summary.json",
       "direction": "Research",
       "wp_type": "Data",
@@ -2637,6 +4407,180 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S1_50w_homo_pid_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S1_50w_homo_pid_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S1_50w_homo_pid_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S1_50w_homo_pid_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S1_50w_homo_pid_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S2_50w_mixed_warp_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S2_50w_mixed_warp_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S2_50w_mixed_warp_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S2_50w_mixed_warp_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S2_50w_mixed_warp_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S3_50w_grouped_warp_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S3_50w_grouped_warp_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S3_50w_grouped_warp_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S3_50w_grouped_warp_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S3_50w_grouped_warp_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S4_maxn_grouped_warp_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S4_maxn_grouped_warp_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S4_maxn_grouped_warp_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S4_maxn_grouped_warp_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S4_maxn_grouped_warp_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S5_maxn_grouped_warp_rtpin_r1.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S5_maxn_grouped_warp_rtpin_r2.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S5_maxn_grouped_warp_rtpin_r3.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S5_maxn_grouped_warp_rtpin_r4.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/exp03_S5_maxn_grouped_warp_rtpin_r5.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/run-01-exp-gpu-03-s1-s5.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/sass-sm87-hetero.txt",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-03/summary_exp_gpu_03.json",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/kuzmin_machine_10_steps_development_chronicle.md",
+      "direction": "Research",
+      "wp_type": "Report / Development Chronicle",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/epistemology-and-learning.md",
       "direction": "Research",
       "wp_type": "Model / Analysis",
@@ -2655,6 +4599,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/persistent_subscribers.cu",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/plan.md",
       "direction": "Research",
       "wp_type": "Plan",
@@ -2664,6 +4614,42 @@
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/protocol.md",
       "direction": "Research",
       "wp_type": "Protocol",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-178-protocol-pmod-fix.md",
+      "direction": "Research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md",
+      "direction": "Research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report.md",
+      "direction": "Research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/summarize_repeatability_240.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/test_persistent_subscribers.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/tests/test_persistent_subscribers.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
@@ -2751,6 +4737,24 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M5_skip_port_a_resync.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M5_skip_port_a_resync.vcd",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/M5_skip_port_a_resync.yosys.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/cfg_p_ha_formal_provenance.json",
       "direction": "Research",
       "wp_type": "Data",
@@ -2823,6 +4827,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/sim_c4_b_we_at_swap.log",
+      "direction": "Research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/run_cfg_p_ha_formal.py",
       "direction": "Research",
       "wp_type": "Source Code",
@@ -2854,6 +4864,30 @@
     },
     {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/tests/test_exp_gpu_02_cfg_p_ha.py",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-03/README.md",
+      "direction": "Research",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-03/heterogeneous_subscribers.cu",
+      "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-03/report.md",
+      "direction": "Research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-03/summarize_exp_gpu_03.py",
       "direction": "Research",
       "wp_type": "Source Code",
       "immutable_input": false
