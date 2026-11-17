@@ -22,13 +22,18 @@
 //                                   на скінченних чергах + індуктивна незворотність
 // ============================================================================
 
+`ifndef KM_FORMAL_PIPE_STAGES
+`define KM_FORMAL_PIPE_STAGES 1
+`endif
+
 module manycore_formal_props #(
-    parameter int NUM_CORES     = 2,
-    parameter int NUM_EXT_PORTS = 2,
-    parameter int QUEUE_DEPTH   = 4,
-    parameter int NUM_CONCEPTS  = 4,
-    parameter int DATA_WIDTH    = 32,
-    parameter int ADDR_WIDTH    = 4
+    parameter int NUM_CORES       = 2,
+    parameter int NUM_EXT_PORTS   = 2,
+    parameter int QUEUE_DEPTH     = 4,
+    parameter int NUM_CONCEPTS    = 4,
+    parameter int DATA_WIDTH      = 32,
+    parameter int ADDR_WIDTH      = 4,
+    parameter int PIPELINE_STAGES = `KM_FORMAL_PIPE_STAGES
 )(
     input  logic                                clk,
     input  logic                                rst_n,
@@ -71,7 +76,8 @@ module manycore_formal_props #(
         .QUEUE_DEPTH(QUEUE_DEPTH),
         .NUM_CONCEPTS(NUM_CONCEPTS),
         .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDR_WIDTH)
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .PIPELINE_STAGES(PIPELINE_STAGES)
     ) dut (
         .clk(clk),
         .rst_n(rst_n),
@@ -111,6 +117,7 @@ module manycore_formal_props #(
     (* keep *) wire [1:0]  obs_node_rx_valid;
     (* keep *) wire [1:0]  obs_node_rx_ready;
 
+    (* keep *) wire [1:0]  obs_xbar_s1_valid;
     (* keep *) wire [1:0]  obs_xbar_pipe_valid;
     (* keep *) wire [1:0]  obs_xbar_accept_pulse;
     (* keep *) wire        obs_xbar_can_accept_0;
@@ -127,6 +134,10 @@ module manycore_formal_props #(
     (* keep *) wire [31:0] obs_n0_desc_w2_q;
     (* keep *) wire [31:0] obs_n0_desc_w3_q;
     (* keep *) wire        obs_n0_sub_fire_w;
+    (* keep *) wire        obs_n0_sub_valid_q;
+    (* keep *) wire        obs_n0_sub_local_q;
+    (* keep *) wire        obs_n0_sub_valid_comb_w;
+    (* keep *) wire        obs_n0_sub_is_local_w;
     (* keep *) wire [3:0]  obs_n0_sub_dst_bank_w;
     (* keep *) wire [5:0]  obs_n0_sub_dst_cid_w;
     (* keep *) wire        obs_n0_b_we_q;
@@ -145,6 +156,10 @@ module manycore_formal_props #(
     (* keep *) wire [31:0] obs_n1_desc_w2_q;
     (* keep *) wire [31:0] obs_n1_desc_w3_q;
     (* keep *) wire        obs_n1_sub_fire_w;
+    (* keep *) wire        obs_n1_sub_valid_q;
+    (* keep *) wire        obs_n1_sub_local_q;
+    (* keep *) wire        obs_n1_sub_valid_comb_w;
+    (* keep *) wire        obs_n1_sub_is_local_w;
     (* keep *) wire [3:0]  obs_n1_sub_dst_bank_w;
     (* keep *) wire [5:0]  obs_n1_sub_dst_cid_w;
     (* keep *) wire        obs_n1_b_we_q;
@@ -182,12 +197,17 @@ module manycore_formal_props #(
     end
 
     // Спільне визначення взаємного циклічного дедлока Bank 0 <-> Bank 1
+    wire xbar_trap_full_w = (PIPELINE_STAGES == 1)
+        ? (obs_xbar_pipe_valid[0] && obs_xbar_pipe_valid[1])
+        : (obs_xbar_pipe_valid[0] && obs_xbar_pipe_valid[1] &&
+           obs_xbar_s1_valid[0] && obs_xbar_s1_valid[1]);
+
     wire cyclic_deadlock_trap_w =
         (obs_n0_state_q == 4'd8) && (obs_n1_state_q == 4'd8) &&
         obs_node_tx_valid[0] && (obs_node_tx_dst_bank[3:0] == 4'd1) &&
         obs_node_tx_valid[1] && (obs_node_tx_dst_bank[7:4] == 4'd0) &&
         (obs_n0_fifo_count_q == 3'd4) && (obs_n1_fifo_count_q == 3'd4) &&
-        obs_xbar_pipe_valid[0] && obs_xbar_pipe_valid[1] &&
+        xbar_trap_full_w &&
         (obs_node_rx_ready == 2'b00) && (obs_node_tx_ready == 2'b00);
 
 `ifdef FORMAL_SAFETY
@@ -270,8 +290,12 @@ module manycore_formal_props #(
         end
     end
 
+    wire [5:0] b0_xbar_inflight_u6 =
+        {5'd0, obs_xbar_pipe_valid[0]} + {5'd0, obs_xbar_s1_valid[0]};
+    wire [5:0] b1_xbar_inflight_u6 =
+        {5'd0, obs_xbar_pipe_valid[1]} + {5'd0, obs_xbar_s1_valid[1]};
     wire [5:0] xbar_inflight_u6 =
-        {5'd0, obs_xbar_pipe_valid[0]} + {5'd0, obs_xbar_pipe_valid[1]};
+        b0_xbar_inflight_u6 + b1_xbar_inflight_u6;
 
     wire n0_in_eval_pipe_w = (obs_n0_state_q >= 4'd1) && (obs_n0_state_q <= 4'd7);
     wire n1_in_eval_pipe_w = (obs_n1_state_q >= 4'd1) && (obs_n1_state_q <= 4'd7);
@@ -394,10 +418,21 @@ module manycore_formal_props #(
                 assert (!obs_n0_pend_valid_q || ((obs_n0_state_q == 4'd0) && (obs_n0_fifo_count_q == 3'd4)));
             INV_n1_pend_full:
                 assert (!obs_n1_pend_valid_q || ((obs_n1_state_q == 4'd0) && (obs_n1_fifo_count_q == 3'd4)));
-            INV_n0_wait_tx_has_tx_valid:
-                assert ((obs_n0_state_q != 4'd8) || obs_node_tx_valid[0]);
-            INV_n1_wait_tx_has_tx_valid:
-                assert ((obs_n1_state_q != 4'd8) || obs_node_tx_valid[1]);
+            if (PIPELINE_STAGES == 1) begin
+                INV_n0_wait_tx_has_tx_valid:
+                    assert ((obs_n0_state_q != 4'd8) || obs_node_tx_valid[0]);
+                INV_n1_wait_tx_has_tx_valid:
+                    assert ((obs_n1_state_q != 4'd8) || obs_node_tx_valid[1]);
+            end else begin
+                INV_n0_sub_predecode:
+                    assert ((obs_n0_state_q != 4'd7) ||
+                            ((obs_n0_sub_valid_q == obs_n0_sub_valid_comb_w) &&
+                             (obs_n0_sub_local_q == obs_n0_sub_is_local_w)));
+                INV_n1_sub_predecode:
+                    assert ((obs_n1_state_q != 4'd7) ||
+                            ((obs_n1_sub_valid_q == obs_n1_sub_valid_comb_w) &&
+                             (obs_n1_sub_local_q == obs_n1_sub_is_local_w)));
+            end
             INV_int_dst_bank_valid:
                 assert ((!obs_node_tx_valid[0] || (obs_node_tx_dst_bank[3:0] == 4'd1)) &&
                         (!obs_node_tx_valid[1] || (obs_node_tx_dst_bank[7:4] == 4'd0)) &&
@@ -433,8 +468,8 @@ module manycore_formal_props #(
             MC1_event_conservation:
                 assert ((f_xbar_net_q == xbar_inflight_u6) &&
                         (invalid_dst_drop_count_o == 32'd0) &&
-                        (f_b0_xbar_net_q == {5'd0, obs_xbar_pipe_valid[0]}) &&
-                        (f_b1_xbar_net_q == {5'd0, obs_xbar_pipe_valid[1]}) &&
+                        (f_b0_xbar_net_q == b0_xbar_inflight_u6) &&
+                        (f_b1_xbar_net_q == b1_xbar_inflight_u6) &&
                         (f_n0_net_q == n0_inflight_u6) &&
                         (f_n1_net_q == n1_inflight_u6) &&
                         (f_tx0_net_q == n0_tx_inflight_u6) &&
@@ -507,11 +542,12 @@ module manycore_formal_props #(
                 assume (ext_valid_i == 2'b00);
             end
 
-            if (step_cnt_q == 7'd44) begin
+            if (step_cnt_q == ((PIPELINE_STAGES == 1) ? 7'd44 : 7'd48)) begin
                 MC3_dag_progress:
                     assert (!cluster_busy_o &&
                             (obs_n0_fifo_count_q == 3'd0) &&
                             (obs_n1_fifo_count_q == 3'd0) &&
+                            (obs_xbar_s1_valid == 2'b00) &&
                             (obs_xbar_pipe_valid == 2'b00) &&
                             (obs_node_tx_valid == 2'b00));
             end

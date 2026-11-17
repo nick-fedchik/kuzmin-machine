@@ -1,0 +1,37 @@
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/formal_mc3_dag_bmc49_p2.ys
+# timestamp: 2026-11-17T14:08:53.275892+02:00
+Warning: Replacing memory \rr_ptr_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:159
+Warning: Replacing memory \pipe_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:158
+Warning: Replacing memory \pipe_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:157
+Warning: Replacing memory \bank_grant_fire with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:134
+Warning: Replacing memory \src_param with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:74
+Warning: Replacing memory \src_dst_cid with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:73
+Warning: Replacing memory \src_dst_bank with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:72
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:332
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:331
+Warning: Replacing memory \node_tx_stalls with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \node_rem_cnt with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \node_loc_cnt with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \node_rej_cnt with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \node_comm_cnt with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \node_ev_cnt with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \node_cfg_rdata with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:0
+Warning: Replacing memory \gen_cluster_agg_s2.pair_stalls_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:714
+Warning: Replacing memory \gen_cluster_agg_s2.pair_rem_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:713
+Warning: Replacing memory \gen_cluster_agg_s2.pair_loc_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:712
+Warning: Replacing memory \gen_cluster_agg_s2.pair_rej_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:711
+Warning: Replacing memory \gen_cluster_agg_s2.pair_comm_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:710
+Warning: Replacing memory \gen_cluster_agg_s2.pair_ev_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:709
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:354
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_manycore_cluster.sv:353
+Warning: Replacing memory \gen_bank_slice[1].gen_stage2.grp_param with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:223
+Warning: Replacing memory \gen_bank_slice[1].gen_stage2.grp_cid with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:222
+Warning: Replacing memory \gen_bank_slice[1].gen_stage2.grp_ofs_1hot with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:210
+Warning: Replacing memory \gen_bank_slice[1].gen_stage2.grp_ofs with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:225, /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:209
+Warning: Replacing memory \rr_ptr_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:267
+Warning: Replacing memory \pipe_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:266
+Warning: Replacing memory \pipe_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:265
+Warning: Replacing memory \gen_bank_slice[0].gen_stage2.grp_param with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:223
+Warning: Replacing memory \gen_bank_slice[0].gen_stage2.grp_cid with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:222
+Warning: Replacing memory \gen_bank_slice[0].gen_stage2.grp_ofs_1hot with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:210
+Warning: Replacing memory \gen_bank_slice[0].gen_stage2.grp_ofs with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:225, /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/hw/rtl/cluster/km_event_crossbar.sv:209

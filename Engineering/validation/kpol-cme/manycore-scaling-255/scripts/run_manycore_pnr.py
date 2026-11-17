@@ -108,12 +108,13 @@ def parse_yosys_stat(text: str) -> dict[str, int]:
     return res
 
 
-def run_xbar_only_yosys(work: str, out_dir: str, n: int) -> int:
-    wrap_sv = os.path.join(work, f"xbar_wrap_n{n}.sv")
+def run_xbar_only_yosys(work: str, out_dir: str, n: int, pipe_stages: int = 1) -> int:
+    sfx = "" if pipe_stages == 1 else f"_p{pipe_stages}"
+    wrap_sv = os.path.join(work, f"xbar_wrap{sfx}_n{n}.sv")
     with open(wrap_sv, "w", encoding="utf-8") as f:
         f.write(
             f"`timescale 1ns/1ps\n"
-            f"module xbar_wrap_n{n}(\n"
+            f"module xbar_wrap{sfx}_n{n}(\n"
             f"  input logic clk, input logic rst_n,\n"
             f"  input logic [{n}-1:0] int_valid_i, output logic [{n}-1:0] int_ready_o,\n"
             f"  input logic [{n*4}-1:0] int_dst_bank_i, input logic [{n*6}-1:0] int_dst_cid_i,\n"
@@ -126,45 +127,59 @@ def run_xbar_only_yosys(work: str, out_dir: str, n: int) -> int:
             f"  output logic xbar_busy_o, output logic [31:0] routed_events_count_o,\n"
             f"  output logic [31:0] backpressure_stall_cycles_o, output logic [31:0] invalid_dst_drop_count_o\n"
             f");\n"
-            f"  km_event_crossbar #(.NUM_CORES({n}), .NUM_EXT_PORTS({n}), .DATA_WIDTH(32)) u (.*);\n"
+            f"  km_event_crossbar #(.NUM_CORES({n}), .NUM_EXT_PORTS({n}), .DATA_WIDTH(32), .PIPELINE_STAGES({pipe_stages})) u (.*);\n"
             f"endmodule\n"
         )
     cmd = [
         OPENXC7_YOSYS,
         "-p",
         f"read_verilog -sv {RTL_XBAR} {wrap_sv}; "
-        f"synth_xilinx -flatten -abc9 -arch xc7 -nobram -noiopad -top xbar_wrap_n{n}; "
+        f"synth_xilinx -flatten -abc9 -arch xc7 -nobram -noiopad -top xbar_wrap{sfx}_n{n}; "
         f"stat -tech xilinx; check",
     ]
-    rc, out, _ = sh(cmd, work, os.path.join(out_dir, f"yosys_xbar_only_n{n}.log"))
+    rc, out, _ = sh(cmd, work, os.path.join(out_dir, f"yosys_xbar_only{sfx}_n{n}.log"))
     if rc != 0:
-        raise RuntimeError(f"yosys xbar_only failed for N={n}:\n{out}")
+        raise RuntimeError(f"yosys xbar_only failed for N={n} P={pipe_stages}:\n{out}")
     return parse_yosys_stat(out)["estimated_lcs"]
 
 
 def fit_quadratic_c(ns: list[int], ys: list[int]) -> tuple[int, float]:
-    """Fits c in LUT_hat(N) = N * LUT_1 + c * (N^2 - N) so N=1 is exact and N>1 captures quadratic crossbar."""
-    y1 = ys[0]
-    # Also compute pure N*y1 + c*N^2 least squares for N in {2, 4, 8}
-    num = sum((n * n) * (y - n * y1) for n, y in zip(ns, ys) if n > 1)
-    den = sum((n * n) ** 2 for n in ns if n > 1)
+    """Fits LUT_hat(N) = N * LUT_1 + c * N^2 across the measured core counts."""
+    if ns[0] == 1:
+        y1 = ys[0]
+        num = sum((n * n) * (y - n * y1) for n, y in zip(ns, ys) if n > 1)
+        den = sum((n * n) ** 2 for n in ns if n > 1)
+        c = num / den if den else 0.0
+        return y1, round(c, 4)
+    s_n2 = sum(n * n for n in ns)
+    s_n3 = sum(n**3 for n in ns)
+    s_n4 = sum(n**4 for n in ns)
+    s_ny = sum(n * y for n, y in zip(ns, ys))
+    s_n2y = sum((n * n) * y for n, y in zip(ns, ys))
+    det = s_n2 * s_n4 - s_n3 * s_n3
+    y1 = round((s_ny * s_n4 - s_n2y * s_n3) / det) if det else (ys[0] // ns[0])
+    num = sum((n * n) * (y - n * y1) for n, y in zip(ns, ys))
+    den = sum((n * n) ** 2 for n in ns)
     c = num / den if den else 0.0
-    return y1, round(c, 4)
+    return int(y1), round(c, 4)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default=DEFAULT_OUT)
     ap.add_argument("--cores", default="1,2,4,8")
+    ap.add_argument("--pipeline-stages", type=int, default=1)
     args = ap.parse_args()
 
     if not (os.path.isfile(OPENXC7_YOSYS) and os.path.isfile(OPENXC7_NEXTPNR) and os.path.isfile(CHIPDB)):
         raise RuntimeError("OpenXC7 toolchain or chipdb-xc7z020.bin not found on host")
 
+    pipe_stages = int(args.pipeline_stages)
+    sfx = "" if pipe_stages == 1 else f"_p{pipe_stages}"
     core_list = [int(x.strip()) for x in args.cores.split(",") if x.strip()]
     out_dir = os.path.abspath(args.out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    work = os.path.join(out_dir, "_work_pnr")
+    work = os.path.join(out_dir, f"_work_pnr{sfx}")
     if os.path.isdir(work):
         shutil.rmtree(work)
     os.makedirs(work, exist_ok=True)
@@ -172,24 +187,24 @@ def main() -> None:
     rows = []
     try:
         for n in core_list:
-            xbar_lcs = run_xbar_only_yosys(work, out_dir, n)
+            xbar_lcs = run_xbar_only_yosys(work, out_dir, n, pipe_stages)
 
-            netlist_json = os.path.join(work, f"manycore_n{n}.json")
-            fasm_out = os.path.join(work, f"manycore_n{n}.fasm")
-            pnr_rep_json = os.path.join(out_dir, f"nextpnr_report_n{n}.json")
-            pnr_raw_log = os.path.join(work, f"nextpnr_internal_n{n}.log")
+            netlist_json = os.path.join(work, f"manycore{sfx}_n{n}.json")
+            fasm_out = os.path.join(work, f"manycore{sfx}_n{n}.fasm")
+            pnr_rep_json = os.path.join(out_dir, f"nextpnr_report{sfx}_n{n}.json")
+            pnr_raw_log = os.path.join(work, f"nextpnr_internal{sfx}_n{n}.log")
 
             yosys_cmd = [
                 OPENXC7_YOSYS,
                 "-p",
-                f"read_verilog -sv -DKM_SYNTH_CORES={n} "
+                f"read_verilog -sv -DKM_SYNTH_CORES={n} -DKM_SYNTH_PIPE_STAGES={pipe_stages} "
                 f"{RTL_GATE} {RTL_CME} {RTL_BRAM} {RTL_XBAR} {RTL_CLUSTER_SV} {SYNTH_TOP}; "
                 f"synth_xilinx -flatten -abc9 -arch xc7 -top km_manycore_synth_top; "
                 f"stat -tech xilinx; check; write_json {netlist_json}",
             ]
-            rc_y, out_y, dt_y = sh(yosys_cmd, work, os.path.join(out_dir, f"yosys_synth_n{n}.log"))
+            rc_y, out_y, dt_y = sh(yosys_cmd, work, os.path.join(out_dir, f"yosys_synth{sfx}_n{n}.log"))
             if rc_y != 0:
-                raise RuntimeError(f"OpenXC7 Yosys failed for N={n}:\n{out_y}")
+                raise RuntimeError(f"OpenXC7 Yosys failed for N={n} P={pipe_stages}:\n{out_y}")
             y_stat = parse_yosys_stat(out_y)
 
             pnr_cmd = [
@@ -218,9 +233,9 @@ def main() -> None:
             ]
             rc_p, out_p, dt_p = sh(pnr_cmd, work)
             log_text = open(pnr_raw_log, "r", encoding="utf-8").read() if os.path.isfile(pnr_raw_log) else out_p
-            write_log(os.path.join(out_dir, f"nextpnr_pnr_n{n}.log"), pnr_cmd, log_text)
+            write_log(os.path.join(out_dir, f"nextpnr_pnr{sfx}_n{n}.log"), pnr_cmd, log_text)
             if rc_p != 0:
-                raise RuntimeError(f"nextpnr-himbaechel failed for N={n}:\n{log_text[-3000:]}")
+                raise RuntimeError(f"nextpnr-himbaechel failed for N={n} P={pipe_stages}:\n{log_text[-3000:]}")
 
             # Clean trailing whitespace in JSON report as well
             rep = json.loads(open(pnr_rep_json, "r", encoding="utf-8").read())
@@ -251,6 +266,7 @@ def main() -> None:
 
             rows.append({
                 "num_cores": n,
+                "pipeline_stages": pipe_stages,
                 "yosys_xbar_only_lcs": xbar_lcs,
                 "yosys_estimated_lcs": y_stat["estimated_lcs"],
                 "yosys_fd_total": y_stat["fd_total"],
@@ -288,7 +304,7 @@ def main() -> None:
             100.0 * (r["pnr_slice_lutx"] - pred_pnr) / r["pnr_slice_lutx"], 2
         )
 
-    csv_path = os.path.join(out_dir, "manycore_pnr_scaling.csv")
+    csv_path = os.path.join(out_dir, f"manycore_pnr_scaling{sfx}.csv")
     fields = list(rows[0].keys())
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
@@ -297,7 +313,8 @@ def main() -> None:
 
     summary = {
         "timestamp": datetime.datetime.now().astimezone().isoformat(),
-        "issue": 255,
+        "issue": 255 if pipe_stages == 1 else 263,
+        "pipeline_stages": pipe_stages,
         "evidence_kind": "openxc7_place_and_route_sta",
         "not_physical_hil": True,
         "device": "xc7z020clg400-1",
@@ -333,7 +350,7 @@ def main() -> None:
         },
         "rows": rows,
     }
-    with open(os.path.join(out_dir, "manycore_pnr_summary.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out_dir, f"manycore_pnr_summary{sfx}.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
         f.write("\n")
 

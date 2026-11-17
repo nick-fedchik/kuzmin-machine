@@ -1,0 +1,5 @@
+# cmd: yosys-smtbmc --noprogress -s z3 --noincr -S tactic.default_tactic=qfbv -t 0:49:49 /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/formal_mc3_dag_bmc49_p2.smt2
+# timestamp: 2026-11-17T14:08:55.508070+02:00
+##   0:00:00  Solver: z3
+##   0:00:00  Checking assertions in steps 0 to 48..
+##   0:00:02  Status: PASSED

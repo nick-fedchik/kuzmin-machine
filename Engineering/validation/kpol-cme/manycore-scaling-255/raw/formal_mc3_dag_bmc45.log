@@ -1,5 +1,5 @@
-# cmd: yosys-smtbmc --noprogress -s z3 --noincr -S tactic.default_tactic=qfbv -t 0:45:45 /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/formal_mc3_dag_bmc45.smt2
-# timestamp: 2026-11-16T23:27:45.124953+02:00
+# cmd: yosys-smtbmc --noprogress -s z3 --noincr -S tactic.default_tactic=qfbv -t 0:45:45 /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/formal_mc3_dag_bmc45.smt2
+# timestamp: 2026-11-17T14:08:52.252138+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Checking assertions in steps 0 to 44..
-##   0:00:04  Status: PASSED
+##   0:00:01  Status: PASSED

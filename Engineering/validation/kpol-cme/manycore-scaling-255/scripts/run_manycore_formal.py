@@ -59,10 +59,11 @@ CONNECTS = [
     "connect -nomap -set obs_node_tx_dst_cid \\dut.node_tx_dst_cid",
     "connect -nomap -set obs_node_rx_valid \\dut.node_rx_valid",
     "connect -nomap -set obs_node_rx_ready \\dut.node_rx_ready",
+    "connect -nomap -set obs_xbar_s1_valid \\dut.xbar_inst.s1_valid_q",
     "connect -nomap -set obs_xbar_pipe_valid \\dut.xbar_inst.pipe_valid_q",
     "connect -nomap -set obs_xbar_accept_pulse \\dut.xbar_inst.bank_accept_pulse",
-    "connect -nomap -set obs_xbar_can_accept_0 \\dut.xbar_inst.gen_bank_slice[0].pipe_can_accept_w",
-    "connect -nomap -set obs_xbar_can_accept_1 \\dut.xbar_inst.gen_bank_slice[1].pipe_can_accept_w",
+    "connect -nomap -set obs_xbar_can_accept_0 \\dut.xbar_inst.gen_bank_slice[0].xbar_can_accept_w",
+    "connect -nomap -set obs_xbar_can_accept_1 \\dut.xbar_inst.gen_bank_slice[1].xbar_can_accept_w",
     "connect -nomap -set obs_xbar_rr_ptr_0 \\dut.xbar_inst.rr_ptr_q[0]",
     "connect -nomap -set obs_xbar_rr_ptr_1 \\dut.xbar_inst.rr_ptr_q[1]",
     "connect -nomap -set obs_n0_state_q \\dut.gen_core[0].node_inst.state_q",
@@ -74,6 +75,10 @@ CONNECTS = [
     "connect -nomap -set obs_n0_desc_w2_q \\dut.gen_core[0].node_inst.desc_w2_q",
     "connect -nomap -set obs_n0_desc_w3_q \\dut.gen_core[0].node_inst.desc_w3_q",
     "connect -nomap -set obs_n0_sub_fire_w \\dut.gen_core[0].node_inst.sub_fire_w",
+    "connect -nomap -set obs_n0_sub_valid_q \\dut.gen_core[0].node_inst.sub_valid_q",
+    "connect -nomap -set obs_n0_sub_local_q \\dut.gen_core[0].node_inst.sub_local_q",
+    "connect -nomap -set obs_n0_sub_valid_comb_w \\dut.gen_core[0].node_inst.sub_valid_comb_w",
+    "connect -nomap -set obs_n0_sub_is_local_w \\dut.gen_core[0].node_inst.sub_is_local_w",
     "connect -nomap -set obs_n0_sub_dst_bank_w \\dut.gen_core[0].node_inst.sub_dst_bank_w",
     "connect -nomap -set obs_n0_sub_dst_cid_w \\dut.gen_core[0].node_inst.sub_dst_cid_w",
     "connect -nomap -set obs_n0_b_we_q \\dut.gen_core[0].node_inst.bram_b_we_q",
@@ -91,6 +96,10 @@ CONNECTS = [
     "connect -nomap -set obs_n1_desc_w2_q \\dut.gen_core[1].node_inst.desc_w2_q",
     "connect -nomap -set obs_n1_desc_w3_q \\dut.gen_core[1].node_inst.desc_w3_q",
     "connect -nomap -set obs_n1_sub_fire_w \\dut.gen_core[1].node_inst.sub_fire_w",
+    "connect -nomap -set obs_n1_sub_valid_q \\dut.gen_core[1].node_inst.sub_valid_q",
+    "connect -nomap -set obs_n1_sub_local_q \\dut.gen_core[1].node_inst.sub_local_q",
+    "connect -nomap -set obs_n1_sub_valid_comb_w \\dut.gen_core[1].node_inst.sub_valid_comb_w",
+    "connect -nomap -set obs_n1_sub_is_local_w \\dut.gen_core[1].node_inst.sub_is_local_w",
     "connect -nomap -set obs_n1_sub_dst_bank_w \\dut.gen_core[1].node_inst.sub_dst_bank_w",
     "connect -nomap -set obs_n1_sub_dst_cid_w \\dut.gen_core[1].node_inst.sub_dst_cid_w",
     "connect -nomap -set obs_n1_b_we_q \\dut.gen_core[1].node_inst.bram_b_we_q",
@@ -126,6 +135,14 @@ MUTANTS = [
         "faulty crossbar bank decode routes a single event into both banks simultaneously",
         "                wire bank_match_w = (src_dst_bank[gk] == BANK_J);",
         "                wire bank_match_w = 1'b1;",
+    ),
+    (
+        "M4_stage2_skid_overwrite",
+        ["FORMAL_SAFETY", "ONLY_MC1", "KM_FORMAL_PIPE_STAGES=2"],
+        12,
+        "broken Stage 1 -> Stage 2 skid handshake overwrites Stage 1 register when Stage 2 is stalled",
+        "            wire s1_can_accept_w   = !s1_valid_q[gj] || !pipe_valid_q[gj];",
+        "            wire s1_can_accept_w   = 1'b1;",
     ),
 ]
 
@@ -321,6 +338,37 @@ def main() -> None:
             ),
         })
 
+        # 1c. Concrete 32-bit base BMC (t=4) + 1d. Unbounded k-induction (k=2) for PIPELINE_STAGES=2 (#263)
+        rows.append({
+            "design": "original (Cluster N=2, 2-stage)",
+            "check": "MC1_MC4_base_bmc_p2",
+            **run_smtbmc(
+                work,
+                out_dir,
+                RTL_XBAR,
+                PROPS,
+                ["FORMAL_SAFETY", "FORMAL_INDUCTION", "KM_FORMAL_PIPE_STAGES=2"],
+                "bmc",
+                4,
+                "formal_mc1_mc4_base_bmc_p2",
+            ),
+        })
+        rows.append({
+            "design": "original (Cluster N=2, 2-stage)",
+            "check": "MC1_MC4_safety_ind_p2",
+            **run_smtbmc(
+                work,
+                out_dir,
+                RTL_XBAR,
+                PROPS,
+                ["FORMAL_SAFETY", "FORMAL_INDUCTION", "KM_FORMAL_PIPE_STAGES=2"],
+                "ind",
+                2,
+                "formal_mc1_mc4_ind_p2",
+                cut_cme=False,
+            ),
+        })
+
         if not args.fast:
             # 2. Bounded liveness BMC (t=45) for MC3_dag_progress (Bank 0 -> Bank 1 drains to idle)
             rows.append({
@@ -335,6 +383,24 @@ def main() -> None:
                     "bmc",
                     45,
                     "formal_mc3_dag_bmc45",
+                    batch_qfbv=True,
+                    cut_cme=True,
+                ),
+            })
+
+            # 2b. Bounded liveness BMC (t=49) for MC3_dag_progress at PIPELINE_STAGES=2 (#263)
+            rows.append({
+                "design": "original (Cluster N=2, 2-stage)",
+                "check": "MC3_dag_progress_bmc_p2",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    PROPS,
+                    ["FORMAL_DAG_BMC", "KM_FORMAL_PIPE_STAGES=2"],
+                    "bmc",
+                    49,
+                    "formal_mc3_dag_bmc49_p2",
                     batch_qfbv=True,
                     cut_cme=True,
                 ),
@@ -393,6 +459,20 @@ def main() -> None:
                     "cover",
                     30,
                     "formal_c1_c2_cover",
+                ),
+            })
+            rows.append({
+                "design": "original (Cluster N=2, 2-stage)",
+                "check": "cover_dag_and_contention_p2",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    c12_only_props,
+                    ["FORMAL_COVER", "KM_FORMAL_PIPE_STAGES=2"],
+                    "cover",
+                    32,
+                    "formal_c1_c2_cover_p2",
                 ),
             })
 

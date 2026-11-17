@@ -1,9 +1,14 @@
 design,check,engine,status,seconds,failed,reached,unreached,vcd
-original (Cluster N=2),MC1_MC4_base_bmc,smtbmc z3 bmc t=4,PASSED,0.388,,,,
-original (Cluster N=2),MC1_MC4_safety_ind,smtbmc z3 ind t=2,PASSED,11.419,,,,
-original (Cluster N=2),MC3_dag_progress_bmc,smtbmc z3 bmc t=45,PASSED,4.097,,,,
-original (Cluster N=2),MC4_cyclic_deadlock_witness,smtbmc z3 cover t=28,PASSED,16.337,,MC4_cyclic_deadlock_witness,,MC4_cyclic_deadlock_witness.vcd
-original (Cluster N=2),cover_dag_and_contention,smtbmc z3 cover t=30,PASSED,33.974,,C1_interbank_cascade_to_idle;C2_many_to_one_contention,,
-M1_fixed_priority_starvation: fixed priority 0 > 1 > 2 > 3 instead of round-robin pointer causes starvation,mutant_bmc,smtbmc z3 bmc t=8,FAILED,0.541,MC2_rr_fairness,,,M1_fixed_priority_starvation.vcd
-M2_drop_crossbar_backpressure: ignoring dst_ready_i == 0 overwrites crossbar slice under backpressure and drops events,mutant_bmc,smtbmc z3 bmc t=12,FAILED,3.007,MC1_event_conservation,,,M2_drop_crossbar_backpressure.vcd
-M3_duplicate_broadcast: faulty crossbar bank decode routes a single event into both banks simultaneously,mutant_bmc,smtbmc z3 bmc t=6,FAILED,0.484,MC1_event_conservation,,,M3_duplicate_broadcast.vcd
+original (Cluster N=2),MC1_MC4_base_bmc,smtbmc z3 bmc t=4,PASSED,0.157,,,,
+original (Cluster N=2),MC1_MC4_safety_ind,smtbmc z3 ind t=2,PASSED,12.253,,,,
+"original (Cluster N=2, 2-stage)",MC1_MC4_base_bmc_p2,smtbmc z3 bmc t=4,PASSED,0.151,,,,
+"original (Cluster N=2, 2-stage)",MC1_MC4_safety_ind_p2,smtbmc z3 ind t=2,PASSED,14.585,,,,
+original (Cluster N=2),MC3_dag_progress_bmc,smtbmc z3 bmc t=45,PASSED,1.992,,,,
+"original (Cluster N=2, 2-stage)",MC3_dag_progress_bmc_p2,smtbmc z3 bmc t=49,PASSED,2.232,,,,
+original (Cluster N=2),MC4_cyclic_deadlock_witness,smtbmc z3 cover t=28,PASSED,7.636,,MC4_cyclic_deadlock_witness,,MC4_cyclic_deadlock_witness.vcd
+original (Cluster N=2),cover_dag_and_contention,smtbmc z3 cover t=30,PASSED,16.039,,C1_interbank_cascade_to_idle;C2_many_to_one_contention,,
+"original (Cluster N=2, 2-stage)",cover_dag_and_contention_p2,smtbmc z3 cover t=32,PASSED,14.122,,C1_interbank_cascade_to_idle;C2_many_to_one_contention,,
+M1_fixed_priority_starvation: fixed priority 0 > 1 > 2 > 3 instead of round-robin pointer causes starvation,mutant_bmc,smtbmc z3 bmc t=8,FAILED,0.211,MC2_rr_fairness,,,M1_fixed_priority_starvation.vcd
+M2_drop_crossbar_backpressure: ignoring dst_ready_i == 0 overwrites crossbar slice under backpressure and drops events,mutant_bmc,smtbmc z3 bmc t=12,FAILED,1.375,MC1_event_conservation,,,M2_drop_crossbar_backpressure.vcd
+M3_duplicate_broadcast: faulty crossbar bank decode routes a single event into both banks simultaneously,mutant_bmc,smtbmc z3 bmc t=6,FAILED,0.165,MC1_event_conservation,,,M3_duplicate_broadcast.vcd
+M4_stage2_skid_overwrite: broken Stage 1 -> Stage 2 skid handshake overwrites Stage 1 register when Stage 2 is stalled,mutant_bmc,smtbmc z3 bmc t=12,FAILED,1.975,MC1_event_conservation,,,M4_stage2_skid_overwrite.vcd
