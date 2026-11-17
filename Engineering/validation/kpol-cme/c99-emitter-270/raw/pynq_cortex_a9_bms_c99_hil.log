@@ -1,7 +1,15 @@
-# cmd: ssh xilinx@192.168.68.69 'gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c ...'
-# timestamp: 2026-11-17T20:05:38.966291+02:00
+# cmd: flock -w 600 /tmp/km-bench.lock ssh xilinx@192.168.68.69 'gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -lm ...'
+# timestamp: 2026-11-17T20:45:28.785058+02:00
+# git_commit: 9d28d3126e415d257e3c523fc295422fc9d70683
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+# bench_lock: flock -w 600 /tmp/km-bench.lock (acquired)
+# bms_bench_c_sha256: 1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80
 Linux pynq-2 6.6.10-xilinx-v2024.1-g916a1f7c7222 #1 SMP PREEMPT Sat Apr 27 05:22:24 UTC 2024 armv7l armv7l armv7l GNU/Linux
 gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0
+de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee  bms_safety_cascade.bin
+108447cfb1fb623378ce92ace2189e8e46e0c21140b1a07b4fe8f8f9965c486f  bms_safety_cascade_gen.c
+1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80  bms_c99_hil_bench.c
+342d974549f84ccea037848f498e729349635e1adcb79d25c14b55365336f756  bms_c99_hil_bench
 === ARM_C99_JSON_START ===
 {
   "verdict": "PASS",
@@ -13,13 +21,25 @@ gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0
   "fault_trace_commits": 6,
   "fault_trace_rejects": 3,
   "fault_trace_fault_propagations": 3,
+  "bench_batches": 25,
+  "bench_batch_iterations": 8000,
   "bench_iterations": 200000,
-  "ns_per_single_reject": 266.88,
-  "ns_per_fault_reject": 215.17,
-  "ns_per_full_4stage_cascade": 1031.47,
-  "ns_per_cascade_concept_step": 257.87
+  "ns_per_single_reject": 286.73,
+  "ns_per_single_reject_p50": 285.12,
+  "ns_per_single_reject_p99": 306.00,
+  "ns_per_single_reject_sigma": 4.53,
+  "ns_per_fault_reject": 223.85,
+  "ns_per_fault_reject_p50": 223.12,
+  "ns_per_fault_reject_p99": 227.62,
+  "ns_per_fault_reject_sigma": 1.45,
+  "ns_per_full_4stage_cascade": 1038.26,
+  "ns_per_full_4stage_cascade_p50": 1035.88,
+  "ns_per_full_4stage_cascade_p99": 1081.88,
+  "ns_per_full_4stage_cascade_sigma": 17.06,
+  "ns_per_cascade_concept_step": 259.56
 }
 === ARM_C99_JSON_END ===
+d0636a15f9d99b9ae557a809090f1b7285f581e6eb0c1dde912a7fdbf7d37143  pynq_bms_pl_mmio
 === ZYNQ_PL_JSON_START ===
 {
   "fpga_id_hex": "0x4B504D43",

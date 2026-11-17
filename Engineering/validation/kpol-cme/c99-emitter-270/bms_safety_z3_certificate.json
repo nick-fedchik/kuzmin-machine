@@ -6,6 +6,7 @@
   "verdict": "VERIFIED",
   "passed": true,
   "descriptor_table_sha256": "de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee",
+  "c99_source_sha256": "108447cfb1fb623378ce92ace2189e8e46e0c21140b1a07b4fe8f8f9965c486f",
   "active_concepts_count": 4,
   "active_cids": [
     0,
@@ -62,17 +63,17 @@
       "status": "UNSAT",
       "passed": true,
       "active_concepts_verified": 4,
-      "quantified_domain": "forall cur_state, ev_param in BitVec(32)"
+      "quantified_domain": "forall cur_state, ev_param in BitVec(32) on parsed C99 transition & table"
     },
     "P3_no_commit_on_invalid_param_or_state": {
       "status": "UNSAT",
       "passed": true,
-      "property": "(!param_valid || !concept_valid) => (!commit && next_state == cur_state && fault_propagations_inc == 1)"
+      "property": "(!ev_param_valid || !concept_valid) => (!commit && next_state == cur_state && fault_propagations_inc == 1)"
     },
     "P4_c99_rtl_bitvec32_miter_equivalence": {
       "status": "UNSAT",
       "passed": true,
-      "quantified_domain": "forall cur_state, ev_param, operand in BitVec(32), pred_op, action_op, guard_flags, hazard_limit in BitVec(8)"
+      "quantified_domain": "forall cur_state, ev_param, operand in BitVec(32), pred_op, action_op, guard_flags, hazard_limit in BitVec(8) on parsed C99 vs CFG-P RTL spec"
     }
   },
   "failures": []

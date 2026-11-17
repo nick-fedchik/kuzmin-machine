@@ -1,5 +1,7 @@
 # cmd: python3 -m pytest -v Engineering/sw/tests/test_c99_emitter_270.py
-# timestamp: 2026-11-17T20:08:41.914478+02:00
+# timestamp: 2026-11-17T20:57:49.578018+02:00
+# git_commit: 9d28d3126e415d257e3c523fc295422fc9d70683
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
 ============================= test session starts ==============================
 platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
 cachedir: .pytest_cache
@@ -9,11 +11,11 @@ configfile: pytest.ini
 plugins: typeguard-4.4.4, hypothesis-6.151.5
 collecting ... collected 6 items
 
-Engineering/sw/tests/test_c99_emitter_270.py::test_bms_committed_artifacts_and_strict_c99_build PASSED [ 16%]
+Engineering/sw/tests/test_c99_emitter_270.py::test_bms_committed_artifacts_sha256_docs_and_multi_tu_c99_build PASSED [ 16%]
 Engineering/sw/tests/test_c99_emitter_270.py::test_c99_emitter_equivalence_with_cfg_p_and_cli_flags PASSED [ 33%]
 Engineering/sw/tests/test_c99_emitter_270.py::test_M1_c99_bypass_invariant PASSED [ 50%]
 Engineering/sw/tests/test_c99_emitter_270.py::test_M2_c99_mask_invalid_sensor PASSED [ 66%]
 Engineering/sw/tests/test_c99_emitter_270.py::test_M3_c99_wrong_topo_order PASSED [ 83%]
 Engineering/sw/tests/test_c99_emitter_270.py::test_M4_z3_cyclic_or_unsafe_descriptor PASSED [100%]
 
-============================== 6 passed in 1.04s ===============================
+============================== 6 passed in 1.56s ===============================

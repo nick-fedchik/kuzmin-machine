@@ -65,8 +65,15 @@ def main():
         try:
             descriptors = disassemble_concept_microcode(image)
             concept_names = [st.name for st in module.states]
+            c99_code = emit_c99_safety_module(
+                descriptors,
+                profile=args.profile,
+                module_name=module.name,
+                concept_names=concept_names,
+            )
             z3_cert = prove_c99_descriptor_safety_z3(
                 descriptors,
+                c99_source=c99_code,
                 profile=args.profile,
                 module_name=module.name,
                 concept_names=concept_names,
@@ -74,40 +81,35 @@ def main():
             if not z3_cert.get("passed", False):
                 reasons = "; ".join(z3_cert.get("failures", ["Z3 verification failed"]))
                 parser.exit(2, f"{prefix}-Z3: {reasons}\n")
-            if args.emit_c99 is not None:
-                c99_code = emit_c99_safety_module(
-                    descriptors,
-                    profile=args.profile,
-                    module_name=module.name,
-                    concept_names=concept_names,
-                    z3_certificate=z3_cert,
-                )
-        except (C99EmitterError, KpolError) as error:
+        except (C99EmitterError, KpolError, RuntimeError) as error:
             parser.exit(2, f"{prefix}-C99: {error}\n")
 
     for out_path in (args.image, args.emit_c99, args.emit_z3_cert):
         if out_path is not None and out_path.exists():
             parser.exit(2, f"{prefix}-IO: {out_path}: File exists\n")
 
+    created_paths: list[Path] = []
     try:
         with args.image.open("xb") as output:
             output.write(image)
-    except OSError as error:
-        parser.exit(2, f"{prefix}-IO: {args.image}: {error}\n")
+        created_paths.append(args.image)
 
-    if args.emit_c99 is not None and c99_code is not None:
-        try:
+        if args.emit_c99 is not None and c99_code is not None:
             with args.emit_c99.open("x", encoding="utf-8") as c_out:
                 c_out.write(c99_code)
-        except OSError as error:
-            parser.exit(2, f"{prefix}-IO: {args.emit_c99}: {error}\n")
+            created_paths.append(args.emit_c99)
 
-    if args.emit_z3_cert is not None and z3_cert is not None:
-        try:
+        if args.emit_z3_cert is not None and z3_cert is not None:
             with args.emit_z3_cert.open("x", encoding="utf-8") as z_out:
                 z_out.write(json.dumps(z3_cert, indent=2, ensure_ascii=False) + "\n")
-        except OSError as error:
-            parser.exit(2, f"{prefix}-IO: {args.emit_z3_cert}: {error}\n")
+            created_paths.append(args.emit_z3_cert)
+    except OSError as error:
+        for created in created_paths:
+            try:
+                created.unlink()
+            except OSError:
+                pass
+        parser.exit(2, f"{prefix}-IO: {error}\n")
 
 
 if __name__ == "__main__":

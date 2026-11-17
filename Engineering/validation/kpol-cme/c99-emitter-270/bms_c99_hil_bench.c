@@ -10,9 +10,54 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 #include <time.h>
 
 #include "bms_safety_cascade_gen.c"
+
+#define BMS_BENCH_BATCHES     25u
+#define BMS_BENCH_BATCH_ITERS 8000u
+#define BMS_BENCH_TOTAL_ITERS (BMS_BENCH_BATCHES * BMS_BENCH_BATCH_ITERS)
+
+typedef struct {
+    double mean_ns;
+    double p50_ns;
+    double p99_ns;
+    double min_ns;
+    double max_ns;
+    double sigma_ns;
+} bms_timing_stats_t;
+
+static bms_timing_stats_t compute_batch_stats(double samples[BMS_BENCH_BATCHES]) {
+    bms_timing_stats_t st;
+    uint32_t i, j;
+    double sum = 0.0;
+    double var_sum = 0.0;
+
+    for (i = 0u; i < BMS_BENCH_BATCHES; ++i) {
+        for (j = i + 1u; j < BMS_BENCH_BATCHES; ++j) {
+            if (samples[j] < samples[i]) {
+                double tmp = samples[i];
+                samples[i] = samples[j];
+                samples[j] = tmp;
+            }
+        }
+    }
+    for (i = 0u; i < BMS_BENCH_BATCHES; ++i) {
+        sum += samples[i];
+    }
+    st.mean_ns = sum / (double)BMS_BENCH_BATCHES;
+    for (i = 0u; i < BMS_BENCH_BATCHES; ++i) {
+        double d = samples[i] - st.mean_ns;
+        var_sum += d * d;
+    }
+    st.sigma_ns = sqrt(var_sum / (double)(BMS_BENCH_BATCHES - 1u));
+    st.min_ns   = samples[0];
+    st.p50_ns   = samples[BMS_BENCH_BATCHES / 2u];
+    st.p99_ns   = samples[BMS_BENCH_BATCHES - 1u];
+    st.max_ns   = samples[BMS_BENCH_BATCHES - 1u];
+    return st;
+}
 
 typedef struct {
     uint8_t root_cid;
@@ -56,12 +101,14 @@ int main(void) {
         { 0u,  -10, 1, 4, 4, 0,  0, 18u, 12u, 6u, 0u }
     };
 
-    uint32_t i;
+    uint32_t i, b;
     clock_t t0, t1;
-    double ns_single_reject;
-    double ns_fault_reject;
-    double ns_full_cascade4;
-    const uint32_t bench_iters = 200000u;
+    double batch_single[BMS_BENCH_BATCHES];
+    double batch_fault[BMS_BENCH_BATCHES];
+    double batch_cascade4[BMS_BENCH_BATCHES];
+    bms_timing_stats_t st_single;
+    bms_timing_stats_t st_fault;
+    bms_timing_stats_t st_cascade4;
 
     km_safety_init(&ctx);
     for (i = 0u; i < 8u; ++i) {
@@ -147,37 +194,45 @@ int main(void) {
         return 2;
     }
 
-    /* 3. L1-Cache Deterministic Execution Timing Benchmark (N = 200,000) */
+    /* 3. L1-Cache Deterministic Execution Timing Benchmark (25 batches x 8,000 = 200,000 iters) */
     km_safety_init(&bench_ctx);
-    /* Warmup */
     for (i = 0u; i < 2000u; ++i) {
         (void)step_fn(&bench_ctx, 0u, 15, true);
     }
 
-    km_safety_init(&bench_ctx);
-    t0 = clock();
-    for (i = 0u; i < bench_iters; ++i) {
-        (void)step_fn(&bench_ctx, 0u, 15, true);
+    for (b = 0u; b < BMS_BENCH_BATCHES; ++b) {
+        km_safety_init(&bench_ctx);
+        t0 = clock();
+        for (i = 0u; i < BMS_BENCH_BATCH_ITERS; ++i) {
+            (void)step_fn(&bench_ctx, 0u, 15, true);
+        }
+        t1 = clock();
+        batch_single[b] = ((double)(t1 - t0) * 1.0e9 / (double)CLOCKS_PER_SEC) / (double)BMS_BENCH_BATCH_ITERS;
     }
-    t1 = clock();
-    ns_single_reject = ((double)(t1 - t0) * 1.0e9 / (double)CLOCKS_PER_SEC) / (double)bench_iters;
+    st_single = compute_batch_stats(batch_single);
 
-    km_safety_init(&bench_ctx);
-    t0 = clock();
-    for (i = 0u; i < bench_iters; ++i) {
-        (void)step_fn(&bench_ctx, 0u, 120, false);
+    for (b = 0u; b < BMS_BENCH_BATCHES; ++b) {
+        km_safety_init(&bench_ctx);
+        t0 = clock();
+        for (i = 0u; i < BMS_BENCH_BATCH_ITERS; ++i) {
+            (void)step_fn(&bench_ctx, 0u, 120, false);
+        }
+        t1 = clock();
+        batch_fault[b] = ((double)(t1 - t0) * 1.0e9 / (double)CLOCKS_PER_SEC) / (double)BMS_BENCH_BATCH_ITERS;
     }
-    t1 = clock();
-    ns_fault_reject = ((double)(t1 - t0) * 1.0e9 / (double)CLOCKS_PER_SEC) / (double)bench_iters;
+    st_fault = compute_batch_stats(batch_fault);
 
-    km_safety_init(&bench_ctx);
-    bench_ctx.state[2] = 1000000;
-    t0 = clock();
-    for (i = 0u; i < bench_iters; ++i) {
-        (void)step_fn(&bench_ctx, 0u, 120, true);
+    for (b = 0u; b < BMS_BENCH_BATCHES; ++b) {
+        km_safety_init(&bench_ctx);
+        bench_ctx.state[2] = 1000000;
+        t0 = clock();
+        for (i = 0u; i < BMS_BENCH_BATCH_ITERS; ++i) {
+            (void)step_fn(&bench_ctx, 0u, 120, true);
+        }
+        t1 = clock();
+        batch_cascade4[b] = ((double)(t1 - t0) * 1.0e9 / (double)CLOCKS_PER_SEC) / (double)BMS_BENCH_BATCH_ITERS;
     }
-    t1 = clock();
-    ns_full_cascade4 = ((double)(t1 - t0) * 1.0e9 / (double)CLOCKS_PER_SEC) / (double)bench_iters;
+    st_cascade4 = compute_batch_stats(batch_cascade4);
 
     printf("{\n");
     printf("  \"verdict\": \"PASS\",\n");
@@ -190,11 +245,22 @@ int main(void) {
     printf("  \"fault_trace_commits\": %u,\n", (unsigned)fault_ctx.commits);
     printf("  \"fault_trace_rejects\": %u,\n", (unsigned)fault_ctx.rejects);
     printf("  \"fault_trace_fault_propagations\": %u,\n", (unsigned)fault_ctx.fault_propagations);
-    printf("  \"bench_iterations\": %u,\n", (unsigned)bench_iters);
-    printf("  \"ns_per_single_reject\": %.2f,\n", ns_single_reject);
-    printf("  \"ns_per_fault_reject\": %.2f,\n", ns_fault_reject);
-    printf("  \"ns_per_full_4stage_cascade\": %.2f,\n", ns_full_cascade4);
-    printf("  \"ns_per_cascade_concept_step\": %.2f\n", ns_full_cascade4 / 4.0);
+    printf("  \"bench_batches\": %u,\n", (unsigned)BMS_BENCH_BATCHES);
+    printf("  \"bench_batch_iterations\": %u,\n", (unsigned)BMS_BENCH_BATCH_ITERS);
+    printf("  \"bench_iterations\": %u,\n", (unsigned)BMS_BENCH_TOTAL_ITERS);
+    printf("  \"ns_per_single_reject\": %.2f,\n", st_single.mean_ns);
+    printf("  \"ns_per_single_reject_p50\": %.2f,\n", st_single.p50_ns);
+    printf("  \"ns_per_single_reject_p99\": %.2f,\n", st_single.p99_ns);
+    printf("  \"ns_per_single_reject_sigma\": %.2f,\n", st_single.sigma_ns);
+    printf("  \"ns_per_fault_reject\": %.2f,\n", st_fault.mean_ns);
+    printf("  \"ns_per_fault_reject_p50\": %.2f,\n", st_fault.p50_ns);
+    printf("  \"ns_per_fault_reject_p99\": %.2f,\n", st_fault.p99_ns);
+    printf("  \"ns_per_fault_reject_sigma\": %.2f,\n", st_fault.sigma_ns);
+    printf("  \"ns_per_full_4stage_cascade\": %.2f,\n", st_cascade4.mean_ns);
+    printf("  \"ns_per_full_4stage_cascade_p50\": %.2f,\n", st_cascade4.p50_ns);
+    printf("  \"ns_per_full_4stage_cascade_p99\": %.2f,\n", st_cascade4.p99_ns);
+    printf("  \"ns_per_full_4stage_cascade_sigma\": %.2f,\n", st_cascade4.sigma_ns);
+    printf("  \"ns_per_cascade_concept_step\": %.2f\n", st_cascade4.mean_ns / 4.0);
     printf("}\n");
 
     return 0;

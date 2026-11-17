@@ -183,7 +183,7 @@ def _scratch_dir():
 
 
 @contextmanager
-def _hardware_bench_lock(timeout_sec: float = 120.0):
+def _hardware_bench_lock(timeout_sec: float = 600.0):
     lock_path = "/" + "tmp/km-bench.lock"
     fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o666)
     deadline = time.monotonic() + timeout_sec
@@ -198,17 +198,37 @@ def _hardware_bench_lock(timeout_sec: float = 120.0):
                 if time.monotonic() >= deadline:
                     raise TimeoutError(f"Timed out acquiring {lock_path}")
                 time.sleep(0.2)
-        yield
+        yield lock_path
     finally:
         if acquired:
             fcntl.flock(fd, fcntl.LOCK_UN)
         os.close(fd)
 
 
-def _write_log(path: Path, cmd_str: str, body: str) -> None:
+def _git_head_sha() -> str:
+    res = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return res.stdout.strip()
+
+
+def _write_log(path: Path, cmd_str: str, body: str, extra_headers: dict[str, str] | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     ts = datetime.datetime.now().astimezone().isoformat()
-    header = f"# cmd: {cmd_str}\n# timestamp: {ts}\n"
+    git_sha = _git_head_sha()
+    host_str = platform.platform()
+    hdr_lines = [
+        f"# cmd: {cmd_str}",
+        f"# timestamp: {ts}",
+        f"# git_commit: {git_sha}",
+        f"# host: {host_str}",
+    ]
+    for k, v in (extra_headers or {}).items():
+        hdr_lines.append(f"# {k}: {v}")
+    header = "\n".join(hdr_lines) + "\n"
     cleaned = "\n".join(line.rstrip() for line in (header + body).splitlines()) + "\n"
     path.write_text(cleaned, encoding="utf-8")
 
@@ -402,10 +422,13 @@ def main() -> int:
 
     cert = prove_c99_descriptor_safety_z3(
         image_bytes,
+        c99_source=BMS_C99_PATH.read_text(encoding="utf-8"),
         module_name=module.name,
         concept_names=[s.name for s in module.states],
     )
     assert cert["passed"] is True
+    git_sha = _git_head_sha()
+    bench_c_sha256 = hashlib.sha256(BMS_BENCH_C_PATH.read_bytes()).hexdigest()
 
     with _scratch_dir() as scratch:
         # 2. Host x86_64 strict C99 build & run
@@ -419,10 +442,12 @@ def main() -> int:
             "-Werror",
             "-pedantic",
             str(BMS_BENCH_C_PATH),
+            "-lm",
             "-o",
             str(x86_bin),
         ]
         subprocess.run(gcc_cmd, check=True, capture_output=True, text=True)
+        x86_bin_sha256 = hashlib.sha256(x86_bin.read_bytes()).hexdigest()
         x86_run = subprocess.run([str(x86_bin)], check=True, capture_output=True, text=True)
         x86_json = json.loads(x86_run.stdout)
 
@@ -437,11 +462,14 @@ def main() -> int:
         x86_summary = {
             "timestamp": datetime.datetime.now().astimezone().isoformat(),
             "issue": 270,
+            "git_commit": git_sha,
             "evidence_kind": "host_x86_64_c99_and_iverilog_rtl_simulation",
             "host_platform": platform.platform(),
-            "gcc_flags": "-std=c99 -O2 -Wall -Wextra -Werror -pedantic",
+            "gcc_flags": "-std=c99 -O2 -Wall -Wextra -Werror -pedantic -lm",
             "bms_bin_sha256": hashlib.sha256(image_bytes).hexdigest(),
             "bms_c99_sha256": hashlib.sha256(BMS_C99_PATH.read_bytes()).hexdigest(),
+            "bms_bench_c_sha256": bench_c_sha256,
+            "x86_compiled_bin_sha256": x86_bin_sha256,
             "z3_certificate_verdict": cert["verdict"],
             "z3_solver": cert["solver"],
             "c99_x86_64": x86_json,
@@ -459,13 +487,17 @@ def main() -> int:
         )
         _write_log(
             RAW_DIR / "x86_64_bms_c99_verification.log",
-            "gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c && ./bms_c99_hil_bench_x86",
+            "gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -lm -o bms_c99_hil_bench_x86 && ./bms_c99_hil_bench_x86",
             x86_run.stdout,
+            extra_headers={
+                "bms_bench_c_sha256": bench_c_sha256,
+                "x86_compiled_bin_sha256": x86_bin_sha256,
+            },
         )
 
         # 4. Physical ARM Cortex-A9 + Zynq-7020 PL on PYNQ-Z1 (pynq2)
         if not args.skip_pynq:
-            with _hardware_bench_lock(120.0):
+            with _hardware_bench_lock(600.0) as lock_path:
                 mmio_c_file = scratch / "pynq_bms_pl_mmio.c"
                 mmio_c_file.write_text(PYNQ_MMIO_C_SOURCE, encoding="utf-8")
 
@@ -500,11 +532,14 @@ def main() -> int:
                     "cd /home/xilinx/km_270_bms && "
                     "uname -a && "
                     "gcc --version | head -n 1 && "
-                    "gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -o bms_c99_hil_bench && "
+                    "sha256sum bms_safety_cascade.bin bms_safety_cascade_gen.c bms_c99_hil_bench.c && "
+                    "gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -lm -o bms_c99_hil_bench && "
+                    "sha256sum bms_c99_hil_bench && "
                     "echo '=== ARM_C99_JSON_START ===' && "
                     "./bms_c99_hil_bench && "
                     "echo '=== ARM_C99_JSON_END ===' && "
                     "gcc -std=c99 -O2 -Wall -Wextra -Werror pynq_bms_pl_mmio.c -o pynq_bms_pl_mmio && "
+                    "sha256sum pynq_bms_pl_mmio && "
                     "echo '=== ZYNQ_PL_JSON_START ===' && "
                     "echo xilinx | sudo -S -p '' ./pynq_bms_pl_mmio bms_safety_cascade.bin && "
                     "echo '=== ZYNQ_PL_JSON_END ==='"
@@ -518,8 +553,12 @@ def main() -> int:
                 out_text = pynq_res.stdout
                 _write_log(
                     RAW_DIR / "pynq_cortex_a9_bms_c99_hil.log",
-                    f"ssh {args.pynq_host} 'gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c ...'",
+                    f"flock -w 600 {lock_path} ssh {args.pynq_host} 'gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -lm ...'",
                     out_text,
+                    extra_headers={
+                        "bench_lock": f"flock -w 600 {lock_path} (acquired)",
+                        "bms_bench_c_sha256": bench_c_sha256,
+                    },
                 )
 
                 arm_block = out_text.split("=== ARM_C99_JSON_START ===")[1].split("=== ARM_C99_JSON_END ===")[0].strip()
@@ -535,10 +574,14 @@ def main() -> int:
                 pynq_summary = {
                     "timestamp": datetime.datetime.now().astimezone().isoformat(),
                     "issue": 270,
+                    "git_commit": git_sha,
+                    "bench_lock": f"flock -w 600 {lock_path}",
                     "evidence_kind": "physical_hil_pynq_z1_cortex_a9_and_zynq7020_pl",
                     "board": f"Digilent PYNQ-Z1 ({args.pynq_host}, Dual ARM Cortex-A9 @ 650 MHz + XC7Z020 PL @ 100 MHz)",
-                    "gcc_flags": "-std=c99 -O2 -Wall -Wextra -Werror -pedantic",
+                    "gcc_flags": "-std=c99 -O2 -Wall -Wextra -Werror -pedantic -lm",
                     "bms_bin_sha256": hashlib.sha256(image_bytes).hexdigest(),
+                    "bms_c99_sha256": hashlib.sha256(BMS_C99_PATH.read_bytes()).hexdigest(),
+                    "bms_bench_c_sha256": bench_c_sha256,
                     "arm_cortex_a9_c99": arm_json,
                     "zynq_7020_pl_cfg_p": pl_json,
                     "bit_exact_match_c99_vs_pl_vs_model": True,
