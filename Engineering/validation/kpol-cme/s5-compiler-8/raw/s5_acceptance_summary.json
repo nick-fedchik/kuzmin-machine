@@ -1,0 +1,73 @@
+{
+  "issue": 8,
+  "step": "S5",
+  "date": "2026-11-17",
+  "evidence_kind": "host_compiler_and_iverilog_rtl_simulation_not_physical_hil",
+  "contours": {
+    "KPOL-CME-1": {
+      "profile": "KPOL-CME-1",
+      "bram_bytes": 1024,
+      "signed_container_bytes": 1088,
+      "golden_cme1_sha256": "da1d69c5be5f52482ab39b9e549b5a736db7789f319a035494aa422f0a1835bb",
+      "increase_bram_sha256": "4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d",
+      "decrease_bram_sha256": "00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3",
+      "rtl_targets_verified": [
+        "kpol_bram_pipeline_axi.sv"
+      ],
+      "negative_codes_verified": [
+        "B3-SYNTAX",
+        "B3-TYPE",
+        "B3-GUARD",
+        "B3-ACTION",
+        "B3-PROOF"
+      ]
+    },
+    "KPOL-CME-2": {
+      "profile": "KPOL-CME-2",
+      "bram_bytes": 1024,
+      "cascade4_bram_sha256": "fbab43811f156c8b0b9b6356e5f2abd4c2a26798bb78b2be28200cffe0978886",
+      "chain_cid0_bram_sha256": "ce744c95af971f9bbbd8470ba7414c3de614ad957df397609a5bff0584b0a414",
+      "rtl_targets_verified": [
+        "kpol_bram_pipeline_axi.sv",
+        "kpol_bram_pipeline_axi_ha.sv"
+      ],
+      "negative_codes_verified": [
+        "CME2-OPERAND-COLLISION",
+        "CME2-CASCADE"
+      ]
+    },
+    "KPOL-AUTH": {
+      "subset_spec": "Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md",
+      "bram_bytes": 1024,
+      "thermal_bram_sha256": "6ef255e19b367c8540e4bd8f785b8c5127bfc12208b147406a5e76fb90d39543",
+      "thermal_dogo_words": 18,
+      "cascade4_auth_bram_sha256": "e061db203b9d65a3e00e76459bbaef78c2df9a57581f365094ebc5e115cc40f8",
+      "cascade4_auth_dogo_words": 15,
+      "cycle_rejection_code": "KPOL-LOWER-CYCLE",
+      "uncertainty_gates_verified": [
+        "KPOL-AUTH-U01",
+        "KPOL-AUTH-U02",
+        "KPOL-AUTH-U03",
+        "KPOL-AUTH-U04",
+        "KPOL-AUTH-U05",
+        "KPOL-AUTH-U06",
+        "KPOL-AUTH-U07",
+        "KPOL-AUTH-U08",
+        "KPOL-AUTH-U09",
+        "KPOL-AUTH-U10",
+        "KPOL-AUTH-U11",
+        "KPOL-AUTH-U12"
+      ],
+      "open_boundary_issue": 186
+    }
+  },
+  "mutant_controls": [
+    "M1_secure_boot_hmac_byte_tamper_and_replay",
+    "M2a_bram_action_opcode_inc_to_dec_rtl_divergence",
+    "M2b_bram_threshold_w1_10_to_50_rtl_divergence",
+    "M3a_dogo_opcode_add_to_sub_vm_divergence",
+    "M3b_dogo_missing_exit_opcode_vm_abort",
+    "M4_bram_cycle_validator_stub_caught",
+    "M5_uncertainty_gate_stub_caught"
+  ]
+}
