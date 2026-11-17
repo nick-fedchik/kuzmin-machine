@@ -710,7 +710,55 @@ def test_pynq_z1_top_cdc_debounce_and_param1(tmp_path):
     assert "PASS: pynq_z1_top cdc, debounce and param=1 verified" in out, out
 
 
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_axi_hw_commit_cid_diagnostic_output(tmp_path):
+    """Issue #247: ізольована перевірка hw_commit_cid_o на каскаді CID 3 -> 19 -> 42 та reject CID 57."""
+    simulation = tmp_path / "axi_commit_cid.vvp"
+    subprocess.run(
+        [
+            "iverilog", "-g2012",
+            "-s", "kpol_bram_pipeline_axi_tb",
+            "-o", str(simulation),
+            str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+            str(HW / "rtl/core/km_concept_micro_engine.sv"),
+            str(HW / "rtl/core/km_concept_bram.sv"),
+            str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+            str(HW / "rtl/bus/kpol_bram_pipeline_axi.sv"),
+            str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+        ],
+        check=True, capture_output=True, text=True,
+    )
+    result = subprocess.run(
+        ["vvp", "-n", str(simulation), "+commit_cid_audit"],
+        capture_output=True, text=True, timeout=30,
+    )
+    out = result.stdout + result.stderr
+    assert result.returncode == 0, out
+    assert "PASS: axi commit_cid_audit (cids=3,19,42,42,19 reject_cid=57)" in out, out
+
+
 AXI_PYNQ_MUTANTS = [
+    pytest.param(
+        "axi_commit_cid_shifted_slice",
+        "rtl/bus/kpol_bram_pipeline_axi.sv",
+        "assign hw_commit_cid_o = b_addr[7:2];",
+        "assign hw_commit_cid_o = b_addr[5:0];",
+        "axi_commit_cid",
+        "[FAIL] commit_cid_audit:",
+        id="axi-commit-cid-shifted-slice",
+    ),
+    pytest.param(
+        "axi_commit_cid_stuck_zero",
+        "rtl/bus/kpol_bram_pipeline_axi.sv",
+        "assign hw_commit_cid_o = b_addr[7:2];",
+        "assign hw_commit_cid_o = 6'd0;",
+        "axi_commit_cid",
+        "[FAIL] commit_cid_audit:",
+        id="axi-commit-cid-stuck-zero",
+    ),
     pytest.param(
         "axi_allow_b4_write_race",
         "rtl/bus/kpol_bram_pipeline_axi.sv",
@@ -788,7 +836,26 @@ def test_axi_b4_and_pynq_top_mutant_controls(
     top_src = str(mutated_path) if rel_file.endswith(".v") else str(HW / "boards/pynq-z1/kpol_bram_pipeline_pynq_z1_top.v")
 
     sim = tmp_path / f"mut_{name}.vvp"
-    if runner in ("axi_b4", "axi_w1c"):
+    if runner == "axi_commit_cid":
+        subprocess.run(
+            [
+                "iverilog", "-g2012",
+                "-s", "kpol_bram_pipeline_axi_tb",
+                "-o", str(sim),
+                str(HW / "rtl/core/kpol_txn_gate_v2.sv"),
+                str(HW / "rtl/core/km_concept_micro_engine.sv"),
+                str(HW / "rtl/core/km_concept_bram.sv"),
+                str(HW / "rtl/core/km_autonomous_sequencer.sv"),
+                axi_src,
+                str(HW / "tests/kpol_bram_pipeline_axi_tb.sv"),
+            ],
+            check=True, capture_output=True, text=True,
+        )
+        res = subprocess.run(
+            ["vvp", "-n", str(sim), "+commit_cid_audit"],
+            capture_output=True, text=True, timeout=30,
+        )
+    elif runner in ("axi_b4", "axi_w1c"):
         image_a_hex = _compile_increase_hex(tmp_path)
         subprocess.run(
             [
