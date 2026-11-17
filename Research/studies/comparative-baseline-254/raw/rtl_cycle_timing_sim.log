@@ -1,0 +1,13 @@
+# cmd: iverilog -g2012 -s rtl_cycle_timing_bench_tb -o /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Research/studies/comparative-baseline-254/.build_work/rtl_cycle_timing_bench.vvp /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Engineering/hw/rtl/baseline/km_reg_configurable_cascade_axi.sv /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Engineering/hw/rtl/core/kpol_txn_gate_v2.sv /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Engineering/hw/rtl/core/km_concept_micro_engine.sv /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Engineering/hw/rtl/core/km_concept_bram.sv /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Engineering/hw/rtl/core/km_autonomous_sequencer.sv /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Engineering/hw/rtl/bus/kpol_bram_pipeline_axi.sv /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Research/studies/comparative-baseline-254/.build_work/rtl_cycle_timing_bench_tb.sv && vvp -n /home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Research/studies/comparative-baseline-254/.build_work/rtl_cycle_timing_bench.vvp
+# timestamp: 2026-11-16T23:27:53+02:00
+
+REG_REJECT_CYCLES=1
+REG_CASCADE4_CYCLES=4
+REG_AXI_UPDATE_12WORDS_CYCLES=24
+REG_AXI_LOAD_16WORDS_CYCLES=32
+CFGP_REJECT_CYCLES=9
+CFGP_CASCADE4_CYCLES=32
+CFGP_AXI_UPDATE_12WORDS_CYCLES=48
+CFGP_AXI_LOAD_16WORDS_CYCLES=64
+CFGP_AXI_LOAD_256WORDS_CYCLES=1024
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-254-baseline/Research/studies/comparative-baseline-254/.build_work/rtl_cycle_timing_bench_tb.sv:151: $finish called at 18475000 (1ps)

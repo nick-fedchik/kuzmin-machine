@@ -1,0 +1,177 @@
+{
+  "base_commit_sha": "4079aa470be38aff6a48ff8e3689c78eaa38090e",
+  "generated_at": "2026-11-16T23:29:05+02:00",
+  "arm_cortex_a9": {
+    "mlockall_succeeded": true,
+    "online_cpus": 2,
+    "n_direct": 100000,
+    "n_os_eventfd": 10000,
+    "sanity": {
+      "reject_bench_commits": 0,
+      "reject_bench_rejects": 100000,
+      "cascade4_bench_commits": 400000,
+      "cascade4_bench_rejects": 0,
+      "cascade4_final_c3": 9900000,
+      "os_eventfd_total_commits": 40800,
+      "os_eventfd_total_rejects": 0
+    },
+    "clock_monotonic_raw_floor_ns": {
+      "mean": 1185.576,
+      "sigma": 597.097,
+      "min": 1169,
+      "p50": 1176,
+      "p99": 1212,
+      "p99_9": 1225,
+      "max": 149896
+    },
+    "c99_o3_reject_1concept_ns": {
+      "amortized_mean": 97.96,
+      "mean": 1280.328,
+      "sigma": 427.969,
+      "min": 1261,
+      "p50": 1280,
+      "p99": 1293,
+      "p99_9": 1311,
+      "max": 76763
+    },
+    "c99_o3_cascade_4concepts_ns": {
+      "amortized_mean": 534.119,
+      "mean": 1730.476,
+      "sigma": 373.381,
+      "min": 1716,
+      "p50": 1723,
+      "p99": 1730,
+      "p99_9": 1772,
+      "max": 40203
+    },
+    "c99_o3_rule_update_ram_ns": {
+      "amortized_4concepts_mean": 63.115,
+      "amortized_64concepts_mean": 481.915,
+      "mean": 1272.125,
+      "sigma": 237.346,
+      "min": 1236,
+      "p50": 1268,
+      "p99": 1323,
+      "p99_9": 1335,
+      "max": 31870
+    },
+    "linux_eventfd_poll_crosscpu_cascade4_ns": {
+      "mean": 33327.112,
+      "sigma": 1345.424,
+      "min": 31963,
+      "p50": 33206,
+      "p99": 35421,
+      "p99_9": 55471,
+      "max": 65803
+    },
+    "linux_eventfd_poll_samecpu_cascade4_ns": {
+      "mean": 28837.613,
+      "sigma": 2633.175,
+      "min": 23348,
+      "p50": 29772,
+      "p99": 32800,
+      "p99_9": 55729,
+      "max": 68387
+    }
+  },
+  "rtl_cycle_timing": {
+    "reg_reject_cycles": 1,
+    "reg_cascade4_cycles": 4,
+    "reg_axi_update_12words_cycles": 24,
+    "reg_axi_load_16words_cycles": 32,
+    "cfgp_reject_cycles": 9,
+    "cfgp_cascade4_cycles": 32,
+    "cfgp_axi_update_12words_cycles": 48,
+    "cfgp_axi_load_16words_cycles": 64,
+    "cfgp_axi_load_256words_cycles": 1024
+  },
+  "standalone_yosys_xc7": {
+    "yosys_binary": "/usr/bin/yosys",
+    "reg_k4_lcs": 1461,
+    "reg_k16_lcs": 2861,
+    "reg_k64_lcs": 6581,
+    "cfg_p_k64_lcs": 2331
+  },
+  "openxc7_pnr_xc7z020": {
+    "cfg_p_k64": {
+      "tag": "cfg_p_k64",
+      "yosys_estimated_lcs": 2202,
+      "slice_lutx": 3351,
+      "slice_ffx": 1399,
+      "carry4": 144,
+      "selmux2_1": 16,
+      "ramb36e1": 1,
+      "ramb18e1": 0,
+      "fmax_mhz": 103.53,
+      "passes_100mhz": true
+    },
+    "reg_k4": {
+      "tag": "reg_k4",
+      "yosys_estimated_lcs": 968,
+      "slice_lutx": 2209,
+      "slice_ffx": 919,
+      "carry4": 134,
+      "selmux2_1": 6,
+      "ramb36e1": 0,
+      "ramb18e1": 0,
+      "fmax_mhz": 72.47,
+      "passes_100mhz": false
+    },
+    "reg_k16": {
+      "tag": "reg_k16",
+      "yosys_estimated_lcs": 1568,
+      "slice_lutx": 2783,
+      "slice_ffx": 2023,
+      "carry4": 134,
+      "selmux2_1": 6,
+      "ramb36e1": 0,
+      "ramb18e1": 0,
+      "fmax_mhz": 63.52,
+      "passes_100mhz": false
+    },
+    "reg_k64": {
+      "tag": "reg_k64",
+      "yosys_estimated_lcs": 4297,
+      "slice_lutx": 5543,
+      "slice_ffx": 6439,
+      "carry4": 135,
+      "selmux2_1": 6,
+      "ramb36e1": 0,
+      "ramb18e1": 0,
+      "fmax_mhz": 59.29,
+      "passes_100mhz": false
+    },
+    "crossover": {
+      "cfg_p_slice_lutx": 3351,
+      "piecewise_segment": [
+        16,
+        64
+      ],
+      "piecewise_k_star": 25.88,
+      "piecewise_k_star_ceil_int": 26,
+      "ols_intercept_lut": 1940.33,
+      "ols_slope_lut_per_concept": 56.12,
+      "ols_k_star": 25.14
+    }
+  },
+  "raw_artifact_sha256": {
+    "arm_c99_and_eventfd_bench.json": "c07762ec53fc7ada472f68640c147d3717d3dad5a4e17328b2d835fffe40086b",
+    "arm_c99_and_eventfd_bench.log": "f9fc1d8a5f296b449cb66d3c6e31043dad90af204ab3207d71bafd2a5b2e5af8",
+    "arm_c99_build_and_sysinfo.log": "712b1adeb55b6ab914e654953515ed9b3349d11657e8b9780acc7a8ea1a25706",
+    "arm_c99_o3_disasm.txt": "3f1cd151c950ed9bad6ffae22ed45f1c9d460c91b1756e45e24a0408f481cef7",
+    "nextpnr_cfg_p_k64.log": "e9f3b03cb226350a3ec8bdcf2ae2f86e3852248160a6b500d9d507cf7cc909c2",
+    "nextpnr_cfg_p_k64_report.json": "766f85f7ba32a8400e936651edb94e82e2978f07b4100cb87eb8dfeaea6bcccb",
+    "nextpnr_reg_k16.log": "834ea0ca6ee9033fa55f4b490562e284c18104a8ef71e11c9fd0857777ef9bda",
+    "nextpnr_reg_k16_report.json": "24c7db59ea9130f564ae0011366a8175f06d0e8d3d9e9d3560bf6a7c5f6c58d4",
+    "nextpnr_reg_k4.log": "591537c5f40595e19dac5efc99476b7f451072fb084a0bca61290115cedfb697",
+    "nextpnr_reg_k4_report.json": "0f9f2d33d9fda2ccd46bc35f576c44106f580b2d072bbbe92e456c3720d7e132",
+    "nextpnr_reg_k64.log": "4d84b5f9b35cf3b42717aa45b23746226c1a79caedd67b22ae6ff4e6b6159b50",
+    "nextpnr_reg_k64_report.json": "7ef0ed3fce668891ccacc38b029623dea3095e0467059d4c2e63217c21cc3c64",
+    "rtl_cycle_timing_sim.log": "dfe8fe74502f98a8de2c73be85203e27fd04471c24109509e73aa7dbed7b55db",
+    "yosys_cfg_p_k64.log": "577c0b8cd884a7718c0d69df206fd14b386ddda8a04bc081538f59f943ba807c",
+    "yosys_reg_k16.log": "6799e63df1aae106b45285a0713fe4e4e3eb4bad938dca4ff3362df91f99231e",
+    "yosys_reg_k4.log": "42463aacd0a4216f8bda081a6c212f999e2349044207125f67aaa225e337d707",
+    "yosys_reg_k64.log": "261a6c0c0eee2bd0be0a8e6d50e46b7d3640289234137d4a41c9d59a03f9921a",
+    "yosys_standalone_cores_stat.log": "5891855e844fe6ba330a34f80f21c5115bc81355499df065f701692d037385e5"
+  }
+}
