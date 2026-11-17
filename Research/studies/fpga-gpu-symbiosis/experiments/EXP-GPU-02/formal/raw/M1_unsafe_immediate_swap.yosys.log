@@ -1,7 +1,7 @@
-# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/M1_unsafe_immediate_swap.ys
-# timestamp: 2026-11-16T22:43:31.156216+02:00
-Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
-Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236
+# cmd: yosys -q /home/mfedchyk/GitHub/nick-fedchik/km-wt-253-hil-complete/Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/formal/raw/_work/M1_unsafe_immediate_swap.ys
+# timestamp: 2026-11-17T17:32:50.754304+02:00
+Warning: Replacing memory \fifo_param_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-253-hil-complete/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:237
+Warning: Replacing memory \fifo_cid_q with list of registers. See /home/mfedchyk/GitHub/nick-fedchik/km-wt-253-hil-complete/Engineering/hw/rtl/core/km_autonomous_sequencer.sv:236
 Warning: Wire cfg_p_ha_formal_props.\obs_b0_ram_0 [31] is used but has no driver.
 Warning: Wire cfg_p_ha_formal_props.\obs_b0_ram_0 [30] is used but has no driver.
 Warning: Wire cfg_p_ha_formal_props.\obs_b0_ram_0 [29] is used but has no driver.

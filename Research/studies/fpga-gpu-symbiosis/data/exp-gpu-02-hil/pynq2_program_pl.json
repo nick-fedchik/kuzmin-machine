@@ -1,0 +1,1 @@
+{"bitstream": "kpol_pynq_ha.bit", "sha256": "b5f455aad296364ea66c2462cdbecf56e7b8657d220903ed83f173287cbd683b", "design": "/home/mfedchyk/GitHub/nick-fedchik/km-wt-253-hil-complete/.build_ha_bit/pipeline_ha.frames;Generator=xc7frames2bit", "part": "xc7z020clg400-1", "built": "2026/11/17 14:33:39", "payload_bytes": 4045564, "fpga_state": "operating"}

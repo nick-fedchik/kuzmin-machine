@@ -1,0 +1,294 @@
+{
+  "attempts": 1,
+  "capture": {
+    "captured_at_utc": "2026-11-17T14:46:04Z",
+    "channels": [
+      {
+        "channel": 1,
+        "duty_cycle_percent": null,
+        "edge_samples": [],
+        "edge_times_us": [],
+        "edges_note": "level toggles at each edge, starting from idle_level",
+        "falling_edges": 0,
+        "final_level": 1,
+        "first_edge_us": null,
+        "glitch_detection": {
+          "count": 0,
+          "detected": false
+        },
+        "gpio": 2,
+        "high_pulse_width_us": null,
+        "high_time_percent": 100.0,
+        "idle_level": 1,
+        "last_edge_us": null,
+        "low_pulse_width_us": null,
+        "max_pulse_width_us": null,
+        "mean_frequency_hz": null,
+        "min_pulse_width_us": null,
+        "name": "JA1_TRIG",
+        "pulse_count_high": 0,
+        "pulse_count_low": 0,
+        "rising_edges": 0,
+        "samples": 3200,
+        "trailing_level_us": 32.0,
+        "transitions": 0
+      },
+      {
+        "channel": 2,
+        "duty_cycle_percent": 2.259259259259259,
+        "edge_samples": [
+          50,
+          60,
+          500,
+          510,
+          950,
+          960,
+          1400,
+          1410,
+          1850,
+          1861,
+          2300,
+          2310,
+          2750,
+          2761
+        ],
+        "edge_times_us": [
+          0.0,
+          0.09999999999999999,
+          4.5,
+          4.6,
+          9.0,
+          9.1,
+          13.5,
+          13.6,
+          18.0,
+          18.11,
+          22.5,
+          22.6,
+          27.0,
+          27.11
+        ],
+        "edges_note": "level toggles at each edge, starting from idle_level",
+        "falling_edges": 7,
+        "final_level": 0,
+        "first_edge_us": 0.0,
+        "glitch_detection": {
+          "count": 0,
+          "detected": false
+        },
+        "gpio": 3,
+        "high_pulse_width_us": {
+          "max": 0.11,
+          "mean": 0.10285714285714286,
+          "min": 0.09999999999999999
+        },
+        "high_time_percent": 2.25,
+        "idle_level": 0,
+        "last_edge_us": 27.11,
+        "low_pulse_width_us": {
+          "max": 4.4,
+          "mean": 4.398333333333333,
+          "min": 4.390000000000001
+        },
+        "max_pulse_width_us": 4.4,
+        "mean_frequency_hz": 222222.22222222222,
+        "min_pulse_width_us": 0.09999999999999999,
+        "name": "JA2_COMMIT",
+        "periodicity": {
+          "burst_gap_threshold_samples": 1800,
+          "bursts": 1,
+          "cv": 0.0,
+          "edge": "rising",
+          "irregular_edge_samples": [],
+          "irregular_periods": 0,
+          "kind": "periodic",
+          "max_gap_samples": 0,
+          "max_samples": 450,
+          "median_period_ns": 4500.0,
+          "median_samples": 450,
+          "min_gap_samples": 0,
+          "min_samples": 450,
+          "note": "frequency_hz and duty_cycle_percent use intra-burst periods only",
+          "periods": 6
+        },
+        "pulse_count_high": 7,
+        "pulse_count_low": 6,
+        "rising_edges": 7,
+        "samples": 3200,
+        "trailing_level_us": 4.390000000000001,
+        "transitions": 14
+      }
+    ],
+    "duration_us": 32.0,
+    "format": "logictracer-capture-v1",
+    "pre_trigger_samples": 50,
+    "sample_period_ns": 10.0,
+    "sample_period_us": 0.01,
+    "sample_rate_hz": 100000000,
+    "samples": 3200,
+    "schema_version": 1,
+    "time_origin": "trigger (t=0 at sample index trigger_sample)",
+    "trigger_sample": 50
+  },
+  "command": "capture",
+  "config": {
+    "channels": [
+      {
+        "channel": 1,
+        "gpio": 2,
+        "name": "JA1_TRIG"
+      },
+      {
+        "channel": 2,
+        "gpio": 3,
+        "name": "JA2_COMMIT"
+      }
+    ],
+    "firmware_poll_latency_ms": 150,
+    "frequency_hz": 100000000,
+    "mode": "8ch",
+    "post_trigger_samples": 450,
+    "pre_trigger_samples": 50,
+    "samples": 500,
+    "segments": 7,
+    "timeout_ms": 5000,
+    "trigger": {
+      "channel": 2,
+      "edge": "rising",
+      "gpio": 3,
+      "sensitivity": "edge",
+      "type": "edge"
+    }
+  },
+  "device": {
+    "blast_frequency_hz": 200000000,
+    "board": "PICO",
+    "buffer_bytes": 131072,
+    "channels": 24,
+    "clock_domain": "async",
+    "edge_sensitive_trigger": true,
+    "firmware_family": "logictracer",
+    "firmware_version": "0.5.0",
+    "gpio_map": {
+      "1": 2,
+      "10": 11,
+      "11": 12,
+      "12": 13,
+      "13": 14,
+      "14": 15,
+      "15": 16,
+      "16": 17,
+      "17": 18,
+      "18": 19,
+      "19": 20,
+      "2": 3,
+      "20": 21,
+      "21": 22,
+      "22": 26,
+      "23": 27,
+      "24": 28,
+      "3": 4,
+      "4": 5,
+      "5": 6,
+      "6": 7,
+      "7": 8,
+      "8": 9,
+      "9": 10,
+      "ext_trigger": 1
+    },
+    "max_frequency_hz": 100000000,
+    "max_immediate_samples": {
+      "16ch": 65534,
+      "24ch": 32766,
+      "8ch": 131070
+    },
+    "max_samples": {
+      "16ch": 65536,
+      "24ch": 32768,
+      "8ch": 131072
+    },
+    "min_frequency_hz": 3051,
+    "port": "/dev/ttyACM0",
+    "protocol": "v6",
+    "segment_trigger_times": true,
+    "serial_number": "E66118604B78A622",
+    "version": "LOGICTRACER_PICO_0.5.0"
+  },
+  "elapsed_ms": 813,
+  "outputs": {
+    "json": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-02-hil/logictracer_segmented_200mhz_blast_ts.json"
+  },
+  "port": "/dev/ttyACM0",
+  "schema_version": 1,
+  "segments": {
+    "layout": {
+      "count": 7,
+      "note": "windows are stored back to back; trigger_times_us says when each one started",
+      "post_samples": 450,
+      "pre_samples": 50,
+      "trigger_channel": 2,
+      "trigger_edge": "rising",
+      "trigger_time_resolution_ns": 5.0,
+      "trigger_times_us": [
+        0.0,
+        108.795,
+        164.36,
+        270.125,
+        376.40999999999997,
+        429.785,
+        483.45
+      ]
+    },
+    "windows": [
+      {
+        "edges": 2,
+        "samples": 500,
+        "trigger_time_us": 0.0,
+        "window": 1
+      },
+      {
+        "edges": 2,
+        "samples": 451,
+        "trigger_time_us": 108.795,
+        "window": 2
+      },
+      {
+        "edges": 2,
+        "samples": 451,
+        "trigger_time_us": 164.36,
+        "window": 3
+      },
+      {
+        "edges": 2,
+        "samples": 451,
+        "trigger_time_us": 270.125,
+        "window": 4
+      },
+      {
+        "edges": 2,
+        "samples": 451,
+        "trigger_time_us": 376.40999999999997,
+        "window": 5
+      },
+      {
+        "edges": 2,
+        "samples": 451,
+        "trigger_time_us": 429.785,
+        "window": 6
+      },
+      {
+        "edges": 2,
+        "samples": 451,
+        "trigger_time_us": 483.45,
+        "window": 7
+      }
+    ]
+  },
+  "setup": {
+    "dut.bitstream_sha256": "b5f455aad296364ea66c2462cdbecf56e7b8657d220903ed83f173287cbd683b",
+    "dut.board": "PYNQ-Z1",
+    "dut.design": "kpol_bram_pipeline_pynq_z1_ha_top"
+  },
+  "status": "OK",
+  "warnings": []
+}

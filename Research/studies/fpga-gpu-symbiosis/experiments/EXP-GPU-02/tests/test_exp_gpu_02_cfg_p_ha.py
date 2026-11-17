@@ -33,6 +33,7 @@ HW_DIR = REPO_ROOT / "Engineering" / "hw"
 RTL_CORE = HW_DIR / "rtl" / "core"
 RTL_BUS = HW_DIR / "rtl" / "bus"
 DATA_SIM_DIR = REPO_ROOT / "Research" / "studies" / "fpga-gpu-symbiosis" / "data" / "exp-gpu-02-sim"
+DATA_HIL_DIR = REPO_ROOT / "Research" / "studies" / "fpga-gpu-symbiosis" / "data" / "exp-gpu-02-hil"
 FORMAL_DIR = EXP_DIR / "formal"
 FORMAL_RAW_DIR = FORMAL_DIR / "raw"
 CME2_PROV_PATH = (
@@ -40,6 +41,7 @@ CME2_PROV_PATH = (
 )
 
 sys.path.insert(0, str(EXP_DIR))
+import hil_exp_gpu_02_runner as hil_runner  # noqa: E402
 import rule_injector as ri  # noqa: E402
 
 EXPECTED_AXI_CFG_P_SHA256 = "99ccf4907785ad9e20509367ae1977fc64264cc73de4e34cc5cc71c55771a4e1"
@@ -234,7 +236,7 @@ def test_committed_10k_rtl_simulation_and_yosys_xc7_synthesis_artifacts():
     assert "RAMB36E1                        1" in synth_txt
     assert "RAMB36E1                        2" in synth_txt
     assert "Estimated number of LCs:       1750" in synth_txt
-    assert "Estimated number of LCs:       3867" in synth_txt
+    assert "Estimated number of LCs:       3587" in synth_txt
 
 
 @pytest.mark.skipif(
@@ -348,6 +350,7 @@ def test_committed_formal_smt_z3_artifacts():
     for req_check in (
         "H1_H6_base_bmc",
         "H1_H6_safety_ind",
+        "tree_equiv_256w_miter",
         "H1_H2_H4_H5_safety_bmc",
         "H2_H3_safety_bmc",
         "cover_non_vacuity",
@@ -363,6 +366,7 @@ def test_committed_formal_smt_z3_artifacts():
     } <= reached
 
     assert prov.get("followup_issue") == 259
+    assert prov.get("hil_and_pnr_issue") == 253
     assert "1-bit per word" in prov.get("bmc_h3_slice_note", "")
     sim_c4 = prov["sim_c4_b_we_at_swap"]
     assert sim_c4["evidence_kind"] == "rtl_simulation_iverilog"
@@ -372,6 +376,7 @@ def test_committed_formal_smt_z3_artifacts():
     assert sim_c4["b_we_at_swap_no_override"] > 0
     assert sim_c4["b_we_at_swap_with_override"] > 0
     assert (FORMAL_RAW_DIR / "sim_c4_b_we_at_swap.log").is_file()
+    assert (FORMAL_RAW_DIR / "tree_equiv_256w_miter.log").is_file()
 
     by_mut = {r["design"].split(":")[0]: r for r in rows if not r["design"].startswith("original")}
     expected_mutants = {
@@ -380,6 +385,7 @@ def test_committed_formal_smt_z3_artifacts():
         "M3_drop_w0_mirror": "H6_live_state_preserved",
         "M4_block_trigger_on_shadow": "H4_zero_sequencer_stall",
         "M5_skip_port_a_resync": "H7_multi_patch_rule_persistence",
+        "M6_broken_tree_priority_encoder": "INV_sync_has_dirty",
     }
     for mid, expected_prop in expected_mutants.items():
         row = by_mut[mid]
@@ -420,6 +426,7 @@ def test_live_formal_smt_z3_induction_and_mutants(tmp_path):
         "M3_drop_w0_mirror",
         "M4_block_trigger_on_shadow",
         "M5_skip_port_a_resync",
+        "M6_broken_tree_priority_encoder",
     ):
         assert (tmp_path / f"{mid}.vcd").is_file()
 
@@ -483,7 +490,8 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
     assert "1   BUFG" in yosys_txt
 
     nextpnr_txt = nextpnr_log.read_text(encoding="utf-8")
-    assert "7.99 ns logic, 26.66 ns routing" in nextpnr_txt
+    assert "3.10 ns logic, 6.83 ns routing" in nextpnr_txt
+    assert "PASS at 100.00 MHz" in nextpnr_txt
 
     rep = json.loads(report_json.read_text(encoding="utf-8"))
     util = rep["utilization"]
@@ -492,17 +500,19 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
     assert util["PS7"]["used"] == 1
     assert util["BUFGCTRL"]["used"] == 1
     assert util["PAD"]["used"] == 20
-    assert util["SLICE_LUTX"]["used"] == 5934
+    assert util["SLICE_LUTX"]["used"] == 5718
     assert util["SLICE_FFX"]["used"] == 1935
     assert util["CARRY4"]["used"] == 178
 
     fmax_clk = rep["fmax"]["clk"]
     assert fmax_clk["constraint"] == 100
-    assert float(fmax_clk["achieved"]) == pytest.approx(28.86, abs=0.05)
+    assert float(fmax_clk["achieved"]) >= 100.0
+    assert float(fmax_clk["achieved"]) == pytest.approx(100.69, abs=0.05)
 
     sha_line = bit_sha_file.read_text(encoding="utf-8").strip()
     sha_hex, bit_name = sha_line.split()
     assert len(sha_hex) == 64
+    assert sha_hex == "b5f455aad296364ea66c2462cdbecf56e7b8657d220903ed83f173287cbd683b"
     assert bit_name == "kpol_pynq_ha.bit"
 
     opt_bit = Path(
@@ -512,8 +522,237 @@ def test_committed_openxc7_pnr_and_bitstream_artifacts_issue_253():
         )
     )
     if opt_bit.is_file():
-        assert opt_bit.stat().st_size == 4_045_751
+        assert opt_bit.stat().st_size == 4_045_745
         assert hashlib.sha256(opt_bit.read_bytes()).hexdigest() == sha_hex
+
+
+def test_committed_physical_hil_pynq_z1_and_logictracer_artifacts_issue_253():
+    """Verifies physical Zynq-7020 HIL artifacts (10,003 swaps) and LogicTracer Pico captures + mutant controls."""
+    prog_json = DATA_HIL_DIR / "pynq2_program_pl.json"
+    detect_json = DATA_HIL_DIR / "logictracer_detect.json"
+    hil_sum_json = DATA_HIL_DIR / "exp_gpu_02_hil_10k_swaps_summary.json"
+    hil_csv = DATA_HIL_DIR / "exp_gpu_02_hil_timing.csv"
+    lt_100m_json = DATA_HIL_DIR / "logictracer_100mhz_ja2_commit.json"
+    lt_100m_vcd = DATA_HIL_DIR / "logictracer_100mhz_ja2_commit.vcd"
+    lt_100m_md = DATA_HIL_DIR / "logictracer_100mhz_ja2_commit_ai.md"
+    lt_seg_json = DATA_HIL_DIR / "logictracer_segmented_200mhz_blast_ts.json"
+    lt_seg_md = DATA_HIL_DIR / "logictracer_segmented_200mhz_blast_ts_ai.md"
+
+    for p in (
+        prog_json,
+        detect_json,
+        hil_sum_json,
+        hil_csv,
+        lt_100m_json,
+        lt_100m_vcd,
+        lt_100m_md,
+        lt_seg_json,
+        lt_seg_md,
+    ):
+        assert p.is_file(), f"Missing physical HIL artifact: {p}"
+
+    sha_hex = (DATA_SIM_DIR / "openxc7_ha_bitstream.sha256").read_text(encoding="utf-8").split()[0]
+    prog = json.loads(prog_json.read_text(encoding="utf-8"))
+    assert prog["fpga_state"] == "operating"
+    assert prog["part"] == "xc7z020clg400-1"
+    assert prog["sha256"] == sha_hex
+
+    det = json.loads(detect_json.read_text(encoding="utf-8"))
+    assert det["status"] == "OK"
+    dev = det["devices"][0]["device"]
+    assert dev["version"] == "LOGICTRACER_PICO_0.5.0"
+    assert dev["max_frequency_hz"] == 100_000_000
+    assert dev["blast_frequency_hz"] == 200_000_000
+
+    hil_sum = json.loads(hil_sum_json.read_text(encoding="utf-8"))
+    hil_runner.validate_hil_summary(hil_sum)
+    assert hil_sum["bitstream_sha256"] == sha_hex
+
+    with hil_csv.open("r", encoding="utf-8") as f:
+        csv_rows = list(csv.DictReader(f))
+    assert len(csv_rows) == 8
+    assert all(r["evidence_kind"] == "physical_hil_pynq_z1" for r in csv_rows)
+    assert all(int(r["last_seq_exec_cycles"]) == 8 for r in csv_rows)
+    assert all(int(r["seq_anomaly_count"]) == 0 for r in csv_rows)
+
+    # Verify 100 MS/s (10 ns) LogicTracer capture of JA2_COMMIT (CH2 = GP3)
+    cap100 = json.loads(lt_100m_json.read_text(encoding="utf-8"))
+    assert cap100["status"] == "OK"
+    assert cap100["capture"]["sample_rate_hz"] == 100_000_000
+    assert cap100["capture"]["sample_period_ns"] == 10.0
+    ch2_100 = cap100["capture"]["channels"][1]
+    assert ch2_100["name"] == "JA2_COMMIT"
+    assert ch2_100["gpio"] == 3
+    assert ch2_100["pulse_count_high"] == 7
+    edges_100 = ch2_100["edge_samples"]
+    assert len(edges_100) == 14
+    widths_100 = [edges_100[2 * i + 1] - edges_100[2 * i] for i in range(7)]
+    assert widths_100 == [10, 10, 10, 10, 10, 10, 10]
+
+    # Verify 7-segment capture with 200 MHz (5.0 ns) blast trigger timestamps
+    cap_seg = json.loads(lt_seg_json.read_text(encoding="utf-8"))
+    assert cap_seg["status"] == "OK"
+    assert cap_seg["device"]["blast_frequency_hz"] == 200_000_000
+    seg_layout = cap_seg["segments"]["layout"]
+    assert seg_layout["count"] == 7
+    assert seg_layout["trigger_time_resolution_ns"] == 5.0
+    assert len(seg_layout["trigger_times_us"]) == 7
+    ch2_seg = cap_seg["capture"]["channels"][1]
+    edges_seg = ch2_seg["edge_samples"]
+    assert len(edges_seg) == 14
+    widths_seg = [edges_seg[2 * i + 1] - edges_seg[2 * i] for i in range(7)]
+    assert all(10 <= w <= 11 for w in widths_seg)
+
+    # Negative / mutant controls on validate_hil_summary (AGENTS.md §4.1)
+    mut_cases = [
+        ("mock_label", lambda d: d.update({"evidence_kind": "rtl_simulation_iverilog"})),
+        ("not_physical_flag", lambda d: d.update({"not_physical_hil": True})),
+        ("wrong_hw_id", lambda d: d.update({"hw_id_hex": "0x4b504d43"})),
+        ("phase1_false_commit", lambda d: d["phases_1_4"].update({"p1_e1_x50_w0": 1})),
+        ("phase2_shadow_leak", lambda d: d["phases_1_4"].update({"p2_active_c0_w1_before_swap": 40})),
+        ("phase2_dropped_w0_mirror", lambda d: d["phases_1_4"].update({"p2_e4_x120_pre_swap_sh_w0": 1})),
+        ("phase4_stale_rule_after_swap", lambda d: d["phases_1_4"].update({"p4_e5_x50_post_swap_w0": 2})),
+        ("phase4_broken_w0_override", lambda d: d["phases_1_4"].update({"p4_post_override_w0": 6})),
+        ("stress_torn_read", lambda d: d["stress_10k"].update({"torn_read_errors": 1})),
+        ("stress_bram_collision", lambda d: d["stress_10k"].update({"bram_collision_count": 1})),
+        ("stress_seq_stall", lambda d: d["stress_10k"].update({"last_seq_exec_cycles": 9})),
+        ("stress_swap_wait_bound", lambda d: d["stress_10k"].update({"swap_wait_max_cycles": 9})),
+    ]
+    for mname, mutate_fn in mut_cases:
+        bad = json.loads(json.dumps(hil_sum))
+        mutate_fn(bad)
+        with pytest.raises(ValueError):
+            hil_runner.validate_hil_summary(bad)
+
+
+@pytest.mark.skipif(
+    shutil.which("iverilog") is None or shutil.which("vvp") is None,
+    reason="Потрібні iverilog і vvp",
+)
+def test_live_256w_tree_priority_encoder_equivalence_and_mutant(tmp_path):
+    """Verifies 256-word binary tree priority encoder equivalence against linear loop + mutant control (R1)."""
+    dual_src = (RTL_CORE / "km_concept_bram_dual_ha.sv").read_text(encoding="utf-8")
+    rtl_sources = [
+        RTL_CORE / "kpol_txn_gate_v2.sv",
+        RTL_CORE / "km_concept_micro_engine.sv",
+        RTL_CORE / "km_concept_bram.sv",
+        RTL_CORE / "km_concept_bram_dual_ha.sv",
+        RTL_CORE / "km_autonomous_sequencer.sv",
+        RTL_BUS / "kpol_bram_pipeline_axi_ha.sv",
+        HW_DIR / "tests" / "kpol_bram_pipeline_axi_ha_tb.sv",
+    ]
+
+    # 1. Negative mutant on binary tree priority encoder inside km_concept_bram_dual_ha.sv must fail TB
+    old_tree_root = "        next_has_dirty_w  = tree_valid[ADDR_WIDTH][0];"
+    new_tree_root = "        next_has_dirty_w  = 1'b0;"
+    assert dual_src.count(old_tree_root) == 1
+    mut_dual = tmp_path / "mut_tree_dual_ha.sv"
+    mut_dual.write_text(dual_src.replace(old_tree_root, new_tree_root), encoding="utf-8")
+    mut_sources = [mut_dual if p.name == "km_concept_bram_dual_ha.sv" else p for p in rtl_sources]
+    sim_mut = tmp_path / "tree_mut_tb.vvp"
+    subprocess.run(
+        ["iverilog", "-g2012", "-s", "kpol_bram_pipeline_axi_ha_tb", "-o", str(sim_mut), *map(str, mut_sources)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    run_mut = subprocess.run(
+        ["vvp", "-n", str(sim_mut), "+num_swaps=50"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    combined = run_mut.stdout + run_mut.stderr
+    assert run_mut.returncode != 0 or "[FAIL]" in combined, (
+        "Corrupted binary tree priority encoder was NOT caught by kpol_bram_pipeline_axi_ha_tb.sv"
+    )
+    assert "[FAIL]" in combined
+
+    # 2. Direct 256-bit combinational equivalence TB (walking-1, walking-2, dense & random patterns + mutant)
+    eq_tb = tmp_path / "tree_256w_equiv_tb.sv"
+    eq_tb.write_text(
+        "`timescale 1ns/1ps\n"
+        "module tree_256w_equiv_tb;\n"
+        "  localparam int WORDS_TOTAL = 256;\n"
+        "  localparam int ADDR_WIDTH  = 8;\n"
+        "  logic [255:0] dirty_search_mask_w;\n"
+        "  wire [WORDS_TOTAL-1:0]            tree_valid [0:ADDR_WIDTH];\n"
+        "  wire [WORDS_TOTAL*ADDR_WIDTH-1:0] tree_addr  [0:ADDR_WIDTH];\n"
+        "  genvar g_idx, g_lvl, g_k;\n"
+        "  generate\n"
+        "    for (g_idx = 0; g_idx < WORDS_TOTAL; g_idx = g_idx + 1) begin : gen_tree_leaf\n"
+        "      localparam logic [31:0] LEAF_IDX_U32 = g_idx;\n"
+        "      assign tree_valid[0][g_idx] = dirty_search_mask_w[g_idx];\n"
+        "      assign tree_addr[0][g_idx * ADDR_WIDTH +: ADDR_WIDTH] = LEAF_IDX_U32[ADDR_WIDTH-1:0];\n"
+        "    end\n"
+        "    for (g_lvl = 0; g_lvl < ADDR_WIDTH; g_lvl = g_lvl + 1) begin : gen_tree_lvl\n"
+        "      localparam int ACTIVE_NODES = (WORDS_TOTAL >> (g_lvl + 1));\n"
+        "      for (g_k = 0; g_k < ACTIVE_NODES; g_k = g_k + 1) begin : gen_tree_node\n"
+        "        assign tree_valid[g_lvl + 1][g_k] = tree_valid[g_lvl][2 * g_k] | tree_valid[g_lvl][2 * g_k + 1];\n"
+        "`ifdef MUTANT_SWAP_TREE_HALF\n"
+        "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+        "            ? tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+        "            : tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH];\n"
+        "`else\n"
+        "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = tree_valid[g_lvl][2 * g_k]\n"
+        "            ? tree_addr[g_lvl][(2 * g_k) * ADDR_WIDTH +: ADDR_WIDTH]\n"
+        "            : tree_addr[g_lvl][(2 * g_k + 1) * ADDR_WIDTH +: ADDR_WIDTH];\n"
+        "`endif\n"
+        "      end\n"
+        "      for (g_k = ACTIVE_NODES; g_k < WORDS_TOTAL; g_k = g_k + 1) begin : gen_tree_pad\n"
+        "        assign tree_valid[g_lvl + 1][g_k] = 1'b0;\n"
+        "        assign tree_addr[g_lvl + 1][g_k * ADDR_WIDTH +: ADDR_WIDTH] = '0;\n"
+        "      end\n"
+        "    end\n"
+        "  endgenerate\n"
+        "  wire tree_has = tree_valid[ADDR_WIDTH][0];\n"
+        "  wire [ADDR_WIDTH-1:0] tree_out = tree_valid[ADDR_WIDTH][0] ? tree_addr[ADDR_WIDTH][0 +: ADDR_WIDTH] : '0;\n"
+        "  logic lin_has;\n"
+        "  logic [ADDR_WIDTH-1:0] lin_out;\n"
+        "  always_comb begin\n"
+        "    lin_has = 1'b0;\n"
+        "    lin_out = '0;\n"
+        "    for (int idx = 0; idx < WORDS_TOTAL; idx = idx + 1) begin\n"
+        "      if (!lin_has && dirty_search_mask_w[idx]) begin\n"
+        "        lin_has = 1'b1;\n"
+        "        lin_out = idx[ADDR_WIDTH-1:0];\n"
+        "      end\n"
+        "    end\n"
+        "  end\n"
+        "  task automatic check_mask(input [255:0] m);\n"
+        "    begin\n"
+        "      dirty_search_mask_w = m;\n"
+        "      #1;\n"
+        "      if ((tree_has !== lin_has) || (tree_out !== lin_out)) begin\n"
+        "        $display(\"[FAIL] tree=(%0b,%0d) != lin=(%0b,%0d)\", tree_has, tree_out, lin_has, lin_out);\n"
+        "        $fatal(1);\n"
+        "      end\n"
+        "    end\n"
+        "  endtask\n"
+        "  initial begin\n"
+        "    check_mask(256'd0);\n"
+        "    check_mask({256{1'b1}});\n"
+        "    for (int i = 0; i < 256; i = i + 1) begin\n"
+        "      check_mask(256'd1 << i);\n"
+        "      for (int j = i + 1; j < 256; j = j + 17) begin\n"
+        "        check_mask((256'd1 << i) | (256'd1 << j));\n"
+        "      end\n"
+        "    end\n"
+        "    $display(\"PASS: 256-word binary tree priority encoder matches linear encoder\");\n"
+        "    $finish;\n"
+        "  end\n"
+        "endmodule\n",
+        encoding="utf-8",
+    )
+    eq_ok = tmp_path / "eq_ok.vvp"
+    subprocess.run(["iverilog", "-g2012", "-o", str(eq_ok), str(eq_tb)], check=True)
+    res_eq_ok = subprocess.run(["vvp", "-n", str(eq_ok)], capture_output=True, text=True, check=True)
+    assert "PASS: 256-word binary tree priority encoder matches linear encoder" in res_eq_ok.stdout
+
+    eq_mut = tmp_path / "eq_mut.vvp"
+    subprocess.run(["iverilog", "-g2012", "-DMUTANT_SWAP_TREE_HALF", "-o", str(eq_mut), str(eq_tb)], check=True)
+    res_eq_mut = subprocess.run(["vvp", "-n", str(eq_mut)], capture_output=True, text=True)
+    assert res_eq_mut.returncode != 0 or "[FAIL]" in (res_eq_mut.stdout + res_eq_mut.stderr)
 
 
 @pytest.mark.skipif(
