@@ -1,5 +1,5 @@
 {
-  "version": "0.17.0",
+  "version": "0.18.0",
   "date": "2026-11-17",
   "entries": [
     {
@@ -165,6 +165,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/hw/boards/pynq-z1/build_bram_pipeline_egress.sh",
+      "direction": "engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/hw/boards/pynq-z1/hil-bench-wiring-guide.md",
       "direction": "Engineering",
       "wp_type": "Guide",
@@ -174,6 +180,12 @@
       "path": "Engineering/hw/boards/pynq-z1/hil-hardware-experiment-plan.md",
       "direction": "Engineering",
       "wp_type": "Plan",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/hw/boards/pynq-z1/hil/burst_egress_trig.c",
+      "direction": "engineering",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
@@ -2457,6 +2469,24 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/logictracer_egress_ja2_100mhz.json",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/logictracer_egress_ja2_100mhz.log",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/logictracer_egress_ja2_100mhz.vcd",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/open-flow-01.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2465,6 +2495,36 @@
     {
       "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/open-flow-02.log",
       "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/openxc7_egress_bitstream.sha256",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/openxc7_egress_nextpnr.log",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/openxc7_egress_nextpnr_report.json",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/openxc7_egress_yosys.log",
+      "direction": "engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/pmod-event-egress-230/raw/pynq2_egress_silicon_cascade.log",
+      "direction": "engineering",
       "wp_type": "Data",
       "immutable_input": false
     },
@@ -3933,6 +3993,66 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/crossboard_r1.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/crossboard_r2.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/crossboard_r3.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/crossboard_r4.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/crossboard_r5.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/logictracer_egress_ja2_100mhz.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/logictracer_egress_ja2_100mhz.vcd",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/run-01-crossboard-5x1000.log",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/sha256sums.txt",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-crossboard/summary_crossboard_226.json",
+      "direction": "research",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/data/exp-gpu-01-phase3/ab_16x32_isolated_10k.json",
       "direction": "Research",
       "wp_type": "Data",
@@ -4593,6 +4713,24 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/crossboard_egress_client.c",
+      "direction": "research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/crossboard_egress_server.cu",
+      "direction": "research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/crossboard_frame.py",
+      "direction": "research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/j501-hardware-interface.md",
       "direction": "Research",
       "wp_type": "Specification / Hardware Interface Guide",
@@ -4623,6 +4761,12 @@
       "immutable_input": false
     },
     {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase1-2-4-crossboard-egress.md",
+      "direction": "research",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/report-phase3-warp-scaling.md",
       "direction": "Research",
       "wp_type": "Report",
@@ -4643,6 +4787,12 @@
     {
       "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/test_persistent_subscribers.py",
       "direction": "Research",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/tests/test_crossboard_egress_226.py",
+      "direction": "research",
       "wp_type": "Source Code",
       "immutable_input": false
     },

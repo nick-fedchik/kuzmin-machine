@@ -1,0 +1,73 @@
+# cmd: R=5x1000 crossboard PYNQ-Z1 (192.168.68.69, pipeline_egress.bit) -> GbE UDP -> Jetson AGX Orin J501 (192.168.68.68, 16x64=1024 subscribers)
+# timestamp: 2026-11-17T15:37:45+02:00
+# bitstream_sha256: 7bfd5f5742334a7f08f2a290d5dde0a241e5bd06ced64c39d82e70021f30bbce
+--- Starting Run r=1 on port 55221 ---
+READY port=55221 blocks=16 threads=64 subscribers=1024
+{
+  "valid_events_processed": 1000,
+  "crc_drop_count": 1,
+  "state_mismatches": 0,
+  "subscribers_verified": 1024,
+  "gpu_math_gt_ns_p50": 64,
+  "gpu_math_gt_ns_p99": 64,
+  "gpu_e2e_gt_ns_p50": 2048,
+  "gpu_e2e_gt_ns_p99": 2784,
+  "gpu_e2e_gt_ns_p99_9": 1152992,
+  "gpu_e2e_gt_ns_max": 1152992
+}
+--- Starting Run r=2 on port 55222 ---
+READY port=55222 blocks=16 threads=64 subscribers=1024
+{
+  "valid_events_processed": 1000,
+  "crc_drop_count": 1,
+  "state_mismatches": 0,
+  "subscribers_verified": 1024,
+  "gpu_math_gt_ns_p50": 64,
+  "gpu_math_gt_ns_p99": 64,
+  "gpu_e2e_gt_ns_p50": 2016,
+  "gpu_e2e_gt_ns_p99": 2720,
+  "gpu_e2e_gt_ns_p99_9": 1145984,
+  "gpu_e2e_gt_ns_max": 1145984
+}
+--- Starting Run r=3 on port 55223 ---
+READY port=55223 blocks=16 threads=64 subscribers=1024
+{
+  "valid_events_processed": 1000,
+  "crc_drop_count": 1,
+  "state_mismatches": 0,
+  "subscribers_verified": 1024,
+  "gpu_math_gt_ns_p50": 64,
+  "gpu_math_gt_ns_p99": 64,
+  "gpu_e2e_gt_ns_p50": 1952,
+  "gpu_e2e_gt_ns_p99": 2752,
+  "gpu_e2e_gt_ns_p99_9": 2944,
+  "gpu_e2e_gt_ns_max": 2944
+}
+--- Starting Run r=4 on port 55224 ---
+READY port=55224 blocks=16 threads=64 subscribers=1024
+{
+  "valid_events_processed": 1000,
+  "crc_drop_count": 1,
+  "state_mismatches": 0,
+  "subscribers_verified": 1024,
+  "gpu_math_gt_ns_p50": 64,
+  "gpu_math_gt_ns_p99": 64,
+  "gpu_e2e_gt_ns_p50": 2016,
+  "gpu_e2e_gt_ns_p99": 2752,
+  "gpu_e2e_gt_ns_p99_9": 2912,
+  "gpu_e2e_gt_ns_max": 2912
+}
+--- Starting Run r=5 on port 55225 ---
+READY port=55225 blocks=16 threads=64 subscribers=1024
+{
+  "valid_events_processed": 1000,
+  "crc_drop_count": 1,
+  "state_mismatches": 0,
+  "subscribers_verified": 1024,
+  "gpu_math_gt_ns_p50": 64,
+  "gpu_math_gt_ns_p99": 64,
+  "gpu_e2e_gt_ns_p50": 1952,
+  "gpu_e2e_gt_ns_p99": 2720,
+  "gpu_e2e_gt_ns_p99_9": 2944,
+  "gpu_e2e_gt_ns_max": 2944
+}
