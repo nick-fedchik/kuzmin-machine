@@ -1,5 +1,5 @@
 {
-  "version": "0.19.0",
+  "version": "0.20.0",
   "date": "2026-11-17",
   "entries": [
     {
@@ -699,6 +699,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/kpol-ref/c99_emitter.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/kpol-ref/kpol_reference.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -748,6 +754,12 @@
     },
     {
       "path": "Engineering/sw/runtime/pynq/tests/test_kpol_direct_mmio.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_c99_emitter_270.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -1506,6 +1518,84 @@
       "path": "Engineering/validation/kpol-cme/behavior-153/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/bms_c99_hil_bench.c",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/bms_safety_cascade.bin",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/bms_safety_cascade_gen.c",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/bms_safety_z3_certificate.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/raw/iverilog_bms_cfg_p_trace.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/raw/pynq_cortex_a9_bms_c99_hil.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/raw/pynq_cortex_a9_bms_c99_hil.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/raw/pytest_c99_emitter_270.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/raw/x86_64_bms_c99_verification.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/raw/x86_64_bms_c99_verification.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/c99-emitter-270/run_bms_c99_verification.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
@@ -3814,6 +3904,12 @@
     },
     {
       "path": "Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md",
+      "direction": "Research",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Research/studies/commercialization-and-final-conclusions.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false

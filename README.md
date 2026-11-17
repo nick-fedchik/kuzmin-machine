@@ -1,10 +1,10 @@
 # Машина Кузьміна
 
-* **Версія:** 0.2.0
-* **Дата:** 2026-11-12
+* **Версія:** 0.3.0
+* **Дата:** 2026-11-17
 * **Тип WP:** Guide
 * **Укладач:** GitHub Copilot CLI, Auto.
-* **Підстава:** команди Миколи Федчика підготувати актуальне дерево без legacy та перенести його до Git; [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148).
+* **Підстава:** команди Миколи Федчика підготувати актуальне дерево без legacy та перенести його до Git; [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270).
 
 ## Призначення
 
@@ -24,9 +24,10 @@
 | [Engineering](Engineering/README.md) | Вимоги, контракти, рішення, compiler/loader/BRAM/CME та перевірки. |
 | [Project](Project/README.md) | Правила, плани, реєстри, оцінювання й шаблони WP. |
 
-Поточний цільовий тракт: текст KPOL → CME-образ → loader → BRAM →
-sequencer/CME/gate v2. Опис складу — у
-[Solution](Engineering/solutions/compiler-bram-pipeline.md).
+Поточний цільовий тракт: текст KPOL → CME-образ (`--emit-c99` / `--emit-z3-cert`) → loader → BRAM (`CFG-P` / `CFG-P-HA`) →
+sequencer/CME/gate v2 або детермінований C99-автомат безпеки. Опис складу — у
+[Solution](Engineering/solutions/compiler-bram-pipeline.md), а підсумковий інженерно-комерційний висновок проєкту — у
+[Commercialization & Final Conclusions](Research/studies/commercialization-and-final-conclusions.md).
 Реалізований фронтенд ширший за погоджений цільовий профіль KPOL-CME-1.
 
 ## Використання
@@ -71,6 +72,7 @@ AV-10/11 стосуються попередньої CFG-R. Їхні дані н
 | 0.1.0 | 2026-11-12 | Три напрями та вибіркове перенесення актуальних артефактів. |
 | 0.1.1 | 2026-11-12 | Пропрієтарний режим і записи атрибуції за рішенням власника #20. |
 | 0.2.0 | 2026-11-12 | Перехід від локальної підготовки до Git-гілки міграції #148 зі збереженням історії. |
+| 0.3.0 | 2026-11-17 | #270: додано навігацію на підсумковий інженерно-комерційний висновок `Research/studies/commercialization-and-final-conclusions.md` та бекенд `--emit-c99` + Z3. |
 
 ## Абревіатури та глосарій
 

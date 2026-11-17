@@ -1,0 +1,33 @@
+# cmd: gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic bms_c99_hil_bench.c -lm -o bms_c99_hil_bench_x86 && ./bms_c99_hil_bench_x86
+# timestamp: 2026-11-17T21:17:48.057760+02:00
+# git_commit: dec3ffc7334322d2dfb8406b085862389df28e8c
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+# bms_bench_c_sha256: 1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80
+# x86_compiled_bin_sha256: cade7cfd7b83aec9cd79ee8fd096b97be94ad2da3ec6ac1f40f822f4c37bbe4a
+{
+  "verdict": "PASS",
+  "hw_trace_final_state": [4, 4, 0, 0],
+  "hw_trace_events": 18,
+  "hw_trace_commits": 12,
+  "hw_trace_rejects": 6,
+  "hw_trace_fault_propagations": 0,
+  "fault_trace_commits": 6,
+  "fault_trace_rejects": 3,
+  "fault_trace_fault_propagations": 3,
+  "bench_batches": 25,
+  "bench_batch_iterations": 8000,
+  "bench_iterations": 200000,
+  "ns_per_single_reject": 14.05,
+  "ns_per_single_reject_p50": 14.25,
+  "ns_per_single_reject_p99": 15.00,
+  "ns_per_single_reject_sigma": 0.66,
+  "ns_per_fault_reject": 9.03,
+  "ns_per_fault_reject_p50": 9.50,
+  "ns_per_fault_reject_p99": 16.88,
+  "ns_per_fault_reject_sigma": 1.95,
+  "ns_per_full_4stage_cascade": 28.55,
+  "ns_per_full_4stage_cascade_p50": 27.75,
+  "ns_per_full_4stage_cascade_p99": 40.75,
+  "ns_per_full_4stage_cascade_sigma": 2.90,
+  "ns_per_cascade_concept_step": 7.14
+}

@@ -1,0 +1,15 @@
+# cmd: iverilog -g2012 ... && vvp bms_cfgp.vvp +num_events=8
+# timestamp: 2026-11-17T21:17:48.053061+02:00
+# git_commit: dec3ffc7334322d2dfb8406b085862389df28e8c
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+WARNING: /home/mfedchyk/GitHub/nick-fedchik/km-wt-270-commercial-c99/.pytest_cache/bms270_cc0c8ef34421421da7591b2feac672f8/bms_cfgp_tb.sv:76: $readmemh(/home/mfedchyk/GitHub/nick-fedchik/km-wt-270-commercial-c99/.pytest_cache/bms270_cc0c8ef34421421da7591b2feac672f8/bms_events.hex): Not enough words in the file for the requested range [0:63].
+RTL_STEP 0 param=15 cycles=9
+RTL_STEP 1 param=5500 cycles=9
+RTL_STEP 2 param=120 cycles=34
+RTL_STEP 3 param=49 cycles=9
+RTL_STEP 4 param=180 cycles=34
+RTL_STEP 5 param=250 cycles=25
+RTL_STEP 6 param=5000 cycles=25
+RTL_STEP 7 param=-10 cycles=9
+RTL_SUMMARY events=18 commits=12 rejects=6 states=4,4,0,0
+/home/mfedchyk/GitHub/nick-fedchik/km-wt-270-commercial-c99/.pytest_cache/bms270_cc0c8ef34421421da7591b2feac672f8/bms_cfgp_tb.sv:104: $finish called at 17430000 (1ps)

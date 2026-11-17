@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-11-17T20:45:28.789913+02:00",
+  "issue": 270,
+  "git_commit": "dec3ffc7334322d2dfb8406b085862389df28e8c",
+  "bench_lock": "flock -w 600 /tmp/km-bench.lock",
+  "evidence_kind": "physical_hil_pynq_z1_cortex_a9_and_zynq7020_pl",
+  "board": "Digilent PYNQ-Z1 (xilinx@192.168.68.69, Dual ARM Cortex-A9 @ 650 MHz + XC7Z020 PL @ 100 MHz)",
+  "gcc_flags": "-std=c99 -O2 -Wall -Wextra -Werror -pedantic -lm",
+  "bms_bin_sha256": "de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee",
+  "bms_c99_sha256": "6e91db7ef5124b166f68b513cc2f20b653340811c0e17e18fe70f7d30d917966",
+  "bms_bench_c_sha256": "1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80",
+  "arm_cortex_a9_c99": {
+    "verdict": "PASS",
+    "hw_trace_final_state": [
+      4,
+      4,
+      0,
+      0
+    ],
+    "hw_trace_events": 18,
+    "hw_trace_commits": 12,
+    "hw_trace_rejects": 6,
+    "hw_trace_fault_propagations": 0,
+    "fault_trace_commits": 6,
+    "fault_trace_rejects": 3,
+    "fault_trace_fault_propagations": 3,
+    "bench_batches": 25,
+    "bench_batch_iterations": 8000,
+    "bench_iterations": 200000,
+    "ns_per_single_reject": 286.73,
+    "ns_per_single_reject_p50": 285.12,
+    "ns_per_single_reject_p99": 306.0,
+    "ns_per_single_reject_sigma": 4.53,
+    "ns_per_fault_reject": 223.85,
+    "ns_per_fault_reject_p50": 223.12,
+    "ns_per_fault_reject_p99": 227.62,
+    "ns_per_fault_reject_sigma": 1.45,
+    "ns_per_full_4stage_cascade": 1038.26,
+    "ns_per_full_4stage_cascade_p50": 1035.88,
+    "ns_per_full_4stage_cascade_p99": 1081.88,
+    "ns_per_full_4stage_cascade_sigma": 17.06,
+    "ns_per_cascade_concept_step": 259.56
+  },
+  "zynq_7020_pl_cfg_p": {
+    "fpga_id_hex": "0x4B504D43",
+    "pl_final_state": [
+      4,
+      4,
+      0,
+      0
+    ],
+    "pl_events_delta": 18,
+    "pl_commits_delta": 12,
+    "pl_rejects_delta": 6
+  },
+  "bit_exact_match_c99_vs_pl_vs_model": true
+}
