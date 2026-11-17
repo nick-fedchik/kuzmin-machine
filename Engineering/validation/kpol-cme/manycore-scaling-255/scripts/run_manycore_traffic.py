@@ -67,18 +67,21 @@ def main() -> None:
     ap.add_argument("--out-dir", default=DEFAULT_OUT)
     ap.add_argument("--cores", default="4,8")
     ap.add_argument("--events-per-profile", type=int, default=1024)
+    ap.add_argument("--pipeline-stages", type=int, default=1)
     args = ap.parse_args()
 
+    pipe_stages = int(args.pipeline_stages)
+    sfx = "" if pipe_stages == 1 else f"_p{pipe_stages}"
     core_list = [int(x.strip()) for x in args.cores.split(",") if x.strip()]
     out_dir = os.path.abspath(args.out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    work = os.path.join(out_dir, "_work_traffic")
+    work = os.path.join(out_dir, f"_work_traffic{sfx}")
     if os.path.isdir(work):
         shutil.rmtree(work)
     os.makedirs(work, exist_ok=True)
 
     fmax_by_n: dict[int, float] = {}
-    pnr_json_path = os.path.join(out_dir, "manycore_pnr_summary.json")
+    pnr_json_path = os.path.join(out_dir, f"manycore_pnr_summary{sfx}.json")
     if os.path.isfile(pnr_json_path):
         pnr_data = json.loads(open(pnr_json_path, "r", encoding="utf-8").read())
         for r in pnr_data.get("rows", []):
@@ -88,12 +91,13 @@ def main() -> None:
     runs = []
     try:
         for n in core_list:
-            vvp_bin = os.path.join(work, f"cluster_tb_n{n}.vvp")
-            sum_json = os.path.join(work, f"traffic_n{n}.json")
+            vvp_bin = os.path.join(work, f"cluster_tb{sfx}_n{n}.vvp")
+            sum_json = os.path.join(work, f"traffic{sfx}_n{n}.json")
             comp_cmd = [
                 "iverilog",
                 "-g2012",
                 f"-Pkm_manycore_cluster_tb.NUM_CORES={n}",
+                f"-Pkm_manycore_cluster_tb.PIPELINE_STAGES={pipe_stages}",
                 "-s",
                 "km_manycore_cluster_tb",
                 "-o",
@@ -107,7 +111,7 @@ def main() -> None:
             ]
             rc_c, out_c, _ = sh(comp_cmd, work)
             if rc_c != 0:
-                raise RuntimeError(f"iverilog failed for N={n}:\n{out_c}")
+                raise RuntimeError(f"iverilog failed for N={n} P={pipe_stages}:\n{out_c}")
 
             run_cmd = [
                 "vvp",
@@ -116,9 +120,9 @@ def main() -> None:
                 f"+events_per_profile={args.events_per_profile}",
                 f"+summary_json={sum_json}",
             ]
-            rc_r, out_r, dt_r = sh(run_cmd, work, os.path.join(out_dir, f"iverilog_traffic_n{n}.log"))
+            rc_r, out_r, dt_r = sh(run_cmd, work, os.path.join(out_dir, f"iverilog_traffic{sfx}_n{n}.log"))
             if rc_r != 0 or "[FAIL]" in out_r:
-                raise RuntimeError(f"Simulation failed for N={n}:\n{out_r}")
+                raise RuntimeError(f"Simulation failed for N={n} P={pipe_stages}:\n{out_r}")
 
             data = json.loads(open(sum_json, "r", encoding="utf-8").read())
             runs.append(data)
@@ -128,6 +132,7 @@ def main() -> None:
                 row = {
                     "evidence_kind": "rtl_simulation_iverilog",
                     "num_cores": n,
+                    "pipeline_stages": pipe_stages,
                     "profile": p["profile"],
                     "primary_events": p["primary_events"],
                     "total_events_evaluated": p["total_events_evaluated"],
@@ -150,7 +155,7 @@ def main() -> None:
         if os.path.isdir(work):
             shutil.rmtree(work)
 
-    csv_path = os.path.join(out_dir, "manycore_traffic_profiles.csv")
+    csv_path = os.path.join(out_dir, f"manycore_traffic_profiles{sfx}.csv")
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(csv_rows[0].keys()), lineterminator="\n")
         w.writeheader()
@@ -158,7 +163,8 @@ def main() -> None:
 
     summary_out = {
         "timestamp": datetime.datetime.now().astimezone().isoformat(),
-        "issue": 255,
+        "issue": 255 if pipe_stages == 1 else 263,
+        "pipeline_stages": pipe_stages,
         "evidence_kind": "rtl_simulation_iverilog",
         "not_physical_hil": True,
         "events_per_profile": args.events_per_profile,
@@ -175,7 +181,7 @@ def main() -> None:
         },
         "rows": csv_rows,
     }
-    with open(os.path.join(out_dir, "manycore_traffic_summary.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out_dir, f"manycore_traffic_summary{sfx}.json"), "w", encoding="utf-8") as f:
         json.dump(summary_out, f, indent=2)
         f.write("\n")
 

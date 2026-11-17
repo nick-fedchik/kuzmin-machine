@@ -1,30 +1,36 @@
 #!/usr/bin/env python3
-"""Issue #255: Formal SMT verification of 2-core CFG-P cluster & crossbar via Yosys + Z3.
+"""Issue #255 & #263: Formal SMT verification of 2-core CFG-P cluster & crossbar via Yosys + Z3.
 
 Verifies `km_manycore_cluster` + `km_event_crossbar` at `NUM_CORES=2, NUM_EXT_PORTS=2,
-QUEUE_DEPTH=4, NUM_CONCEPTS=4, DATA_WIDTH=32, ADDR_WIDTH=4` with zero vacuous internal
+QUEUE_DEPTH=4, NUM_CONCEPTS=4, DATA_WIDTH=32, ADDR_WIDTH=4` across both `PIPELINE_STAGES=1`
+(1-stage baseline, #255) and `PIPELINE_STAGES=2` (2-stage pipelined crossbar with 2-group
+hierarchical round-robin arbiter `GROUP_SIZE=2, NUM_GRPS=2`, #263) with zero vacuous internal
 `assume` statements inside `FORMAL_INDUCTION`:
-  * Concrete base BMC (`yosys-smtbmc -s z3 -t 4`) + unbounded k-induction (`ind t=2`):
-      - MC1_event_conservation (exact crossbar + tx buffer + node queue conservation);
-      - MC2_rr_fairness (round-robin starvation freedom, <= 3 bypassed grants per bank);
+  * Concrete base BMC (`yosys-smtbmc -s z3 -t 4`) + unbounded k-induction (`ind t=2`) for
+    both `PIPELINE_STAGES=1` and `PIPELINE_STAGES=2` (`GROUP_SIZE=2, NUM_GRPS=2`):
+      - MC1_event_conservation (exact Stage 1 + Stage 2 crossbar + tx buffer + node queue conservation);
+      - MC2_rr_fairness (round-robin starvation freedom across groups, <= 3 bypassed grants per bank);
       - MC3_dag_lyapunov_rank_n0/n1 (strict lexicographic rank decrease for DAG profiles);
       - MC4_deadlock_permanence (inductive permanence once mutual cyclic trap is entered).
-  * Bounded liveness BMC (`yosys-smtbmc -s z3 --noincr -t 0:45:45` with sound CME cutpoints):
-      - MC3_dag_progress (arbitrary Bank 0 -> Bank 1 DAG + concurrent 2-port burst
-        deterministically drains all queues and transitions to `!cluster_busy_o`).
+  * Bounded liveness BMC (`yosys-smtbmc -s z3 --noincr` with sound CME cutpoints):
+      - MC3_dag_progress (`t=45` for 1-stage, `t=49` for 2-stage: arbitrary Bank 0 -> Bank 1 DAG +
+        concurrent 2-port burst deterministically drains all queues and crossbar stages to `!cluster_busy_o`).
   * Constructive Cover witnesses (`yosys-smtbmc -s z3 -c`):
-      - C1_interbank_cascade_to_idle, C2_many_to_one_contention (`t=30`);
+      - C1_interbank_cascade_to_idle, C2_many_to_one_contention (`t=30` for 1-stage, `t=32` for 2-stage);
       - MC4_cyclic_deadlock_witness (`t=28` with dumped VCD witness proving mutual cyclic
         deadlock on `Bank 0 <-> Bank 1` when finite queues fill under `ready == 0`).
   * Mutant negative controls (AGENTS.md §4.1) with counterexample VCDs:
       - M1_fixed_priority_starvation -> caught by MC2_rr_fairness
       - M2_drop_crossbar_backpressure -> caught by MC1_event_conservation
       - M3_duplicate_broadcast        -> caught by MC1_event_conservation
+      - M4_stage2_skid_overwrite      -> caught by MC1_event_conservation (Stage 1 -> Stage 2 skid handshake)
+      - M5_multigroup_arbiter_fault   -> caught by MC1_event_conservation (inter-group arbiter collision g=0 vs g=1)
 """
 
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import csv
 import datetime
 import hashlib
@@ -59,10 +65,11 @@ CONNECTS = [
     "connect -nomap -set obs_node_tx_dst_cid \\dut.node_tx_dst_cid",
     "connect -nomap -set obs_node_rx_valid \\dut.node_rx_valid",
     "connect -nomap -set obs_node_rx_ready \\dut.node_rx_ready",
+    "connect -nomap -set obs_xbar_s1_valid \\dut.xbar_inst.s1_valid_q",
     "connect -nomap -set obs_xbar_pipe_valid \\dut.xbar_inst.pipe_valid_q",
     "connect -nomap -set obs_xbar_accept_pulse \\dut.xbar_inst.bank_accept_pulse",
-    "connect -nomap -set obs_xbar_can_accept_0 \\dut.xbar_inst.gen_bank_slice[0].pipe_can_accept_w",
-    "connect -nomap -set obs_xbar_can_accept_1 \\dut.xbar_inst.gen_bank_slice[1].pipe_can_accept_w",
+    "connect -nomap -set obs_xbar_can_accept_0 \\dut.xbar_inst.gen_bank_slice[0].xbar_can_accept_w",
+    "connect -nomap -set obs_xbar_can_accept_1 \\dut.xbar_inst.gen_bank_slice[1].xbar_can_accept_w",
     "connect -nomap -set obs_xbar_rr_ptr_0 \\dut.xbar_inst.rr_ptr_q[0]",
     "connect -nomap -set obs_xbar_rr_ptr_1 \\dut.xbar_inst.rr_ptr_q[1]",
     "connect -nomap -set obs_n0_state_q \\dut.gen_core[0].node_inst.state_q",
@@ -74,6 +81,10 @@ CONNECTS = [
     "connect -nomap -set obs_n0_desc_w2_q \\dut.gen_core[0].node_inst.desc_w2_q",
     "connect -nomap -set obs_n0_desc_w3_q \\dut.gen_core[0].node_inst.desc_w3_q",
     "connect -nomap -set obs_n0_sub_fire_w \\dut.gen_core[0].node_inst.sub_fire_w",
+    "connect -nomap -set obs_n0_sub_valid_q \\dut.gen_core[0].node_inst.sub_valid_q",
+    "connect -nomap -set obs_n0_sub_local_q \\dut.gen_core[0].node_inst.sub_local_q",
+    "connect -nomap -set obs_n0_sub_valid_comb_w \\dut.gen_core[0].node_inst.sub_valid_comb_w",
+    "connect -nomap -set obs_n0_sub_is_local_w \\dut.gen_core[0].node_inst.sub_is_local_w",
     "connect -nomap -set obs_n0_sub_dst_bank_w \\dut.gen_core[0].node_inst.sub_dst_bank_w",
     "connect -nomap -set obs_n0_sub_dst_cid_w \\dut.gen_core[0].node_inst.sub_dst_cid_w",
     "connect -nomap -set obs_n0_b_we_q \\dut.gen_core[0].node_inst.bram_b_we_q",
@@ -91,6 +102,10 @@ CONNECTS = [
     "connect -nomap -set obs_n1_desc_w2_q \\dut.gen_core[1].node_inst.desc_w2_q",
     "connect -nomap -set obs_n1_desc_w3_q \\dut.gen_core[1].node_inst.desc_w3_q",
     "connect -nomap -set obs_n1_sub_fire_w \\dut.gen_core[1].node_inst.sub_fire_w",
+    "connect -nomap -set obs_n1_sub_valid_q \\dut.gen_core[1].node_inst.sub_valid_q",
+    "connect -nomap -set obs_n1_sub_local_q \\dut.gen_core[1].node_inst.sub_local_q",
+    "connect -nomap -set obs_n1_sub_valid_comb_w \\dut.gen_core[1].node_inst.sub_valid_comb_w",
+    "connect -nomap -set obs_n1_sub_is_local_w \\dut.gen_core[1].node_inst.sub_is_local_w",
     "connect -nomap -set obs_n1_sub_dst_bank_w \\dut.gen_core[1].node_inst.sub_dst_bank_w",
     "connect -nomap -set obs_n1_sub_dst_cid_w \\dut.gen_core[1].node_inst.sub_dst_cid_w",
     "connect -nomap -set obs_n1_b_we_q \\dut.gen_core[1].node_inst.bram_b_we_q",
@@ -114,7 +129,7 @@ MUTANTS = [
     (
         "M2_drop_crossbar_backpressure",
         ["FORMAL_SAFETY", "ONLY_MC1"],
-        12,
+        10,
         "ignoring dst_ready_i == 0 overwrites crossbar slice under backpressure and drops events",
         "            wire pipe_can_accept_w = !pipe_valid_q[gj] || dst_ready_i[gj];",
         "            wire pipe_can_accept_w = 1'b1;",
@@ -126,6 +141,22 @@ MUTANTS = [
         "faulty crossbar bank decode routes a single event into both banks simultaneously",
         "                wire bank_match_w = (src_dst_bank[gk] == BANK_J);",
         "                wire bank_match_w = 1'b1;",
+    ),
+    (
+        "M4_stage2_skid_overwrite",
+        ["FORMAL_SAFETY", "ONLY_MC1", "KM_FORMAL_PIPE_STAGES=2"],
+        10,
+        "broken Stage 1 -> Stage 2 skid handshake overwrites Stage 1 register when Stage 2 is stalled",
+        "            wire s1_can_accept_w   = !s1_valid_q[gj] || !pipe_valid_q[gj];",
+        "            wire s1_can_accept_w   = 1'b1;",
+    ),
+    (
+        "M5_multigroup_arbiter_fault",
+        ["FORMAL_SAFETY", "ONLY_MC1", "KM_FORMAL_PIPE_STAGES=2"],
+        6,
+        "broken inter-group wrap-around mux (grp_eff_any = grp_hi_any) corrupts multi-group grant handoff",
+        "                assign grp_eff_any = (|grp_hi_any) ? grp_hi_any : grp_lo_any;",
+        "                assign grp_eff_any = grp_hi_any;",
     ),
 ]
 
@@ -290,7 +321,7 @@ def main() -> None:
 
     rows = []
     try:
-        # 1a. Concrete 32-bit base BMC (t=4) + 1b. Unbounded k-induction (k=2) of MC1, MC2, MC3-rank, MC4-permanence
+        # 1a. Concrete 32-bit base BMC (t=4) for 1-stage and 2-stage
         rows.append({
             "design": "original (Cluster N=2)",
             "check": "MC1_MC4_base_bmc",
@@ -305,21 +336,54 @@ def main() -> None:
                 "formal_mc1_mc4_base_bmc",
             ),
         })
+        if not args.fast:
+            rows.append({
+                "design": "original (Cluster N=2)",
+                "check": "MC1_MC4_safety_ind",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    PROPS,
+                    ["FORMAL_SAFETY", "FORMAL_INDUCTION"],
+                    "ind",
+                    2,
+                    "formal_mc1_mc4_ind",
+                    cut_cme=False,
+                ),
+            })
+
+        # 1c. Concrete 32-bit base BMC (t=4) + 1d. Unbounded k-induction (k=2) for PIPELINE_STAGES=2 (#263)
         rows.append({
-            "design": "original (Cluster N=2)",
-            "check": "MC1_MC4_safety_ind",
+            "design": "original (Cluster N=2, 2-stage)",
+            "check": "MC1_MC4_base_bmc_p2",
             **run_smtbmc(
                 work,
                 out_dir,
                 RTL_XBAR,
                 PROPS,
-                ["FORMAL_SAFETY", "FORMAL_INDUCTION"],
-                "ind",
-                2,
-                "formal_mc1_mc4_ind",
-                cut_cme=False,
+                ["FORMAL_SAFETY", "FORMAL_INDUCTION", "KM_FORMAL_PIPE_STAGES=2"],
+                "bmc",
+                4,
+                "formal_mc1_mc4_base_bmc_p2",
             ),
         })
+        if not args.fast:
+            rows.append({
+                "design": "original (Cluster N=2, 2-stage)",
+                "check": "MC1_MC4_safety_ind_p2",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    PROPS,
+                    ["FORMAL_SAFETY", "FORMAL_INDUCTION", "KM_FORMAL_PIPE_STAGES=2"],
+                    "ind",
+                    2,
+                    "formal_mc1_mc4_ind_p2",
+                    cut_cme=False,
+                ),
+            })
 
         if not args.fast:
             # 2. Bounded liveness BMC (t=45) for MC3_dag_progress (Bank 0 -> Bank 1 drains to idle)
@@ -335,6 +399,24 @@ def main() -> None:
                     "bmc",
                     45,
                     "formal_mc3_dag_bmc45",
+                    batch_qfbv=True,
+                    cut_cme=True,
+                ),
+            })
+
+            # 2b. Bounded liveness BMC (t=49) for MC3_dag_progress at PIPELINE_STAGES=2 (#263)
+            rows.append({
+                "design": "original (Cluster N=2, 2-stage)",
+                "check": "MC3_dag_progress_bmc_p2",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    PROPS,
+                    ["FORMAL_DAG_BMC", "KM_FORMAL_PIPE_STAGES=2"],
+                    "bmc",
+                    49,
+                    "formal_mc3_dag_bmc49_p2",
                     batch_qfbv=True,
                     cut_cme=True,
                 ),
@@ -395,17 +477,31 @@ def main() -> None:
                     "formal_c1_c2_cover",
                 ),
             })
+            rows.append({
+                "design": "original (Cluster N=2, 2-stage)",
+                "check": "cover_dag_and_contention_p2",
+                **run_smtbmc(
+                    work,
+                    out_dir,
+                    RTL_XBAR,
+                    c12_only_props,
+                    ["FORMAL_COVER", "KM_FORMAL_PIPE_STAGES=2"],
+                    "cover",
+                    32,
+                    "formal_c1_c2_cover_p2",
+                ),
+            })
 
         # 4. Mutant negative controls (AGENTS.md §4.1)
-        for mid, m_defines, depth, desc, old, new in MUTANTS:
+        def _run_mutant(m_spec: tuple[str, list[str], int, str, str, str]) -> dict[str, object]:
+            mid, m_defines, depth, desc, old, new = m_spec
             cnt = xbar_src.count(old)
             if cnt != 1:
                 raise RuntimeError(f"{mid}: expected 1 match in {RTL_XBAR}, found {cnt}")
             m_xbar = os.path.join(work, f"{mid}_xbar.sv")
             with open(m_xbar, "w", encoding="utf-8") as f:
                 f.write(xbar_src.replace(old, new))
-
-            rows.append({
+            return {
                 "design": f"{mid}: {desc}",
                 "check": "mutant_bmc",
                 **run_smtbmc(
@@ -418,8 +514,16 @@ def main() -> None:
                     depth,
                     mid,
                     keep_vcd=True,
+                    cut_cme=args.fast,
                 ),
-            })
+            }
+
+        if args.fast:
+            with ThreadPoolExecutor(max_workers=len(MUTANTS)) as ex:
+                rows.extend(ex.map(_run_mutant, MUTANTS))
+        else:
+            for m_spec in MUTANTS:
+                rows.append(_run_mutant(m_spec))
     finally:
         if os.path.isdir(work):
             shutil.rmtree(work)

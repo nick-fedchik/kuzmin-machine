@@ -19,8 +19,13 @@
 `define KM_SYNTH_CORES 4
 `endif
 
+`ifndef KM_SYNTH_PIPE_STAGES
+`define KM_SYNTH_PIPE_STAGES 1
+`endif
+
 module km_manycore_synth_top #(
-    parameter int NUM_CORES = `KM_SYNTH_CORES
+    parameter int NUM_CORES       = `KM_SYNTH_CORES,
+    parameter int PIPELINE_STAGES = `KM_SYNTH_PIPE_STAGES
 )(
     input  wire       clk_i,
     input  wire       rst_ni,
@@ -153,7 +158,8 @@ module km_manycore_synth_top #(
         .QUEUE_DEPTH(16),
         .NUM_CONCEPTS(64),
         .DATA_WIDTH(32),
-        .ADDR_WIDTH(8)
+        .ADDR_WIDTH(8),
+        .PIPELINE_STAGES(PIPELINE_STAGES)
     ) dut_cluster (
         .clk(clk),
         .rst_n(rst_n),

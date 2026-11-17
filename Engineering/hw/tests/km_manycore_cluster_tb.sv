@@ -21,11 +21,12 @@
 // ============================================================================
 
 module km_manycore_cluster_tb #(
-    parameter int NUM_CORES    = 4,
-    parameter int QUEUE_DEPTH  = 16,
-    parameter int NUM_CONCEPTS = 64,
-    parameter int DATA_WIDTH   = 32,
-    parameter int ADDR_WIDTH   = 8
+    parameter int NUM_CORES       = 4,
+    parameter int QUEUE_DEPTH     = 16,
+    parameter int NUM_CONCEPTS    = 64,
+    parameter int DATA_WIDTH      = 32,
+    parameter int ADDR_WIDTH      = 8,
+    parameter int PIPELINE_STAGES = 1
 );
 
     logic                           clk   = 1'b0;
@@ -70,7 +71,8 @@ module km_manycore_cluster_tb #(
         .QUEUE_DEPTH(QUEUE_DEPTH),
         .NUM_CONCEPTS(NUM_CONCEPTS),
         .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDR_WIDTH)
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .PIPELINE_STAGES(PIPELINE_STAGES)
     ) dut (.*);
 
     // W2 = NOP (0x00) + guards (assumption_known | invariant_known = 0x03) + INC (0x01)
@@ -110,6 +112,7 @@ module km_manycore_cluster_tb #(
     genvar gb;
     generate
         for (gb = 0; gb < NUM_CORES; gb = gb + 1) begin : gen_lat_mon
+            longint unsigned s1_ts;
             longint unsigned pipe_ts;
             longint unsigned fifo_ts [0:QUEUE_DEPTH-1];
             longint unsigned pend_ts;
@@ -117,6 +120,7 @@ module km_manycore_cluster_tb #(
 
             always @(posedge clk) begin
                 if (!rst_n || lat_reset_req) begin
+                    s1_ts            <= 0;
                     pipe_ts          <= 0;
                     pend_ts          <= 0;
                     act_ts           <= 0;
@@ -131,8 +135,18 @@ module km_manycore_cluster_tb #(
                     end
                 end else begin
                     // 1. Зріз кросбара цільового банку gb
-                    if (dut.xbar_inst.gen_bank_slice[gb].grant_fire_w) begin
-                        pipe_ts <= src_birth_ts[dut.xbar_inst.gen_bank_slice[gb].win_idx];
+                    if (PIPELINE_STAGES == 1) begin
+                        if (dut.xbar_inst.gen_bank_slice[gb].grant_fire_w) begin
+                            pipe_ts <= src_birth_ts[dut.xbar_inst.gen_bank_slice[gb].win_idx];
+                        end
+                    end else begin
+                        if (dut.xbar_inst.gen_bank_slice[gb].grant_fire_w) begin
+                            s1_ts <= src_birth_ts[dut.xbar_inst.gen_bank_slice[gb].win_idx];
+                        end
+                        if (dut.xbar_inst.s1_valid_q[gb] &&
+                            dut.xbar_inst.gen_bank_slice[gb].pipe_can_accept_w) begin
+                            pipe_ts <= s1_ts;
+                        end
                     end
 
                     // 2. Вихідний міжбанковий буфер вузла gb
@@ -267,10 +281,12 @@ module km_manycore_cluster_tb #(
     // Перевірка Fail-Closed відхилення транзакції без каскаду
     // ========================================================================
     int unsigned total_errors = 0;
+    int          watchdog_cycles = 500000;
 
     task automatic verify_fail_closed_guard();
         logic [31:0] rd_w0_b0, rd_w0_b1;
         int target_b;
+        int w_cnt;
         begin
             hw_reset();
             target_b = (NUM_CORES > 1) ? 1 : 0;
@@ -285,16 +301,22 @@ module km_manycore_cluster_tb #(
             ext_param_i[0 +: 32]     = 32'd99;
             ext_valid_i[0]           = 1'b1;
             #1;
-            while (!ext_ready_o[0]) begin
+            w_cnt = 0;
+            while (!ext_ready_o[0] && (w_cnt < 2000)) begin
                 @(posedge clk);
                 #1;
+                w_cnt = w_cnt + 1;
             end
             @(posedge clk);
             #1;
             ext_valid_i[0] = 1'b0;
 
             repeat (3) @(posedge clk);
-            while (cluster_busy_o) @(posedge clk);
+            w_cnt = 0;
+            while (cluster_busy_o && (w_cnt < 2000)) begin
+                @(posedge clk);
+                w_cnt = w_cnt + 1;
+            end
             #1;
 
             cfg_read_word(0, 0, rd_w0_b0);
@@ -446,7 +468,7 @@ module km_manycore_cluster_tb #(
 
             all_sent = 0;
             guard_timeout = 0;
-            while (!all_sent && (guard_timeout < 500000)) begin
+            while (!all_sent && (guard_timeout < watchdog_cycles)) begin
                 guard_timeout = guard_timeout + 1;
                 all_sent = 1;
 
@@ -539,7 +561,7 @@ module km_manycore_cluster_tb #(
             ext_valid_i = '0;
 
             // 3. Очікуємо повного вивільнення всіх черг, кросбара та вихідних буферів
-            while (cluster_busy_o && (guard_timeout < 600000)) begin
+            while (cluster_busy_o && (guard_timeout < (watchdog_cycles + 10000))) begin
                 @(posedge clk);
                 guard_timeout = guard_timeout + 1;
             end
@@ -628,6 +650,7 @@ module km_manycore_cluster_tb #(
 
     initial begin
         void'($value$plusargs("events_per_profile=%d", events_per_profile));
+        void'($value$plusargs("watchdog_cycles=%d", watchdog_cycles));
         void'($value$plusargs("summary_json=%s", summary_json_path));
 
         verify_fail_closed_guard();
@@ -643,6 +666,7 @@ module km_manycore_cluster_tb #(
                 $fwrite(fd, "  \"evidence_kind\": \"rtl_simulation_iverilog\",\n");
                 $fwrite(fd, "  \"not_physical_hil\": true,\n");
                 $fwrite(fd, "  \"num_cores\": %0d,\n", NUM_CORES);
+                $fwrite(fd, "  \"pipeline_stages\": %0d,\n", PIPELINE_STAGES);
                 $fwrite(fd, "  \"queue_depth\": %0d,\n", QUEUE_DEPTH);
                 $fwrite(fd, "  \"total_errors\": %0d,\n", total_errors);
                 $fwrite(fd, "  \"profiles\": [\n");

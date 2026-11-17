@@ -1,10 +1,10 @@
-# cmd: yosys-smtbmc --noprogress -s z3 -t 6 --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/M3_duplicate_broadcast.smt2
-# timestamp: 2026-11-16T23:28:54.927450+02:00
+# cmd: yosys-smtbmc --noprogress -s z3 -t 6 --dump-vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.vcd /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/_work_formal/M3_duplicate_broadcast.smt2
+# timestamp: 2026-11-17T14:44:23.912007+02:00
 ##   0:00:00  Solver: z3
 ##   0:00:00  Checking assertions in step 0..
 ##   0:00:00  Checking assertions in step 1..
 ##   0:00:00  Checking assertions in step 2..
 ##   0:00:00  BMC failed!
 ##   0:00:00  Assert failed in manycore_formal_props: MC1_event_conservation
-##   0:00:00  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-255-manycore/Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.vcd
+##   0:00:00  Writing trace to VCD file: /home/mfedchyk/GitHub/nick-fedchik/km-wt-263-pipelined-xbar/Engineering/validation/kpol-cme/manycore-scaling-255/raw/M3_duplicate_broadcast.vcd
 ##   0:00:00  Status: FAILED

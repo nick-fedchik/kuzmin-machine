@@ -20,12 +20,13 @@
 
 /* verilator lint_off DECLFILENAME */
 module km_cluster_node #(
-    parameter int CORE_ID      = 0,
-    parameter int NUM_CORES    = 4,
-    parameter int QUEUE_DEPTH  = 16,
-    parameter int NUM_CONCEPTS = 64,
-    parameter int DATA_WIDTH   = 32,
-    parameter int ADDR_WIDTH   = 8
+    parameter int CORE_ID         = 0,
+    parameter int NUM_CORES       = 4,
+    parameter int QUEUE_DEPTH     = 16,
+    parameter int NUM_CONCEPTS    = 64,
+    parameter int DATA_WIDTH      = 32,
+    parameter int ADDR_WIDTH      = 8,
+    parameter int PIPELINE_STAGES = 1
 )(
     input  logic                   clk,
     input  logic                   rst_n,
@@ -197,13 +198,21 @@ module km_cluster_node #(
     wire       sub_target_ok_w = ({28'd0, sub_dst_bank_w} < NUM_CORES_U32) &&
                                  ({26'd0, sub_dst_cid_w} < NUM_CONCEPTS_U32);
     wire       sub_is_self_w   = (sub_dst_bank_w == CORE_ID_U4) && (sub_dst_cid_w == active_cid_q);
-    wire       sub_fire_w      = cme_committed && sub_active_w && sub_target_ok_w && !sub_is_self_w;
+    wire       sub_valid_comb_w = sub_active_w && sub_target_ok_w && !sub_is_self_w;
     wire       sub_is_local_w  = (sub_dst_bank_w == CORE_ID_U4);
+
+    logic      sub_valid_q;
+    logic      sub_local_q;
+
+    wire       sub_fire_w      = (PIPELINE_STAGES == 1)
+                               ? (cme_committed && sub_valid_comb_w)
+                               : (cme_committed && sub_valid_q);
+    wire       sub_loc_eff_w   = (PIPELINE_STAGES == 1) ? sub_is_local_w : sub_local_q;
 
     // Управління локальною чергою FIFO (локальний каскад має пріоритет над rx_valid_i)
     wire dequeue_req        = (state_q == ST_IDLE) && (fifo_count_q > 0);
-    wire local_cascade_req  = (state_q == ST_EVAL_GATE) && sub_fire_w && sub_is_local_w;
-    wire remote_cascade_req = (state_q == ST_EVAL_GATE) && sub_fire_w && !sub_is_local_w;
+    wire local_cascade_req  = (state_q == ST_EVAL_GATE) && sub_fire_w && sub_loc_eff_w;
+    wire remote_cascade_req = (state_q == ST_EVAL_GATE) && sub_fire_w && !sub_loc_eff_w;
 
     wire                  local_cascade_valid = cascade_pending_valid_q || local_cascade_req;
     wire [5:0]            local_cascade_cid   = cascade_pending_valid_q ? cascade_pending_cid_q : sub_dst_cid_w;
@@ -213,19 +222,29 @@ module km_cluster_node #(
         ? {{PTR_WIDTH{1'b0}}, 2'd2}
         : {{PTR_WIDTH{1'b0}}, 2'd1};
 
-    assign rx_ready_o  = !cascade_pending_valid_q &&
+    wire rx_ready_p1_w = !cascade_pending_valid_q &&
                          (({1'b0, fifo_count_q} + rx_slots_needed) <= {1'b0, DEPTH_CNT});
+    wire rx_ready_p2_w = !cascade_pending_valid_q &&
+                         (state_q != ST_EVAL_GATE) &&
+                         (fifo_count_q < DEPTH_CNT);
+
+    assign rx_ready_o  = (PIPELINE_STAGES == 1) ? rx_ready_p1_w : rx_ready_p2_w;
     assign fifo_full_o = (fifo_count_q == DEPTH_CNT);
 
     wire local_cascade_enq = local_cascade_valid && ((fifo_count_q < DEPTH_CNT) || dequeue_req);
     wire rx_accept         = rx_valid_i && rx_ready_o;
+    wire fifo_we_p2_w      = local_cascade_enq || rx_accept;
+    wire [5:0]            fifo_wcid_p2_w   = local_cascade_enq ? local_cascade_cid   : rx_cid_i;
+    wire [DATA_WIDTH-1:0] fifo_wparam_p2_w = local_cascade_enq ? local_cascade_param : rx_param_i;
 
-    wire [PTR_WIDTH:0] enq_delta = (local_cascade_enq && rx_accept) ? {{(PTR_WIDTH-1){1'b0}}, 2'd2}
-                                 : ((local_cascade_enq || rx_accept) ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0);
-    wire [PTR_WIDTH:0] deq_delta = dequeue_req ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0;
+    wire [PTR_WIDTH:0] enq_delta_p1 = (local_cascade_enq && rx_accept) ? {{(PTR_WIDTH-1){1'b0}}, 2'd2}
+                                    : ((local_cascade_enq || rx_accept) ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0);
+    wire [PTR_WIDTH:0] enq_delta_p2 = fifo_we_p2_w ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0;
+    wire [PTR_WIDTH:0] enq_delta    = (PIPELINE_STAGES == 1) ? enq_delta_p1 : enq_delta_p2;
+    wire [PTR_WIDTH:0] deq_delta    = dequeue_req ? {{PTR_WIDTH{1'b0}}, 1'b1} : '0;
 
     // Рукотискання вихідного міжбанкового буфера до кросбара
-    wire tx_buf_free_w = !tx_valid_q || tx_ready_i;
+    wire tx_buf_free_w = (PIPELINE_STAGES == 1) ? (!tx_valid_q || tx_ready_i) : !tx_valid_q;
     wire tx_push_eval  = remote_cascade_req && tx_buf_free_w;
     wire tx_push_wait  = (state_q == ST_WAIT_TX) && tx_buf_free_w;
 
@@ -288,6 +307,8 @@ module km_cluster_node #(
             desc_w1_q               <= '0;
             desc_w2_q               <= '0;
             desc_w3_q               <= '0;
+            sub_valid_q             <= 1'b0;
+            sub_local_q             <= 1'b0;
 
             ev_count_q              <= 32'd0;
             comm_count_q            <= 32'd0;
@@ -305,26 +326,41 @@ module km_cluster_node #(
                 fifo_rd_ptr_q <= rd_ptr_next1;
             end
 
-            if (local_cascade_enq && rx_accept) begin
-                fifo_cid_q[fifo_wr_ptr_q]   <= local_cascade_cid;
-                fifo_param_q[fifo_wr_ptr_q] <= local_cascade_param;
-                fifo_cid_q[wr_ptr_next1]    <= rx_cid_i;
-                fifo_param_q[wr_ptr_next1]  <= rx_param_i;
-                fifo_wr_ptr_q               <= wr_ptr_next2;
-                cascade_pending_valid_q     <= 1'b0;
-            end else if (local_cascade_enq) begin
-                fifo_cid_q[fifo_wr_ptr_q]   <= local_cascade_cid;
-                fifo_param_q[fifo_wr_ptr_q] <= local_cascade_param;
-                fifo_wr_ptr_q               <= wr_ptr_next1;
-                cascade_pending_valid_q     <= 1'b0;
-            end else if (rx_accept) begin
-                fifo_cid_q[fifo_wr_ptr_q]   <= rx_cid_i;
-                fifo_param_q[fifo_wr_ptr_q] <= rx_param_i;
-                fifo_wr_ptr_q               <= wr_ptr_next1;
-            end else if (local_cascade_req) begin
-                cascade_pending_valid_q <= 1'b1;
-                cascade_pending_cid_q   <= sub_dst_cid_w;
-                cascade_pending_param_q <= cme_updated_state;
+            if (PIPELINE_STAGES == 1) begin
+                if (local_cascade_enq && rx_accept) begin
+                    fifo_cid_q[fifo_wr_ptr_q]   <= local_cascade_cid;
+                    fifo_param_q[fifo_wr_ptr_q] <= local_cascade_param;
+                    fifo_cid_q[wr_ptr_next1]    <= rx_cid_i;
+                    fifo_param_q[wr_ptr_next1]  <= rx_param_i;
+                    fifo_wr_ptr_q               <= wr_ptr_next2;
+                    cascade_pending_valid_q     <= 1'b0;
+                end else if (local_cascade_enq) begin
+                    fifo_cid_q[fifo_wr_ptr_q]   <= local_cascade_cid;
+                    fifo_param_q[fifo_wr_ptr_q] <= local_cascade_param;
+                    fifo_wr_ptr_q               <= wr_ptr_next1;
+                    cascade_pending_valid_q     <= 1'b0;
+                end else if (rx_accept) begin
+                    fifo_cid_q[fifo_wr_ptr_q]   <= rx_cid_i;
+                    fifo_param_q[fifo_wr_ptr_q] <= rx_param_i;
+                    fifo_wr_ptr_q               <= wr_ptr_next1;
+                end else if (local_cascade_req) begin
+                    cascade_pending_valid_q <= 1'b1;
+                    cascade_pending_cid_q   <= sub_dst_cid_w;
+                    cascade_pending_param_q <= cme_updated_state;
+                end
+            end else begin
+                if (fifo_we_p2_w) begin
+                    fifo_cid_q[fifo_wr_ptr_q]   <= fifo_wcid_p2_w;
+                    fifo_param_q[fifo_wr_ptr_q] <= fifo_wparam_p2_w;
+                    fifo_wr_ptr_q               <= wr_ptr_next1;
+                end
+                if (local_cascade_enq) begin
+                    cascade_pending_valid_q <= 1'b0;
+                end else if (local_cascade_req) begin
+                    cascade_pending_valid_q <= 1'b1;
+                    cascade_pending_cid_q   <= sub_dst_cid_w;
+                    cascade_pending_param_q <= cme_updated_state;
+                end
             end
 
             fifo_count_q <= fifo_count_q + enq_delta - deq_delta;
@@ -385,6 +421,8 @@ module km_cluster_node #(
 
                 ST_WAIT_GATE: begin
                     cme_event_valid_q <= 1'b0;
+                    sub_valid_q       <= sub_valid_comb_w;
+                    sub_local_q       <= sub_is_local_w;
                     state_q           <= ST_EVAL_GATE;
                 end
 
@@ -399,17 +437,17 @@ module km_cluster_node #(
                         bram_b_wstrb_q <= 4'b1111;
                         bram_b_we_q    <= 1'b1;
 
-                        if (sub_fire_w && sub_is_local_w) begin
+                        if (sub_fire_w && sub_loc_eff_w) begin
                             loc_casc_count_q <= loc_casc_count_q + 32'd1;
                             state_q          <= ST_IDLE;
-                        end else if (sub_fire_w && !sub_is_local_w) begin
+                        end else if (sub_fire_w && !sub_loc_eff_w) begin
                             rem_casc_count_q <= rem_casc_count_q + 32'd1;
+                            hold_tx_bank_q   <= sub_dst_bank_w;
+                            hold_tx_cid_q    <= sub_dst_cid_w;
+                            hold_tx_param_q  <= cme_updated_state;
                             if (tx_buf_free_w) begin
                                 state_q <= ST_IDLE;
                             end else begin
-                                hold_tx_bank_q <= sub_dst_bank_w;
-                                hold_tx_cid_q  <= sub_dst_cid_w;
-                                hold_tx_param_q <= cme_updated_state;
                                 tx_stall_cnt_q <= tx_stall_cnt_q + 32'd1;
                                 state_q        <= ST_WAIT_TX;
                             end
@@ -440,12 +478,14 @@ endmodule
 
 
 module km_manycore_cluster #(
-    parameter int NUM_CORES     = 4,
-    parameter int NUM_EXT_PORTS = NUM_CORES,
-    parameter int QUEUE_DEPTH   = 16,
-    parameter int NUM_CONCEPTS  = 64,
-    parameter int DATA_WIDTH    = 32,
-    parameter int ADDR_WIDTH    = 8
+    parameter int NUM_CORES       = 4,
+    parameter int NUM_EXT_PORTS   = NUM_CORES,
+    parameter int QUEUE_DEPTH     = 16,
+    parameter int NUM_CONCEPTS    = 64,
+    parameter int DATA_WIDTH      = 32,
+    parameter int ADDR_WIDTH      = 8,
+    parameter int PIPELINE_STAGES = 1,
+    parameter int GROUP_SIZE      = 4
 )(
     input  logic                                clk,
     input  logic                                rst_n,
@@ -519,7 +559,9 @@ module km_manycore_cluster #(
     km_event_crossbar #(
         .NUM_CORES(NUM_CORES),
         .NUM_EXT_PORTS(NUM_EXT_PORTS),
-        .DATA_WIDTH(DATA_WIDTH)
+        .DATA_WIDTH(DATA_WIDTH),
+        .PIPELINE_STAGES(PIPELINE_STAGES),
+        .GROUP_SIZE(GROUP_SIZE)
     ) xbar_inst (
         .clk(clk),
         .rst_n(rst_n),
@@ -557,7 +599,8 @@ module km_manycore_cluster #(
                 .QUEUE_DEPTH(QUEUE_DEPTH),
                 .NUM_CONCEPTS(NUM_CONCEPTS),
                 .DATA_WIDTH(DATA_WIDTH),
-                .ADDR_WIDTH(ADDR_WIDTH)
+                .ADDR_WIDTH(ADDR_WIDTH),
+                .PIPELINE_STAGES(PIPELINE_STAGES)
             ) node_inst (
                 .clk(clk),
                 .rst_n(rst_n),
@@ -591,26 +634,128 @@ module km_manycore_cluster #(
         end
     endgenerate
 
-    always_comb begin
-        cfg_rdata_o               = '0;
-        total_events_processed_o  = 32'd0;
-        total_committed_o         = 32'd0;
-        total_rejected_o          = 32'd0;
-        total_local_cascades_o    = 32'd0;
-        total_remote_cascades_o   = 32'd0;
-        backpressure_stall_cycles_o = xbar_stall_cycles;
+    if (PIPELINE_STAGES == 1) begin : gen_cluster_agg_s1
+        always_comb begin
+            cfg_rdata_o                 = '0;
+            total_events_processed_o    = 32'd0;
+            total_committed_o           = 32'd0;
+            total_rejected_o            = 32'd0;
+            total_local_cascades_o      = 32'd0;
+            total_remote_cascades_o     = 32'd0;
+            backpressure_stall_cycles_o = xbar_stall_cycles;
 
-        for (int c = 0; c < NUM_CORES; c = c + 1) begin
-            if (cfg_bank_sel_q == c[3:0]) begin
-                cfg_rdata_o = node_cfg_rdata[c];
+            for (int c = 0; c < NUM_CORES; c = c + 1) begin
+                if (cfg_bank_sel_q == c[3:0]) begin
+                    cfg_rdata_o = node_cfg_rdata[c];
+                end
+                total_events_processed_o    = total_events_processed_o + node_ev_cnt[c];
+                total_committed_o           = total_committed_o + node_comm_cnt[c];
+                total_rejected_o            = total_rejected_o + node_rej_cnt[c];
+                total_local_cascades_o      = total_local_cascades_o + node_loc_cnt[c];
+                total_remote_cascades_o     = total_remote_cascades_o + node_rem_cnt[c];
+                backpressure_stall_cycles_o = backpressure_stall_cycles_o + node_tx_stalls[c];
             end
-            total_events_processed_o    = total_events_processed_o + node_ev_cnt[c];
-            total_committed_o           = total_committed_o + node_comm_cnt[c];
-            total_rejected_o            = total_rejected_o + node_rej_cnt[c];
-            total_local_cascades_o      = total_local_cascades_o + node_loc_cnt[c];
-            total_remote_cascades_o     = total_remote_cascades_o + node_rem_cnt[c];
-            backpressure_stall_cycles_o = backpressure_stall_cycles_o + node_tx_stalls[c];
         end
+    end else begin : gen_cluster_agg_s2
+        localparam int NUM_PAIRS = (NUM_CORES > 1) ? ((NUM_CORES + 1) / 2) : 1;
+
+        logic [31:0] pair_ev_q     [NUM_PAIRS];
+        logic [31:0] pair_comm_q   [NUM_PAIRS];
+        logic [31:0] pair_rej_q    [NUM_PAIRS];
+        logic [31:0] pair_loc_q    [NUM_PAIRS];
+        logic [31:0] pair_rem_q    [NUM_PAIRS];
+        logic [31:0] pair_stalls_q [NUM_PAIRS];
+        logic [31:0] xbar_stalls_d1_q;
+
+        logic [31:0] tot_ev_q;
+        logic [31:0] tot_comm_q;
+        logic [31:0] tot_rej_q;
+        logic [31:0] tot_loc_q;
+        logic [31:0] tot_rem_q;
+        logic [31:0] tot_stalls_q;
+
+        logic [31:0] sum_ev_w;
+        logic [31:0] sum_comm_w;
+        logic [31:0] sum_rej_w;
+        logic [31:0] sum_loc_w;
+        logic [31:0] sum_rem_w;
+        logic [31:0] sum_stalls_w;
+
+        always_comb begin
+            cfg_rdata_o  = '0;
+            for (int c = 0; c < NUM_CORES; c = c + 1) begin
+                if (cfg_bank_sel_q == c[3:0]) begin
+                    cfg_rdata_o = node_cfg_rdata[c];
+                end
+            end
+
+            sum_ev_w     = 32'd0;
+            sum_comm_w   = 32'd0;
+            sum_rej_w    = 32'd0;
+            sum_loc_w    = 32'd0;
+            sum_rem_w    = 32'd0;
+            sum_stalls_w = xbar_stalls_d1_q;
+            for (int p = 0; p < NUM_PAIRS; p = p + 1) begin
+                sum_ev_w     = sum_ev_w + pair_ev_q[p];
+                sum_comm_w   = sum_comm_w + pair_comm_q[p];
+                sum_rej_w    = sum_rej_w + pair_rej_q[p];
+                sum_loc_w    = sum_loc_w + pair_loc_q[p];
+                sum_rem_w    = sum_rem_w + pair_rem_q[p];
+                sum_stalls_w = sum_stalls_w + pair_stalls_q[p];
+            end
+        end
+
+        always_ff @(posedge clk or negedge rst_n) begin
+            if (!rst_n) begin
+                for (int p = 0; p < NUM_PAIRS; p = p + 1) begin
+                    pair_ev_q[p]     <= 32'd0;
+                    pair_comm_q[p]   <= 32'd0;
+                    pair_rej_q[p]    <= 32'd0;
+                    pair_loc_q[p]    <= 32'd0;
+                    pair_rem_q[p]    <= 32'd0;
+                    pair_stalls_q[p] <= 32'd0;
+                end
+                xbar_stalls_d1_q <= 32'd0;
+                tot_ev_q         <= 32'd0;
+                tot_comm_q       <= 32'd0;
+                tot_rej_q        <= 32'd0;
+                tot_loc_q        <= 32'd0;
+                tot_rem_q        <= 32'd0;
+                tot_stalls_q     <= 32'd0;
+            end else begin
+                for (int p = 0; p < NUM_PAIRS; p = p + 1) begin
+                    if ((2 * p + 1) < NUM_CORES) begin
+                        pair_ev_q[p]     <= node_ev_cnt[2*p] + node_ev_cnt[2*p+1];
+                        pair_comm_q[p]   <= node_comm_cnt[2*p] + node_comm_cnt[2*p+1];
+                        pair_rej_q[p]    <= node_rej_cnt[2*p] + node_rej_cnt[2*p+1];
+                        pair_loc_q[p]    <= node_loc_cnt[2*p] + node_loc_cnt[2*p+1];
+                        pair_rem_q[p]    <= node_rem_cnt[2*p] + node_rem_cnt[2*p+1];
+                        pair_stalls_q[p] <= node_tx_stalls[2*p] + node_tx_stalls[2*p+1];
+                    end else begin
+                        pair_ev_q[p]     <= node_ev_cnt[2*p];
+                        pair_comm_q[p]   <= node_comm_cnt[2*p];
+                        pair_rej_q[p]    <= node_rej_cnt[2*p];
+                        pair_loc_q[p]    <= node_loc_cnt[2*p];
+                        pair_rem_q[p]    <= node_rem_cnt[2*p];
+                        pair_stalls_q[p] <= node_tx_stalls[2*p];
+                    end
+                end
+                xbar_stalls_d1_q <= xbar_stall_cycles;
+                tot_ev_q         <= sum_ev_w;
+                tot_comm_q       <= sum_comm_w;
+                tot_rej_q        <= sum_rej_w;
+                tot_loc_q        <= sum_loc_w;
+                tot_rem_q        <= sum_rem_w;
+                tot_stalls_q     <= sum_stalls_w;
+            end
+        end
+
+        assign total_events_processed_o    = tot_ev_q;
+        assign total_committed_o           = tot_comm_q;
+        assign total_rejected_o            = tot_rej_q;
+        assign total_local_cascades_o      = tot_loc_q;
+        assign total_remote_cascades_o     = tot_rem_q;
+        assign backpressure_stall_cycles_o = tot_stalls_q;
     end
 
     assign cluster_busy_o = (|core_busy_o) || xbar_busy;
