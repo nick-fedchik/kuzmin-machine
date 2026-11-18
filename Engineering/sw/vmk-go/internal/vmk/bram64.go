@@ -277,11 +277,16 @@ type CascadeTraceStep struct {
 	WatchpointsHit         []string `json:"watchpoints_hit"`
 }
 
-// QueuedEvent represents an event in the 16-entry ingress FIFO queue.
+// QueuedEvent represents an event in the 16-entry ingress FIFO queue or interactive wave hop queue.
 type QueuedEvent struct {
 	CID        int
 	Param      int32
 	ParamValid bool
+	Depth      int
+	EventID    int
+	IsHop      bool
+	OpKind     string
+	CmdLine    string
 }
 
 // BRAM64Engine implements the hardware-accurate 64-slot CME-RAW-1 / CFG-P / CFG-P-HA VMK engine.
@@ -590,6 +595,212 @@ func (e *BRAM64Engine) RevalidateConcept(cid int, recoveredState int32) {
 			e.ValidMask |= (uint64(1) << uint(cid))
 		}
 	}
+}
+
+// ModifyConceptState updates the live W0 state and validity bit '_' for concept cid (What-If interactive editor).
+func (e *BRAM64Engine) ModifyConceptState(cid int, newW0 int32, valid bool) error {
+	if cid < 0 || cid >= 64 {
+		return fmt.Errorf("VMK-MOD-CID: invalid CID %d (expected 0..63)", cid)
+	}
+	e.State[cid] = newW0
+	e.Descriptors()[cid].CurrentState = uint32(newW0)
+	if valid {
+		e.ValidMask |= (uint64(1) << uint(cid))
+	} else {
+		e.ValidMask &^= (uint64(1) << uint(cid))
+	}
+	return nil
+}
+
+// StepSingleHop executes exactly one concept evaluation hop (C_i) at the given cascade depth,
+// returning the trace step and an optional next hop QueuedEvent if a subscriber C_j was triggered.
+func (e *BRAM64Engine) StepSingleHop(ev QueuedEvent) (CascadeTraceStep, *QueuedEvent) {
+	eventID := ev.EventID
+	if !ev.IsHop {
+		eventID = e.EventCounter
+		e.EventCounter++
+	}
+	depth := ev.Depth
+	cid := ev.CID
+	curParam := ev.Param
+	curValid := ev.ParamValid
+
+	if cid < 0 || cid >= 64 {
+		e.EventsProcessed++
+		e.Rejects++
+		e.FaultPropagations++
+		stepIdx := len(e.Steps)
+		var reasons []string
+		if e.BreakOnReject {
+			reasons = append(reasons, "BREAK_ON_REJECT(BAD_CID)")
+		}
+		badStep := CascadeTraceStep{
+			StepIndex:      stepIdx,
+			EventID:        eventID,
+			CascadeStep:    depth,
+			Depth:          depth,
+			CID:            cid,
+			ConceptName:    fmt.Sprintf("INVALID_CID_%d", cid),
+			ConceptType:    "Int32",
+			Param:          curParam,
+			ParamValid:     curValid,
+			PreW0:          0,
+			PreValid:       false,
+			PredFormula:    "N/A",
+			PredMatch:      false,
+			ActionFormula:  "N/A",
+			CandidateW0:    0,
+			ArithOverflow:  false,
+			InvFormula:     "cid in 0..63",
+			InvOK:          false,
+			Verdict:        VerdictRejectFault,
+			PostW0:         0,
+			PostValid:      false,
+			WatchpointsHit: reasons,
+		}
+		e.Steps = append(e.Steps, badStep)
+		return badStep, nil
+	}
+
+	descs := e.Descriptors()
+	d := descs[cid]
+	stepIdx := len(e.Steps)
+	e.EventsProcessed++
+
+	preW0 := e.State[cid]
+	preValid := ((e.ValidMask >> uint(cid)) & 1) != 0
+
+	predFormula := DecodePredicateFormula(d)
+	actFormula := DecodeActionFormula(d)
+	invFormula := DecodeInvariantFormula(d)
+
+	candW0, actionValid, arithOvf := e.EvalAction(d, preW0, curParam)
+	predMatch := e.EvalPredicate(d, curParam)
+	invOK := e.EvalInvariantGate(d, candW0, curParam, actionValid, arithOvf)
+
+	var enqueuedCID *int
+	var enqueuedName *string
+	var verdict string
+	var postW0 int32
+	var postValid bool
+
+	isUncertaintyFault := (!curValid) || (!preValid)
+	if isUncertaintyFault {
+		verdict = VerdictRejectFault
+		predMatch = false
+		invOK = false
+		postW0 = preW0
+		postValid = preValid
+		e.Rejects++
+		e.FaultPropagations++
+	} else if !predMatch {
+		verdict = VerdictRejectGuard
+		postW0 = preW0
+		postValid = preValid
+		e.Rejects++
+	} else if !invOK {
+		verdict = VerdictRejectInvariant
+		postW0 = preW0
+		postValid = preValid
+		e.Rejects++
+	} else {
+		postW0 = candW0
+		postValid = preValid
+		e.State[cid] = postW0
+		descs[cid].CurrentState = uint32(postW0)
+		e.Commits++
+		e.LastCommittedState = postW0
+		var suppressedSelf bool
+		enqueuedCID, suppressedSelf = e.resolveSubscriber(d)
+		if suppressedSelf {
+			verdict = VerdictSuppressedSelf
+		} else {
+			verdict = VerdictCommit
+		}
+		if enqueuedCID != nil {
+			nm := descs[*enqueuedCID].Name
+			enqueuedName = &nm
+		}
+	}
+
+	var hitReasons []string
+	if e.WatchCIDs[cid] {
+		hitReasons = append(hitReasons, fmt.Sprintf("WATCH_CID(C%d:%s)", cid, d.Name))
+	}
+	if e.BreakOnReject && (verdict == VerdictRejectGuard || verdict == VerdictRejectInvariant || verdict == VerdictRejectFault) {
+		hitReasons = append(hitReasons, fmt.Sprintf("BREAK_ON_REJECT(%s)", verdict))
+	}
+	if e.WatchStateChange && postW0 != preW0 {
+		hitReasons = append(hitReasons, fmt.Sprintf("STATE_CHANGE(%d->%d)", preW0, postW0))
+	}
+	if thr, ok := e.ThresholdWatch[cid]; ok {
+		if postW0 >= thr && preW0 < thr {
+			hitReasons = append(hitReasons, fmt.Sprintf("THRESHOLD_REACHED(C%d>=%d)", cid, thr))
+		}
+	}
+
+	stepRecord := CascadeTraceStep{
+		StepIndex:              stepIdx,
+		EventID:                eventID,
+		CascadeStep:            depth,
+		Depth:                  depth,
+		CID:                    cid,
+		ConceptName:            d.Name,
+		ConceptType:            "Int32",
+		Param:                  curParam,
+		ParamValid:             curValid,
+		PreW0:                  preW0,
+		PreValid:               preValid,
+		PredFormula:            predFormula,
+		PredMatch:              predMatch,
+		ActionFormula:          actFormula,
+		CandidateW0:            candW0,
+		ArithOverflow:          arithOvf,
+		InvFormula:             invFormula,
+		InvOK:                  invOK,
+		Verdict:                verdict,
+		PostW0:                 postW0,
+		PostValid:              postValid,
+		EnqueuedSubscriberCID:  enqueuedCID,
+		EnqueuedSubscriberName: enqueuedName,
+		WatchpointsHit:         hitReasons,
+	}
+	e.Steps = append(e.Steps, stepRecord)
+
+	for _, r := range hitReasons {
+		e.WatchpointTriggers = append(e.WatchpointTriggers, WatchpointTrigger{
+			StepIndex:    stepIdx,
+			EventID:      eventID,
+			CascadeDepth: depth,
+			CID:          cid,
+			ConceptName:  d.Name,
+			Reason:       r,
+			Verdict:      verdict,
+			PreW0:        preW0,
+			PostW0:       postW0,
+			Param:        curParam,
+			ParamValid:   curValid,
+		})
+	}
+
+	if len(hitReasons) > 0 && e.StopOnBreakpoint {
+		e.HaltedOnBreakpoint = true
+		return stepRecord, nil
+	}
+
+	if enqueuedCID != nil && depth+1 < 64 {
+		nextHop := &QueuedEvent{
+			CID:        *enqueuedCID,
+			Param:      postW0,
+			ParamValid: postValid,
+			Depth:      depth + 1,
+			EventID:    eventID,
+			IsHop:      true,
+			OpKind:     "cascade",
+		}
+		return stepRecord, nextHop
+	}
+	return stepRecord, nil
 }
 
 // EvalPredicate evaluates predicate `::` (including invert flag) for descriptor d.

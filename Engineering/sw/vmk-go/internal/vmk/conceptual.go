@@ -152,6 +152,174 @@ func NewConceptualVM(programName, sourceCode string, slots []ConceptualSlot) *Co
 	return vm
 }
 
+// Reset restores all ConceptualVM slots to their post-load initial values and clears histories/counters.
+func (vm *ConceptualVM) Reset() {
+	for i := range vm.Slots {
+		vm.Slots[i].Valid = vm.Slots[i].InitValid
+		vm.Slots[i].BoolVal = vm.Slots[i].InitBool
+		vm.Slots[i].IntVal = vm.Slots[i].InitInt
+		vm.Slots[i].FloatVal = vm.Slots[i].InitFloat
+		vm.Slots[i].Busy = false
+	}
+	vm.StdinHistory = nil
+	vm.StdoutHistory = nil
+	vm.StderrHistory = nil
+	vm.Steps = nil
+	vm.EventsProcessed = 0
+	vm.Commits = 0
+	vm.Rejects = 0
+	vm.FaultPropagations = 0
+	vm.LastCommittedState = 0
+	vm.EventCounter = 0
+}
+
+// ModifySlotState updates a ConceptualVM slot's live value and validity bit '_' (What-If editor).
+func (vm *ConceptualVM) ModifySlotState(cid int, rawVal string, valid bool) error {
+	if cid < 0 || cid >= len(vm.Slots) {
+		return fmt.Errorf("VMK-MOD-CID: invalid conceptual CID %d", cid)
+	}
+	slot := &vm.Slots[cid]
+	valClean := strings.TrimSpace(rawVal)
+	if !valid || valClean == "_" || strings.EqualFold(valClean, "undef") || strings.EqualFold(valClean, "invalid") {
+		slot.Valid = false
+		return nil
+	}
+	slot.Valid = true
+	switch slot.Type {
+	case TypeBool:
+		switch strings.ToLower(valClean) {
+		case "!", "true", "0":
+			slot.BoolVal = true
+			slot.IntVal = 0
+		case "¬", "~false", "false", "1":
+			slot.BoolVal = false
+			slot.IntVal = 1
+		default:
+			return fmt.Errorf("VMK-MOD-VAL: invalid Bool value %q (expected !, ¬, true, or false)", valClean)
+		}
+	case TypeFloat64:
+		fv, err := strconv.ParseFloat(valClean, 64)
+		if err != nil {
+			return fmt.Errorf("VMK-MOD-VAL: invalid Float value %q", valClean)
+		}
+		slot.FloatVal = fv
+		slot.IntVal = int64(fv)
+	default:
+		iv, err := strconv.ParseInt(valClean, 0, 64)
+		if err != nil {
+			return fmt.Errorf("VMK-MOD-VAL: invalid integer value %q", valClean)
+		}
+		slot.IntVal = iv
+		slot.FloatVal = float64(iv)
+	}
+	return nil
+}
+
+// ExecuteGenericWrite executes a write/stimulus or fault '_' on any ConceptualVM slot.
+func (vm *ConceptualVM) ExecuteGenericWrite(cid int, param int32, valid bool) CascadeTraceStep {
+	if cid < 0 || cid >= len(vm.Slots) {
+		cid = 0
+	}
+	slot := &vm.Slots[cid]
+	lowName := strings.ToLower(slot.Name)
+	if lowName == "if" && valid {
+		return vm.ExecuteIfToggleImpulse()
+	}
+	if lowName == "sum" {
+		return vm.ExecuteSumWrite(float64(param), valid)
+	}
+
+	evID := vm.EventCounter
+	vm.EventCounter++
+	vm.EventsProcessed++
+	preStr := slot.FormatValue()
+	preW0 := int32(slot.IntVal)
+
+	if !valid {
+		vm.Rejects++
+		vm.FaultPropagations++
+		errMsg := fmt.Sprintf("REJECT_FAULT: %s[cid=%d] kept %s (input valid=_)", slot.Name, cid, preStr)
+		vm.StderrHistory = append(vm.StderrHistory, errMsg)
+		st := CascadeTraceStep{
+			StepIndex:     len(vm.Steps),
+			EventID:       evID,
+			CascadeStep:   0,
+			Depth:         0,
+			CID:           cid,
+			ConceptName:   slot.Name,
+			ConceptType:   string(slot.Type),
+			EventDisplay:  fmt.Sprintf("Go %s ← _", slot.Name),
+			PreDisplay:    preStr,
+			PostDisplay:   preStr,
+			Param:         0,
+			ParamValid:    false,
+			PreW0:         preW0,
+			PreValid:      slot.Valid,
+			PredFormula:   "Valid != _ => false",
+			PredMatch:     false,
+			ActionFormula: "N/A",
+			CandidateW0:   preW0,
+			InvFormula:    "•(Valid != _)",
+			InvOK:         false,
+			Verdict:       VerdictRejectFault,
+			PostW0:        preW0,
+			PostValid:     slot.Valid,
+		}
+		vm.Steps = append(vm.Steps, st)
+		return st
+	}
+
+	slot.Valid = true
+	switch slot.Type {
+	case TypeBool:
+		slot.BoolVal = param != 0
+		if slot.BoolVal {
+			slot.IntVal = 0
+		} else {
+			slot.IntVal = 1
+		}
+	case TypeFloat64:
+		slot.FloatVal = float64(param)
+		slot.IntVal = int64(param)
+	default:
+		slot.IntVal = int64(param)
+		slot.FloatVal = float64(param)
+	}
+	postStr := slot.FormatValue()
+	postW0 := int32(slot.IntVal)
+	vm.Commits++
+	vm.LastCommittedState = postW0
+	msg := fmt.Sprintf("COMMIT: %s[cid=%d] = %s (pre=%s, ← := %d)", slot.Name, cid, postStr, preStr, param)
+	vm.StdoutHistory = append(vm.StdoutHistory, msg)
+	st := CascadeTraceStep{
+		StepIndex:     len(vm.Steps),
+		EventID:       evID,
+		CascadeStep:   0,
+		Depth:         0,
+		CID:           cid,
+		ConceptName:   slot.Name,
+		ConceptType:   string(slot.Type),
+		EventDisplay:  fmt.Sprintf("Go %s ← %d", slot.Name, param),
+		PreDisplay:    preStr,
+		PostDisplay:   postStr,
+		Param:         param,
+		ParamValid:    true,
+		PreW0:         preW0,
+		PreValid:      true,
+		PredFormula:   "← write => true",
+		PredMatch:     true,
+		ActionFormula: fmt.Sprintf("%s := %d => %s", slot.Name, param, postStr),
+		CandidateW0:   postW0,
+		InvFormula:    "•(Conceptual Gate)",
+		InvOK:         true,
+		Verdict:       VerdictCommit,
+		PostW0:        postW0,
+		PostValid:     true,
+	}
+	vm.Steps = append(vm.Steps, st)
+	return st
+}
+
 // ExecuteIfToggleImpulse executes one `Go If ←` write impulse on the T-flip-flop `If` (`? If _ ; ! If = ¬ ; ¬ = !`),
 // enforcing RFC-001 Busy lock so that writing `If` inside `If`'s subscription does not oscillate infinitely.
 func (vm *ConceptualVM) ExecuteIfToggleImpulse() CascadeTraceStep {

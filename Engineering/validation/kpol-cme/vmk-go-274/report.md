@@ -1,9 +1,9 @@
-# Звіт VMK-GO-274: Двомодовий емулятор Віртуальної Машини Кузьміна (`VMK`) та 4-панельний TUI-дебагер на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`, Issue #274)
+# Звіт VMK-GO-274: Двомодовий емулятор Віртуальної Машини Кузьміна (`VMK`) та повноекранний TUI-дебагер на Go (`Engineering/sw/vmk-go`, SemVer `0.3.0`, Issues #274, #280)
 
-* **Версія:** 1.0.1
+* **Версія:** 1.1.0
 * **Дата:** 2026-11-18
 * **Тип WP редакції NG:** Report
-* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274). **PR:** [#275](https://github.com/nick-fedchik/kuzmin-machine/pull/275) у гілці `feat/274-vmk-go-emulator-and-tui-debugger`.
+* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), оновлено в [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280). **PR:** [#275](https://github.com/nick-fedchik/kuzmin-machine/pull/275) у гілці `feat/274-vmk-go-emulator-and-tui-debugger`, оновлення повноекранного TUI `v0.3.0` у гілці `feat/280-fullscreen-interactive-tui-debugger-v030`.
 * **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент:** `claude-sonnet-5.5` ([рецензія PR #275 на `c366224`](https://github.com/nick-fedchik/kuzmin-machine/pull/275#issuecomment-6975587372) — «Прийнято із зауваженнями», `N1..N6` закрито у версії `1.0.1`).
 * **Коміт виконання:** `c366224485c8210784b1cba041832c24d7d666a9` (`origin/main`: `6616ab80dd196919980a6f1ba7f8c362a81bf525`).
 * **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`go1.27.1 linux/amd64`, `GCC 15.2.0`, `Python 3.14.4`, `pytest 9.0.2`, `Icarus Verilog 12.0`).
@@ -52,7 +52,8 @@
 * [`raw/vmk_examples_all_traces.log`](raw/vmk_examples_all_traces.log) та [`raw/vmk_examples_all_summary.json`](raw/vmk_examples_all_summary.json) — повні траси та TUI-кадри всіх 10 вбудованих прикладів (`vmk --example all`);
 * [`raw/vmk_stdio_bms_session.log`](raw/vmk_stdio_bms_session.log) — потокова перевірка `STDIO` (`--stdio --fail-on-reject`) у режимах `bram64` і `conceptual`;
 * [`raw/go_test_vmk_274.log`](raw/go_test_vmk_274.log) — вивід модульних тестів Go (`go test -v ./...`, `0.017 с`);
-* [`raw/pytest_vmk_go_274.log`](raw/pytest_vmk_go_274.log) — вивід інтеграційного пакета `pytest` включно з 5 мутантами `M1..M5`.
+* [`raw/pytest_vmk_go_274.log`](raw/pytest_vmk_go_274.log) — вивід інтеграційного пакета `pytest` включно з 5 мутантами `M1..M5`;
+* [`raw/vmk_fullscreen_tui_280.log`](raw/vmk_fullscreen_tui_280.log) — сирий лог інтерактивної сесії повноекранного TUI-дебагера `VMK v0.3.0` (`--render-fullscreen-tui` та `--tui-canvas` з покроковим мікро-хопом хвилі `C00 -> C01 -> C02 -> C03`, ручним створенням подій `[e]`, інжекцією `_` `[f]`, редактором стану `[m]` та таблицею `Pre-Load vs Post-Load Diff` `[d]`, Issue #280).
 
 ### 3.1. Натурний сеанс Go `vmk` проти фізичної плати `PYNQ-Z1` (`pynq2`): `PRE-LOAD` $\to$ `POST-LOAD` $\to$ `POST-RUN`
 
@@ -95,6 +96,8 @@
 | **`M3_go_ignore_uncertainty_bit`** | `internal/vmk/bram64.go` | Ігнорування стану невизначеності `_`: `isUncertaintyFault := false` | `TestBRAM64PredicatesActionsInvariantsAndUncertainties` (пропускає `param_valid = false` і неініціалізований концепт без `REJECT_FAULT`) | **KILLED** (`exit != 0`) |
 | **`M4_go_skip_post_read_dot_reset`** | `internal/vmk/conceptual.go` | Пропуск пост-адресного скидання `→ • Sum = 0` у `ExecuteSumReadWithPostDotReset` | `TestConceptualModeAllSixExamples` (`post_read_state` залишається `35` замість `0`, порушуючи `RFC-013`) | **KILLED** (`exit != 0`) |
 | **`M5_go_corrupt_pre_post_load_diff`** | `internal/vmk/snapshot.go` | Ігнорування зміни слів `W1/W2/W3` у `ComputePrePostLoadDiff`: `slotChanged := w0Changed` | `TestBMSSafetyCascadeAndPrePostLoadDiff` (не помічає заміну правила `W1/W2` при однаковому початковому `W0 = 42`) | **KILLED** (`exit != 0`) |
+| **`M6_go_break_single_hop_subscriber_enqueue`** | `internal/vmk/bram64.go` | Пропуск постановки підписника `nextHop` у `StepSingleHop` (`if false && enqueuedCID != nil`) | `TestFullScreenTUIDebuggerBRAM64AndConceptual` (хвиля не перестрибує `C00 -> C01 -> C02 -> C03` при натисканні `n` / `Space`) | **KILLED** (`exit != 0`) |
+| **`M7_go_break_modify_concept_state`** | `internal/vmk/bram64.go` | Ігнорування нового значення `newW0` у `ModifyConceptState` (`e.State[cid] = 0`) | `TestFullScreenTUIDebuggerBRAM64AndConceptual` (редактор стану `[m]` не встановлює введене значення `W0 = 77`) | **KILLED** (`exit != 0`) |
 
 ---
 
@@ -137,6 +140,7 @@ python3 Project/tools/check_wp_documents.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.1.0 | 2026-11-18 | #280: додано повноекранний інтерактивний TUI-дебагер `VMK v0.3.0` (`internal/vmk/tui_fullscreen.go`, `--tui`, `--tui-canvas`, `--render-fullscreen-tui`), сирий лог сесії [`raw/vmk_fullscreen_tui_280.log`](raw/vmk_fullscreen_tui_280.log) та мутанти `M6..M7` на `StepSingleHop` і `ModifyConceptState`. |
 | 1.0.1 | 2026-11-18 | За рецензією PR #275 (`claude-sonnet-5.5`, `N1..N6`): виконано `gofmt -w`, усунено trailing whitespace, додано підтримку всіх 10 прикладів у `--mode conceptual --stdio` (`conceptual (descriptor-backed)`), роз'яснено походження станів `PRE-LOAD` у `sim` (`3/64`, `1/64`, `0/64`) проти фізичної `pynq2`, незалежні еталони `kpol_reference.py`/`C99`/`iverilog` та оновлено `# git_commit:` у `raw/*.log` на `c366224485c8210784b1cba041832c24d7d666a9`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск звіту верифікації двомодового емулятора VMK та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`), натурної сесії на `pynq2` та 5 мутантів `M1..M5` за Issue #274. |
 

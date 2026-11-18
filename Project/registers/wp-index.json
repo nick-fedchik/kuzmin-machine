@@ -1,5 +1,5 @@
 {
-  "version": "0.26.0",
+  "version": "0.27.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -987,6 +987,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/vmk-go/internal/vmk/tui_fullscreen.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/vmk-go/internal/vmk/version.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -994,6 +1000,12 @@
     },
     {
       "path": "Engineering/sw/vmk-go/internal/vmk/vmk_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/vmk",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -3472,6 +3484,12 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_examples_all_traces.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_fullscreen_tui_280.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false

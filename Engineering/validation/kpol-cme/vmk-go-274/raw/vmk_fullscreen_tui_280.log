@@ -1,0 +1,838 @@
+# cmd: (cd Engineering/sw/vmk-go && ./vmk --example bms --render-fullscreen-tui && printf '\x1b[Bw\x1b[Ae120+nnnnfm99\nddq' | ./vmk --program examples/bms_safety_cascade.ekpol --tui-canvas)
+# timestamp: 2026-11-18T15:52:00+02:00
+# git_commit: d556b35bc1cf2c885f6d13c3d018cb7e65d03dc0
+# host: Linux 7.0.0-42-generic x86_64 GNU/Linux
+
+=== [1] ./vmk --example bms --render-fullscreen-tui ===
+ VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 1/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=3(+3)    [CHGD]  ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│     C01 Module_Thermal_Gu… W0=3(+3)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: 10 -> Post-Load W0: 0 -> Current W0…│
+│     C02 Pack_Fault_Latch   W0=0(-2)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=0(-10)   [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000003  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : Step #11 (E5.0): param=250, valid=1 => COMMIT (W…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E3.0#3  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E3.1#4  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E3.2#5  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E3.3#6  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E4.0#7  │0 │C00 Cell_Delta…│p=180,v=1 │W0=1,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=2,v…│->C01  │
+│ E4.1#8  │1 │C01 Module_The…│p=2,v=1   │W0=1,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=2,v…│->C02  │
+│ E4.2#9  │2 │C02 Pack_Fault…│p=2,v=1   │W0=1,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=0,v…│->C03  │
+│ E4.3#10 │3 │C03 Contactor_…│p=0,v=1   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=0,v…│None   │
+│ E5.0#11 │0 │C00 Cell_Delta…│p=250,v=1 │W0=2,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=3,v…│->C01  │
+│ E5.1#12 │1 │C01 Module_The…│p=3,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=3,v…│->C02  │
+│ E5.2#13 │2 │C02 Pack_Fault…│p=3,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│REJECT_INVARIANT│W0=0,v…│None   │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (06) : E2: C00(Cell_Delta_mV) <- param=0, valid=_ ; E3: C00(Cell_Delta_mV) <- param=120, valid=1 ; E4: C00(Cell_D…│
+│ STDOUT (10) -> COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3)                                         │
+│ STDERR (04) -> REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1)                           │
+│ STATUS      : Ready. Use Up/Down to select concept, [e] New Event, [n/Space] 1-Hop, [s] Full Step, [d] Inspector/Source/…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+=== [2] ./vmk --example nod --render-fullscreen-tui ===
+ VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (RFC-001..018) | Mode: conceptual (EuclidNod) | Phase: PRE-LOAD -> POST-LOAD…
+ Concepts: Active 6/64 (Pre-load: 3/64, Changed: 3, Free: 58) | Queue:0 pending | Events:20 | Commits:20 | Rejects:0 | Faul…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (a) | Type: U64                              │
+│ >   C00 a                  Val=6       [CHGD]  ->…│ State Evolution   : Pre-Load: _ (empty) -> Post-Load: 120 -> Current…│
+│     C01 b                  Val=6       [VALID] ->…│ Validity Bit (_)  : 1 (VALID) | RFC-001 Busy Lock: false             │
+│     C02 Nod                Val=6       [CHGD]  ST…│ Predicate & Rule  : a > b : a -= b                                   │
+│     C03 STDIN              Val=0       [VALID] Ho…│ Big Dot Gate (•)  : •(a > 0) (PostReadZero=false)                    │
+│     C04 STDOUT             Val=0       [VALID] Ho…│ Subscription      : -> b                                             │
+│     C05 STDERR             Val=0       [VALID] Ho…│ Last Activity     : Step #18 (E0.18): Wave #19 (a=12,b=6) => COMMIT …│
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.9#9  │9 │C00 a          │Wave #10 …│a=66, …│a > b (66 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=60, …│->C01  │
+│ E0.10#… │10│C00 a          │Wave #11 …│a=60, …│a > b (60 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=54, …│->C01  │
+│ E0.11#… │11│C00 a          │Wave #12 …│a=54, …│a > b (54 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=48, …│->C01  │
+│ E0.12#… │12│C00 a          │Wave #13 …│a=48, …│a > b (48 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=42, …│->C01  │
+│ E0.13#… │13│C00 a          │Wave #14 …│a=42, …│a > b (42 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=36, …│->C01  │
+│ E0.14#… │14│C00 a          │Wave #15 …│a=36, …│a > b (36 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=30, …│->C01  │
+│ E0.15#… │15│C00 a          │Wave #16 …│a=30, …│a > b (30 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=24, …│->C01  │
+│ E0.16#… │16│C00 a          │Wave #17 …│a=24, …│a > b (24 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=18, …│->C01  │
+│ E0.17#… │17│C00 a          │Wave #18 …│a=18, …│a > b (18 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=12, …│->C01  │
+│ E0.18#… │18│C00 a          │Wave #19 …│a=12, …│a > b (12 > 6)=…│a -= b =>…│•(a > 0)=>tr…│COMMIT          │a=6, b…│->C01  │
+│ E0.19#… │19│C02 Nod        │Converged…│a=6, b…│a > b (false) &…│Return =a…│•(Wave extin…│COMMIT          │Nod=6  │None   │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (01) : call Nod 120 6                                                                                             │
+│ STDOUT (01) -> COMMIT: Nod[cid=2] = 6 (a_init=120, b_init=6, sub_steps=19, total_steps=20)                               │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Ready (Conceptual VM). Use Up/Down to select concept, [e] New Event, [n/Space] Step, [m] Modify, [d] Diff/…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+=== [3] Interactive Keystroke Session (--tui-canvas on bms_safety_cascade.ekpol) ===
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│     C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (00) : (empty)                                                                                                    │
+│ STDOUT (00) -> (none)                                                                                                    │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Ready. Use Up/Down to select concept, [e] New Event, [n/Space] 1-Hop, [s] Full Step, [d] Inspector/Source/…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C01 (Module_Thermal_Guard) | Type: Int32 | Watch…│
+│     C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : INTERNAL CASCADE (@stdout) | Bank: 0             │
+│ >   C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x00000001  W2=0x01001B04  W3=…│
+│                                                   │ Predicate (::)    : !(param < 1) [>= 1] (assump_en=true, op=0x04)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=1)            │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C2 (Pack_Fault_Latch)                         │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (00) : (empty)                                                                                                    │
+│ STDOUT (00) -> (none)                                                                                                    │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Ready. Use Up/Down to select concept, [e] New Event, [n/Space] 1-Hop, [s] Full Step, [d] Inspector/Source/…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C01 (Module_Thermal_Guard) | Type: Int32 | Watch…│
+│     C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : INTERNAL CASCADE (@stdout) | Bank: 0             │
+│ > * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x00000001  W2=0x01001B04  W3=…│
+│                                                   │ Predicate (::)    : !(param < 1) [>= 1] (assump_en=true, op=0x04)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=1)            │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C2 (Pack_Fault_Latch)                         │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (00) : (empty)                                                                                                    │
+│ STDOUT (00) -> (none)                                                                                                    │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Watchpoint (*) set on C01 (Module_Thermal_Guard)                                                           │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (00) : (empty)                                                                                                    │
+│ STDOUT (00) -> (none)                                                                                                    │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Watchpoint (*) set on C01 (Module_Thermal_Guard)                                                           │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MANUAL EVENT CREATOR DIALOG ([e] / [Enter]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Target Concept (←/→) : C00 (Cell_Delta_mV)                                                                        ║    │
+│ ║ Operation (Tab)      : [1:Write/Stimulus(<-)]  2:Fault/Undef(_)   3:Read(->)   4:Call(|)                          ║    │
+│ ║ Parameter / Args     : _ (type number e.g. 120, -10, 250 or _ for fault)                                               │
+│ ║ Action Keys          : [Enter] Execute Immediately  |  [+] Add to Pending Queue (Step-by-Step)  |  [Esc] Cancel   ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MANUAL EVENT CREATOR DIALOG ([e] / [Enter]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Target Concept (←/→) : C00 (Cell_Delta_mV)                                                                        ║    │
+│ ║ Operation (Tab)      : [1:Write/Stimulus(<-)]  2:Fault/Undef(_)   3:Read(->)   4:Call(|)                          ║    │
+│ ║ Parameter / Args     : 1_ (type number e.g. 120, -10, 250 or _ for fault)                                              │
+│ ║ Action Keys          : [Enter] Execute Immediately  |  [+] Add to Pending Queue (Step-by-Step)  |  [Esc] Cancel   ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MANUAL EVENT CREATOR DIALOG ([e] / [Enter]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Target Concept (←/→) : C00 (Cell_Delta_mV)                                                                        ║    │
+│ ║ Operation (Tab)      : [1:Write/Stimulus(<-)]  2:Fault/Undef(_)   3:Read(->)   4:Call(|)                          ║    │
+│ ║ Parameter / Args     : 12_ (type number e.g. 120, -10, 250 or _ for fault)                                             │
+│ ║ Action Keys          : [Enter] Execute Immediately  |  [+] Add to Pending Queue (Step-by-Step)  |  [Esc] Cancel   ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MANUAL EVENT CREATOR DIALOG ([e] / [Enter]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Target Concept (←/→) : C00 (Cell_Delta_mV)                                                                        ║    │
+│ ║ Operation (Tab)      : [1:Write/Stimulus(<-)]  2:Fault/Undef(_)   3:Read(->)   4:Call(|)                          ║    │
+│ ║ Parameter / Args     : 120_ (type number e.g. 120, -10, 250 or _ for fault)                                            │
+│ ║ Action Keys          : [Enter] Execute Immediately  |  [+] Add to Pending Queue (Step-by-Step)  |  [Esc] Cancel   ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+│ Manual Event Creator: Type parameter, [Left/Right] Target Concept, [Tab] Operation, [Enter] Execute Now, [+] Add to Queu…│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:1 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=0        [VALID] ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000000  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : None (no steps executed on this concept yet)     │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (1): [1] C00(param=120,valid=1)                                                                            │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (00) : (empty)                                                                                                    │
+│ STDOUT (00) -> (none)                                                                                                    │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Queued Event C00 (Cell_Delta_mV) <- param=120 into Pending Queue (len=1). Press [n/Space] to step!         │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:1 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│   * C01 Module_Thermal_Gu… W0=0        [VALID] ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : Step #0 (E0.0): param=120, valid=1 => COMMIT (W0…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (1): [1] HOP d=1 C01(param=1,valid=1)                                                                      │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (01) : E0: C00(Cell_Delta_mV) <- param=120, valid=1                                                               │
+│ STDOUT (01) -> COMMIT: Cell_Delta_mV[cid=0] = 1 (pre=0, depth=0, param=120)                                              │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Micro-Hop E0.0: C00 (Cell_Delta_mV) param=120, valid=1 => COMMIT (W0: 0 -> 1) | Next hop queued -> C01 (pa…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:1 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C01 (Module_Thermal_Guard) | Type: Int32 | Watch…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : INTERNAL CASCADE (@stdout) | Bank: 0             │
+│ > * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 0 -> Cur…│
+│     C02 Pack_Fault_Latch   W0=2        [VALID] ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000001  W2=0x01001B04  W3=…│
+│                                                   │ Predicate (::)    : !(param < 1) [>= 1] (assump_en=true, op=0x04)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=1)            │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C2 (Pack_Fault_Latch)                         │
+│                                                   │ Last Activity     : Step #1 (E0.1): param=1, valid=1 => COMMIT (W0: …│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (1): [1] HOP d=2 C02(param=1,valid=1)                                                                      │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (01) : E0: C00(Cell_Delta_mV) <- param=120, valid=1                                                               │
+│ STDOUT (02) -> COMMIT: Module_Thermal_Guard[cid=1] = 1 (pre=0, depth=1, param=1)                                         │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Micro-Hop E0.1: C01 (Module_Thermal_Guard) param=1, valid=1 => COMMIT (W0: 0 -> 1) | Next hop queued -> C0…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:1 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C02 (Pack_Fault_Latch) | Type: Int32 | Watch: OFF│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : INTERNAL CASCADE (@stdout) | Bank: 0             │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 2 -> Cur…│
+│ >   C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=10       [VALID] No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000001  W2=0x02001B04  W3=…│
+│                                                   │ Predicate (::)    : !(param < 1) [>= 1] (assump_en=true, op=0x04)    │
+│                                                   │ Action (=>)       : W0' := W0 - 1 (act_op=0x02, W1_i32=1)            │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C3 (Contactor_Interlock)                      │
+│                                                   │ Last Activity     : Step #2 (E0.2): param=1, valid=1 => COMMIT (W0: …│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (1): [1] HOP d=3 C03(param=1,valid=1)                                                                      │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (01) : E0: C00(Cell_Delta_mV) <- param=120, valid=1                                                               │
+│ STDOUT (03) -> COMMIT: Pack_Fault_Latch[cid=2] = 1 (pre=2, depth=2, param=1)                                             │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Micro-Hop E0.2: C02 (Pack_Fault_Latch) param=1, valid=1 => COMMIT (W0: 2 -> 1) | Next hop queued -> C03 (p…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C03 (Contactor_Interlock) | Type: Int32 | Watch:…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : LEAF (@stdout) | Bank: 0                         │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 10 -> Cu…│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│ >   C03 Contactor_Interlo… W0=1(-9)    [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000002  W2=0x00000B01  W3=…│
+│                                                   │ Predicate (::)    : !(param == 2) [!= 2] (assump_en=true, op=0x01)   │
+│                                                   │ Action (=>)       : W0' := param (act_op=0x00, W1_i32=2)             │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : None (0)                                         │
+│                                                   │ Last Activity     : Step #3 (E0.3): param=1, valid=1 => COMMIT (W0: …│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (01) : E0: C00(Cell_Delta_mV) <- param=120, valid=1                                                               │
+│ STDOUT (04) -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1)                                         │
+│ STDERR (00) -> (none)                                                                                                    │
+│ STATUS      : Micro-Hop E0.3: C03 (Contactor_Interlock) param=1, valid=1 => COMMIT (W0: 10 -> 1) | Wave settled          │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C03 (Contactor_Interlock) | Type: Int32 | Watch:…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : LEAF (@stdout) | Bank: 0                         │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 10 -> Cu…│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│ >   C03 Contactor_Interlo… W0=1(-9)    [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000002  W2=0x00000B01  W3=…│
+│                                                   │ Predicate (::)    : !(param == 2) [!= 2] (assump_en=true, op=0x01)   │
+│                                                   │ Action (=>)       : W0' := param (act_op=0x00, W1_i32=2)             │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : None (0)                                         │
+│                                                   │ Last Activity     : Step #4 (E1.0): param=0, valid=_ => REJECT_FAULT…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (02) : E0: C00(Cell_Delta_mV) <- param=120, valid=1 ; E1: C03(Contactor_Interlock) <- param=0, valid=_            │
+│ STDOUT (04) -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1)                                         │
+│ STDERR (01) -> REJECT_FAULT: Contactor_Interlock[cid=3] kept W0=1 (depth=0, param=0, valid=_)                            │
+│ STATUS      : Injected Fault '_' on C03 (Contactor_Interlock) => REJECT_FAULT (kept W0=1, Faults=1)                      │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C03 (Contactor_Interlock) | Type: Int32 | Watch:…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : LEAF (@stdout) | Bank: 0                         │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 10 -> Cu…│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│ >   C03 Contactor_Interlo… W0=1(-9)    [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000002  W2=0x00000B01  W3=…│
+│                                                   │ Predicate (::)    : !(param == 2) [!= 2] (assump_en=true, op=0x01)   │
+│                                                   │ Action (=>)       : W0' := param (act_op=0x00, W1_i32=2)             │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : None (0)                                         │
+│                                                   │ Last Activity     : Step #4 (E1.0): param=0, valid=_ => REJECT_FAULT…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MODIFY CONCEPT STATE ('WHAT-IF' EDITOR [m]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Selected Concept     : C03 (Contactor_Interlock)           (Current State: 1)                                          │
+│ ║ Validity Bit (Tab/_) : 1 (VALID)                                                                                       │
+│ ║ New W0 / Value       : _ (leave empty to keep current W0 and only toggle Valid/_)                                      │
+│ ║ Action Keys          : [Enter] Apply State Change  |  [Tab or _] Toggle Valid (1 <-> _)  |  [Esc] Cancel          ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Modify State (What-If) for C03: Type new W0 value, [Tab or _] Toggle Valid (1 <-> _), [Enter] Apply, [Esc] Cancel.       │
+│ Modify State (What-If) for C03: Type new W0 value, [Tab or _] Toggle Valid (1 <-> _), [Enter] Apply, [Esc] Cancel.       │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C03 (Contactor_Interlock) | Type: Int32 | Watch:…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : LEAF (@stdout) | Bank: 0                         │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 10 -> Cu…│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│ >   C03 Contactor_Interlo… W0=1(-9)    [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000002  W2=0x00000B01  W3=…│
+│                                                   │ Predicate (::)    : !(param == 2) [!= 2] (assump_en=true, op=0x01)   │
+│                                                   │ Action (=>)       : W0' := param (act_op=0x00, W1_i32=2)             │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : None (0)                                         │
+│                                                   │ Last Activity     : Step #4 (E1.0): param=0, valid=_ => REJECT_FAULT…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MODIFY CONCEPT STATE ('WHAT-IF' EDITOR [m]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Selected Concept     : C03 (Contactor_Interlock)           (Current State: 1)                                          │
+│ ║ Validity Bit (Tab/_) : 1 (VALID)                                                                                       │
+│ ║ New W0 / Value       : 9_ (leave empty to keep current W0 and only toggle Valid/_)                                     │
+│ ║ Action Keys          : [Enter] Apply State Change  |  [Tab or _] Toggle Valid (1 <-> _)  |  [Esc] Cancel          ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Modify State (What-If) for C03: Type new W0 value, [Tab or _] Toggle Valid (1 <-> _), [Enter] Apply, [Esc] Cancel.       │
+│ Modify State (What-If) for C03: Type new W0 value, [Tab or _] Toggle Valid (1 <-> _), [Enter] Apply, [Esc] Cancel.       │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C03 (Contactor_Interlock) | Type: Int32 | Watch:…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : LEAF (@stdout) | Bank: 0                         │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 10 -> Cu…│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│ >   C03 Contactor_Interlo… W0=1(-9)    [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000001  W1=0x00000002  W2=0x00000B01  W3=…│
+│                                                   │ Predicate (::)    : !(param == 2) [!= 2] (assump_en=true, op=0x01)   │
+│                                                   │ Action (=>)       : W0' := param (act_op=0x00, W1_i32=2)             │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : None (0)                                         │
+│                                                   │ Last Activity     : Step #4 (E1.0): param=0, valid=_ => REJECT_FAULT…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ ╔══ MODIFY CONCEPT STATE ('WHAT-IF' EDITOR [m]) ═════════════════════════════════════════════════════════════════════╗   │
+│ ║ Selected Concept     : C03 (Contactor_Interlock)           (Current State: 1)                                          │
+│ ║ Validity Bit (Tab/_) : 1 (VALID)                                                                                       │
+│ ║ New W0 / Value       : 99_ (leave empty to keep current W0 and only toggle Valid/_)                                    │
+│ ║ Action Keys          : [Enter] Apply State Change  |  [Tab or _] Toggle Valid (1 <-> _)  |  [Esc] Cancel          ║    │
+│ ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝   │
+│ Modify State (What-If) for C03: Type new W0 value, [Tab or _] Toggle Valid (1 <-> _), [Enter] Apply, [Esc] Cancel.       │
+│ Modify State (What-If) for C03: Type new W0 value, [Tab or _] Toggle Valid (1 <-> _), [Enter] Apply, [Esc] Cancel.       │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C03 (Contactor_Interlock) | Type: Int32 | Watch:…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ Topology & Role   : LEAF (@stdout) | Bank: 0                         │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: _ (empty) -> Post-Load W0: 10 -> Cu…│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│ >   C03 Contactor_Interlo… W0=99(+89)  [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000063  W1=0x00000002  W2=0x00000B01  W3=…│
+│                                                   │ Predicate (::)    : !(param == 2) [!= 2] (assump_en=true, op=0x01)   │
+│                                                   │ Action (=>)       : W0' := param (act_op=0x00, W1_i32=2)             │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : None (0)                                         │
+│                                                   │ Last Activity     : Step #4 (E1.0): param=0, valid=_ => REJECT_FAULT…│
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (02) : E0: C00(Cell_Delta_mV) <- param=120, valid=1 ; E1: C03(Contactor_Interlock) <- param=0, valid=_            │
+│ STDOUT (04) -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1)                                         │
+│ STDERR (01) -> REJECT_FAULT: Contactor_Interlock[cid=3] kept W0=1 (depth=0, param=0, valid=_)                            │
+│ STATUS      : Modified C03 (Contactor_Interlock): W0 := 99 (0x00000063), Valid := 1                                      │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] SOURCE CODE (.ekpol / .kpol) (d:Toggle View) ───────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ [SOURCE CODE (.ekpol / .kpol) — press 'd' for Pre-Load vs Post-Load …│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ 01 │ module BmsSafetyCascade;                                        │
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ 02 │                                                                 │
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ 03 │ @stdin                                                          │
+│ >   C03 Contactor_Interlo… W0=99(+89)  [CHGD]  No…│ 04 │ @stdout                                                         │
+│                                                   │ 05 │ concept Cell_Delta_mV: i32 = 0 [>= 0] {                         │
+│                                                   │ 06 │     <- EvCellDelta(delta_mv) :: delta_mv in 50..5000 => Cell_De…│
+│                                                   │ 07 │ }                                                               │
+│                                                   │ 08 │                                                                 │
+│                                                   │ 09 │ @stdout                                                         │
+│                                                   │ 10 │ concept Module_Thermal_Guard: i32 = 0 [>= 0] {                  │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (02) : E0: C00(Cell_Delta_mV) <- param=120, valid=1 ; E1: C03(Contactor_Interlock) <- param=0, valid=_            │
+│ STDOUT (04) -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1)                                         │
+│ STDERR (01) -> REJECT_FAULT: Contactor_Interlock[cid=3] kept W0=1 (depth=0, param=0, valid=_)                            │
+│ STATUS      : Switched Panel [2] view to: SOURCE CODE (.ekpol / .kpol)                                                   │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[2J[H VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] PRE-LOAD vs POST-LOAD DIFF (d:Toggle View) ─────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ CID  Name                 Chg  Pre-Load W0  Post-Load W0  Current W0…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ C00  Cell_Delta_mV        YES  _ (empty)    0             1         …│
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ C01  Module_Thermal_Gua…  YES  _ (empty)    0             1         …│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ C02  Pack_Fault_Latch     YES  _ (empty)    2             1         …│
+│ >   C03 Contactor_Interlo… W0=99(+89)  [CHGD]  No…│ C03  Contactor_Interlock  YES  _ (empty)    10            99        …│
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (02) : E0: C00(Cell_Delta_mV) <- param=120, valid=1 ; E1: C03(Contactor_Interlock) <- param=0, valid=_            │
+│ STDOUT (04) -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1)                                         │
+│ STDERR (01) -> REJECT_FAULT: Contactor_Interlock[cid=3] kept W0=1 (depth=0, param=0, valid=_)                            │
+│ STATUS      : Switched Panel [2] view to: PRE-LOAD vs POST-LOAD DIFF                                                     │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> P…
+ Concepts: Active 4/64 (Pre-load: 0/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Event…
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] PRE-LOAD vs POST-LOAD DIFF (d:Toggle View) ─────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ CID  Name                 Chg  Pre-Load W0  Post-Load W0  Current W0…│
+│     C00 Cell_Delta_mV      W0=1(+1)    [CHGD]  ->…│ C00  Cell_Delta_mV        YES  _ (empty)    0             1         …│
+│   * C01 Module_Thermal_Gu… W0=1(+1)    [CHGD]  ->…│ C01  Module_Thermal_Gua…  YES  _ (empty)    0             1         …│
+│     C02 Pack_Fault_Latch   W0=1(-1)    [CHGD]  ->…│ C02  Pack_Fault_Latch     YES  _ (empty)    2             1         …│
+│ >   C03 Contactor_Interlo… W0=99(+89)  [CHGD]  No…│ C03  Contactor_Interlock  YES  _ (empty)    10            99        …│
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+│                                                   │                                                                      │
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E0.0#0  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E0.1#1  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E0.2#2  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E0.3#3  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+│ E1.0#4  │0 │C03 Contactor_…│p=0,v=_   │W0=1,v…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│REJECT_FAULT    │W0=1,v…│None   │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+│                                                                                                                          │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (02) : E0: C00(Cell_Delta_mV) <- param=120, valid=1 ; E1: C03(Contactor_Interlock) <- param=0, valid=_            │
+│ STDOUT (04) -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1)                                         │
+│ STDERR (01) -> REJECT_FAULT: Contactor_Interlock[cid=3] kept W0=1 (depth=0, param=0, valid=_)                            │
+│ STATUS      : Switched Panel [2] view to: PRE-LOAD vs POST-LOAD DIFF                                                     │
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘

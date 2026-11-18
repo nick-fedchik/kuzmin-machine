@@ -7,7 +7,7 @@ import (
 )
 
 // Version is the SemVer 2.0.0 release version of the Go VMK emulator and TUI debugger.
-const Version = "0.2.0"
+const Version = "0.3.0"
 
 // Execution modes supported by VMK.
 const (

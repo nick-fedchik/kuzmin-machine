@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.10.0
+* **Версія:** 0.11.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -73,6 +73,7 @@
 | 0.3.0 | 2026-11-12 | Додано реєстрацію B6 (ADR GPU симбіоз) та пакету експерименту EXP-GPU-01 (Protocol, Plan, Guide). |
 | 0.4.0 | 2026-11-13 | #151: оновлено стан B5 v2.1 та додано реєстрацію звіту верифікації черги `queue-retention-151/report.md`. |
 | 0.5.0 | 2026-11-14 | #169: зареєстровано звіти перевірок #115, #164, #167, #168, #169 та оновлено стан специфікацій B4/B5 v2.2.0 і `wp-index.json`. |
+| 0.11.0 | 2026-11-18 | #280: зареєстровано повноекранний інтерактивний TUI-дебагер `Engineering/sw/vmk-go/internal/vmk/tui_fullscreen.go` (`VMK v0.3.0`), сирий лог сесії `Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_fullscreen_tui_280.log`, оновлено `vmk-users-guide.md` (`1.2.0`), `vmk-go-emulator-and-tui-debugger-0.1.0.md` (`1.2.0`), `vmk-go-274/report.md` (`1.1.0`) та `wp-index.json`. |
 | 0.10.0 | 2026-11-18 | #278: зареєстровано специфікацію `Engineering/specifications/kpol/ekpol-specification-0.1.0.md` (`1.0.0`), Python-фронтенд `Engineering/sw/kpol-ref/ekpol_frontend.py`, Go-парсер `Engineering/sw/vmk-go/internal/vmk/ekpol.go` (`VMK v0.2.0`), каталог прикладів `Engineering/sw/vmk-go/examples/*.ekpol`, звіт `Engineering/validation/kpol-cme/ekpol-278/report.md` (`1.0.0`), тести `Engineering/sw/tests/test_ekpol_278.py` та оновлено `wp-index.json` (`0.25.0`). |
 | 0.9.1 | 2026-11-18 | #276: зареєстровано практичний Посібник користувача VMK `Engineering/guides/vmk-users-guide.md` (`1.0.1`, тип WP `Guide`), `Engineering/sw/vmk-go/README.md` (`1.0.0`) та оновлено `wp-index.json` (`0.23.0`). |
 | 0.9.0 | 2026-11-18 | #274: зареєстровано Go-модуль двомодового емулятора VMK та 4-панельного TUI-дебагера `Engineering/sw/vmk-go/`, специфікацію `Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`, пакет верифікації `Engineering/validation/kpol-cme/vmk-go-274/`, тести `Engineering/sw/tests/test_vmk_go_274.py` та оновлено `wp-index.json` (`0.22.0`). |

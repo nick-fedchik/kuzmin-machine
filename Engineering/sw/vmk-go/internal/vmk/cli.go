@@ -29,27 +29,29 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs.SetOutput(stderr)
 
 	var (
-		mode             string
-		example          string
-		programPath      string
-		profile          string
-		target           string
-		connectAlias     string
-		traceEvents      string
-		dumpConcepts     bool
-		stdioMode        bool
-		failOnReject     bool
-		exitOnReject     bool
-		tuiMode          bool
-		renderTUIFrame   bool
-		watchCIDsStr     string
-		breakOnReject    bool
-		stopOnBreakpoint bool
-		jsonOutPath      string
-		toKPOL           bool
-		toEKPOL          bool
-		ekpolStyle       string
-		showVersion      bool
+		mode                string
+		example             string
+		programPath         string
+		profile             string
+		target              string
+		connectAlias        string
+		traceEvents         string
+		dumpConcepts        bool
+		stdioMode           bool
+		failOnReject        bool
+		exitOnReject        bool
+		tuiMode             bool
+		tuiCanvas           bool
+		renderTUIFrame      bool
+		renderFullScreenTUI bool
+		watchCIDsStr        string
+		breakOnReject       bool
+		stopOnBreakpoint    bool
+		jsonOutPath         string
+		toKPOL              bool
+		toEKPOL             bool
+		ekpolStyle          string
+		showVersion         bool
 	)
 
 	fs.StringVar(&mode, "mode", "", "execution mode: 'bram64' or 'conceptual'")
@@ -63,8 +65,11 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs.BoolVar(&stdioMode, "stdio", false, "stream events/commands from stdin, emit COMMIT/READ to stdout and REJECT_* to stderr")
 	fs.BoolVar(&failOnReject, "fail-on-reject", false, "return exit code 1 if any event/step was rejected")
 	fs.BoolVar(&exitOnReject, "exit-on-reject", false, "alias for --fail-on-reject")
-	fs.BoolVar(&tuiMode, "tui", false, "launch TUI debugger")
+	fs.BoolVar(&tuiMode, "tui", false, "launch full-screen interactive TUI debugger")
+	fs.BoolVar(&tuiCanvas, "tui-canvas", false, "launch full-screen interactive TUI canvas")
+	fs.BoolVar(&tuiCanvas, "tui-Canvas", false, "alias for --tui-canvas")
 	fs.BoolVar(&renderTUIFrame, "render-tui-frame", false, "render deterministic 4-panel ASCII TUI frame")
+	fs.BoolVar(&renderFullScreenTUI, "render-fullscreen-tui", false, "render non-blocking full-screen UTF-8 TUI canvas frame")
 	fs.StringVar(&watchCIDsStr, "watch-cid", "", "comma-separated CIDs to watch (e.g. '0,2,3')")
 	fs.BoolVar(&breakOnReject, "break-on-reject", false, "trigger watchpoint/breakpoint on REJECT_*")
 	fs.BoolVar(&stopOnBreakpoint, "stop-on-breakpoint", false, "halt execution when a watchpoint/breakpoint fires")
@@ -86,6 +91,9 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	if exitOnReject {
 		failOnReject = true
+	}
+	if tuiCanvas {
+		tuiMode = true
 	}
 
 	exLower := strings.ToLower(strings.TrimSpace(example))
@@ -190,36 +198,45 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			_, _ = fmt.Fprintf(stderr, "%v\n", err)
 			return 2
 		}
-		if stdioMode {
-			rawIn, err := io.ReadAll(stdin)
-			if err != nil {
-				_, _ = fmt.Fprintf(stderr, "VMK-IO: %v\n", err)
-				return 2
+		if tuiMode && !stdioMode && !renderTUIFrame {
+			isInteractive := IsCharDeviceTTY(stdin, stdout) || tuiCanvas
+			st := NewConceptualFullScreenTUI(vm, defaultCmds)
+			frame := RunFullScreenTUI(st, stdin, stdout, isInteractive)
+			_, _ = fmt.Fprintln(stdout, frame)
+		} else {
+			if stdioMode {
+				rawIn, err := io.ReadAll(stdin)
+				if err != nil {
+					_, _ = fmt.Fprintf(stderr, "VMK-IO: %v\n", err)
+					return 2
+				}
+				lines := strings.Split(string(rawIn), "\n")
+				var outW, errW io.Writer
+				if !tuiMode && !renderTUIFrame && !renderFullScreenTUI {
+					outW = stdout
+					errW = stderr
+				}
+				_, err = RunConceptualStdioStream(vm, lines, outW, errW)
+				if err != nil {
+					_, _ = fmt.Fprintf(stderr, "%v\n", err)
+					return 2
+				}
+			} else if len(defaultCmds) > 0 {
+				_, err = RunConceptualStdioStream(vm, defaultCmds, nil, nil)
+				if err != nil {
+					_, _ = fmt.Fprintf(stderr, "%v\n", err)
+					return 2
+				}
 			}
-			lines := strings.Split(string(rawIn), "\n")
-			var outW, errW io.Writer
-			if !tuiMode && !renderTUIFrame {
-				outW = stdout
-				errW = stderr
+			statusLbl := "COMPLETED"
+			if stdioMode {
+				statusLbl = "RUNNING"
 			}
-			_, err = RunConceptualStdioStream(vm, lines, outW, errW)
-			if err != nil {
-				_, _ = fmt.Fprintf(stderr, "%v\n", err)
-				return 2
+			if renderFullScreenTUI {
+				_, _ = fmt.Fprintln(stdout, RenderConceptualFullScreenTUI(vm, nil, statusLbl))
+			} else if tuiMode || renderTUIFrame || !stdioMode {
+				_, _ = fmt.Fprintln(stdout, RenderConceptualTUIFrame(vm, statusLbl))
 			}
-		} else if len(defaultCmds) > 0 {
-			_, err = RunConceptualStdioStream(vm, defaultCmds, nil, nil)
-			if err != nil {
-				_, _ = fmt.Fprintf(stderr, "%v\n", err)
-				return 2
-			}
-		}
-		statusLbl := "COMPLETED"
-		if stdioMode {
-			statusLbl = "RUNNING"
-		}
-		if tuiMode || renderTUIFrame || !stdioMode {
-			_, _ = fmt.Fprintln(stdout, RenderConceptualTUIFrame(vm, statusLbl))
 		}
 		if jsonOutPath != "" {
 			payload := map[string]any{
@@ -253,8 +270,8 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		}
 	}
 
-	// Built-in examples without custom --stdio stream
-	if exLower != "" && !stdioMode && programPath == "" {
+	// Built-in examples without custom --stdio stream (unless --tui or --render-fullscreen-tui is requested)
+	if exLower != "" && !stdioMode && programPath == "" && !tuiMode && !renderFullScreenTUI {
 		if exLower == "all" {
 			txt, data, err := RunAllExamples()
 			if err != nil {
@@ -292,7 +309,7 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 0
 	}
 
-	// Pure Conceptual mode (if, sum, nod, factorial, tachometer) with --stdio
+	// Pure Conceptual mode (if, sum, nod, factorial, tachometer) with --stdio, --tui, or --render-fullscreen-tui
 	if mode == ModeConceptual && programPath == "" && (exLower == "" || isPureConceptualExample(exLower)) {
 		exName := exLower
 		if exName == "" {
@@ -303,26 +320,38 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			_, _ = fmt.Fprintf(stderr, "%v\n", err)
 			return 2
 		}
-		if stdioMode {
-			rawIn, err := io.ReadAll(stdin)
-			if err != nil {
-				_, _ = fmt.Fprintf(stderr, "VMK-IO: %v\n", err)
-				return 2
+		defaultExCmds := defaultConceptualCmdsForExample(exName)
+		if tuiMode && !stdioMode && !renderTUIFrame {
+			isInteractive := IsCharDeviceTTY(stdin, stdout) || tuiCanvas
+			st := NewConceptualFullScreenTUI(vm, defaultExCmds)
+			frame := RunFullScreenTUI(st, stdin, stdout, isInteractive)
+			_, _ = fmt.Fprintln(stdout, frame)
+		} else {
+			if stdioMode {
+				rawIn, err := io.ReadAll(stdin)
+				if err != nil {
+					_, _ = fmt.Fprintf(stderr, "VMK-IO: %v\n", err)
+					return 2
+				}
+				lines := strings.Split(string(rawIn), "\n")
+				var outW, errW io.Writer
+				if !tuiMode && !renderTUIFrame && !renderFullScreenTUI {
+					outW = stdout
+					errW = stderr
+				}
+				_, err = RunConceptualStdioStream(vm, lines, outW, errW)
+				if err != nil {
+					_, _ = fmt.Fprintf(stderr, "%v\n", err)
+					return 2
+				}
+			} else if len(defaultExCmds) > 0 {
+				_, _ = RunConceptualStdioStream(vm, defaultExCmds, nil, nil)
 			}
-			lines := strings.Split(string(rawIn), "\n")
-			var outW, errW io.Writer
-			if !tuiMode && !renderTUIFrame {
-				outW = stdout
-				errW = stderr
+			if renderFullScreenTUI {
+				_, _ = fmt.Fprintln(stdout, RenderConceptualFullScreenTUI(vm, nil, "RUNNING"))
+			} else if tuiMode || renderTUIFrame || !stdioMode {
+				_, _ = fmt.Fprintln(stdout, RenderConceptualTUIFrame(vm, "RUNNING"))
 			}
-			_, err = RunConceptualStdioStream(vm, lines, outW, errW)
-			if err != nil {
-				_, _ = fmt.Fprintf(stderr, "%v\n", err)
-				return 2
-			}
-		}
-		if tuiMode || renderTUIFrame || !stdioMode {
-			_, _ = fmt.Fprintln(stdout, RenderConceptualTUIFrame(vm, "RUNNING"))
 		}
 		if jsonOutPath != "" {
 			payload := map[string]any{
@@ -473,7 +502,7 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		}
 		lines := strings.Split(string(rawIn), "\n")
 		var outW, errW io.Writer
-		if !tuiMode && !renderTUIFrame {
+		if !tuiMode && !renderTUIFrame && !renderFullScreenTUI {
 			outW = stdout
 			errW = stderr
 		}
@@ -483,7 +512,10 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			return 2
 		}
 		queuedEvents = stdioRes.StdinRecords
-	} else if len(queuedEvents) > 0 && !tuiMode {
+	} else if len(queuedEvents) == 0 && exLower != "" {
+		queuedEvents = defaultBRAMEventsForExample(exLower, eng.Descriptors())
+	}
+	if !stdioMode && len(queuedEvents) > 0 && !tuiMode {
 		for _, ev := range queuedEvents {
 			eng.StepEvent(ev.CID, ev.Param, ev.ParamValid)
 		}
@@ -491,7 +523,16 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 	var pynqHWReport map[string]any
 	if target == "sim" {
-		if err := conn.LoadProgramIntoSim(bramImage, conceptNames, nil); err != nil {
+		var preInitBRAM []byte
+		var preNames []string
+		if exLower == "bms" {
+			if incComp, err := CompileKPOLSource(ExampleIncreaseSource, "KPOL-CME-1"); err == nil {
+				preInitBRAM = incComp.BRAMImage
+				preNames = incComp.ConceptNames
+				conn, _ = NewMachineConnection(target, preInitBRAM)
+			}
+		}
+		if err := conn.LoadProgramIntoSim(bramImage, conceptNames, preNames); err != nil {
 			_, _ = fmt.Fprintf(stderr, "%v\n", err)
 			return 2
 		}
@@ -514,9 +555,12 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		if !stdioMode {
 			pending = queuedEvents
 		}
-		isInteractive := IsCharDeviceTTY(stdin, stdout) && !renderTUIFrame && !stdioMode
-		frame := RunInteractiveBRAM64TUI(eng, conn, pending, stdioRes, stdin, stdout, isInteractive)
+		isInteractive := (IsCharDeviceTTY(stdin, stdout) || tuiCanvas) && !renderTUIFrame && !stdioMode
+		st := NewBRAM64FullScreenTUI(eng, conn, pending, stdioRes)
+		frame := RunFullScreenTUI(st, stdin, stdout, isInteractive)
 		_, _ = fmt.Fprintln(stdout, frame)
+	} else if renderFullScreenTUI {
+		_, _ = fmt.Fprintln(stdout, RenderBRAM64FullScreenTUI(eng, conn, nil, stdioRes, "RUNNING"))
 	} else if renderTUIFrame {
 		_, _ = fmt.Fprintln(stdout, conn.FormatPrePostLoadSummary())
 		_, _ = fmt.Fprintln(stdout)
@@ -573,6 +617,43 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 1
 	}
 	return 0
+}
+
+func defaultConceptualCmdsForExample(name string) []string {
+	switch strings.ToLower(strings.TrimSpace(name)) {
+	case "if":
+		return []string{"write If 1", "write If 1", "write If 1"}
+	case "sum":
+		return []string{"write Sum 10", "write Sum 25", "read Sum"}
+	case "nod":
+		return []string{"call Nod 120 6"}
+	case "factorial":
+		return []string{"call Factorial 5"}
+	case "tachometer":
+		return []string{"call Tachometer Tick", "call Tachometer Tick", "call Tachometer Tick", "call Tachometer _Tick 1"}
+	default:
+		return nil
+	}
+}
+
+func defaultBRAMEventsForExample(name string, descs *[64]ConceptDescriptor) []QueuedEvent {
+	var spec string
+	switch strings.ToLower(strings.TrimSpace(name)) {
+	case "increase":
+		spec = "0:5,0:25,0:_"
+	case "decrease":
+		spec = "0:5,0:5,0:25"
+	case "cascade":
+		spec = "0:10,0:100,0:10,0:10"
+	case "bms":
+		spec = "0:15,0:5500,0:_,0:120,0:180,0:250"
+	case "auth":
+		spec = "0:25,0:-5,0:_"
+	default:
+		return nil
+	}
+	evs, _ := ParseTraceEventsSpec(spec, descs)
+	return evs
 }
 
 func exampleHasRejects(data map[string]any) bool {

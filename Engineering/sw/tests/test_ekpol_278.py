@@ -156,7 +156,7 @@ def test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go():
     with _workspace_scratch_dir("roundtrip") as scratch:
         vmk_bin = _build_vmk_binary(scratch)
 
-        # Check VMK version is v0.2.0
+        # Check VMK version is v0.3.0
         ver_res = subprocess.run(
             [str(vmk_bin), "--version"],
             env=_go_env(scratch),
@@ -164,7 +164,7 @@ def test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go():
             capture_output=True,
             text=True,
         )
-        assert ver_res.stdout.strip() == "VMK (Virtual Machine of Kuzmin) v0.2.0"
+        assert ver_res.stdout.strip() == "VMK (Virtual Machine of Kuzmin) v0.3.0"
 
         for name, (kpol_src, cme_prof, ekpol_example_path) in classic_sources.items():
             assert ekpol_example_path.is_file(), f"Missing canonical example {ekpol_example_path}"
@@ -354,7 +354,7 @@ def test_all_nine_ekpol_examples_in_vmk_v020():
                 capture_output=True,
                 text=True,
             )
-            assert "VMK (Virtual Machine of Kuzmin) v0.2.0" in res.stdout
+            assert "VMK (Virtual Machine of Kuzmin) v0.3.0" in res.stdout
             payload = json.loads(json_out.read_text(encoding="utf-8"))
             assert payload["mode"] == "conceptual"
             assert payload["profile"] == "EKPOL"

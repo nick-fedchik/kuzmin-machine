@@ -266,7 +266,7 @@ func TestCLIStdioFailOnRejectTUIAndUnreachableTarget(t *testing.T) {
 	}
 	tuiStr := outBuf.String()
 	for _, marker := range []string{
-		"VMK (Virtual Machine of Kuzmin) v0.2.0",
+		"VMK (Virtual Machine of Kuzmin) v0.3.0",
 		"State: PRE-LOAD -> POST-LOAD -> RUNNING",
 		"[PANEL 1: CONCEPT TABLE",
 		"[PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS",
@@ -589,5 +589,143 @@ func TestEKPOLStaticVerificationErrors(t *testing.T) {
 	collisionSrc := `concept C0: i32 = 0 [>= 0] { <- x :: x < 10 => C0 += 5 . }`
 	if _, err := CompileEKPOLSource(collisionSrc, "Collision"); err == nil || !strings.Contains(err.Error(), "EKPOL-COLLISION-ERR") {
 		t.Fatalf("expected EKPOL-COLLISION-ERR on W1 collision, got %v", err)
+	}
+}
+
+func TestFullScreenTUIDebuggerBRAM64AndConceptual(t *testing.T) {
+	// 1. Test BRAM64 Full-Screen TUI:
+	//    - Navigation (Down arrow \x1b[B to C01, Up arrow \x1b[A back to C00)
+	//    - Watchpoint toggle ('w')
+	//    - Manual Event Creator ('e') -> type '120' -> '+' (enqueue into Pending Queue without immediate execution!)
+	//    - Single Micro-Step ('n' / Space) hop-by-hop across C00 -> C01 -> C02 -> C03!
+	//    - Quick Fault '_' injection ('f')
+	//    - Modify Concept State ('m') -> type '42' + Enter -> verifies State[0] == 42
+	//    - Toggle Panel [2] ('d') between Concept Inspector, Source Code, and Pre-Load vs Post-Load Diff
+	//    - Reset ('r') back to Post-Load state
+	//    - Help overlay ('?') and Quit ('q')
+	incComp, err := CompileKPOLSource(ExampleIncreaseSource, "KPOL-CME-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bmsComp, err := CompileKPOLSource(ExampleBMSSafetyCascadeSource, "KPOL-CME-2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	conn, _ := NewMachineConnection("sim", incComp.BRAMImage)
+	_ = conn.LoadProgramIntoSim(bmsComp.BRAMImage, bmsComp.ConceptNames, incComp.ConceptNames)
+	eng, err := NewBRAM64Engine(bmsComp.BRAMImage, "KPOL-CME-2", bmsComp.ModuleName, ExampleBMSSafetyCascadeSource, bmsComp.ConceptNames)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	st := NewBRAM64FullScreenTUI(eng, conn, nil, nil)
+
+	// Step A: Move cursor down to C01 (\x1b[B) and verify SelectedCID() == 1 and Concept Inspector shows C01
+	var buf bytes.Buffer
+	_ = RunFullScreenTUI(st, strings.NewReader("\x1b[Bw"), &buf, true)
+	if st.SelectedCID() != 1 || !eng.WatchCIDs[1] {
+		t.Fatalf("expected SelectedCID()==1 and WatchCIDs[1]==true after Down+w, got cid=%d watch=%v", st.SelectedCID(), eng.WatchCIDs[1])
+	}
+	frameC01 := st.RenderFrame()
+	if !strings.Contains(frameC01, "Concept ID & Name : C01 (Module_Thermal_Guard)") {
+		t.Fatalf("Inspector missing C01 card:\n%s", frameC01)
+	}
+
+	// Step B: Move cursor up to C00 (\x1b[A), open Manual Event Creator ('e'), type "120", press '+' to enqueue into PendingQueue
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("\x1b[Ae120+"), &buf, true)
+	if len(st.PendingQueue) != 1 || st.PendingQueue[0].CID != 0 || st.PendingQueue[0].Param != 120 || eng.EventsProcessed != 0 {
+		t.Fatalf("expected 1 queued event C00(120) with 0 executed steps, got queue=%+v events=%d", st.PendingQueue, eng.EventsProcessed)
+	}
+
+	// Step C: Press 'n' (Single Micro-Step #1): must evaluate ONLY C00 (0 -> 1) and place hop C01(param=1) at head of PendingQueue!
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("n"), &buf, true)
+	if eng.EventsProcessed != 1 || eng.State[0] != 1 || eng.State[1] != 0 {
+		t.Fatalf("expected SingleHop #1 to update only C00=1 (C01 still 0), got events=%d states=%v", eng.EventsProcessed, eng.State[:4])
+	}
+	if len(st.PendingQueue) != 1 || !st.PendingQueue[0].IsHop || st.PendingQueue[0].CID != 1 || st.PendingQueue[0].Depth != 1 {
+		t.Fatalf("expected PendingQueue to hold cascade hop C01(depth=1), got %+v", st.PendingQueue)
+	}
+
+	// Step D: Press Space (' ') for Hop #2 (C01: 0 -> 1, queues C02), 'n' for Hop #3 (C02: 2 -> 1, queues C03), 'n' for Hop #4 (C03: 10 -> 1)
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader(" nn"), &buf, true)
+	wantAfterWave1 := [4]int32{1, 1, 1, 1}
+	for i, w := range wantAfterWave1 {
+		if eng.State[i] != w {
+			t.Fatalf("after 4 micro-hops State[%d] = %d, want %d", i, eng.State[i], w)
+		}
+	}
+	if len(st.PendingQueue) != 0 {
+		t.Fatalf("expected PendingQueue to be empty after 4 hops, got %+v", st.PendingQueue)
+	}
+
+	// Step E: Immediate event execution via Manual Event Creator ('e' + "180" + Enter) -> full cascade to [2, 2, 0, 0]
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("\x1b[A\x1b[A\x1b[Ae180\n"), &buf, true)
+	wantAfterWave2 := [4]int32{2, 2, 0, 0}
+	for i, w := range wantAfterWave2 {
+		if eng.State[i] != w {
+			t.Fatalf("after immediate Event(180) State[%d] = %d, want %d", i, eng.State[i], w)
+		}
+	}
+
+	// Step F: Inject quick sensor fault '_' ('f') -> FaultPropagations increments, state preserved
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("f"), &buf, true)
+	if eng.FaultPropagations != 1 || eng.State[0] != 2 {
+		t.Fatalf("expected FaultPropagations=1 and State[0]=2 after 'f', got faults=%d state=%d", eng.FaultPropagations, eng.State[0])
+	}
+
+	// Step G: Modify Concept State ('m' + "77" + Enter) on C00 -> State[0] becomes 77
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("m77\n"), &buf, true)
+	if eng.State[0] != 77 {
+		t.Fatalf("expected ModifyConceptState ('m77\\n') to set State[0]=77, got %d", eng.State[0])
+	}
+
+	// Step H: Modify Concept Validity to '_' ('m' + "_" + Enter) on C00 -> ValidMask bit 0 becomes 0
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("m_\n"), &buf, true)
+	if (eng.ValidMask & 1) != 0 {
+		t.Fatalf("expected ModifyConceptState ('m_\\n') to set C00 ValidMask bit to 0 (_), got mask=0x%X", eng.ValidMask)
+	}
+
+	// Step I: Toggle Panel [2] with 'd' (Source Code) and 'd' again (Pre-Load vs Post-Load Diff)
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("d"), &buf, true)
+	if st.Panel2Mode != ViewSourceCode || !strings.Contains(st.RenderFrame(), "Problem BmsSafetyCascade") {
+		t.Fatalf("expected Source Code view after first 'd', got mode=%v", st.Panel2Mode)
+	}
+	buf.Reset()
+	_ = RunFullScreenTUI(st, strings.NewReader("d"), &buf, true)
+	diffFrame := st.RenderFrame()
+	if st.Panel2Mode != ViewPrePostDiff || !strings.Contains(diffFrame, "PRE-LOAD vs POST-LOAD DIFF") {
+		t.Fatalf("expected Pre-Load vs Post-Load Diff view after second 'd', got mode=%v\n%s", st.Panel2Mode, diffFrame)
+	}
+
+	// Step J: Reset ('r') restores Post-Load states [0, 0, 2, 10] and ValidMask, then 'q' quits
+	buf.Reset()
+	finalFrame := RunFullScreenTUI(st, strings.NewReader("rq"), &buf, true)
+	if eng.State[0] != 0 || eng.State[2] != 2 || eng.State[3] != 10 || eng.EventsProcessed != 0 {
+		t.Fatalf("expected Reset ('r') to restore [0,0,2,10] and EventsProcessed=0, got states=%v events=%d", eng.State[:4], eng.EventsProcessed)
+	}
+	if !strings.Contains(finalFrame, "VMK v0.3.0 FULL-SCREEN DEBUGGER") || !strings.Contains(finalFrame, "┌─") {
+		t.Fatalf("missing full-screen UTF-8 box headers in finalFrame:\n%s", finalFrame)
+	}
+
+	// 2. Test CLI flags `--render-fullscreen-tui` and `--tui-canvas` for both bram64 and conceptual
+	var cliOut, cliErr bytes.Buffer
+	code := RunCLI([]string{"--example", "bms", "--render-fullscreen-tui"}, strings.NewReader(""), &cliOut, &cliErr)
+	if code != 0 || !strings.Contains(cliOut.String(), "VMK v0.3.0 FULL-SCREEN DEBUGGER") || !strings.Contains(cliOut.String(), "Concept ID & Name : C00 (Cell_Delta_mV)") {
+		t.Fatalf("--render-fullscreen-tui failed: code=%d stderr=%s\nout=%s", code, cliErr.String(), cliOut.String())
+	}
+
+	cliOut.Reset()
+	cliErr.Reset()
+	code = RunCLI([]string{"--program", "../../examples/sum_autoreset.ekpol", "--tui-canvas"}, strings.NewReader("nnn\x1b[Be15\nq"), &cliOut, &cliErr)
+	if code != 0 || !strings.Contains(cliOut.String(), "VMK v0.3.0 FULL-SCREEN DEBUGGER") || !strings.Contains(cliOut.String(), "READ: Sum = 35") {
+		t.Fatalf("conceptual --tui-canvas failed: code=%d stderr=%s\nout=%s", code, cliErr.String(), cliOut.String())
 	}
 }
