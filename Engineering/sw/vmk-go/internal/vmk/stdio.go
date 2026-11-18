@@ -382,9 +382,9 @@ func RunConceptualStdioStream(
 		cmd := strings.ToLower(parts[0])
 
 		switch cmd {
-		case "write":
+		case "write", "toggle":
 			if len(parts) < 2 {
-				return nil, fmt.Errorf("STDIO-CONCEPTUAL: write requires concept name")
+				return nil, fmt.Errorf("STDIO-CONCEPTUAL: %s requires concept name", cmd)
 			}
 			target := strings.ToLower(parts[1])
 			valTok := "1"
@@ -471,7 +471,7 @@ func RunConceptualStdioStream(
 				return nil, fmt.Errorf("STDIO-CONCEPTUAL: unknown call target %q", parts[1])
 			}
 		default:
-			return nil, fmt.Errorf("STDIO-CONCEPTUAL: unknown command %q (expected write, read, or call)", parts[0])
+			return nil, fmt.Errorf("STDIO-CONCEPTUAL: unknown command %q (expected write, toggle, read, or call)", parts[0])
 		}
 
 		for _, msg := range vm.StdoutHistory[prevOutLen:] {

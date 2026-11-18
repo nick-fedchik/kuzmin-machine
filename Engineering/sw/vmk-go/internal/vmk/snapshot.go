@@ -573,9 +573,14 @@ func (c *MachineConnection) ExecutePYNQSession(programBRAM []byte, hwParams []in
 	for _, p := range hwParams {
 		paramStrs = append(paramStrs, strconv.FormatInt(int64(p), 10))
 	}
+	sudoPass := os.Getenv("PYNQ_SUDO_PASS")
+	if sudoPass == "" {
+		sudoPass = "xilinx"
+	}
 	remoteExec := fmt.Sprintf(
-		"cd %s && gcc -std=c99 -O2 -Wall -Wextra -Werror km_pynq_debug_probe.c -o km_pynq_debug_probe && echo xilinx | sudo -S -p '' ./km_pynq_debug_probe program_image.bin %s",
+		"cd %s && gcc -std=c99 -O2 -Wall -Wextra -Werror km_pynq_debug_probe.c -o km_pynq_debug_probe && echo %s | sudo -S -p '' ./km_pynq_debug_probe program_image.bin %s",
 		remoteDir,
+		sudoPass,
 		strings.Join(paramStrs, " "),
 	)
 	runCmd := exec.Command("ssh", append(append([]string{}, sshOpts...), sshHost, remoteExec)...)

@@ -365,7 +365,12 @@ func TestAllPredicatesActionsSelfSuppressAndExamplesAll(t *testing.T) {
 		t.Fatalf("expected exit code 1 for --example bms --fail-on-reject, got %d", code)
 	}
 
-	// Verify --mode conceptual --stdio works for all BRAM-lowered examples (bms, cascade, increase, decrease, auth)
+	// Verify --mode conceptual --stdio works for `toggle If` and all BRAM-lowered examples (bms, cascade, increase, decrease, auth)
+	exOut.Reset()
+	exErr.Reset()
+	if code := RunCLI([]string{"--mode", "conceptual", "--example", "if", "--stdio"}, strings.NewReader("toggle If\ntoggle If\n"), &exOut, &exErr); code != 0 || !strings.Contains(exOut.String(), "COMMIT: If[cid=0] = ¬") {
+		t.Fatalf("toggle If in conceptual stdio failed: code=%d stderr=%s out=%s", code, exErr.String(), exOut.String())
+	}
 	for _, exName := range []string{"bms", "cascade", "increase", "decrease", "auth"} {
 		exOut.Reset()
 		exErr.Reset()

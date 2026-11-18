@@ -1,13 +1,13 @@
 # Специфікація віртуальної машини Кузьміна (VMK) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`)
 
-* **Версія:** 1.0.1
+* **Версія:** 1.0.2
 * **Дата:** 2026-11-18
 * **Тип WP:** Specification
 * **Статус:** Запропоновано на затвердження власником (Proposed)
 * **ASPICE 4.0 процеси:** `SWE.1` (Software Requirements Analysis), `SWE.2` (Software Architectural Design), `SWE.3` (Software Detailed Design and Unit Construction)
-* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274); пов'язані задачі [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
+* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Architect).
-* **Цільовий програмний модуль:** [`Engineering/sw/vmk-go/`](../../sw/vmk-go/go.mod) (`cmd/vmk`, `internal/vmk`, Go `1.22`+, виключно стандартна бібліотека `std`).
+* **Цільовий програмний модуль та посібник:** [`Engineering/sw/vmk-go/`](../../sw/vmk-go/README.md) (`cmd/vmk`, `internal/vmk`, Go `1.22`+, виключно стандартна бібліотека `std`), [Посібник користувача VMK `1.0.0`](../../guides/vmk-users-guide.md).
 * **Верифікація:** [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go), [`Engineering/sw/tests/test_vmk_go_274.py`](../../sw/tests/test_vmk_go_274.py) та звіт [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md).
 
 ---
@@ -110,6 +110,7 @@ flowchart LR
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.2 | 2026-11-18 | #276: додано взаємне перехресне посилання на практичний Посібник користувача VMK [`Engineering/guides/vmk-users-guide.md`](../../guides/vmk-users-guide.md) та [`Engineering/sw/vmk-go/README.md`](../../sw/vmk-go/README.md). |
 | 1.0.1 | 2026-11-18 | За рецензією PR #275 (`claude-sonnet-5.5`, `N1..N6`): задокументовано виконання BRAM-прикладів (`bms`, `cascade`, `increase`, `decrease`, `auth`) у `--mode conceptual --stdio` як `conceptual (descriptor-backed)` та походження початкового стану `PRE-LOAD` у симуляторі (`3/64`, `1/64`, `0/64`) проти фізичної плати `PYNQ-Z1`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск специфікації двомодового емулятора VMK (`bram64` + `conceptual`) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`) за Issue #274. |
 
