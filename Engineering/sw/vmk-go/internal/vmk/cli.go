@@ -46,13 +46,16 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		breakOnReject    bool
 		stopOnBreakpoint bool
 		jsonOutPath      string
+		toKPOL           bool
+		toEKPOL          bool
+		ekpolStyle       string
 		showVersion      bool
 	)
 
 	fs.StringVar(&mode, "mode", "", "execution mode: 'bram64' or 'conceptual'")
 	fs.StringVar(&example, "example", "", "built-in example: if|sum|nod|factorial|tachometer|bms|increase|decrease|cascade|auth|all")
-	fs.StringVar(&programPath, "program", "", "path to .kpol source file or 1024-byte .bin BRAM image")
-	fs.StringVar(&profile, "profile", "KPOL-CME-2", "KPOL compiler profile: KPOL-CME-1, KPOL-CME-2, or KPOL-AUTH")
+	fs.StringVar(&programPath, "program", "", "path to .kpol / .ekpol source file or 1024-byte .bin BRAM image")
+	fs.StringVar(&profile, "profile", "KPOL-CME-2", "compiler profile: KPOL-CME-1, KPOL-CME-2, KPOL-AUTH, or EKPOL")
 	fs.StringVar(&target, "target", "sim", "machine target: sim, pynq1, pynq2, or ssh host")
 	fs.StringVar(&connectAlias, "connect", "", "alias for --target")
 	fs.StringVar(&traceEvents, "trace-events", "", "comma-separated event spec, e.g. '0:10,0:100,0:invalid'")
@@ -66,6 +69,9 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs.BoolVar(&breakOnReject, "break-on-reject", false, "trigger watchpoint/breakpoint on REJECT_*")
 	fs.BoolVar(&stopOnBreakpoint, "stop-on-breakpoint", false, "halt execution when a watchpoint/breakpoint fires")
 	fs.StringVar(&jsonOutPath, "json-out", "", "optional path to write structured JSON report")
+	fs.BoolVar(&toKPOL, "to-kpol", false, "transpile input .ekpol program to classic .kpol and print to stdout")
+	fs.BoolVar(&toEKPOL, "to-ekpol", false, "transpile input .kpol program or built-in example to .ekpol and print to stdout")
+	fs.StringVar(&ekpolStyle, "ekpol-style", "symbolic", "EKPOL formatting style for --to-ekpol: 'symbolic' or 'keyword'")
 	fs.BoolVar(&showVersion, "version", false, "print VMK SemVer version and exit")
 
 	if err := fs.Parse(args); err != nil {
@@ -83,17 +89,159 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 
 	exLower := strings.ToLower(strings.TrimSpace(example))
+
+	// Handle --to-kpol and --to-ekpol transpilation flags
+	if toKPOL || toEKPOL {
+		var src string
+		modStem := "EkpolModule"
+		if programPath != "" {
+			rawBytes, err := os.ReadFile(programPath)
+			if err != nil {
+				_, _ = fmt.Fprintf(stderr, "VMK-IO: %s: %v\n", programPath, err)
+				return 2
+			}
+			src = string(rawBytes)
+			modStem = strings.TrimSuffix(filepath.Base(programPath), filepath.Ext(programPath))
+		} else if exLower != "" {
+			switch exLower {
+			case "increase":
+				src = ExampleIncreaseSource
+			case "decrease":
+				src = ExampleDecreaseSource
+			case "cascade":
+				src = ExampleCascade4Source
+			case "bms":
+				src = ExampleBMSSafetyCascadeSource
+			default:
+				_, _ = fmt.Fprintf(stderr, "VMK-CLI: --to-ekpol/--to-kpol supports examples increase|decrease|cascade|bms or --program\n")
+				return 2
+			}
+		} else {
+			_, _ = fmt.Fprintln(stderr, "VMK-CLI: --to-kpol / --to-ekpol requires --program or --example")
+			return 2
+		}
+
+		if toKPOL {
+			outTxt, err := TranspileEKPOLToKPOL(src, modStem)
+			if err != nil {
+				_, _ = fmt.Fprintf(stderr, "%v\n", err)
+				return 2
+			}
+			_, _ = fmt.Fprint(stdout, outTxt)
+			return 0
+		}
+		// toEKPOL: if input is already .ekpol, transpile to KPOL first then format in requested ekpolStyle
+		if strings.EqualFold(filepath.Ext(programPath), ".ekpol") || profile == "EKPOL" {
+			kpolTmp, err := TranspileEKPOLToKPOL(src, modStem)
+			if err != nil {
+				_, _ = fmt.Fprintf(stderr, "%v\n", err)
+				return 2
+			}
+			src = kpolTmp
+		}
+		outTxt, err := TranspileKPOLToEKPOL(src, ekpolStyle)
+		if err != nil {
+			_, _ = fmt.Fprintf(stderr, "%v\n", err)
+			return 2
+		}
+		_, _ = fmt.Fprint(stdout, outTxt)
+		return 0
+	}
+
+	// Check if --program is a conceptual .ekpol program
+	var parsedEKPOL *EKPOLProgram
+	var rawProgramText string
+	if programPath != "" && (strings.EqualFold(filepath.Ext(programPath), ".ekpol") || profile == "EKPOL") {
+		rawBytes, err := os.ReadFile(programPath)
+		if err != nil {
+			_, _ = fmt.Fprintf(stderr, "VMK-IO: %s: %v\n", programPath, err)
+			return 2
+		}
+		rawProgramText = string(rawBytes)
+		modStem := strings.TrimSuffix(filepath.Base(programPath), filepath.Ext(programPath))
+		parsedEKPOL, err = ParseEKPOL(rawProgramText, modStem)
+		if err != nil {
+			_, _ = fmt.Fprintf(stderr, "%v\n", err)
+			return 2
+		}
+	}
+
 	if mode == "" {
-		switch exLower {
-		case "if", "sum", "nod", "factorial", "tachometer":
+		if parsedEKPOL != nil && parsedEKPOL.IsConceptualOnly() {
 			mode = ModeConceptual
-		default:
-			mode = ModeBRAM64
+		} else {
+			switch exLower {
+			case "if", "sum", "nod", "factorial", "tachometer":
+				mode = ModeConceptual
+			default:
+				mode = ModeBRAM64
+			}
 		}
 	}
 	if mode != ModeBRAM64 && mode != ModeConceptual {
 		_, _ = fmt.Fprintf(stderr, "VMK-CLI: invalid --mode %q (expected 'bram64' or 'conceptual')\n", mode)
 		return 2
+	}
+
+	// Pure Conceptual mode for conceptual .ekpol file
+	if parsedEKPOL != nil && parsedEKPOL.IsConceptualOnly() && mode == ModeConceptual {
+		vm, defaultCmds, err := NewConceptualVMFromEKPOL(parsedEKPOL, rawProgramText)
+		if err != nil {
+			_, _ = fmt.Fprintf(stderr, "%v\n", err)
+			return 2
+		}
+		if stdioMode {
+			rawIn, err := io.ReadAll(stdin)
+			if err != nil {
+				_, _ = fmt.Fprintf(stderr, "VMK-IO: %v\n", err)
+				return 2
+			}
+			lines := strings.Split(string(rawIn), "\n")
+			var outW, errW io.Writer
+			if !tuiMode && !renderTUIFrame {
+				outW = stdout
+				errW = stderr
+			}
+			_, err = RunConceptualStdioStream(vm, lines, outW, errW)
+			if err != nil {
+				_, _ = fmt.Fprintf(stderr, "%v\n", err)
+				return 2
+			}
+		} else if len(defaultCmds) > 0 {
+			_, err = RunConceptualStdioStream(vm, defaultCmds, nil, nil)
+			if err != nil {
+				_, _ = fmt.Fprintf(stderr, "%v\n", err)
+				return 2
+			}
+		}
+		statusLbl := "COMPLETED"
+		if stdioMode {
+			statusLbl = "RUNNING"
+		}
+		if tuiMode || renderTUIFrame || !stdioMode {
+			_, _ = fmt.Fprintln(stdout, RenderConceptualTUIFrame(vm, statusLbl))
+		}
+		if jsonOutPath != "" {
+			payload := map[string]any{
+				"mode":             ModeConceptual,
+				"profile":          "EKPOL",
+				"program":          vm.ProgramName,
+				"events_processed": vm.EventsProcessed,
+				"commits":          vm.Commits,
+				"rejects":          vm.Rejects,
+				"steps":            vm.Steps,
+				"stdout":           vm.StdoutHistory,
+				"stderr":           vm.StderrHistory,
+			}
+			if err := writeJSONFile(jsonOutPath, payload); err != nil {
+				_, _ = fmt.Fprintf(stderr, "VMK-IO: %v\n", err)
+				return 2
+			}
+		}
+		if failOnReject && vm.Rejects > 0 {
+			return 1
+		}
+		return 0
 	}
 
 	isPureConceptualExample := func(name string) bool {
@@ -215,7 +363,15 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			bramImage = rawBytes
 		} else {
 			sourceText = string(rawBytes)
-			comp, err := CompileKPOLSource(sourceText, profile)
+			if strings.EqualFold(filepath.Ext(programPath), ".ekpol") {
+				profile = "EKPOL"
+			}
+			var comp *CompiledKPOL
+			if profile == "EKPOL" {
+				comp, err = CompileEKPOLSource(sourceText, modName)
+			} else {
+				comp, err = CompileKPOLSource(sourceText, profile)
+			}
 			if err != nil {
 				_, _ = fmt.Fprintf(stderr, "%v\n", err)
 				return 2

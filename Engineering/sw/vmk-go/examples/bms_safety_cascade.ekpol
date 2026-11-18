@@ -1,0 +1,43 @@
+module BmsSafetyCascade;
+
+@stdin
+@stdout
+concept Cell_Delta_mV: i32 = 0 [>= 0] {
+    <- EvCellDelta(delta_mv) :: delta_mv in 50..5000 => Cell_Delta_mV += 1 .
+}
+
+@stdout
+concept Module_Thermal_Guard: i32 = 0 [>= 0] {
+    ~ Cell_Delta_mV :: Cell_Delta_mV >= 1 => Module_Thermal_Guard += 1 .
+}
+
+@stdout
+concept Pack_Fault_Latch: i32 = 2 [>= 0] {
+    ~ Module_Thermal_Guard :: Module_Thermal_Guard >= 1 => Pack_Fault_Latch -= 1 .
+}
+
+@stdout
+concept Contactor_Interlock: i32 = 10 [>= 0] {
+    ~ Pack_Fault_Latch :: !(Pack_Fault_Latch == 2) => Contactor_Interlock = Pack_Fault_Latch .
+}
+
+test BmsFourLevelProtectionAndLatch {
+    send Cell_Delta_mV(15);
+    expect Cell_Delta_mV == 0;
+    expect Contactor_Interlock == 10;
+    send Cell_Delta_mV(120);
+    expect Cell_Delta_mV == 1;
+    expect Module_Thermal_Guard == 1;
+    expect Pack_Fault_Latch == 1;
+    expect Contactor_Interlock == 1;
+    send Cell_Delta_mV(180);
+    expect Cell_Delta_mV == 2;
+    expect Module_Thermal_Guard == 2;
+    expect Pack_Fault_Latch == 0;
+    expect Contactor_Interlock == 0;
+    send Cell_Delta_mV(250);
+    expect Cell_Delta_mV == 3;
+    expect Module_Thermal_Guard == 3;
+    expect Pack_Fault_Latch == 0;
+    expect Contactor_Interlock == 0;
+}

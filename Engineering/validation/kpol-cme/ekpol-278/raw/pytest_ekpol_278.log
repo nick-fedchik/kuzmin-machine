@@ -1,0 +1,21 @@
+# cmd: python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
+# timestamp: 2026-11-18T12:22:12Z
+# git_commit: c49869a35e6922a790c2291f537d2cb07e7ccaeb
+# host: AORUS-5-SE x86_64 GNU/Linux
+
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-278-ekpol
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 5 items
+
+Engineering/sw/tests/test_ekpol_278.py::test_classic_kpol_files_unmodified_and_sha256_preserved PASSED [ 20%]
+Engineering/sw/tests/test_ekpol_278.py::test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go PASSED [ 40%]
+Engineering/sw/tests/test_ekpol_278.py::test_compile_cli_c99_z3_and_debugger_on_ekpol PASSED [ 60%]
+Engineering/sw/tests/test_ekpol_278.py::test_all_five_conceptual_ekpol_examples_in_vmk_v020 PASSED [ 80%]
+Engineering/sw/tests/test_ekpol_278.py::test_mutants_m1_to_m5_all_killed PASSED [100%]
+
+============================== 5 passed in 1.44s ===============================

@@ -1,0 +1,132 @@
+{
+  "increase": {
+    "profile": "KPOL-CME-1",
+    "bram_sha256": "4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d",
+    "classic_kpol": {
+      "loc": 10,
+      "tokens": 46,
+      "chars": 229,
+      "non_ascii_chars": 0
+    },
+    "ekpol_symbolic": {
+      "loc": 6,
+      "tokens": 29,
+      "chars": 122,
+      "non_ascii_chars": 0
+    },
+    "ekpol_keyword": {
+      "loc": 6,
+      "tokens": 30,
+      "chars": 132,
+      "non_ascii_chars": 0
+    }
+  },
+  "decrease": {
+    "profile": "KPOL-CME-1",
+    "bram_sha256": "00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3",
+    "classic_kpol": {
+      "loc": 10,
+      "tokens": 46,
+      "chars": 229,
+      "non_ascii_chars": 0
+    },
+    "ekpol_symbolic": {
+      "loc": 6,
+      "tokens": 29,
+      "chars": 122,
+      "non_ascii_chars": 0
+    },
+    "ekpol_keyword": {
+      "loc": 6,
+      "tokens": 30,
+      "chars": 132,
+      "non_ascii_chars": 0
+    }
+  },
+  "cascade_4concept": {
+    "profile": "KPOL-CME-2",
+    "bram_sha256": "032c4705c91cea6ddddb7d449cd0dcbd6ba62359af1f9e7a846f33c341a7ef38",
+    "classic_kpol": {
+      "loc": 31,
+      "tokens": 202,
+      "chars": 851,
+      "non_ascii_chars": 0
+    },
+    "ekpol_symbolic": {
+      "loc": 28,
+      "tokens": 145,
+      "chars": 531,
+      "non_ascii_chars": 0
+    },
+    "ekpol_keyword": {
+      "loc": 28,
+      "tokens": 158,
+      "chars": 601,
+      "non_ascii_chars": 0
+    }
+  },
+  "bms_safety_cascade": {
+    "profile": "KPOL-CME-2",
+    "bram_sha256": "de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee",
+    "classic_kpol": {
+      "loc": 49,
+      "tokens": 252,
+      "chars": 1849,
+      "non_ascii_chars": 0
+    },
+    "ekpol_symbolic": {
+      "loc": 38,
+      "tokens": 201,
+      "chars": 1226,
+      "non_ascii_chars": 0
+    },
+    "ekpol_keyword": {
+      "loc": 38,
+      "tokens": 214,
+      "chars": 1296,
+      "non_ascii_chars": 0
+    }
+  },
+  "if_toggle": {
+    "author_kpol": {
+      "loc": 4,
+      "tokens": 15,
+      "chars": 48,
+      "non_ascii_chars": 2
+    },
+    "ekpol_file": {
+      "loc": 14,
+      "tokens": 80,
+      "chars": 358,
+      "non_ascii_chars": 0
+    }
+  },
+  "sum_autoreset": {
+    "author_kpol": {
+      "loc": 3,
+      "tokens": 14,
+      "chars": 50,
+      "non_ascii_chars": 3
+    },
+    "ekpol_file": {
+      "loc": 13,
+      "tokens": 73,
+      "chars": 319,
+      "non_ascii_chars": 0
+    }
+  },
+  "nod_euclid": {
+    "author_kpol": {
+      "loc": 2,
+      "tokens": 22,
+      "chars": 62,
+      "non_ascii_chars": 0
+    },
+    "ekpol_file": {
+      "loc": 17,
+      "tokens": 99,
+      "chars": 365,
+      "non_ascii_chars": 0
+    }
+  }
+}

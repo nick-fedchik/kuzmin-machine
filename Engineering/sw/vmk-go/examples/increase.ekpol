@@ -1,0 +1,7 @@
+module Increase;
+
+@stdin
+@stdout
+concept Counter: i32 = 10 [>= 0] {
+    <- Pulse(param) :: param < 20 => Counter += 1 .
+}

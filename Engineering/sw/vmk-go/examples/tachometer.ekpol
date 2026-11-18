@@ -1,0 +1,29 @@
+module TachometerClass;
+
+// Tachometer class with wheel pulses (Tick) and post-read speed calculation (_Tick)
+@stdin
+@stdout
+concept Revolutions: u64 = 0 [>= 0] {
+    on Tick(step) => Revolutions += 1 commit;
+    on read => after Revolutions = 0;
+}
+
+@stdout
+concept Distance: f64 = 0 [>= 0] {
+    on change(Revolutions) when Revolutions >= 1 => Distance += 2 commit;
+}
+
+@stdout
+concept Speed: f64 = 0 [>= 0] {
+    on _Tick(dt) when dt > 0 => Speed = Revolutions commit;
+}
+
+test CheckTachometerThreeTicksAndTimer {
+    send Tick(1);
+    send Tick(1);
+    send Tick(1);
+    send _Tick(1);
+    expect Distance == 6;
+    expect Speed == 6;
+    expect Revolutions == 0;
+}

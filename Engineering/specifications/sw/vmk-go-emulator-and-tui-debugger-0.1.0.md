@@ -1,24 +1,24 @@
-# Специфікація віртуальної машини Кузьміна (VMK) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`)
+# Специфікація віртуальної машини Кузьміна (VMK) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.2.0`)
 
-* **Версія:** 1.0.2
+* **Версія:** 1.1.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Specification
 * **Статус:** Запропоновано на затвердження власником (Proposed)
 * **ASPICE 4.0 процеси:** `SWE.1` (Software Requirements Analysis), `SWE.2` (Software Architectural Design), `SWE.3` (Software Detailed Design and Unit Construction)
-* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
+* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Architect).
-* **Цільовий програмний модуль та посібник:** [`Engineering/sw/vmk-go/`](../../sw/vmk-go/README.md) (`cmd/vmk`, `internal/vmk`, Go `1.22`+, виключно стандартна бібліотека `std`), [Посібник користувача VMK `1.0.1`](../../guides/vmk-users-guide.md).
-* **Верифікація:** [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go), [`Engineering/sw/tests/test_vmk_go_274.py`](../../sw/tests/test_vmk_go_274.py) та звіт [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md).
+* **Цільовий програмний модуль та посібник:** [`Engineering/sw/vmk-go/`](../../sw/vmk-go/README.md) (`cmd/vmk`, `internal/vmk`, `examples/*.ekpol`, Go `1.22`+, виключно стандартна бібліотека `std`), [Посібник користувача VMK `1.1.0`](../../guides/vmk-users-guide.md), [Специфікація `EKPOL 0.1.0`](../kpol/ekpol-specification-0.1.0.md).
+* **Верифікація:** [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go), [`Engineering/sw/tests/test_vmk_go_274.py`](../../sw/tests/test_vmk_go_274.py), [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), звіти [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md) та [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md).
 
 ---
 
 ## 1. Призначення та межі
 
 ### 1.1. Призначення
-Програмний модуль **VMK (Virtual Machine of Kuzmin)** у [`Engineering/sw/vmk-go/`](../../sw/vmk-go/go.mod) (`v0.1.0`) надає самодостатній, статично компільований виконуваний бінарник `vmk` на мові Go без жодних зовнішніх залежностей поза стандартною бібліотекою (`std`), призначений для:
+Програмний модуль **VMK (Virtual Machine of Kuzmin)** у [`Engineering/sw/vmk-go/`](../../sw/vmk-go/go.mod) (`v0.2.0`) надає самодостатній, статично компільований виконуваний бінарник `vmk` на мові Go без жодних зовнішніх залежностей поза стандартною бібліотекою (`std`), призначений для:
 1. Побітово точної емуляції та покрокового 10-фазного трасування 64-слотового апаратного конвеєра дескрипторів `CME-RAW-1` (`CFG-P` та двобанкового `CFG-P-HA`, режим `--mode bram64`), а також прямого підключення до фізичної плати `PYNQ-Z1` (`--target sim|pynq1|pynq2`) під міжпроцесним блокуванням `/tmp/km-bench.lock`;
 2. Навчально-концептуального виконання та візуалізації семантичної моделі Машини Кузьміна за первинними матеріалами та відповідями Автора концепції М. Ю. Кузьміна (`RFC-001..018`, режим `--mode conceptual`);
-3. Автоматизованого потокового тестування програм МК через стандартні потоки UNIX (`--stdio`: `stdin` / `stdout` / `stderr`, `--fail-on-reject`) та інтерактивного чи детермінованого 4-панельного TUI-відлагодження (`--tui`, `--render-tui-frame`).
+3. Автоматизованого потокового тестування програм МК через стандартні потоки UNIX (`--stdio`: `stdin` / `stdout` / `stderr`, `--fail-on-reject`), інтерактивного чи детермінованого 4-панельного TUI-відлагодження (`--tui`, `--render-tui-frame`), а також нативної компіляції та двосторонньої трансляції ергономічної мови **`EKPOL 0.1.0` (`--profile EKPOL`, `--to-kpol`, `--to-ekpol`, `--ekpol-style symbolic|keyword`)** у [`internal/vmk/ekpol.go`](../../sw/vmk-go/internal/vmk/ekpol.go).
 
 ### 1.2. Межі та атрибуція (`AGENTS.md §6.1`)
 - Автор концепції Машини Кузьміна — **Михайло Ювеналійович Кузьмін** (первинні джерела в [`Research/sources/`](../../../Research/sources/README.md)). Ця специфікація та Go-реалізація `Engineering/sw/vmk-go` є похідними інженерними артефактами проєкту (М. Федчик, інженерні агенти) і не замінюють первинних авторських джерел.
@@ -110,6 +110,7 @@ flowchart LR
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.1.0 | 2026-11-18 | #278: піднято SemVer релізу Go `VMK` до `v0.2.0`; додано нативну підтримку мови `EKPOL 0.1.0` (`internal/vmk/ekpol.go`, `--profile EKPOL`, `--to-kpol`, `--to-ekpol`, `--ekpol-style symbolic\|keyword`) та каталог `examples/*.ekpol`. |
 | 1.0.2 | 2026-11-18 | #276: додано взаємне перехресне посилання на практичний Посібник користувача VMK [`Engineering/guides/vmk-users-guide.md`](../../guides/vmk-users-guide.md) та [`Engineering/sw/vmk-go/README.md`](../../sw/vmk-go/README.md). |
 | 1.0.1 | 2026-11-18 | За рецензією PR #275 (`claude-sonnet-5.5`, `N1..N6`): задокументовано виконання BRAM-прикладів (`bms`, `cascade`, `increase`, `decrease`, `auth`) у `--mode conceptual --stdio` як `conceptual (descriptor-backed)` та походження початкового стану `PRE-LOAD` у симуляторі (`3/64`, `1/64`, `0/64`) проти фізичної плати `PYNQ-Z1`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск специфікації двомодового емулятора VMK (`bram64` + `conceptual`) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`) за Issue #274. |
