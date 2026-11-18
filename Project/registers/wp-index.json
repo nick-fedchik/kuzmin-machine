@@ -1,5 +1,5 @@
 {
-  "version": "0.23.0",
+  "version": "0.24.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -880,6 +880,12 @@
     },
     {
       "path": "Engineering/sw/vmk-go/internal/vmk/kpol_compiler.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/pynq.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false

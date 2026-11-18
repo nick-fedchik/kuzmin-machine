@@ -25,7 +25,7 @@
 | [Project](Project/README.md) | Правила, плани, реєстри, оцінювання й шаблони WP. |
 
 Поточний цільовий тракт: текст KPOL → CME-образ (`--emit-c99` / `--emit-z3-cert`) → loader → BRAM (`CFG-P` / `CFG-P-HA`) →
-sequencer/CME/gate v2, детермінований C99-автомат безпеки або двомодовий Go-емулятор **VMK** і 4-панельний TUI-дебагер ([`Engineering/sw/vmk-go/`](Engineering/sw/vmk-go/README.md), [Посібник користувача VMK `1.0.0`](Engineering/guides/vmk-users-guide.md), [специфікація `vmk-go` `0.1.0`](Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md)). Опис складу — у
+sequencer/CME/gate v2, детермінований C99-автомат безпеки або двомодовий Go-емулятор **VMK** і 4-панельний TUI-дебагер ([`Engineering/sw/vmk-go/`](Engineering/sw/vmk-go/README.md), [Посібник користувача VMK `1.0.1`](Engineering/guides/vmk-users-guide.md), [специфікація `vmk-go` `0.1.0`](Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md)). Опис складу — у
 [Solution](Engineering/solutions/compiler-bram-pipeline.md), а підсумковий інженерно-комерційний висновок проєкту — у
 [Commercialization & Final Conclusions](Research/studies/commercialization-and-final-conclusions.md).
 Реалізований фронтенд ширший за погоджений цільовий профіль KPOL-CME-1.

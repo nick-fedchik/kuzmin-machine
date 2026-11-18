@@ -14,7 +14,7 @@
 
 ### Основні документи та артефакти
 
-* **Повний практичний Посібник користувача:** [`Engineering/guides/vmk-users-guide.md`](../../guides/vmk-users-guide.md) (`1.0.0`) — детальний розбір обох режимів (`conceptual` та `bram64`), читання знімків `PRE-LOAD -> POST-LOAD`, анатомії 4 панелей TUI, гарячих клавіш, потоків `STDIO` (`# @stdin` / `# @stdout`), 10 вбудованих прикладів, роботи з фізичною платою `PYNQ-Z1` та усіх прапорців CLI.
+* **Повний практичний Посібник користувача:** [`Engineering/guides/vmk-users-guide.md`](../../guides/vmk-users-guide.md) (`1.0.1`) — детальний розбір обох режимів (`conceptual` та `bram64`), читання знімків `PRE-LOAD -> POST-LOAD`, анатомії 4 панелей TUI, гарячих клавіш, потоків `STDIO` (`# @stdin` / `# @stdout`), 10 вбудованих прикладів, роботи з фізичною платою `PYNQ-Z1` та усіх прапорців CLI.
 * **Нормативна специфікація ПЗ:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`](../../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) (`1.0.1`).
 * **Звіт верифікації та натурного HIL на `pynq2`:** [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md) (`1.0.1`) та інтеграційно-мутаційний пакет [`Engineering/sw/tests/test_vmk_go_274.py`](../tests/test_vmk_go_274.py) (`M1..M5`).
 
@@ -26,7 +26,8 @@
 * [`internal/vmk/bram64.go`](internal/vmk/bram64.go) — апаратно-точний 64-слотовий BRAM-режим (`CME-RAW-1`, `CFG-P` / `CFG-P-HA`, `Bank 0 / Bank 1` з `CRC-8-CCITT`, `FIFO 16`);
 * [`internal/vmk/conceptual.go`](internal/vmk/conceptual.go) — навчально-концептуальна віртуальна машина за `RFC-001..018` (`?`, `Int32`, `U64`, `Float`, біт `_`, адресації `←`, `→`, `|`, `:`, бар'єр `→ •`, захист `Busy`);
 * [`internal/vmk/kpol_compiler.go`](internal/vmk/kpol_compiler.go) — вбудований компілятор профілів `KPOL-CME-1`, `KPOL-CME-2` та `KPOL-AUTH`;
-* [`internal/vmk/snapshot.go`](internal/vmk/snapshot.go) — життєвий цикл підключення `PRE-LOAD -> POST-LOAD -> RUNNING`, диференціальна таблиця слотів і SSH/MMIO-драйвер для `PYNQ-Z1` під `flock /tmp/km-bench.lock`;
+* [`internal/vmk/snapshot.go`](internal/vmk/snapshot.go) — життєвий цикл підключення `PRE-LOAD -> POST-LOAD -> RUNNING`, аналіз топології та диференціальна таблиця слотів;
+* [`internal/vmk/pynq.go`](internal/vmk/pynq.go) — SSH/MMIO-драйвер для фізичних плат `PYNQ-Z1` під `flock /tmp/km-bench.lock` із безпечною передачею `PYNQ_SUDO_PASS` через `stdin` (`sudo -S -p ''`) або `sudo -n`;
 * [`internal/vmk/stdio.go`](internal/vmk/stdio.go) — потоковий інтерфейс `STDIO` (`stdin` / `stdout` / `stderr`) і прагми `# @stdin` / `# @stdout`;
 * [`internal/vmk/tui.go`](internal/vmk/tui.go) — 4-панельний TUI-дебагер (`--tui`, `--render-tui-frame`);
 * [`internal/vmk/examples.go`](internal/vmk/examples.go) — каталог 10 вбудованих прикладів (`if`, `sum`, `nod`, `factorial`, `tachometer`, `bms`, `increase`, `decrease`, `cascade`, `auth`);
@@ -43,7 +44,11 @@ go test -v ./...
 go run ./cmd/vmk --version
 go run ./cmd/vmk --example all
 
-# 3. 4-панельний TUI-кадр та потокове STDIO для 4-рівневого каскаду безпеки BMS
+# 3. Інспекція дескрипторів зовнішнього файлу .kpol відносно Engineering/sw/vmk-go
+go run ./cmd/vmk --program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
+  --profile KPOL-CME-2 --dump-concepts
+
+# 4. 4-панельний TUI-кадр та потокове STDIO для 4-рівневого каскаду безпеки BMS
 printf "Cell_Delta_mV 15\nCell_Delta_mV _\nCell_Delta_mV 120\nCell_Delta_mV 180\nCell_Delta_mV 250\n" | \
   go run ./cmd/vmk --mode bram64 --example bms --stdio --render-tui-frame
 ```

@@ -395,7 +395,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
     import re
 
     required_guide_headings = [
-        "* **Версія:** 1.0.0",
+        "* **Версія:** 1.0.1",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
@@ -410,10 +410,15 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
         "## Обмеження",
         "## Історія версій",
         "## Абревіатури та глосарій",
+        "<ваш_пароль_sudo>",
+        "--program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol",
     ]
     for marker in required_guide_headings:
         if marker not in guide_txt:
             raise AssertionError(f"vmk-users-guide.md missing required marker {marker!r}")
+
+    if "--program ../validation/" in guide_txt or re.search(r"(?<!\.\./)\.\./validation/kpol-cme/c99-emitter-270/", guide_txt):
+        raise AssertionError("vmk-users-guide.md contains broken relative CLI path ../validation/ from Engineering/sw/vmk-go")
 
     required_cli_flags = [
         "--mode",
@@ -463,6 +468,8 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
                 in_fence = not in_fence
                 continue
             if in_fence:
+                if re.search(r"(?<!\.\./)\.\./validation/", line):
+                    raise AssertionError(f"{doc_name}: broken ../validation/ path inside code block: {line!r}")
                 continue
             for m in link_re.finditer(line):
                 target = m.group(1).split("#", 1)[0]
@@ -508,3 +515,35 @@ def test_vmk_users_guide_and_readme_276():
     )
     with pytest.raises(AssertionError, match="broken relative link"):
         _validate_vmk_guide_and_readme(guide_txt, mut_readme_link, guide_path.parent, readme_path.parent)
+
+    # Negative control 3 (AGENTS.md §4.1, F1): broken ../validation/ CLI path must fail validation
+    mut_guide_cli_path = guide_txt.replace(
+        "--program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol",
+        "--program ../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol",
+        1,
+    )
+    with pytest.raises(AssertionError, match="broken|missing required marker"):
+        _validate_vmk_guide_and_readme(mut_guide_cli_path, readme_txt, guide_path.parent, readme_path.parent)
+
+    # Verify the documented CLI command from Engineering/sw/vmk-go executes with exit code 0 (F1)
+    with _workspace_scratch_dir("guide_cli_f1") as scratch:
+        vmk_bin = _build_vmk_binary(scratch)
+        res_dump = subprocess.run(
+            [
+                str(vmk_bin),
+                "--program",
+                "../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol",
+                "--profile",
+                "KPOL-CME-2",
+                "--dump-concepts",
+            ],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            capture_output=True,
+            text=True,
+        )
+        assert res_dump.returncode == 0, (
+            f"Documented --dump-concepts command failed from Engineering/sw/vmk-go:\n{res_dump.stderr}"
+        )
+        assert "BRAM DESCRIPTOR TABLE" in res_dump.stdout
+        assert "Cell_Delta_mV" in res_dump.stdout

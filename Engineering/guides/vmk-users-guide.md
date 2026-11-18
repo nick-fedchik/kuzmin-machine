@@ -1,6 +1,6 @@
 # Посібник користувача VMK (Virtual Machine of Kuzmin) та 4-панельного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.1.0`)
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача
@@ -173,8 +173,8 @@ sequenceDiagram
 ```bash
 cd Engineering/sw/vmk-go
 go run ./cmd/vmk --mode bram64 \
-  --program ../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
-  --dump-concepts
+  --program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
+  --profile KPOL-CME-2 --dump-concepts
 ```
 
 Вивід Блоку 2 (`BRAM DESCRIPTOR TABLE`):
@@ -215,7 +215,7 @@ TUI-дебагер VMK ([`internal/vmk/tui.go`](../sw/vmk-go/internal/vmk/tui.go
 cd Engineering/sw/vmk-go
 printf "Cell_Delta_mV 15\nCell_Delta_mV _\nCell_Delta_mV 120\nCell_Delta_mV 180\nCell_Delta_mV 250\n" | \
   go run ./cmd/vmk --mode bram64 \
-    --program ../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
+    --program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
     --stdio --watch-cid 2,3 --break-on-reject --render-tui-frame
 ```
 
@@ -400,17 +400,22 @@ REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1, 
 # Приклад 1: Акумулятор Sum із пост-адресним скиданням при читанні (RFC-013) та відсіканням '_'
 cd Engineering/sw/vmk-go
 printf "write Sum 10\nwrite Sum 25\nwrite Sum _\nread Sum\nread Sum\n" | \
-  go run ./cmd/vmk --mode conceptual --example sum --stdio
+  go run ./cmd/vmk --mode conceptual --example sum --stdio 2>stderr.log
 ```
 
-Вивід (`stdout` і `stderr`):
+Вивід потоку `stdout` (підтверджені записи `COMMIT` та читання `READ`):
 
 ```text
 COMMIT: Sum[cid=0] = 10 (pre=0, ← += 10)
 COMMIT: Sum[cid=0] = 35 (pre=10, ← += 25)
-REJECT_FAULT: Sum[cid=0] kept 35 (input valid=_)
 READ: Sum = 35 (post-dot → • reset Sum = 0)
 READ: Sum = 0 (post-dot → • reset Sum = 0)
+```
+
+Вивід потоку `stderr` (вміст `stderr.log` — відсікання невалідного запису `write Sum _`; якщо не перенаправляти `2>stderr.log`, у терміналі `vmk` спочатку друкує буфер `stdout`, а слідом за ним — `stderr`):
+
+```text
+REJECT_FAULT: Sum[cid=0] kept 35 (input valid=_)
 ```
 
 Зверніть увагу: перша команда `read Sum` повертає накопичену суму `35`, після чого пост-адресний бар'єр Великої Крапки `→ • Sum = 0` скидає акумулятор у `0`, тому друга команда `read Sum` повертає вже `0`.
@@ -431,18 +436,18 @@ printf "call Factorial 5\n" | go run ./cmd/vmk --mode conceptual --example facto
 
 У бінарник `vmk` вбудовано **10 еталонних програм** ([`internal/vmk/examples.go`](../sw/vmk-go/internal/vmk/examples.go)): 5 чисто концептуальних прикладів за матеріалами Автора (`if`, `sum`, `nod`, `factorial`, `tachometer`) та 5 дескрипторних прикладів (`bms`, `increase`, `decrease`, `cascade`, `auth`), а також мета-режим `--example all`, який послідовно виконує всі 10 програм.
 
-| Назва (`--example`) | Режим за замовчуванням | Профіль / джерело | Команда запуску | Що саме демонструє та очікуваний результат |
+| Назва (`--example`) | Режим за замовчуванням | Профіль / джерело | Команда запуску | Що саме демонструє та очікуваний результат (`./vmk --example all`) |
 | :--- | :---: | :--- | :--- | :--- |
-| **`if`** | `conceptual` | `RFC-001` (`? If _`) | `vmk --example if` | T-тригер, що стартує зі стану невизначеності `_`. За 3 імпульси запису проходить траєкторію **`_ -> ! -> ¬ -> !`**. Прапорець `Busy` блокує нескінченне самозбудження (`SUPPRESSED_SELF`). |
-| **`sum`** | `conceptual` | `RFC-013` (`Float Sum 0`) | `vmk --example sum` | Накопичення `0 + 10 + 25 = 35`. Під час читання `→ • Sum = 0` спочатку видає **`35`** у `STDOUT`, а потім пост-адресно скидає стан `Sum` у **`0`**. |
-| **`nod`** | `conceptual` | Алгоритм Евкліда (`Nod(120, 6)`) | `vmk --example nod` | Реактивна хвиля взаємного віднімання `a -= b` між двома концептами (`a=120, b=6`). Виконує **`19` віднімань** (`20` кроків оцінки, еквівалент **`58` тактів** у `km_euclid_core.sv`), після чого хвиля природно згасає при `a == b == 6` і повертає **`6`**. |
-| **`factorial`** | `conceptual` | Масив вибору `[ 0 1 ]` + `Exit` | `vmk --example factorial` | Рекурсивне обчислення `Factorial(5)`: 4 кроки спуску (`5 -> 4 -> 3 -> 2 -> 1`), спрацювання базового масиву `[ 0 1 ] { Factorial = 1 Exit }` та 4 кроки зворотного множення до **`120`**. |
-| **`tachometer`** | `conceptual` | Клас `Tachometer` (`Tick`, `_Tick`) | `vmk --example tachometer` | 3 імпульси колеса `Tick` накопичують `Revolutions = 3`, `Distance = 6`; імпульс таймера `_Tick(dt=1s)` за правилом `→ •` обчислює **`Speed = 6`** і скидає `Revolutions = 0`. |
-| **`bms`** | `bram64` | `KPOL-CME-2` (`4` концепти) | `vmk --example bms` | 4-рівневий каскад захисту батареї (`Cell_Delta_mV -> Module_Thermal_Guard -> Pack_Fault_Latch -> Contactor_Interlock`). На 6 демо-стимулах (`15, 5500, _, 120, 180, 250`) демонструє всі 4 види вердиктів: `REJECT_GUARD`, `REJECT_FAULT`, `COMMIT` по всій глибині `Depth 0..3` (розмикання контактора `10 -> 1 -> 0`) та `REJECT_INVARIANT` при спробі декременту защіпки `0 -> -1` (фінальні стани **`[3, 3, 0, 0]`**; на 9 стимулах стендового тесту — **`[4, 4, 0, 0]`**). |
-| **`increase`** | `bram64` | `KPOL-CME-1` (`1` концепт) | `vmk --example increase` | Базовий одноконцептний лічильник `Counter = 10` з умовою `param < 20`: на стимулах `5, 25, _` демонструє `COMMIT` (`10 -> 11`), `REJECT_GUARD` (`param=25`) та `REJECT_FAULT` (`param=_`). |
-| **`decrease`** | `bram64` | `KPOL-CME-1` (`1` концепт) | `vmk --example decrease` | Лічильник `Counter = 1` із декрементом `Counter - 1` та інваріантом `Counter >= 0`: на стимулах `5, 5, 25` демонструє `COMMIT` (`1 -> 0`), блокування `0 -> -1` вентилем Великої Крапки `•` (`REJECT_INVARIANT`) та `REJECT_GUARD`. |
-| **`cascade`** | `bram64` | `KPOL-CME-2` (`4` концепти) | `vmk --example cascade` | Канонічний 4-концептний каскад `C0 -> C1 -> C2 -> C3` на стимулах `10, 100, 10, 10` (`12` кроків траси, `10` комітів, `2` відмови, фінальні стани **`[13, 3, 0, 0]`**). |
-| **`auth`** | `bram64` | `KPOL-AUTH` (`Do/Go` + BRAM) | `vmk --example auth` | Компіляція авторського запису `Concept(Counter, 10, ...) / Counter • Assign(Mirror, Counter + 1)` у 5 слів 32-бітного байткоду `Do/Go` (`0x12000000..0x50000000`) та каскад дескрипторів `Counter -> Mirror` (фінальні стани **`[25, 1]`**). |
+| **`if`** | `conceptual` | `RFC-001` (`? If _`) | `vmk --example if` | T-тригер, що стартує зі стану невизначеності `_`. За 3 імпульси запису (`Events=3, Commits=3`) проходить траєкторію **`_ -> ! -> ¬ -> !`** (фінальний стан `If = !`). Прапорець `Busy` блокує нескінченне самозбудження (`SUPPRESSED_SELF`). |
+| **`sum`** | `conceptual` | `RFC-013` (`Float Sum 0`) | `vmk --example sum` | Накопичення `0 + 10 + 25 = 35` (`Events=3, Commits=3`). Під час читання `→ • Sum = 0` спочатку повертає **`35`** у `STDOUT` (`read_returned_value = 35`), а потім пост-адресно скидає стан `Sum` у **`0`** (`post_read_state = 0`). |
+| **`nod`** | `conceptual` | Алгоритм Евкліда (`Nod(120, 6)`) | `vmk --example nod` | Реактивна хвиля взаємного віднімання `a -= b` між двома концептами (`a=120, b=6`). У концептуальній віртуальній машині VMK виконує **`19` реактивних кроків віднімання** (`20` кроків оцінки хвилі `E0.0..E19.0`, де на кроці `#19` при `a == b == 6` хвиля природно згасає і фіксує **`Nod = 6`**, фінальні стани слотів `[a=6, b=6, Nod=6]`). Окреме спеціалізоване апаратне RTL-ядро `km_euclid_core.sv` ([`kpol_debugger.py`](../sw/kpol-ref/kpol_debugger.py)) у симуляції `iverilog` виконує цю саму задачу за **`58` тактів** (`19 × 3 + 1`, `result = 6`). |
+| **`factorial`** | `conceptual` | Масив вибору `[ 0 1 ]` + `Exit` | `vmk --example factorial` | Рекурсивне обчислення `Factorial(5)` (`Events=9, Commits=9`): 4 кроки спуску (`5 -> 4 -> 3 -> 2 -> 1`), 1 крок спрацювання базового масиву `[ 0 1 ] { Factorial = 1 Exit }` та 4 кроки зворотного множення до **`120`** (фінальні стани слотів `[n=1, Factorial=120]`). |
+| **`tachometer`** | `conceptual` | Клас `Tachometer` (`Tick`, `_Tick`) | `vmk --example tachometer` | 3 імпульси колеса `Tick` накопичують `Revolutions = 3`, `Distance = 6`; імпульс таймера `_Tick(dt=1s)` за правилом `→ •` (`Events=7, Commits=7`) обчислює **`Speed = 6`** і скидає `Revolutions = 0` (фінальні стани `[Revolutions=0, Distance=6, Speed=6]`). |
+| **`bms`** | `bram64` | `KPOL-CME-2` (`4` концепти) | `vmk --example bms` | 4-рівневий каскад захисту батареї (`Cell_Delta_mV -> Module_Thermal_Guard -> Pack_Fault_Latch -> Contactor_Interlock`). На 6 демо-стимулах (`15, 5500, _, 120, 180, 250`; `Events=14, Commits=10, Rejects=4, Faults(_)=1`) демонструє всі 4 види вердиктів: `REJECT_GUARD`, `REJECT_FAULT`, `COMMIT` по всій глибині `Depth 0..3` (розмикання контактора `10 -> 1 -> 0`) та `REJECT_INVARIANT` при спробі декременту защіпки `0 -> -1` (фінальні стани **`[3, 3, 0, 0]`**; на 9 стимулах стендового HIL-тесту — **`[4, 4, 0, 0]`**). |
+| **`increase`** | `bram64` | `KPOL-CME-1` (`1` концепт) | `vmk --example increase` | Базовий одноконцептний лічильник `Counter = 10` з умовою `param < 20`: на стимулах `5, 25, _` (`Events=3, Commits=1, Rejects=2, Faults(_)=1`) демонструє `COMMIT` (`10 -> 11`), `REJECT_GUARD` (`param=25`) та `REJECT_FAULT` (`param=_`), фінальний стан **`[11]`**. |
+| **`decrease`** | `bram64` | `KPOL-CME-1` (`1` концепт) | `vmk --example decrease` | Лічильник `Counter = 1` із декрементом `Counter - 1` та інваріантом `Counter >= 0`: на стимулах `5, 5, 25` (`Events=3, Commits=1, Rejects=2, Faults(_)=0`) демонструє `COMMIT` (`1 -> 0`), блокування `0 -> -1` вентилем Великої Крапки `•` (`REJECT_INVARIANT`) та `REJECT_GUARD`, фінальний стан **`[0]`**. |
+| **`cascade`** | `bram64` | `KPOL-CME-2` (`4` концепти) | `vmk --example cascade` | Канонічний 4-концептний каскад `C0 -> C1 -> C2 -> C3` на стимулах `10, 100, 10, 10` (`Events=12, Commits=10, Rejects=2, Faults(_)=0`, фінальні стани **`[13, 3, 0, 0]`**). |
+| **`auth`** | `bram64` | `KPOL-AUTH` (`Do/Go` + BRAM) | `vmk --example auth` | Компіляція авторського запису `Concept(Counter, 10, ...) / Counter • Assign(Mirror, Counter + 1)` у 5 слів 32-бітного байткоду `Do/Go` (`0x12000000..0x50000000`) та каскад дескрипторів `Counter -> Mirror` на стимулах `-5, 25, _` (`Events=4, Commits=2, Rejects=2, Faults(_)=1`, фінальні стани **`[25, 1]`**). |
 
 Щоб виконати всі 10 прикладів одним запуском і зберегти повний машиночитаний звіт у JSON:
 
@@ -464,9 +469,9 @@ go run ./cmd/vmk --example all --json-out vmk_all_examples.json
 
 #### 2. Підключення `vmk` до фізичної плати `Digilent PYNQ-Z1` (`--target pynq1 | pynq2`)
 
-Коли в прапорці `--target` (або `--connect`) вказано апаратну ціль `pynq1`, `pynq2` чи явну адресу `user@host`, метод [`ExecutePYNQSession`](../sw/vmk-go/internal/vmk/snapshot.go):
+Коли в прапорці `--target` (або `--connect`) вказано апаратну ціль `pynq1`, `pynq2` чи явну адресу `user@host`, метод [`ExecutePYNQSession`](../sw/vmk-go/internal/vmk/pynq.go) (разом зі структурою знімків у [`internal/vmk/snapshot.go`](../sw/vmk-go/internal/vmk/snapshot.go)):
 1. Автоматично бере ексклюзивне системне блокування **`syscall.Flock` на файлі `/tmp/km-bench.lock`** із таймаутом очікування до `120 с` (відповідно до правила `AGENTS.md §2.3`, щоб унеможливити одночасний доступ кількох агентів або тестів до `/dev/mem` плати). При запуску зовнішніх оболонок або батч-скриптів також можна обгортати команду у `flock -w 120 /tmp/km-bench.lock`;
-2. Підключається по SSH до плати, компілює та виконує C99 MMIO-зонд за базовою фізичною адресою **`0x40000000`** (`HW_ID = 0x4B504D43` `"KPMC"` для `CFG-P` або `0x4B504841` `"KPHA"` для `CFG-P-HA`);
+2. Підключається по SSH до плати, компілює та виконує C99 MMIO-зонд за базовою фізичною адресою **`0x40000000`** (`HW_ID = 0x4B504D43` `"KPMC"` для `CFG-P` або `0x4B504841` `"KPHA"` для `CFG-P-HA`), передаючи `PYNQ_SUDO_PASS` через `stdin` (`sudo -S -p ''`) без підстановки пароля в рядок команди оболонки (або викликаючи `sudo -n`, якщо `PYNQ_SUDO_PASS` не задано);
 3. Знімає повний апаратний знімок **`PRE-LOAD`** (`256` слів BRAM + апаратні лічильники `REG_EVENTS`, `REG_COMMITS`, `REG_REJECTS`, `REG_LAST_STATE`, `REG_DROPPED`), записує 256 слів нової програми, виконує зворотну перевірку **`POST-LOAD` (`256/256 words OK`)**, подає валідні стимули через `REG_EVENT_PARAM (0x00C)` та `REG_SW_TRIGGER (0x010)` і зчитує фінальний апаратний знімок **`POST-RUN`**.
 
 Приклад команди для роботи з фізичною платою `pynq2`:
@@ -474,9 +479,10 @@ go run ./cmd/vmk --example all --json-out vmk_all_examples.json
 ```bash
 cd Engineering/sw/vmk-go
 printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120\nCell_Delta_mV 49\nCell_Delta_mV 180\nCell_Delta_mV 250\nCell_Delta_mV 5000\nCell_Delta_mV -10\n" | \
+  PYNQ_SUDO_PASS='<ваш_пароль_sudo>' \
   flock -w 120 /tmp/km-bench.lock \
   go run ./cmd/vmk --mode bram64 \
-    --program ../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
+    --program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol \
     --profile KPOL-CME-2 --stdio --render-tui-frame --target pynq2
 ```
 
@@ -484,9 +490,9 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 
 | Змінна оточення / Код виходу | Значення за замовчуванням | Призначення |
 | :--- | :--- | :--- |
-| `KM_PYNQ1_HOST` | `xilinx@192.168.68.81` | SSH-адреса першої стендової плати `PYNQ-Z1` при виборі `--target pynq1`. |
-| `KM_PYNQ2_HOST` | `xilinx@192.168.68.69` | SSH-адреса другої стендової плати `PYNQ-Z1` при виборі `--target pynq2`. |
-| `PYNQ_SUDO_PASS` | `xilinx` | Пароль `sudo` користувача на платі `PYNQ-Z1` для доступу C99 MMIO-зонда до `/dev/mem`. |
+| `KM_PYNQ1_HOST` | `xilinx@192.168.68.81` (локальний стенд) | SSH-адреса першої стендової плати `PYNQ-Z1` при виборі `--target pynq1` (перевизначається змінною оточення). |
+| `KM_PYNQ2_HOST` | `xilinx@192.168.68.69` (локальний стенд) | SSH-адреса другої стендової плати `PYNQ-Z1` при виборі `--target pynq2` (перевизначається змінною оточення). |
+| `PYNQ_SUDO_PASS` | `<ваш_пароль_sudo>` (за замовчуванням порожній `""` $\to$ `sudo -n`) | Пароль `sudo` користувача на платі `PYNQ-Z1` для доступу C99 MMIO-зонда до `/dev/mem` (передається безпечно через `stdin` у `sudo -S -p ''` без інтерполяції в оболонку). |
 | **Код виходу `0`** | Успішне виконання | Програма скомпільована і виконана успішно (навіть якщо були `REJECT_*`, коли прапорець `--fail-on-reject` не вказано). |
 | **Код виходу `1`** | Відмова події при `--fail-on-reject` | Увімкнено `--fail-on-reject` (або `--exit-on-reject`) і під час сесії трапився принаймні один `REJECT_GUARD`, `REJECT_INVARIANT` або `REJECT_FAULT`. |
 | **Код виходу `2`** | Помилка CLI / компіляції / цілі (`VMK-TARGET-IO`) | Некоректні прапорці CLI, помилка синтаксису `.kpol` або недосяжність апаратної цілі по SSH/MMIO (повертається діагностика `VMK-TARGET-IO: ...` у `stderr`). |
@@ -538,6 +544,7 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | Ураховано всі 5 зауважень незалежної рецензії `claude-sonnet-5.5` у PR #277 (`F1..F5`): виправлено відносні шляхи `../../validation/...` у командах запуску з `Engineering/sw/vmk-go` (`F1`); винесено PYNQ-драйвер у `internal/vmk/pynq.go` з безпечною передачею `PYNQ_SUDO_PASS` через `stdin` (`sudo -S -p ''`) або `sudo -n` без інтерполяції в оболонку та замінено пароль на плейсхолдер `<ваш_пароль_sudo>` (`F2, F4`); показано роздільний вивід потоків `stdout` і `stderr` у прикладі `sum --stdio` (`F3`); уточнено атрибуцію `19` реактивних віднімань у VMK проти `58` тактів спеціалізованого RTL-ядра `km_euclid_core.sv` у симуляції `iverilog` і звірено всі фінальні стани таблиці §2.6 із `vmk --example all` (`F5`). |
 | 1.0.0 | 2026-11-18 | Перша редакція практичного Посібника користувача VMK (`Virtual Machine of Kuzmin v0.1.0`) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go/`) за Issue #276. |
 
 ## Абревіатури та глосарій
