@@ -1,45 +1,46 @@
 # Звіт про верифікацію мови EKPOL (Ergonomic KPOL 0.1.0), двостороннього транслятора EKPOL <-> KPOL та оновлення Go VMK v0.2.0
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP:** Report
 * **Статус:** Запропоновано на затвердження власником (Proposed)
 * **ASPICE 4.0 процеси:** `SWE.4` (Software Unit Verification), `SWE.5` (Software Component Verification and Integration), `SWE.6` (Software Verification)
 * **Issue:** `Closes` [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
-* **Нормативна специфікація:** [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../../../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.0`).
+* **Рецензент:** `claude-sonnet-5.5` ([Review Report у PR #279](https://github.com/nick-fedchik/kuzmin-machine/pull/279#issuecomment-6978746030), вердикт «Прийнято із зауваженнями»; зауваження `F1..F4` усунено у версії `1.0.1`).
+* **Нормативна специфікація:** [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../../../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.1`).
 * **Верифіковані модулі та тести:** [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../../../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../../../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/kpol-ref/kpol_debugger.py`](../../../sw/kpol-ref/kpol_debugger.py), [`Engineering/sw/vmk-go/`](../../../sw/vmk-go/README.md) (`v0.2.0`), [`Engineering/sw/tests/test_ekpol_278.py`](../../../sw/tests/test_ekpol_278.py).
-* **Сирі логи та артефакти:** [`Engineering/validation/kpol-cme/ekpol-278/raw/`](raw/ekpol_ergonomics_and_sha256.json) ([`ekpol_ergonomics_and_sha256.log`](raw/ekpol_ergonomics_and_sha256.log), [`go_test_v020.log`](raw/go_test_v020.log), [`pytest_ekpol_278.log`](raw/pytest_ekpol_278.log)).
+* **Сирі логи та артефакти:** [`Engineering/validation/kpol-cme/ekpol-278/raw/`](raw/ekpol_ergonomics_and_sha256.json) ([`ekpol_ergonomics_and_sha256.log`](raw/ekpol_ergonomics_and_sha256.log), [`go_test_v020.log`](raw/go_test_v020.log), [`pytest_ekpol_278.log`](raw/pytest_ekpol_278.log), [`pytest_ekpol_278_rerun_a19bca2.log`](raw/pytest_ekpol_278_rerun_a19bca2.log)).
 
 ---
 
-## 1. Обмеження, межі застосування та що не заявляється (`AGENTS.md §3`)
+## 1. Обмеження, межі застосування та що не заявляється (`AGENTS.md §3`, `AGENTS.md §4 п. 2`)
 
 Відповідно до правил [`AGENTS.md §3–4`](../../../../AGENTS.md) звіт починається з явного переліку обмежень і того, що **не виконувалося** в межах цієї задачі:
 1. **Незмінність апаратного ядра RTL та двійкового формату `CME-RAW-1`:** у межах Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) не змінювалися жодні файли SystemVerilog (`Engineering/hw/rtl/*.sv`) і не вводився 32-байтний формат дескриптора `CME-RAW-2` ([#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185)). Апаратні обмеження 16-байтного слота `CME-RAW-1` (єдине 32-бітне поле `W1 = operand_val` для літерала предиката або кроку `ADD`/`SUB` $\ge 2$, знаковий тип `Int32`, однослотовий підписник `subscriber_cid`) залишаються чинними для режиму `--mode bram64` і контролюються статичним верифікатором `validate_ekpol_for_bram64` (`EKPOL-COLLISION-ERR`, `EKPOL-CYCLE-ERR`, `EKPOL-TYPE-ERR`).
 2. **Незмінність класичного KPOL та відкритих авторських питань `KPOL-AUTH-U01..U12`:** жоден існуючий файл `.kpol` (`kpol_bram_pipeline_increase.kpol`, `kpol_bram_pipeline_decrease.kpol`, `bms_safety_cascade.kpol`) не змінювався (`0` рядків diff). Дванадцять відкритих питань авторського native-діалекту `KPOL-AUTH-U01..U12` у [`Engineering/sw/kpol-auth/`](../../../sw/kpol-auth/__init__.py) залишаються заблокованими за принципом `fail-closed` до відповідей Автора концепції М. Ю. Кузьміна в межах [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
-3. **Походження доказів:** верифікація `EKPOL 0.1.0` та `VMK v0.2.0` у цьому звіті виконана на програмних компіляторах/транспайлерах Python (`3.14.4`) і Go (`go1.27.1 linux/amd64`), компіляторі `gcc` (`C99`), вирішувачі `Z3 SMT` (`QF_LIA + QF_BV BitVec32`) та симуляторі `Icarus Verilog` на хості `workstation` (`x86_64 GNU/Linux`, базовий коміт `c49869a`). Новий синтез бітстріму FPGA у межах [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) не проводився, оскільки згенеровані з `.ekpol` 1024-байтні образи BRAM є **побітово ідентичними (100% збіг SHA-256)** образам класичного `.kpol`, які раніше пройшли натурну HIL-верифікацію на платі `PYNQ-Z1` (`pynq2`, див. [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../vmk-go-274/report.md)).
+3. **Походження доказів (`AGENTS.md §4 п. 2, п. 4`):** верифікація `EKPOL 0.1.0` та `VMK v0.2.0` у цьому звіті виконана на програмних компіляторах/транспайлерах Python (`3.14.4`) і Go (`go1.27.1 linux/amd64`), компіляторі `gcc` (`C99`), вирішувачі `Z3 SMT` (`QF_LIA + QF_BV BitVec32`) та симуляторі `Icarus Verilog` на хості `workstation` (`x86_64 GNU/Linux`, базовий коміт `c49869a`, коміт реалізації `a19bca2157ec1a6fd632b7bcd9b34654a96adea0`). Новий синтез бітстріму FPGA або прямий апаратний прогін `.ekpol` на платі у межах [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) не проводився, оскільки згенеровані з `.ekpol` 1024-байтні образи BRAM є **побітово ідентичними (100% збіг SHA-256)** образам класичного `.kpol`, які раніше пройшли натурну HIL-верифікацію на платі `PYNQ-Z1` (`pynq2`, див. [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../vmk-go-274/report.md)).
 
 ---
 
-## 2. Критерії приймання та зведені результати перевірки
+## 2. Критерії приймання та зведені результати перевірки (`AGENTS.md §4 п. 2`)
 
 Критерії приймання були зафіксовані в описі Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) до початку реалізації:
 
-| № | Критерій приймання Issue #278 | Артефакт / Команда перевірки | Фактичний результат | Статус |
+| № | Критерій приймання Issue #278 | Артефакт / Команда перевірки | Фактичний результат | Статус (`AGENTS.md §4 п. 2`) |
 | :--- | :--- | :--- | :--- | :--- |
-| **C1** | 100% збереження класичних профілів `KPOL-CME-1`, `KPOL-CME-2`, `KPOL-AUTH` та існуючих файлів `.kpol` | `git diff origin/main -- "*.kpol"` + `test_classic_kpol_files_unmodified_and_sha256_preserved` | `0` змінених файлів `.kpol`; усі класичні SHA-256 збережено | **PASS** |
-| **C2** | Специфікація EBNF-граматики `EKPOL 0.1.0` (символьна ASCII + ключова нотація) | [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../../../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.0`, `Specification`) | Задокументовано повну EBNF, таблицю еквівалентності та коди `EKPOL-*-ERR` | **PASS** |
-| **C3** | Побітова ідентичність (SHA-256) 1024-байтних образів BRAM між `.kpol` та `.ekpol` (`symbolic` і `keyword`) у Python та Go `VMK v0.2.0` | `test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go`, `TestEKPOLBRAMBitIdenticalSHA256AndRoundtrip` | `4 / 4` канонічних BRAM-програм (`increase`, `decrease`, `cascade`, `bms`) мають 100% збіг SHA-256 | **PASS** |
-| **C4** | Двостороння безвтратна трансляція `KPOL <-> EKPOL` (`--emit-kpol`, `--emit-ekpol`, `--to-kpol`, `--to-ekpol`) та генерація `--emit-c99` / `--emit-z3-cert` із `.ekpol` | `test_compile_cli_c99_z3_and_debugger_on_ekpol` | Roundtrip `KPOL -> EKPOL -> KPOL -> BRAM` без втрати семантики; Z3 `passed: true` | **PASS** |
-| **C5** | Виконання всіх 9 канонічних прикладів `Engineering/sw/vmk-go/examples/*.ekpol` у Go `VMK v0.2.0` (`bram64` + `conceptual`) | `test_all_five_conceptual_ekpol_examples_in_vmk_v020`, `TestEKPOLConceptualExamplesAndPostReadBarrier` | Усі 9 прикладів (`bms`, `cascade`, `increase`, `decrease`, `if`, `sum`, `nod`, `factorial`, `tachometer`) виконуються з кодом `0` | **PASS** |
-| **C6** | П'ять мутаційних тестів `M1..M5` (`AGENTS.md §4.1`) | `test_mutants_m1_to_m5_all_killed` ([`pytest_ekpol_278.log`](raw/pytest_ekpol_278.log)) | `5 / 5` мутантів детерміновано вбиті (`M1..M5 KILLED`) | **PASS** |
+| **C1** | 100% збереження класичних профілів `KPOL-CME-1`, `KPOL-CME-2`, `KPOL-AUTH` та існуючих файлів `.kpol` | `git diff origin/main -- "*.kpol"` + `test_classic_kpol_files_unmodified_and_sha256_preserved` | `0` змінених файлів `.kpol`; усі класичні SHA-256 збережено | **PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)** |
+| **C2** | Специфікація EBNF-граматики `EKPOL 0.1.0` (символьна ASCII + ключова нотація) | [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../../../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.1`, `Specification`) | Задокументовано повну EBNF, таблицю еквівалентності та коди `EKPOL-*-ERR` | **PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)** |
+| **C3** | Побітова ідентичність (SHA-256) 1024-байтних образів BRAM між `.kpol` та `.ekpol` (`symbolic` і `keyword`) у Python та Go `VMK v0.2.0` | `test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go`, `TestEKPOLBRAMBitIdenticalSHA256AndRoundtrip` | `4 / 4` канонічних BRAM-програм (`increase`, `decrease`, `cascade`, `bms`) мають 100% збіг SHA-256 | **PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)** |
+| **C4** | Двостороння безвтратна трансляція `KPOL <-> EKPOL` (`--emit-kpol`, `--emit-ekpol`, `--to-kpol`, `--to-ekpol`) та генерація `--emit-c99` / `--emit-z3-cert` із `.ekpol` | `test_compile_cli_c99_z3_and_debugger_on_ekpol` | Roundtrip `KPOL -> EKPOL -> KPOL -> BRAM` без втрати семантики; Z3 `passed: true` | **PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)** |
+| **C5** | Виконання всіх 9 канонічних прикладів `Engineering/sw/vmk-go/examples/*.ekpol` у Go `VMK v0.2.0` (`bram64` + `conceptual`) | `test_all_nine_ekpol_examples_in_vmk_v020`, `TestEKPOLConceptualExamplesAndPostReadBarrier` | Усі 9 прикладів (`bms`, `cascade`, `increase`, `decrease`, `if`, `sum`, `nod`, `factorial`, `tachometer`) виконуються з кодом `0` | **PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)** |
+| **C6** | П'ять мутаційних тестів `M1..M5` за критерієм Issue #278 та `AGENTS.md §4 п. 1` | `test_mutants_m1_to_m5_all_killed` ([`pytest_ekpol_278.log`](raw/pytest_ekpol_278.log), [`pytest_ekpol_278_rerun_a19bca2.log`](raw/pytest_ekpol_278_rerun_a19bca2.log)) | `5 / 5` мутантів детерміновано вбиті (`M1..M5 KILLED`) | **PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)** |
 
 ---
 
 ## 3. Побітова ідентичність образів BRAM (`SHA-256`) та порівняльна таблиця ергономіки
 
-Дані отримані автоматизованим бенчмарком ([`raw/ekpol_ergonomics_and_sha256.json`](raw/ekpol_ergonomics_and_sha256.json), [`raw/ekpol_ergonomics_and_sha256.log`](raw/ekpol_ergonomics_and_sha256.log), коміт бази `c49869a`, хост `workstation x86_64 GNU/Linux`).
+Дані отримані автоматизованим бенчмарком ([`raw/ekpol_ergonomics_and_sha256.json`](raw/ekpol_ergonomics_and_sha256.json), [`raw/ekpol_ergonomics_and_sha256.log`](raw/ekpol_ergonomics_and_sha256.log), базовий коміт `c49869a`, коміт прогону `a19bca2157ec1a6fd632b7bcd9b34654a96adea0`, хост `workstation x86_64 GNU/Linux`).
 
 ### 3.1. Побітова ідентичність 1024-байтних образів `CME-RAW-1`
 
@@ -68,9 +69,9 @@
 
 ---
 
-## 4. Результати мутаційного тестування (`M1..M5`, `AGENTS.md §4.1`)
+## 4. Результати мутаційного тестування (`M1..M5`, критерій C6 Issue #278 та `AGENTS.md §4 п. 1`)
 
-Згідно з правилом `AGENTS.md §4.1` («Тест має вміти впасти»), у [`Engineering/sw/tests/test_ekpol_278.py`](../../../sw/tests/test_ekpol_278.py) реалізовано та виконано 5 цільових мутантів ([`raw/pytest_ekpol_278.log`](raw/pytest_ekpol_278.log)):
+Згідно з правилом `AGENTS.md §4 п. 1` («Тест має вміти впасти») та критерієм приймання C6 Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), у [`Engineering/sw/tests/test_ekpol_278.py`](../../../sw/tests/test_ekpol_278.py) реалізовано та виконано 5 цільових мутантів ([`raw/pytest_ekpol_278.log`](raw/pytest_ekpol_278.log), [`raw/pytest_ekpol_278_rerun_a19bca2.log`](raw/pytest_ekpol_278_rerun_a19bca2.log)):
 
 | ID мутанта | Цільовий модуль і мутована ділянка | Опис дефекту | Чим і як перехоплено | Вердикт |
 | :--- | :--- | :--- | :--- | :--- |
@@ -86,6 +87,7 @@
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | Ураховано всі 4 зауваження рецензії `claude-sonnet-5.5` у PR #279 (`F1..F4`): замінено посилання на `AGENTS.md §4 п. 1` та `AGENTS.md §4 п. 2` (`F1`); зафіксовано SHA коміту `a19bca2157ec1a6fd632b7bcd9b34654a96adea0` у звіті та сирих логах `raw/*` (`F2`); перейменовано тест на `test_all_nine_ekpol_examples_in_vmk_v020` з охопленням усіх 9 прикладів (`F3`); додано явну позначку `PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)` до вердиктів таблиці §2 (`F4`). |
 | 1.0.0 | 2026-11-18 | Первинний випуск звіту про верифікацію мови `EKPOL 0.1.0`, двостороннього транслятора `EKPOL <-> KPOL` та Go `VMK v0.2.0` за Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278). |
 
 ## Абревіатури та глосарій

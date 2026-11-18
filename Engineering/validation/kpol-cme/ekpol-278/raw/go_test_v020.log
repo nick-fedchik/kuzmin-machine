@@ -1,6 +1,6 @@
 # cmd: (cd Engineering/sw/vmk-go && go test -v ./...)
 # timestamp: 2026-11-18T12:22:12Z
-# git_commit: c49869a35e6922a790c2291f537d2cb07e7ccaeb
+# git_commit: a19bca2157ec1a6fd632b7bcd9b34654a96adea0
 # host: AORUS-5-SE x86_64 GNU/Linux
 
 === RUN   TestMainVersionAndSubcommands

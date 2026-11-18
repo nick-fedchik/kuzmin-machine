@@ -10,9 +10,10 @@ Covers:
   2. Bidirectional lossless transpilation `KPOL -> EKPOL -> KPOL -> BRAM` (`--emit-ekpol`,
      `--emit-kpol`, `--to-ekpol`, `--to-kpol`, `--ekpol-style symbolic|keyword`) with 0 non-ASCII characters;
   3. Direct `--emit-c99` and `--emit-z3-cert` generation from `.ekpol` and `kpol_debugger.py` execution;
-  4. Execution of all 5 conceptual `.ekpol` examples (`if_toggle.ekpol`, `sum_autoreset.ekpol`,
-     `nod_euclid.ekpol`, `factorial.ekpol`, `tachometer.ekpol`) in Go `vmk v0.2.0`;
-  5. Five negative mutant tests (`M1..M5`, `AGENTS.md §4.1`):
+  4. Execution of all 9 canonical `.ekpol` examples (`bms_safety_cascade.ekpol`,
+     `cascade_4concept.ekpol`, `increase.ekpol`, `decrease.ekpol`, `if_toggle.ekpol`,
+     `sum_autoreset.ekpol`, `nod_euclid.ekpol`, `factorial.ekpol`, `tachometer.ekpol`) in Go `vmk v0.2.0`;
+  5. Five negative mutant tests (`M1..M5`, `AGENTS.md §4 п. 1` and Issue #278 C6):
      - `M1_ekpol_cycle_detection`
      - `M2_ekpol_range_bounds_swap`
      - `M3_ekpol_keyword_vs_symbolic_divergence`
@@ -301,10 +302,17 @@ def test_compile_cli_c99_z3_and_debugger_on_ekpol():
         assert dbg_payload["report"]["telemetry"]["rejects"] == 1
 
 
-def test_all_five_conceptual_ekpol_examples_in_vmk_v020():
-    """Verify all 5 conceptual `.ekpol` examples (`if_toggle`, `sum_autoreset`, `nod_euclid`,
-    `factorial`, `tachometer`) execute in Go `vmk v0.2.0` and produce expected states.
+def test_all_nine_ekpol_examples_in_vmk_v020():
+    """Verify all 9 canonical `.ekpol` examples (`bms_safety_cascade`, `cascade_4concept`,
+    `increase`, `decrease`, `if_toggle`, `sum_autoreset`, `nod_euclid`, `factorial`,
+    `tachometer`) execute in Go `vmk v0.2.0` and produce expected states/hashes.
     """
+    bram_cases = [
+        ("increase.ekpol", EXPECTED_SHA256["increase"]),
+        ("decrease.ekpol", EXPECTED_SHA256["decrease"]),
+        ("cascade_4concept.ekpol", EXPECTED_SHA256["cascade"]),
+        ("bms_safety_cascade.ekpol", EXPECTED_SHA256["bms"]),
+    ]
     conceptual_cases = [
         ("if_toggle.ekpol", "COMMIT: If[cid=0] = !"),
         ("sum_autoreset.ekpol", "READ: Sum = 35 (post-dot → • reset Sum = 0)"),
@@ -312,8 +320,26 @@ def test_all_five_conceptual_ekpol_examples_in_vmk_v020():
         ("factorial.ekpol", "COMMIT: Factorial[cid=1] = 120"),
         ("tachometer.ekpol", "COMMIT: Tachometer._Tick -> Speed=6, Revolutions=0 (Distance=6)"),
     ]
-    with _workspace_scratch_dir("conc_ekpol") as scratch:
+    with _workspace_scratch_dir("all9_ekpol") as scratch:
         vmk_bin = _build_vmk_binary(scratch)
+
+        for filename, expected_sha in bram_cases:
+            ek_path = EXAMPLES_DIR / filename
+            assert ek_path.is_file(), f"Missing {ek_path}"
+            ek_txt = ek_path.read_text(encoding="utf-8")
+            assert all(ord(ch) < 128 for ch in ek_txt), f"{filename} contains non-ASCII characters"
+            json_out = scratch / f"{filename}.json"
+            res = subprocess.run(
+                [str(vmk_bin), "--program", str(ek_path), "--json-out", str(json_out)],
+                env=_go_env(scratch),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            assert res.returncode == 0
+            payload = json.loads(json_out.read_text(encoding="utf-8"))
+            assert payload["post_load"]["bram_sha256"] == expected_sha
+
         for filename, expected_stdout_marker in conceptual_cases:
             ek_path = EXAMPLES_DIR / filename
             assert ek_path.is_file(), f"Missing {ek_path}"
@@ -339,7 +365,7 @@ def test_all_five_conceptual_ekpol_examples_in_vmk_v020():
 
 
 def test_mutants_m1_to_m5_all_killed():
-    """Verify all 5 required mutants (`M1..M5`, `AGENTS.md §4.1`) are deterministically killed."""
+    """Verify all 5 required mutants (`M1..M5`, `AGENTS.md §4 п. 1` and Issue #278 C6) are deterministically killed."""
     bms_ekpol_src = (EXAMPLES_DIR / "bms_safety_cascade.ekpol").read_text(encoding="utf-8")
     bms_kpol_src = BMS_KPOL.read_text(encoding="utf-8")
 
@@ -447,8 +473,9 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
     rep_txt = REPORT_EKPOL_MD.read_text(encoding="utf-8")
 
     for marker in [
-        "* **Версія:** 1.0.0",
+        "* **Версія:** 1.0.1",
         "* **Тип WP:** Specification",
+        "AGENTS.md §4 п. 1",
         "ekpol_program",
         "EKPOL-CYCLE-ERR",
         "## Історія версій",
@@ -457,8 +484,13 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
         assert marker in spec_txt, f"Spec missing {marker!r}"
 
     for marker in [
-        "* **Версія:** 1.0.0",
+        "* **Версія:** 1.0.1",
         "* **Тип WP:** Report",
+        "AGENTS.md §4 п. 1",
+        "AGENTS.md §4 п. 2",
+        "PASS (програмна компіляція / симуляція VMK, без запуску на FPGA)",
+        "a19bca2157ec1a6fd632b7bcd9b34654a96adea0",
+        "test_all_nine_ekpol_examples_in_vmk_v020",
         "M1_ekpol_cycle_detection",
         "M2_ekpol_range_bounds_swap",
         "M3_ekpol_keyword_vs_symbolic_divergence",
@@ -476,7 +508,7 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
         head = lf.read_text(encoding="utf-8")[:500]
         assert "# cmd:" in head
         assert "# timestamp:" in head
-        assert "# git_commit:" in head
+        assert "# git_commit: a19bca2157ec1a6fd632b7bcd9b34654a96adea0" in head
         assert "# host:" in head
 
     wp_index = json.loads((REPO_ROOT / "Project" / "registers" / "wp-index.json").read_text(encoding="utf-8"))

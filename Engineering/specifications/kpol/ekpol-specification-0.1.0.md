@@ -1,6 +1,6 @@
 # Специфікація мови EKPOL (Ergonomic KPOL 0.1.0): двостильова ASCII та програмістська нотація поруч із класичним KPOL
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP:** Specification
 * **Статус:** Запропоновано на затвердження власником (Proposed)
@@ -8,7 +8,7 @@
 * **Issue:** `Closes` [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
 * **Реалізація у ПЗ:** [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/kpol-ref/kpol_debugger.py`](../../sw/kpol-ref/kpol_debugger.py), [`Engineering/sw/vmk-go/internal/vmk/ekpol.go`](../../sw/vmk-go/internal/vmk/ekpol.go) (`VMK v0.2.0`), каталог прикладів [`Engineering/sw/vmk-go/examples/`](../../sw/vmk-go/examples/bms_safety_cascade.ekpol).
-* **Верифікація:** [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go) та звіт [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md).
+* **Верифікація:** [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go) та звіт [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
 
 ---
 
@@ -30,8 +30,9 @@
   2. **Ключова програмістська нотація (`keyword`, у дусі Rust / Go / TypeScript):** `on write(x)`, `on read`, `on change(Src)`, `on call(...)`, `when`, `=>`, `commit;`, `after`;
 * **Забезпечує двосторонню безвтратну трансляцію `EKPOL <-> класичний KPOL`** (`--emit-kpol` / `--to-kpol` та `--emit-ekpol` / `--to-ekpol` зі стилем `--ekpol-style symbolic|keyword`) і **100% побітову ідентичність (SHA-256)** згенерованих 1024-байтних образів BRAM (`CME-RAW-1`), C99-модулів (`--emit-c99`) та Z3-сертифікатів (`--emit-z3-cert`).
 
-### 1.2. Межі та атрибуція (`AGENTS.md §6.1`)
+### 1.2. Межі та атрибуція (`AGENTS.md §6.1`, `AGENTS.md §4 п. 1–2`)
 - Автор концепції Машини Кузьміна та мови KPOL — **Михайло Ювеналійович Кузьмін** (первинні джерела в [`Research/sources/`](../../../Research/sources/README.md)). Мова `EKPOL 0.1.0`, її парсер, двосторонній транспайлер і підтримка у `VMK v0.2.0` є похідними інженерними розробками проєкту (М. Федчик, інженерні агенти), створеними для підвищення ергономіки розробки, читабельності коду та продуктивності сучасних програмістів.
+- Згідно з `AGENTS.md §4 п. 1` (доказ здатності тесту впасти на мутанті або негативному випадку) та `AGENTS.md §4 п. 2` (чесне маркування програмної компіляції й симуляції проти реального заліза), усі правила зниження `EKPOL 0.1.0` верифіковано 5 мутантами `M1..M5` у [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py).
 - Процесна орієнтація на ASPICE 4.0 є добровільним внутрішнім орієнтиром проєкту згідно з [`Project/policies/standards-position.md`](../../../Project/policies/standards-position.md).
 
 ---
@@ -342,6 +343,7 @@ concept If: bool = undef {
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | За рецензією `claude-sonnet-5.5` у PR #279 (`F1`): уточнено посилання на `AGENTS.md §4 п. 1` та `AGENTS.md §4 п. 2`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск специфікації мови `EKPOL 0.1.0` (`Ergonomic KPOL`): двостильова ASCII-символьна та ключова програмістська граматика EBNF, правила зниження в `CME-RAW-1`, двостороння трансляція `EKPOL <-> KPOL` та діагностичні коди помилок (Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278)). |
 
 ## Абревіатури та глосарій

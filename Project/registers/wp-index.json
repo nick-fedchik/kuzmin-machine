@@ -1,5 +1,5 @@
 {
-  "version": "0.25.0",
+  "version": "0.26.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -2482,6 +2482,12 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/ekpol-278/raw/pytest_ekpol_278.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/raw/pytest_ekpol_278_rerun_a19bca2.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
