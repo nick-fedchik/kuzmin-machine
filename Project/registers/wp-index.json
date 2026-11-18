@@ -1,5 +1,5 @@
 {
-  "version": "0.30.0",
+  "version": "0.31.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -144,6 +144,18 @@
       "path": "Engineering/design/system-boundary-allocation-b1.md",
       "direction": "Engineering",
       "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/guides/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/guides/kpol-ekpol-language-guide.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
       "immutable_input": false
     },
     {

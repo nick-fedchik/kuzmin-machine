@@ -407,7 +407,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
     import re
 
     required_guide_headings = [
-        "* **Версія:** 1.2.0",
+        "* **Версія:** 1.2.1",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
