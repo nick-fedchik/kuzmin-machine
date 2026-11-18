@@ -1,6 +1,6 @@
 # Посібник: Керівництво користувача та чистий код мов програмування KPOL і EKPOL за принципами Кернігана, Рітчі та Мартіна
 
-* **Версія:** 1.0.1
+* **Версія:** 1.0.2
 * **Дата:** 2026-11-18
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача та стандарт кодування
@@ -8,7 +8,7 @@
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
 * **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`0.4.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.6.1`).
 * **Інструментарій та виконання:** [`Engineering/guides/vmk-users-guide.md`](vmk-users-guide.md) (`1.2.1`), [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) (`VMK v0.3.0`), [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol).
-* **Автоматична верифікація прикладів посібника:** [`Engineering/sw/tests/test_ekpol_278.py`](../sw/tests/test_ekpol_278.py) (`test_kpol_ekpol_language_guide_examples_compile_and_negative_control`).
+* **Автоматична верифікація прикладів посібника:** [`Engineering/sw/tests/test_ekpol_278.py`](../sw/tests/test_ekpol_278.py) (`test_kpol_ekpol_language_guide_examples_compile_and_negative_control`, `test_markdown_math_formulas_have_no_commonmark_broken_escapes`).
 
 ---
 
@@ -150,7 +150,9 @@ go run ./cmd/vmk --program examples/increase.ekpol --trace-events "0:5,0:25,0:in
 
 У традиційних мовах (C, Python, Go) змінна — це пасивна комірка пам'яті, яку будь-яка функція може перезаписати у довільний момент часу. У Машині Кузьміна пасивних змінних не існує. Єдиною будівельною одиницею є **Концепт (`Concept`)** — автономна реактивна капсула, що об'єднує чотири нероздільні складові:
 
-$$\text{Concept} = \langle \text{Type}, \text{Value } \cup \{\_\}, \text{Invariant } [\dots], \text{Reaction Rules} \rangle$$
+$$\text{Concept} = \langle \text{Type},\ \text{Value} \cup \lbrace\bot_{\text{undef}}\rbrace,\ \text{Invariant},\ \text{Reaction Rules} \rangle$$
+
+(де $\bot_{\text{undef}}$ позначає стан невизначеності `_` / `undef`).
 
 ##### Система типів `EKPOL` та `KPOL`
 
@@ -1003,6 +1005,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.2 | 2026-11-18 | Усунення помилки рендерингу GitHub MathJax (`Extra close brace or missing open brace`) у §1.2 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): замінено `\{\_\}` (де парсер GitHub CommonMark `cmark-gfm` з'їдає бекслеші перед розділовими знаками ASCII, перетворюючи формулу на невалідний індекс `{_}`) на чистий запис `\lbrace\bot_{\text{undef}}\rbrace` та додано регресійний тест `test_markdown_math_formulas_have_no_commonmark_broken_escapes` у `test_ekpol_278.py`. |
 | 1.0.1 | 2026-11-18 | Усунення зауважень рецензії `F1..F4` у PR #285 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): виправлено версії нормативних специфікацій (`kpol-cme-subset.md` `0.4.0`, `kpol-consolidated.md` `0.6.1`, `kpol-cme2-profile.md` `0.1.0`, `kpol-auth-subset.md` `0.1.0`, `ekpol-specification.md` `1.0.1`), наведено дослівний текст діагностики `EKPOL-CYCLE-ERR` та `EKPOL-COLLISION-ERR` із `compile_ekpol_to_bram_image`, розширено верифікацію класичних `.kpol` прикладів (`verify_module` / `VMK`) і додано другий негативний контроль (`EKPOL-COLLISION-ERR`) у `test_ekpol_278.py`. |
 | 1.0.0 | 2026-11-18 | Перший випуск фундаментального «Керівництва користувача та чистого коду мов програмування KPOL і EKPOL» за принципами Браяна Кернігана, Денніса Рітчі (*The C Programming Language*, *The Practice of Programming*) та Роберта Мартіна (*Clean Code*): Частина I (вступний курс від «Hello, Concept!» до каскадів BMS і реактивного алгоритму Евкліда), Частина II (7 золотих правил чистого коду з парними прикладами «Погано vs Чисто» та каталогом `SMELL-01..07`), Частина III (довідник відповідності нотацій, кодів `CME-RAW-1`, діагностики компілятора та CLI-шпаргалка) з автоматичною компіляцією всіх прикладів у `pytest` (Issue [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)). |
 

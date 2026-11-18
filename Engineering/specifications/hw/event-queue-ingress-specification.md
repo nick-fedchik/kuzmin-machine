@@ -109,7 +109,7 @@ hw_trigger_param_i  ->| (Дані 32 біти)              |-> events_dropped_c
 виключно за умовою:
 
 $$
-\text{Event\_Accepted} = \text{hw\_trigger\_valid\_i} \land \text{hw\_trigger\_ready\_o}
+\text{Event-Accepted} = \text{hw-trigger-valid-i} \land \text{hw-trigger-ready-o}
 $$
 
 Після такого фронту відбувається рівно одне додавання події до FIFO без дублювання.
@@ -118,7 +118,7 @@ $$
 `fifo_overflow_o` чи `events_dropped_count_o`. Очікувані зміни стану черги:
 1. Без одночасного каскаду: запис у `fifo_wr_ptr_q`, зсув `fifo_wr_ptr_q` на `+1 mod QUEUE_DEPTH`;
 2. При одночасному каскаді та `fifo_count_q <= QUEUE_DEPTH - 2`: каскад записується у `fifo_wr_ptr_q`, зовнішня подія — у `(fifo_wr_ptr_q + 1) mod QUEUE_DEPTH`, `fifo_wr_ptr_q` зсувається на `+2 mod QUEUE_DEPTH`;
-3. Лічильник `fifo_count_q` оновлюється за `fifo_count_q + enq_delta - deq_delta`, де `enq_delta` $\in \{0, 1, 2\}$, а `deq_delta` $\in \{0, 1\}$ при одночасній вичитці голови черги автоматом у `ST_IDLE`.
+3. Лічильник `fifo_count_q` оновлюється за `fifo_count_q + enq_delta - deq_delta`, де `enq_delta` $\in \lbrace 0, 1, 2 \rbrace$, а `deq_delta` $\in \lbrace 0, 1 \rbrace$ при одночасній вичитці голови черги автоматом у `ST_IDLE`.
 
 ### 3.3. Правило арбітражу: Каскад vs Зовнішня подія та full-каскад
 На такті `ST_EVAL_GATE` при успішній транзакції з підпискою (`cme_committed && cme_trigger_subscriber && subscriber_cid != active_cid_q`) формується `cascade_req = 1`.
@@ -135,7 +135,7 @@ $$
 
 | ID вимоги | Назва та зміст вимоги | Походження | Метод перевірки | Критерій успіху | Статус |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `REQ-SYS-013` | **Очікування без відкидання:** неприйнята подія керованого джерела зберігається до звільнення місця без втрат і дублікатів. | RFC-007, KPOL-SYS-04, #150, #151 | RTL Simulation (`QUEUE_DEPTH` $\in \{4,8,16,32\}$) + мутаційні контролі | Після full/stall і розвантаження кожна утримана подія (включно з `param = 0` та від'ємними `Int32`) виконується рівно один раз; `dropped == 0`, `overflow == 0`. | Реалізовано в RTL (#151); очікує рецензії |
+| `REQ-SYS-013` | **Очікування без відкидання:** неприйнята подія керованого джерела зберігається до звільнення місця без втрат і дублікатів. | RFC-007, KPOL-SYS-04, #150, #151 | RTL Simulation (`QUEUE_DEPTH` $\in \lbrace 4,8,16,32 \rbrace$) + мутаційні контролі | Після full/stall і розвантаження кожна утримана подія (включно з `param = 0` та від'ємними `Int32`) виконується рівно один раз; `dropped == 0`, `overflow == 0`. | Реалізовано в RTL (#151); очікує рецензії |
 | `REQ-SYS-014` | **Cascade Priority & Full-Cascade Retention:** каскад має пріоритет перед одночасною зовнішньою подією та не губиться при повній черзі без повторного `commit`. | B5, #135, #151 | RTL Simulation + монітор записів BRAM | Збереження порядку FIFO, утримання full-каскаду у `cascade_pending_*_q` без блокування `dequeue_req` і без подвійного запису `W0`. | Реалізовано в RTL (#151); очікує рецензії |
 | `REQ-HW-014` | **Ready відповідає прийняттю:** `ready` враховує заповнення, резервування слота каскадом (і `sw_trigger` в AXI) до приймального фронту без петлі `valid -> ready`. | KPOL-SYS-04, §3.2, #151 | Потактовий testbench + Verilator `-Wall` | Жодного випадку `valid && ready` без додавання зовнішньої події; перевірено 2 слоти, 1 слот і 0 слотів при каскаді та колізію `sw_trigger + ext_hw_trigger`. | Реалізовано в RTL (#151); очікує рецензії |
 | `REQ-HW-015` | **FIFO Isolation & Unstoppable-Source Accounting:** порушення утримання незупинним джерелом під час `ready == 0` діагностується без псування черги чи BRAM. | Безпека пам'яті (HWE.1), #151 | Simulation сценарію порушення утримання + мутаційний контроль | Зняття `valid` або зміна `{cid, param}` до `ready == 1` виставляє `fifo_overflow_o = 1` і точний `events_dropped_count_o`, а всі прийняті події та `W1..W3` залишаються цілісними. | Реалізовано в RTL (#151); очікує рецензії |
