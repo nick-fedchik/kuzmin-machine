@@ -1,12 +1,12 @@
 # Посібник: Керівництво користувача та чистий код мов програмування KPOL і EKPOL за принципами Кернігана, Рітчі та Мартіна
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача та стандарт кодування
 * **Issue:** `Closes` [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284); пов'язані задачі [#282](https://github.com/nick-fedchik/kuzmin-machine/issues/282), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
-* **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`2.1.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.2`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.1.0`).
+* **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`0.4.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.6.1`).
 * **Інструментарій та виконання:** [`Engineering/guides/vmk-users-guide.md`](vmk-users-guide.md) (`1.2.1`), [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) (`VMK v0.3.0`), [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol).
 * **Автоматична верифікація прикладів посібника:** [`Engineering/sw/tests/test_ekpol_278.py`](../sw/tests/test_ekpol_278.py) (`test_kpol_ekpol_language_guide_examples_compile_and_negative_control`).
 
@@ -30,8 +30,8 @@
 | :--- | :--- | :--- | :--- |
 | **`EKPOL 0.1.0` — Символьна ASCII (`symbolic`)** | `.ekpol` | Лаконічний запис концептів у чистому 7-бітному ASCII (`<-`, `->`, `~`, `\|`, `::`, `=>`, `.`), де стан, інваріант `[>= 0]` і реакції зібрані в одному блоці `concept`. | Щоденна розробка інженерних каскадів і реактивних алгоритмів; компактні схеми переходів. |
 | **`EKPOL 0.1.0` — Ключова програмістська (`keyword`)** | `.ekpol` | Читабельна нотація у стилі Rust / Go / TypeScript (`on write`, `on read`, `on change`, `on call`, `when`, `=>`, `commit;`, `after`). | Командна розробка з C/Rust/Go-інженерами, код-рев'ю контурів безпеки, самодокументовані модулі. |
-| **Класичний `KPOL-CME-1` / `KPOL-CME-2`** | `.kpol` | Триблочний контракт `Problem / Solution / Proof` ([`kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md), [`kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md)). | Формальна верифікація `Z3` / `SymbiYosys`, сумісність з еталонним корпусом тестів кроку S5 ([#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). |
-| **Авторський підмножинний `KPOL-AUTH`** | `.kpol` | Наближений до слайдів М. Ю. Кузьміна запис з Unicode-символами (`←`, `→`, `•`, `¬`, `!`) ([`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md)). | Дослідження авторської семантики (`Research/sources/author/`) та експериментальне lowering у `Do/Go`. |
+| **Класичний `KPOL-CME-1` / `KPOL-CME-2`** | `.kpol` | Триблочний контракт `Problem / Solution / Proof` ([`kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) `0.4.0`, [`kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) `0.1.0`, [`kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) `0.6.1`). | Формальна верифікація `Z3` / `SymbiYosys`, сумісність з еталонним корпусом тестів кроку S5 ([#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). |
+| **Авторський підмножинний `KPOL-AUTH`** | `.kpol` | Наближений до слайдів М. Ю. Кузьміна запис з Unicode-символами (`←`, `→`, `•`, `¬`, `!`) ([`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) `0.1.0`). | Дослідження авторської семантики (`Research/sources/author/`) та експериментальне lowering у `Do/Go`. |
 
 > **Фундаментальний інваріант еквівалентності:** символьний `EKPOL`, ключовий `EKPOL` і класичний `KPOL-CME-1/2` взаємно транслюються без жодних втрат прапорцями `--to-ekpol` / `--to-kpol` і компілюються в **побітово ідентичний (SHA-256) 1024-байтний образ BRAM (`CME-RAW-1`)**, ідентичний C99-код (`--emit-c99`) та ідентичний сертифікат безпеки `Z3` (`--emit-z3-cert`).
 
@@ -533,14 +533,17 @@ test CheckCleanNaming {
 
 **❌ Погано (Code Smell — *God Concept & W1 Operand Collision*):**
 
-```text
+```ekpol
+// ANTI-PATTERN: EKPOL-COLLISION-ERR (навмисно невалідний приклад із колізією слота W1)
 // Спроба поєднати діапазонний фільтр (потребує W1 для 50..5000)
 // і стрибок на +10 (потребує W1 для константи 10) в одному дескрипторі:
+module BadGodBmsController;
+
 concept God_BMS_Controller: i32 = 0 [>= 0] {
     <- delta_mv :: delta_mv in 50..5000 => God_BMS_Controller += 10 .
 }
 // Компілятор детерміновано відхилить цей код із помилкою:
-// EKPOL-COLLISION-ERR: Concept 'God_BMS_Controller' has a W1 operand collision
+// EKPOL-COLLISION-ERR: concept 'God_BMS_Controller': CME-RAW-1 shares one 32-bit W1 operand_val between guard literal and ADD/SUB step != 1
 ```
 
 **✅ Чисто (Clean EKPOL — *SRP Pipeline Separation*):**
@@ -645,8 +648,8 @@ concept Thermal_Stage_B: i32 = 0 [>= 0] {
 }
 ```
 
-> Спроба скомпілювати наведений вище антипатерн у `CME-RAW-1` негайно блокується 3-кольоровим DFS-аналізатором компілятора з діагностикою:
-> `EKPOL-CYCLE-ERR: Subscription cycle detected in cascade graph involving 'Thermal_Stage_A'`.
+> Спроба скомпілювати наведений вище антипатерн у `CME-RAW-1` негайно блокується 3-кольоровим DFS-аналізатором компілятора ([`validate_ekpol_for_bram64` в `Engineering/sw/kpol-ref/ekpol_frontend.py`](../sw/kpol-ref/ekpol_frontend.py)) із дослівною діагностикою:
+> `EKPOL-CYCLE-ERR: cyclic cascade subscription detected involving concept 'Thermal_Stage_A' (Thermal_Stage_A -> Thermal_Stage_B -> Thermal_Stage_A)`.
 
 **✅ Чисто (Clean EKPOL — *Top-to-Bottom Topological DAG by Lyapunov Rank*):**
 
@@ -1000,6 +1003,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | Усунення зауважень рецензії `F1..F4` у PR #285 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): виправлено версії нормативних специфікацій (`kpol-cme-subset.md` `0.4.0`, `kpol-consolidated.md` `0.6.1`, `kpol-cme2-profile.md` `0.1.0`, `kpol-auth-subset.md` `0.1.0`, `ekpol-specification.md` `1.0.1`), наведено дослівний текст діагностики `EKPOL-CYCLE-ERR` та `EKPOL-COLLISION-ERR` із `compile_ekpol_to_bram_image`, розширено верифікацію класичних `.kpol` прикладів (`verify_module` / `VMK`) і додано другий негативний контроль (`EKPOL-COLLISION-ERR`) у `test_ekpol_278.py`. |
 | 1.0.0 | 2026-11-18 | Перший випуск фундаментального «Керівництва користувача та чистого коду мов програмування KPOL і EKPOL» за принципами Браяна Кернігана, Денніса Рітчі (*The C Programming Language*, *The Practice of Programming*) та Роберта Мартіна (*Clean Code*): Частина I (вступний курс від «Hello, Concept!» до каскадів BMS і реактивного алгоритму Евкліда), Частина II (7 золотих правил чистого коду з парними прикладами «Погано vs Чисто» та каталогом `SMELL-01..07`), Частина III (довідник відповідності нотацій, кодів `CME-RAW-1`, діагностики компілятора та CLI-шпаргалка) з автоматичною компіляцією всіх прикладів у `pytest` (Issue [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)). |
 
 ---

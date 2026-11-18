@@ -549,10 +549,13 @@ def test_specifications_have_no_version_suffix_in_filenames():
 
 
 def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
-    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` and `Engineering/guides/README.md`
-    structure, compile and execute all embedded valid `.ekpol` (`module ...`) and `.kpol` (`Problem ...`)
-    code blocks in Python and Go `VMK v0.3.0`, and prove negative mutant control (`AGENTS.md §4 п. 1`)
-    on the intentionally cyclic anti-pattern (`EKPOL-CYCLE-ERR`).
+    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.1`) and
+    `Engineering/guides/README.md` (`1.0.0`) structure, specification version references (`F1`),
+    compile and execute all embedded valid `.ekpol` (`module ...`) and `.kpol` (`Problem ...`)
+    code blocks (including `Proof` verification via `kpol_reference.verify_module` / `Interpreter`
+    and Go `VMK v0.3.0`, `F4`), and prove negative mutant controls (`AGENTS.md §4 п. 1`) on the
+    intentionally cyclic (`EKPOL-CYCLE-ERR` exact diagnostic string, `F2`) and operand-collision
+    (`EKPOL-COLLISION-ERR`, `F4`) anti-patterns.
     """
     guide_md = REPO_ROOT / "Engineering" / "guides" / "kpol-ekpol-language-guide.md"
     guides_readme = REPO_ROOT / "Engineering" / "guides" / "README.md"
@@ -562,10 +565,25 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
     guide_txt = guide_md.read_text(encoding="utf-8")
     readme_txt = guides_readme.read_text(encoding="utf-8")
 
-    # 1. Verify Guide WP template sections and K&R + Clean Code coverage
+    # 1. Verify Guide WP template sections, spec versions (F1), and K&R + Clean Code coverage
+    expected_cycle_diag = (
+        "EKPOL-CYCLE-ERR: cyclic cascade subscription detected involving concept "
+        "'Thermal_Stage_A' (Thermal_Stage_A -> Thermal_Stage_B -> Thermal_Stage_A)"
+    )
+    expected_collision_diag = (
+        "EKPOL-COLLISION-ERR: concept 'God_BMS_Controller': CME-RAW-1 shares one 32-bit "
+        "W1 operand_val between guard literal and ADD/SUB step != 1"
+    )
     for required_marker in [
-        "* **Версія:** 1.0.0",
+        "* **Версія:** 1.0.1",
         "* **Тип WP:** Guide",
+        "ekpol-specification.md) (`1.0.1`)",
+        "kpol-cme-subset.md) (`0.4.0`)",
+        "kpol-cme2-profile.md) (`0.1.0`)",
+        "kpol-auth-subset.md) (`0.1.0`)",
+        "kpol-consolidated.md) (`0.6.1`)",
+        expected_cycle_diag,
+        expected_collision_diag,
         "## Призначення",
         "## Навігація чи використання",
         "Частина I. Вступний курс за методом Кернігана і Рітчі",
@@ -590,6 +608,7 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         "* **Версія:** 1.0.0",
         "* **Тип WP:** Guide",
         "kpol-ekpol-language-guide.md",
+        "`1.0.1`",
         "vmk-users-guide.md",
         "## Призначення",
         "## Навігація чи використання",
@@ -602,11 +621,12 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
     # 2. Extract all ```ekpol and ```kpol fenced blocks from the guide
     ekpol_blocks = re.findall(r"```ekpol\n(.*?)```", guide_txt, flags=re.DOTALL)
     kpol_blocks = re.findall(r"```kpol\n(.*?)```", guide_txt, flags=re.DOTALL)
-    assert len(ekpol_blocks) >= 15, f"Expected at least 15 ekpol examples in guide, found {len(ekpol_blocks)}"
+    assert len(ekpol_blocks) >= 16, f"Expected at least 16 ekpol examples in guide, found {len(ekpol_blocks)}"
     assert len(kpol_blocks) >= 2, f"Expected at least 2 kpol examples in guide, found {len(kpol_blocks)}"
 
     valid_ekpol_count = 0
     anti_pattern_cycle_count = 0
+    anti_pattern_collision_count = 0
 
     with _workspace_scratch_dir("guide_284") as scratch:
         vmk_bin = _build_vmk_binary(scratch)
@@ -614,9 +634,18 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         for idx, block in enumerate(ekpol_blocks):
             if "ANTI-PATTERN: EKPOL-CYCLE-ERR" in block:
                 anti_pattern_cycle_count += 1
-                # Negative control (AGENTS.md §4 п. 1): cyclic anti-pattern MUST fail with EKPOL-CYCLE-ERR
-                with pytest.raises(ef.EkpolError, match="EKPOL-CYCLE-ERR"):
+                # Negative control #1 (AGENTS.md §4 п. 1, F2): cyclic anti-pattern MUST fail with exact diagnostic
+                with pytest.raises(ef.EkpolError) as exc_cycle:
                     ef.compile_ekpol_to_bram_image(block)
+                assert str(exc_cycle.value) == expected_cycle_diag
+                continue
+
+            if "ANTI-PATTERN: EKPOL-COLLISION-ERR" in block:
+                anti_pattern_collision_count += 1
+                # Negative control #2 (AGENTS.md §4 п. 1, F4): W1 collision anti-pattern MUST fail with exact diagnostic
+                with pytest.raises(ef.EkpolError) as exc_coll:
+                    ef.compile_ekpol_to_bram_image(block)
+                assert str(exc_coll.value) == expected_collision_diag
                 continue
 
             valid_ekpol_count += 1
@@ -648,15 +677,46 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
 
         assert valid_ekpol_count >= 14
         assert anti_pattern_cycle_count == 1, "Guide must include the cyclic anti-pattern negative control block"
+        assert anti_pattern_collision_count == 1, "Guide must include the W1 collision anti-pattern negative control block"
 
+        # 3. Compile and execute all classic `.kpol` examples via `kpol_reference` (verify_module / Interpreter) and Go VMK (F4)
+        kpol_proof_scenarios_verified = 0
         for idx, kblock in enumerate(kpol_blocks):
             mod = kr.parse_module(kblock)
             prof = "KPOL-CME-1" if len(mod.states) == 1 else "KPOL-CME-2"
             img = kr.compile_concept_microcode_bram_image(mod, profile=prof)
             assert len(img) == 1024
 
+            if mod.proofs:
+                kpol_proof_scenarios_verified += 1
+                rep = kr.verify_module(mod)
+                assert rep.passed and not rep.failures, f"KPOL block #{idx} Proof failed: {rep.failures}"
+                assert rep.total_checks >= 6
+            else:
+                interp = kr.Interpreter(mod)
+                run_res = interp.run(
+                    [
+                        kr.EventInput("Pulse", {"param": 5}),
+                        kr.EventInput("Pulse", {"param": 25}),
+                    ]
+                )
+                assert run_res.state["Counter"] == 11
+
+            kpol_file = scratch / f"guide_kpol_{idx}.kpol"
+            kpol_file.write_text(kblock, encoding="utf-8")
+            res_kpol = subprocess.run(
+                [str(vmk_bin), "--program", str(kpol_file), "--profile", prof, "--trace-events", "0:5,0:500"],
+                env=_go_env(scratch),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            assert res_kpol.returncode == 0
+            assert "POST-LOAD" in res_kpol.stdout
+
+        assert kpol_proof_scenarios_verified >= 1
+
     wp_index = json.loads((REPO_ROOT / "Project" / "registers" / "wp-index.json").read_text(encoding="utf-8"))
     by_path = {e["path"]: e for e in wp_index["entries"]}
     assert by_path.get("Engineering/guides/kpol-ekpol-language-guide.md", {}).get("wp_type") == "Guide"
     assert by_path.get("Engineering/guides/README.md", {}).get("wp_type") == "Guide"
-
