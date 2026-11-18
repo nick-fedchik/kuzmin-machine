@@ -1,0 +1,28 @@
+# cmd: python3 -m pytest -v Engineering/sw/tests/test_kpol_debugger_272.py
+# timestamp: 2026-11-18T11:17:10.667125+02:00
+# git_commit: 4c6174c9e3b220e060523525f215ae24f5cff16b
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-272-debugger
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 13 items
+
+Engineering/sw/tests/test_kpol_debugger_272.py::test_debugger_4blocks_and_equivalence_with_ref_c99_and_iverilog PASSED [  7%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_watchpoints_breakpoints_and_z3_counterexample_diagnostic PASSED [ 15%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_stdio_binding_and_unix_pipe_cli PASSED [ 23%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_unreachable_target_exits_cleanly_without_traceback PASSED [ 30%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_machine_connection_pre_load_post_load_and_tui_rendering PASSED [ 38%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_compile_kpol_bram_image_cli_dump_concepts_and_trace_events PASSED [ 46%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_author_slide_examples_if_sum_and_nod_120_6_vs_km_euclid_core_iverilog PASSED [ 53%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_committed_raw_logs_and_pynq2_hil_artifact_provenance_272 PASSED [ 61%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_mutant_m1_debugger_invert_predicate_killed PASSED [ 69%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_mutant_m2_debugger_ignore_invariant_gate_killed PASSED [ 76%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_mutant_m3_debugger_drop_cascade_subscriber_killed PASSED [ 84%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_mutant_m4_debugger_mask_uncertainty_bit_killed PASSED [ 92%]
+Engineering/sw/tests/test_kpol_debugger_272.py::test_mutant_m5_debugger_corrupt_preload_postload_diff_killed PASSED [100%]
+
+============================== 13 passed in 0.91s ==============================
