@@ -1,6 +1,6 @@
 {
-  "version": "0.20.0",
-  "date": "2026-11-17",
+  "version": "0.21.0",
+  "date": "2026-11-18",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -705,6 +705,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/kpol-ref/kpol_debugger.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/kpol-ref/kpol_reference.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -766,6 +772,12 @@
     },
     {
       "path": "Engineering/sw/tests/test_exp_gpu_03_256.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_kpol_debugger_272.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -2194,6 +2206,60 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/cr-cme-raw2-185/scripts/verify_cr_cme_raw2.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/article_examples_all_traces.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/article_examples_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/cli_compile_trace_events_bms.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/pynq2_live_debugger_session.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/pynq2_live_debugger_session.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/pytest_debugger_272.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/raw/stdio_unix_pipe_bms.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/debugger-trace-272/run_debugger_verification.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false

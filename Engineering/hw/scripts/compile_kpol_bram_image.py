@@ -18,6 +18,10 @@ from kpol_reference import (  # noqa: E402
     compile_concept_microcode_bram_image,
     disassemble_concept_microcode,
 )
+from kpol_debugger import (  # noqa: E402
+    KpolCascadeDebugger,
+    parse_trace_events_spec,
+)
 
 
 def main():
@@ -41,6 +45,18 @@ def main():
         type=Path,
         default=None,
         help="new output Z3 SMT safety certificate JSON path (not overwritten)",
+    )
+    parser.add_argument(
+        "--dump-concepts",
+        action="store_true",
+        help="print the compiled BRAM concept descriptor table (W0, Valid '_', W1, W2, W3)",
+    )
+    parser.add_argument(
+        "--trace-events",
+        dest="trace_events",
+        type=str,
+        default=None,
+        help="optional event trace specification (e.g. '0:10,0:100,0:invalid') to debug after compilation",
     )
     parser.add_argument("source", type=Path)
     parser.add_argument("image", type=Path, help="new output file (not overwritten)")
@@ -84,6 +100,13 @@ def main():
         except (C99EmitterError, KpolError, RuntimeError) as error:
             parser.exit(2, f"{prefix}-C99: {error}\n")
 
+    trace_events_list = None
+    if args.trace_events is not None:
+        try:
+            trace_events_list = parse_trace_events_spec(args.trace_events)
+        except KpolError as error:
+            parser.exit(2, f"{prefix}-TRACE: {error}\n")
+
     for out_path in (args.image, args.emit_c99, args.emit_z3_cert):
         if out_path is not None and out_path.exists():
             parser.exit(2, f"{prefix}-IO: {out_path}: File exists\n")
@@ -110,6 +133,25 @@ def main():
             except OSError:
                 pass
         parser.exit(2, f"{prefix}-IO: {error}\n")
+
+    if args.dump_concepts or trace_events_list is not None:
+        concept_names = [st.name for st in module.states]
+        dbg = KpolCascadeDebugger(
+            image,
+            profile=args.profile,
+            module_name=module.name,
+            source_code=source,
+            concept_names=concept_names,
+            break_on_reject=True,
+            watch_state_change=True,
+        )
+        if trace_events_list is not None:
+            dbg.run_events(trace_events_list)
+            print(dbg.format_full_4block_report())
+        else:
+            print(dbg.format_source_block())
+            print()
+            print(dbg.format_concepts_table())
 
 
 if __name__ == "__main__":

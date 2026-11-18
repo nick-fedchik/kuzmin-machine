@@ -1,7 +1,7 @@
 # Інженерні перевірки
 
-* **Версія:** 0.7.0
-* **Дата:** 2026-11-17
+* **Версія:** 0.8.0
+* **Дата:** 2026-11-18
 * **Тип WP:** Guide
 
 ## Призначення та навігація
@@ -31,6 +31,7 @@
 | [Багатоядерне масштабування `CFG-P` ($N=1, 2, 4, 8$) / #255](kpol-cme/manycore-scaling-255/report.md) | Міжбанковий комутатор `km_event_crossbar.sv` та кластер `km_manycore_cluster.sv`, формальний SMT-доказ `Z3` на $N=2$ (`MC1..MC3`, свідок циклічного дедлока `MC4` і 3 мутанти), фізичний P&R та STA в `OpenXC7` (`nextpnr-himbaechel` на `xc7z020clg400-1`, $F_{\max} = 113.92..50.81\text{ МГц}$) і профілювання трафіку (`Icarus Verilog`); не фізичний HIL. |
 | [Консолідована приймальна верифікація компілятора KPOL S5 / #8](kpol-cme/s5-compiler-8/report.md) | Наскрізна перевірка всіх трьох підтримуваних контурів S5 (`KPOL-CME-1` + `Secure Boot`, `KPOL-CME-2` на `CFG-P` і двобанковому `CFG-P-HA`, підмножина `KPOL-AUTH` у `Do/Go` + `CME-RAW-1`), 7 мутантних контролів `M1..M5` і фіксація відкритих меж `#186` та `ADR B7`. |
 | [Генератор детермінованого C99 (`--emit-c99`) + Z3 Safety Certificate на кейсі BMS / #270](kpol-cme/c99-emitter-270/report.md) | Трансляція 4-рівневого каскаду BMS ([`bms_safety_cascade.kpol`](kpol-cme/c99-emitter-270/bms_safety_cascade.kpol)) у 1024-Б образ BRAM, MISRA-орієнтований C99-модуль із `valid_mask` та сертифікат `Z3` (`P1..P4`), верифікована на `x86_64`, `Icarus Verilog`, фізичному `ARM Cortex-A9` (`223.85..286.73 нс`) та кристалі `Zynq-7020 PL` (`pynq2`) з мутантами `M1..M4`; див. також [підсумковий аналіз](../../Research/studies/commercialization-and-final-conclusions.md). |
+| [Покроковий дебагер-трасувальник каскадів МК (`--trace-events`, `--stdio`, `--tui`) та верифікація прикладів зі статей / #272](kpol-cme/debugger-trace-272/report.md) | 4-блоковий дебагер [`kpol_debugger.py`](../sw/kpol-ref/kpol_debugger.py), прапорці `--dump-concepts` і `--trace-events` у [`compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py), потокове `STDIO` (`--stdio`), підключення TUI-дебагера до фізичної `PYNQ-Z1` (`pynq2`) зі знімками `PRE-LOAD` / `POST-LOAD` / `POST-RUN` (`1/64 -> 4/64` концепти), покрокова верифікація 5 груп прикладів зі статей (включно з `Nod(120, 6) = 6` проти `km_euclid_core.sv` у `iverilog`) і 5 мутантів `M1..M5` у [`test_kpol_debugger_272.py`](../sw/tests/test_kpol_debugger_272.py). |
 
 ## Використання
 
@@ -72,6 +73,7 @@ python3 Engineering/validation/experiments/AV-11/scripts/analyze_av11.py --outpu
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.8.0 | 2026-11-18 | #272: зареєстровано пакет верифікації покрокового дебагера каскадів МК (`kpol-cme/debugger-trace-272/report.md`, `kpol_debugger.py`, `test_kpol_debugger_272.py`) з натурною сесією на `pynq2` (`PRE-LOAD -> POST-LOAD -> POST-RUN`) та верифікацією прикладів зі статей. |
 | 0.7.0 | 2026-11-17 | #270: зареєстровано пакет верифікації генератора `--emit-c99 + Z3` (`kpol-cme/c99-emitter-270/`, `test_c99_emitter_270.py`) та підсумковий висновок `commercialization-and-final-conclusions.md`. |
 | 0.6.0 | 2026-11-17 | #8: зареєстровано звіти перевірок фронтенду й lowering `KPOL-AUTH` (`#219/#243/#245`), формальної $k$-індукції до $N=16$ (`#227/#237/#242/#249`), модуля `km_pmod_event_egress.sv` (`#230/#234/#241`), багатоядерного кластера `CFG-P` $N=1..8$ (`#255`) та консолідованої приймальної верифікації компілятора S5 (`s5-compiler-8/report.md`, `#8`). |
 | 0.5.8 | 2026-11-14 | #192: у рядку про #185 «8 тактів» для `CME-RAW-2` позначено проєктною ціллю (не перевірено без RTL), уточнено межі перевірки `Secure Boot` (`v0x0006` із відхиленням `0x0007`/`2048` Б). Рядок історії додано в #198 (його пропущено в #192). |

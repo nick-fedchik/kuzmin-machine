@@ -1,0 +1,2621 @@
+{
+  "timestamp": "2026-11-18T10:51:45.013200+02:00",
+  "git_commit": "6c234bcf513734e8f024024b27379e08a13a35cb",
+  "host": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+  "examples": {
+    "increase": {
+      "example": "increase",
+      "report": {
+        "module_name": "Increase",
+        "profile": "KPOL-CME-1",
+        "active_cids": [
+          0
+        ],
+        "topological_order": [
+          0
+        ],
+        "telemetry": {
+          "events_processed": 3,
+          "commits": 1,
+          "rejects": 2,
+          "fault_propagations": 1,
+          "halted_on_breakpoint": false
+        },
+        "state_diff": [
+          {
+            "cid": 0,
+            "before_w0": 10,
+            "before_valid": "1",
+            "after_w0": 11,
+            "after_valid": "1",
+            "delta": 1,
+            "changed": true
+          }
+        ],
+        "steps": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 5,
+            "param_valid": true,
+            "pre_w0": 10,
+            "pre_valid": true,
+            "pred_formula": "param < 20",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 11,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 11,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "STATE_CHANGE(10->11)"
+            ]
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 25,
+            "param_valid": true,
+            "pre_w0": 11,
+            "pre_valid": true,
+            "pred_formula": "param < 20",
+            "pred_match": false,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 12,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "REJECT_GUARD",
+            "post_w0": 11,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "BREAK_ON_REJECT(REJECT_GUARD)"
+            ]
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 0,
+            "param_valid": false,
+            "pre_w0": 11,
+            "pre_valid": true,
+            "pred_formula": "param < 20",
+            "pred_match": false,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 12,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_FAULT",
+            "post_w0": 11,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "BREAK_ON_REJECT(REJECT_FAULT)"
+            ]
+          }
+        ],
+        "watchpoint_triggers": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 11,
+            "param": 5,
+            "param_valid": true
+          },
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "STATE_CHANGE(10->11)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 11,
+            "param": 5,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 11,
+            "post_w0": 11,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "BREAK_ON_REJECT(REJECT_GUARD)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 11,
+            "post_w0": 11,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "REJECT_FAULT",
+            "pre_w0": 11,
+            "post_w0": 11,
+            "param": 0,
+            "param_valid": false
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "BREAK_ON_REJECT(REJECT_FAULT)",
+            "verdict": "REJECT_FAULT",
+            "pre_w0": 11,
+            "post_w0": 11,
+            "param": 0,
+            "param_valid": false
+          }
+        ]
+      },
+      "stdio": {
+        "stdout": [
+          "COMMIT: Counter[cid=0] = 11 (pre=10, depth=0, param=5, valid=1)"
+        ],
+        "stderr": [
+          "REJECT_GUARD: Counter[cid=0] kept W0=11 (depth=0, param=25, valid=1, pred=(param < 20)=>False, cand=12, gate=(cand >= 0 && !ovf32)=>True)",
+          "REJECT_FAULT: Counter[cid=0] kept W0=11 (depth=0, param=0, valid=_, pred=(param < 20)=>False, cand=12, gate=(cand >= 0 && !ovf32)=>False)"
+        ]
+      }
+    },
+    "decrease": {
+      "example": "decrease",
+      "report": {
+        "module_name": "DecreaseFromOne",
+        "profile": "KPOL-CME-1",
+        "active_cids": [
+          0
+        ],
+        "topological_order": [
+          0
+        ],
+        "telemetry": {
+          "events_processed": 3,
+          "commits": 1,
+          "rejects": 2,
+          "fault_propagations": 0,
+          "halted_on_breakpoint": false
+        },
+        "state_diff": [
+          {
+            "cid": 0,
+            "before_w0": 1,
+            "before_valid": "1",
+            "after_w0": 0,
+            "after_valid": "1",
+            "delta": -1,
+            "changed": true
+          }
+        ],
+        "steps": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 5,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "param < 20",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": 0,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "STATE_CHANGE(1->0)"
+            ]
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 5,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "param < 20",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": -1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_INVARIANT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "BREAK_ON_REJECT(REJECT_INVARIANT)"
+            ]
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 25,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "param < 20",
+            "pred_match": false,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": -1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_GUARD",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "BREAK_ON_REJECT(REJECT_GUARD)"
+            ]
+          }
+        ],
+        "watchpoint_triggers": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 5,
+            "param_valid": true
+          },
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "STATE_CHANGE(1->0)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 5,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "REJECT_INVARIANT",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 5,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "BREAK_ON_REJECT(REJECT_INVARIANT)",
+            "verdict": "REJECT_INVARIANT",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 5,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "BREAK_ON_REJECT(REJECT_GUARD)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 25,
+            "param_valid": true
+          }
+        ]
+      },
+      "z3_invariant_diagnostic": {
+        "status": "SAT_WITNESS_FOUND",
+        "cid": 0,
+        "concept_name": "Counter",
+        "witness_cur_state": 0,
+        "witness_ev_param": 19,
+        "unsafe_candidate_w0": -1,
+        "arith_overflow": false
+      },
+      "stdio": {
+        "stdout": [
+          "COMMIT: Counter[cid=0] = 0 (pre=1, depth=0, param=5, valid=1)"
+        ],
+        "stderr": [
+          "REJECT_INVARIANT: Counter[cid=0] kept W0=0 (depth=0, param=5, valid=1, pred=(param < 20)=>True, cand=-1, gate=(cand >= 0 && !ovf32)=>False)",
+          "REJECT_GUARD: Counter[cid=0] kept W0=0 (depth=0, param=25, valid=1, pred=(param < 20)=>False, cand=-1, gate=(cand >= 0 && !ovf32)=>False)"
+        ]
+      }
+    },
+    "cascade": {
+      "example": "cascade",
+      "report": {
+        "module_name": "Cascade4Concept",
+        "profile": "KPOL-CME-2",
+        "active_cids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "topological_order": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "telemetry": {
+          "events_processed": 12,
+          "commits": 10,
+          "rejects": 2,
+          "fault_propagations": 0,
+          "halted_on_breakpoint": false
+        },
+        "state_diff": [
+          {
+            "cid": 0,
+            "before_w0": 10,
+            "before_valid": "1",
+            "after_w0": 13,
+            "after_valid": "1",
+            "delta": 3,
+            "changed": true
+          },
+          {
+            "cid": 1,
+            "before_w0": 0,
+            "before_valid": "1",
+            "after_w0": 3,
+            "after_valid": "1",
+            "delta": 3,
+            "changed": true
+          },
+          {
+            "cid": 2,
+            "before_w0": 2,
+            "before_valid": "1",
+            "after_w0": 0,
+            "after_valid": "1",
+            "delta": -2,
+            "changed": true
+          },
+          {
+            "cid": 3,
+            "before_w0": 0,
+            "before_valid": "1",
+            "after_w0": 0,
+            "after_valid": "1",
+            "delta": 0,
+            "changed": false
+          }
+        ],
+        "steps": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "param": 10,
+            "param_valid": true,
+            "pre_w0": 10,
+            "pre_valid": true,
+            "pred_formula": "param < 50",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 11,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 11,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "C1",
+            "watchpoints_hit": [
+              "WATCH_CID(C0:C0)",
+              "STATE_CHANGE(10->11)"
+            ]
+          },
+          {
+            "step_index": 1,
+            "event_id": 0,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "C1",
+            "param": 11,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "param > 10",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 2,
+            "enqueued_subscriber_name": "C2",
+            "watchpoints_hit": [
+              "STATE_CHANGE(0->1)"
+            ]
+          },
+          {
+            "step_index": 2,
+            "event_id": 0,
+            "cascade_step": 2,
+            "depth": 2,
+            "cid": 2,
+            "concept_name": "C2",
+            "param": 1,
+            "param_valid": true,
+            "pre_w0": 2,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 3,
+            "enqueued_subscriber_name": "C3",
+            "watchpoints_hit": [
+              "STATE_CHANGE(2->1)"
+            ]
+          },
+          {
+            "step_index": 3,
+            "event_id": 0,
+            "cascade_step": 3,
+            "depth": 3,
+            "cid": 3,
+            "concept_name": "C3",
+            "param": 1,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "!(param == 2) [!= 2]",
+            "pred_match": true,
+            "action_formula": "W0' := param",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C3:C3)",
+              "STATE_CHANGE(0->1)"
+            ]
+          },
+          {
+            "step_index": 4,
+            "event_id": 1,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "param": 100,
+            "param_valid": true,
+            "pre_w0": 11,
+            "pre_valid": true,
+            "pred_formula": "param < 50",
+            "pred_match": false,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 12,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "REJECT_GUARD",
+            "post_w0": 11,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:C0)",
+              "BREAK_ON_REJECT(REJECT_GUARD)"
+            ]
+          },
+          {
+            "step_index": 5,
+            "event_id": 2,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "param": 10,
+            "param_valid": true,
+            "pre_w0": 11,
+            "pre_valid": true,
+            "pred_formula": "param < 50",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 12,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 12,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "C1",
+            "watchpoints_hit": [
+              "WATCH_CID(C0:C0)",
+              "STATE_CHANGE(11->12)"
+            ]
+          },
+          {
+            "step_index": 6,
+            "event_id": 2,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "C1",
+            "param": 12,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "param > 10",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 2,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 2,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 2,
+            "enqueued_subscriber_name": "C2",
+            "watchpoints_hit": [
+              "STATE_CHANGE(1->2)"
+            ]
+          },
+          {
+            "step_index": 7,
+            "event_id": 2,
+            "cascade_step": 2,
+            "depth": 2,
+            "cid": 2,
+            "concept_name": "C2",
+            "param": 2,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": 0,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 3,
+            "enqueued_subscriber_name": "C3",
+            "watchpoints_hit": [
+              "STATE_CHANGE(1->0)"
+            ]
+          },
+          {
+            "step_index": 8,
+            "event_id": 2,
+            "cascade_step": 3,
+            "depth": 3,
+            "cid": 3,
+            "concept_name": "C3",
+            "param": 0,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "!(param == 2) [!= 2]",
+            "pred_match": true,
+            "action_formula": "W0' := param",
+            "candidate_w0": 0,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C3:C3)",
+              "STATE_CHANGE(1->0)"
+            ]
+          },
+          {
+            "step_index": 9,
+            "event_id": 3,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "param": 10,
+            "param_valid": true,
+            "pre_w0": 12,
+            "pre_valid": true,
+            "pred_formula": "param < 50",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 13,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 13,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "C1",
+            "watchpoints_hit": [
+              "WATCH_CID(C0:C0)",
+              "STATE_CHANGE(12->13)"
+            ]
+          },
+          {
+            "step_index": 10,
+            "event_id": 3,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "C1",
+            "param": 13,
+            "param_valid": true,
+            "pre_w0": 2,
+            "pre_valid": true,
+            "pred_formula": "param > 10",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 3,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 3,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 2,
+            "enqueued_subscriber_name": "C2",
+            "watchpoints_hit": [
+              "STATE_CHANGE(2->3)"
+            ]
+          },
+          {
+            "step_index": 11,
+            "event_id": 3,
+            "cascade_step": 2,
+            "depth": 2,
+            "cid": 2,
+            "concept_name": "C2",
+            "param": 3,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": -1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_INVARIANT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "BREAK_ON_REJECT(REJECT_INVARIANT)"
+            ]
+          }
+        ],
+        "watchpoint_triggers": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "WATCH_CID(C0:C0)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 11,
+            "param": 10,
+            "param_valid": true
+          },
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "STATE_CHANGE(10->11)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 11,
+            "param": 10,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 0,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "C1",
+            "reason": "STATE_CHANGE(0->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 11,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 0,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "C2",
+            "reason": "STATE_CHANGE(2->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 2,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 3,
+            "event_id": 0,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "C3",
+            "reason": "WATCH_CID(C3:C3)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 3,
+            "event_id": 0,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "C3",
+            "reason": "STATE_CHANGE(0->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 4,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "WATCH_CID(C0:C0)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 11,
+            "post_w0": 11,
+            "param": 100,
+            "param_valid": true
+          },
+          {
+            "step_index": 4,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "BREAK_ON_REJECT(REJECT_GUARD)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 11,
+            "post_w0": 11,
+            "param": 100,
+            "param_valid": true
+          },
+          {
+            "step_index": 5,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "WATCH_CID(C0:C0)",
+            "verdict": "COMMIT",
+            "pre_w0": 11,
+            "post_w0": 12,
+            "param": 10,
+            "param_valid": true
+          },
+          {
+            "step_index": 5,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "STATE_CHANGE(11->12)",
+            "verdict": "COMMIT",
+            "pre_w0": 11,
+            "post_w0": 12,
+            "param": 10,
+            "param_valid": true
+          },
+          {
+            "step_index": 6,
+            "event_id": 2,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "C1",
+            "reason": "STATE_CHANGE(1->2)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 2,
+            "param": 12,
+            "param_valid": true
+          },
+          {
+            "step_index": 7,
+            "event_id": 2,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "C2",
+            "reason": "STATE_CHANGE(1->0)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 2,
+            "param_valid": true
+          },
+          {
+            "step_index": 8,
+            "event_id": 2,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "C3",
+            "reason": "WATCH_CID(C3:C3)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 0,
+            "param_valid": true
+          },
+          {
+            "step_index": 8,
+            "event_id": 2,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "C3",
+            "reason": "STATE_CHANGE(1->0)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 0,
+            "param_valid": true
+          },
+          {
+            "step_index": 9,
+            "event_id": 3,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "WATCH_CID(C0:C0)",
+            "verdict": "COMMIT",
+            "pre_w0": 12,
+            "post_w0": 13,
+            "param": 10,
+            "param_valid": true
+          },
+          {
+            "step_index": 9,
+            "event_id": 3,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "C0",
+            "reason": "STATE_CHANGE(12->13)",
+            "verdict": "COMMIT",
+            "pre_w0": 12,
+            "post_w0": 13,
+            "param": 10,
+            "param_valid": true
+          },
+          {
+            "step_index": 10,
+            "event_id": 3,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "C1",
+            "reason": "STATE_CHANGE(2->3)",
+            "verdict": "COMMIT",
+            "pre_w0": 2,
+            "post_w0": 3,
+            "param": 13,
+            "param_valid": true
+          },
+          {
+            "step_index": 11,
+            "event_id": 3,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "C2",
+            "reason": "BREAK_ON_REJECT(REJECT_INVARIANT)",
+            "verdict": "REJECT_INVARIANT",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 3,
+            "param_valid": true
+          }
+        ]
+      },
+      "rtl_cfgp": {
+        "events": 12,
+        "commits": 10,
+        "rejects": 2,
+        "states": [
+          13,
+          3,
+          0,
+          0
+        ],
+        "raw_stdout": "WARNING: /home/mfedchyk/GitHub/nick-fedchik/km-wt-272-debugger/.pytest_cache/cfgp272_3de3447c273a43f89d5689094dbb6a49/cfgp_trace_tb.sv:75: $readmemh(/home/mfedchyk/GitHub/nick-fedchik/km-wt-272-debugger/.pytest_cache/cfgp272_3de3447c273a43f89d5689094dbb6a49/events.hex): Not enough words in the file for the requested range [0:127].\nCFGP_SUMMARY events=12 commits=10 rejects=2 states=13,3,0,0\n/home/mfedchyk/GitHub/nick-fedchik/km-wt-272-debugger/.pytest_cache/cfgp272_3de3447c273a43f89d5689094dbb6a49/cfgp_trace_tb.sv:97: $finish called at 16870000 (1ps)\n"
+      },
+      "stdio": {
+        "stdout": [
+          "COMMIT: C0[cid=0] = 11 (pre=10, depth=0, param=10, valid=1)",
+          "COMMIT: C1[cid=1] = 1 (pre=0, depth=1, param=11, valid=1)",
+          "COMMIT: C2[cid=2] = 1 (pre=2, depth=2, param=1, valid=1)",
+          "COMMIT: C3[cid=3] = 1 (pre=0, depth=3, param=1, valid=1)",
+          "COMMIT: C0[cid=0] = 12 (pre=11, depth=0, param=10, valid=1)",
+          "COMMIT: C1[cid=1] = 2 (pre=1, depth=1, param=12, valid=1)",
+          "COMMIT: C2[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)",
+          "COMMIT: C3[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)",
+          "COMMIT: C0[cid=0] = 13 (pre=12, depth=0, param=10, valid=1)",
+          "COMMIT: C1[cid=1] = 3 (pre=2, depth=1, param=13, valid=1)"
+        ],
+        "stderr": [
+          "REJECT_GUARD: C0[cid=0] kept W0=11 (depth=0, param=100, valid=1, pred=(param < 50)=>False, cand=12, gate=(cand >= 0 && !ovf32)=>True)",
+          "REJECT_INVARIANT: C2[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>True, cand=-1, gate=(cand >= 0 && !ovf32)=>False)"
+        ]
+      }
+    },
+    "bms": {
+      "example": "bms",
+      "report": {
+        "module_name": "BmsSafetyCascade",
+        "profile": "KPOL-CME-2",
+        "active_cids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "topological_order": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "telemetry": {
+          "events_processed": 14,
+          "commits": 10,
+          "rejects": 4,
+          "fault_propagations": 1,
+          "halted_on_breakpoint": false
+        },
+        "state_diff": [
+          {
+            "cid": 0,
+            "before_w0": 0,
+            "before_valid": "1",
+            "after_w0": 3,
+            "after_valid": "1",
+            "delta": 3,
+            "changed": true
+          },
+          {
+            "cid": 1,
+            "before_w0": 0,
+            "before_valid": "1",
+            "after_w0": 3,
+            "after_valid": "1",
+            "delta": 3,
+            "changed": true
+          },
+          {
+            "cid": 2,
+            "before_w0": 2,
+            "before_valid": "1",
+            "after_w0": 0,
+            "after_valid": "1",
+            "delta": -2,
+            "changed": true
+          },
+          {
+            "cid": 3,
+            "before_w0": 10,
+            "before_valid": "1",
+            "after_w0": 0,
+            "after_valid": "1",
+            "delta": -10,
+            "changed": true
+          }
+        ],
+        "steps": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "param": 15,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "50 <= param <= 5000",
+            "pred_match": false,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "REJECT_GUARD",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "BREAK_ON_REJECT(REJECT_GUARD)"
+            ]
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "param": 5500,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "50 <= param <= 5000",
+            "pred_match": false,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "REJECT_GUARD",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "BREAK_ON_REJECT(REJECT_GUARD)"
+            ]
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "param": 0,
+            "param_valid": false,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "50 <= param <= 5000",
+            "pred_match": false,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_FAULT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "BREAK_ON_REJECT(REJECT_FAULT)"
+            ]
+          },
+          {
+            "step_index": 3,
+            "event_id": 3,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "param": 120,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "50 <= param <= 5000",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "Module_Thermal_Guard",
+            "watchpoints_hit": [
+              "STATE_CHANGE(0->1)"
+            ]
+          },
+          {
+            "step_index": 4,
+            "event_id": 3,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "Module_Thermal_Guard",
+            "param": 1,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 2,
+            "enqueued_subscriber_name": "Pack_Fault_Latch",
+            "watchpoints_hit": [
+              "STATE_CHANGE(0->1)"
+            ]
+          },
+          {
+            "step_index": 5,
+            "event_id": 3,
+            "cascade_step": 2,
+            "depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "param": 1,
+            "param_valid": true,
+            "pre_w0": 2,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 3,
+            "enqueued_subscriber_name": "Contactor_Interlock",
+            "watchpoints_hit": [
+              "WATCH_CID(C2:Pack_Fault_Latch)",
+              "STATE_CHANGE(2->1)"
+            ]
+          },
+          {
+            "step_index": 6,
+            "event_id": 3,
+            "cascade_step": 3,
+            "depth": 3,
+            "cid": 3,
+            "concept_name": "Contactor_Interlock",
+            "param": 1,
+            "param_valid": true,
+            "pre_w0": 10,
+            "pre_valid": true,
+            "pred_formula": "!(param == 2) [!= 2]",
+            "pred_match": true,
+            "action_formula": "W0' := param",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C3:Contactor_Interlock)",
+              "STATE_CHANGE(10->1)"
+            ]
+          },
+          {
+            "step_index": 7,
+            "event_id": 4,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "param": 180,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "50 <= param <= 5000",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 2,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 2,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "Module_Thermal_Guard",
+            "watchpoints_hit": [
+              "STATE_CHANGE(1->2)",
+              "THRESHOLD_REACHED(C0>=2)"
+            ]
+          },
+          {
+            "step_index": 8,
+            "event_id": 4,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "Module_Thermal_Guard",
+            "param": 2,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 2,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 2,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 2,
+            "enqueued_subscriber_name": "Pack_Fault_Latch",
+            "watchpoints_hit": [
+              "STATE_CHANGE(1->2)"
+            ]
+          },
+          {
+            "step_index": 9,
+            "event_id": 4,
+            "cascade_step": 2,
+            "depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "param": 2,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": 0,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 3,
+            "enqueued_subscriber_name": "Contactor_Interlock",
+            "watchpoints_hit": [
+              "WATCH_CID(C2:Pack_Fault_Latch)",
+              "STATE_CHANGE(1->0)"
+            ]
+          },
+          {
+            "step_index": 10,
+            "event_id": 4,
+            "cascade_step": 3,
+            "depth": 3,
+            "cid": 3,
+            "concept_name": "Contactor_Interlock",
+            "param": 0,
+            "param_valid": true,
+            "pre_w0": 1,
+            "pre_valid": true,
+            "pred_formula": "!(param == 2) [!= 2]",
+            "pred_match": true,
+            "action_formula": "W0' := param",
+            "candidate_w0": 0,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C3:Contactor_Interlock)",
+              "STATE_CHANGE(1->0)"
+            ]
+          },
+          {
+            "step_index": 11,
+            "event_id": 5,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "param": 250,
+            "param_valid": true,
+            "pre_w0": 2,
+            "pre_valid": true,
+            "pred_formula": "50 <= param <= 5000",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 3,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 3,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "Module_Thermal_Guard",
+            "watchpoints_hit": [
+              "STATE_CHANGE(2->3)"
+            ]
+          },
+          {
+            "step_index": 12,
+            "event_id": 5,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "Module_Thermal_Guard",
+            "param": 3,
+            "param_valid": true,
+            "pre_w0": 2,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 3,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 3,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 2,
+            "enqueued_subscriber_name": "Pack_Fault_Latch",
+            "watchpoints_hit": [
+              "STATE_CHANGE(2->3)"
+            ]
+          },
+          {
+            "step_index": 13,
+            "event_id": 5,
+            "cascade_step": 2,
+            "depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "param": 3,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "!(param < 1) [>= 1]",
+            "pred_match": true,
+            "action_formula": "W0' := W0 - 1",
+            "candidate_w0": -1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_INVARIANT",
+            "post_w0": 0,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C2:Pack_Fault_Latch)",
+              "BREAK_ON_REJECT(REJECT_INVARIANT)"
+            ]
+          }
+        ],
+        "watchpoint_triggers": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "BREAK_ON_REJECT(REJECT_GUARD)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 15,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "BREAK_ON_REJECT(REJECT_GUARD)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 5500,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "BREAK_ON_REJECT(REJECT_FAULT)",
+            "verdict": "REJECT_FAULT",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 0,
+            "param_valid": false
+          },
+          {
+            "step_index": 3,
+            "event_id": 3,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "STATE_CHANGE(0->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 120,
+            "param_valid": true
+          },
+          {
+            "step_index": 4,
+            "event_id": 3,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "Module_Thermal_Guard",
+            "reason": "STATE_CHANGE(0->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 5,
+            "event_id": 3,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "reason": "WATCH_CID(C2:Pack_Fault_Latch)",
+            "verdict": "COMMIT",
+            "pre_w0": 2,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 5,
+            "event_id": 3,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "reason": "STATE_CHANGE(2->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 2,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 6,
+            "event_id": 3,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "Contactor_Interlock",
+            "reason": "WATCH_CID(C3:Contactor_Interlock)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 6,
+            "event_id": 3,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "Contactor_Interlock",
+            "reason": "STATE_CHANGE(10->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 1,
+            "param": 1,
+            "param_valid": true
+          },
+          {
+            "step_index": 7,
+            "event_id": 4,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "STATE_CHANGE(1->2)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 2,
+            "param": 180,
+            "param_valid": true
+          },
+          {
+            "step_index": 7,
+            "event_id": 4,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "THRESHOLD_REACHED(C0>=2)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 2,
+            "param": 180,
+            "param_valid": true
+          },
+          {
+            "step_index": 8,
+            "event_id": 4,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "Module_Thermal_Guard",
+            "reason": "STATE_CHANGE(1->2)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 2,
+            "param": 2,
+            "param_valid": true
+          },
+          {
+            "step_index": 9,
+            "event_id": 4,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "reason": "WATCH_CID(C2:Pack_Fault_Latch)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 2,
+            "param_valid": true
+          },
+          {
+            "step_index": 9,
+            "event_id": 4,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "reason": "STATE_CHANGE(1->0)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 2,
+            "param_valid": true
+          },
+          {
+            "step_index": 10,
+            "event_id": 4,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "Contactor_Interlock",
+            "reason": "WATCH_CID(C3:Contactor_Interlock)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 0,
+            "param_valid": true
+          },
+          {
+            "step_index": 10,
+            "event_id": 4,
+            "cascade_depth": 3,
+            "cid": 3,
+            "concept_name": "Contactor_Interlock",
+            "reason": "STATE_CHANGE(1->0)",
+            "verdict": "COMMIT",
+            "pre_w0": 1,
+            "post_w0": 0,
+            "param": 0,
+            "param_valid": true
+          },
+          {
+            "step_index": 11,
+            "event_id": 5,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Cell_Delta_mV",
+            "reason": "STATE_CHANGE(2->3)",
+            "verdict": "COMMIT",
+            "pre_w0": 2,
+            "post_w0": 3,
+            "param": 250,
+            "param_valid": true
+          },
+          {
+            "step_index": 12,
+            "event_id": 5,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "Module_Thermal_Guard",
+            "reason": "STATE_CHANGE(2->3)",
+            "verdict": "COMMIT",
+            "pre_w0": 2,
+            "post_w0": 3,
+            "param": 3,
+            "param_valid": true
+          },
+          {
+            "step_index": 13,
+            "event_id": 5,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "reason": "WATCH_CID(C2:Pack_Fault_Latch)",
+            "verdict": "REJECT_INVARIANT",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 3,
+            "param_valid": true
+          },
+          {
+            "step_index": 13,
+            "event_id": 5,
+            "cascade_depth": 2,
+            "cid": 2,
+            "concept_name": "Pack_Fault_Latch",
+            "reason": "BREAK_ON_REJECT(REJECT_INVARIANT)",
+            "verdict": "REJECT_INVARIANT",
+            "pre_w0": 0,
+            "post_w0": 0,
+            "param": 3,
+            "param_valid": true
+          }
+        ]
+      },
+      "z3_invariant_diagnostic": {
+        "status": "SAT_WITNESS_FOUND",
+        "cid": 2,
+        "concept_name": "Pack_Fault_Latch",
+        "witness_cur_state": 0,
+        "witness_ev_param": 1,
+        "unsafe_candidate_w0": -1,
+        "arith_overflow": false
+      },
+      "stdio": {
+        "stdout": [
+          "COMMIT: Cell_Delta_mV[cid=0] = 1 (pre=0, depth=0, param=120, valid=1)",
+          "COMMIT: Module_Thermal_Guard[cid=1] = 1 (pre=0, depth=1, param=1, valid=1)",
+          "COMMIT: Pack_Fault_Latch[cid=2] = 1 (pre=2, depth=2, param=1, valid=1)",
+          "COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1, valid=1)",
+          "COMMIT: Cell_Delta_mV[cid=0] = 2 (pre=1, depth=0, param=180, valid=1)",
+          "COMMIT: Module_Thermal_Guard[cid=1] = 2 (pre=1, depth=1, param=2, valid=1)",
+          "COMMIT: Pack_Fault_Latch[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)",
+          "COMMIT: Contactor_Interlock[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)",
+          "COMMIT: Cell_Delta_mV[cid=0] = 3 (pre=2, depth=0, param=250, valid=1)",
+          "COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3, valid=1)"
+        ],
+        "stderr": [
+          "REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=15, valid=1, pred=(50 <= param <= 5000)=>False, cand=1, gate=(cand >= 0 && !ovf32)=>True)",
+          "REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=5500, valid=1, pred=(50 <= param <= 5000)=>False, cand=1, gate=(cand >= 0 && !ovf32)=>True)",
+          "REJECT_FAULT: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=0, valid=_, pred=(50 <= param <= 5000)=>False, cand=1, gate=(cand >= 0 && !ovf32)=>False)",
+          "REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>True, cand=-1, gate=(cand >= 0 && !ovf32)=>False)"
+        ]
+      }
+    },
+    "auth": {
+      "example": "auth",
+      "dogo_bytecode_hex": [
+        "0x12000000",
+        "0x30000001",
+        "0x20000000",
+        "0x11000001",
+        "0x50000000"
+      ],
+      "report": {
+        "module_name": "AuthCounterSubset",
+        "profile": "KPOL-AUTH",
+        "active_cids": [
+          0,
+          1
+        ],
+        "topological_order": [
+          0,
+          1
+        ],
+        "telemetry": {
+          "events_processed": 4,
+          "commits": 2,
+          "rejects": 2,
+          "fault_propagations": 1,
+          "halted_on_breakpoint": false
+        },
+        "state_diff": [
+          {
+            "cid": 0,
+            "before_w0": 10,
+            "before_valid": "1",
+            "after_w0": 25,
+            "after_valid": "1",
+            "delta": 15,
+            "changed": true
+          },
+          {
+            "cid": 1,
+            "before_w0": 0,
+            "before_valid": "1",
+            "after_w0": 1,
+            "after_valid": "1",
+            "delta": 1,
+            "changed": true
+          }
+        ],
+        "steps": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 25,
+            "param_valid": true,
+            "pre_w0": 10,
+            "pre_valid": true,
+            "pred_formula": "param > 0",
+            "pred_match": true,
+            "action_formula": "W0' := param",
+            "candidate_w0": 25,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 25,
+            "post_valid": true,
+            "enqueued_subscriber_cid": 1,
+            "enqueued_subscriber_name": "Mirror",
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "STATE_CHANGE(10->25)"
+            ]
+          },
+          {
+            "step_index": 1,
+            "event_id": 0,
+            "cascade_step": 1,
+            "depth": 1,
+            "cid": 1,
+            "concept_name": "Mirror",
+            "param": 25,
+            "param_valid": true,
+            "pre_w0": 0,
+            "pre_valid": true,
+            "pred_formula": "true",
+            "pred_match": true,
+            "action_formula": "W0' := W0 + 1",
+            "candidate_w0": 1,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": true,
+            "verdict": "COMMIT",
+            "post_w0": 1,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C1:Mirror)",
+              "STATE_CHANGE(0->1)"
+            ]
+          },
+          {
+            "step_index": 2,
+            "event_id": 1,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": -5,
+            "param_valid": true,
+            "pre_w0": 25,
+            "pre_valid": true,
+            "pred_formula": "param > 0",
+            "pred_match": false,
+            "action_formula": "W0' := param",
+            "candidate_w0": -5,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_GUARD",
+            "post_w0": 25,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "BREAK_ON_REJECT(REJECT_GUARD)"
+            ]
+          },
+          {
+            "step_index": 3,
+            "event_id": 2,
+            "cascade_step": 0,
+            "depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "param": 0,
+            "param_valid": false,
+            "pre_w0": 25,
+            "pre_valid": true,
+            "pred_formula": "param > 0",
+            "pred_match": false,
+            "action_formula": "W0' := param",
+            "candidate_w0": 0,
+            "arith_overflow": false,
+            "inv_formula": "cand >= 0 && !ovf32",
+            "inv_ok": false,
+            "verdict": "REJECT_FAULT",
+            "post_w0": 25,
+            "post_valid": true,
+            "enqueued_subscriber_cid": null,
+            "enqueued_subscriber_name": null,
+            "watchpoints_hit": [
+              "WATCH_CID(C0:Counter)",
+              "BREAK_ON_REJECT(REJECT_FAULT)"
+            ]
+          }
+        ],
+        "watchpoint_triggers": [
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 25,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 0,
+            "event_id": 0,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "STATE_CHANGE(10->25)",
+            "verdict": "COMMIT",
+            "pre_w0": 10,
+            "post_w0": 25,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 0,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "Mirror",
+            "reason": "WATCH_CID(C1:Mirror)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 1,
+            "event_id": 0,
+            "cascade_depth": 1,
+            "cid": 1,
+            "concept_name": "Mirror",
+            "reason": "STATE_CHANGE(0->1)",
+            "verdict": "COMMIT",
+            "pre_w0": 0,
+            "post_w0": 1,
+            "param": 25,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 25,
+            "post_w0": 25,
+            "param": -5,
+            "param_valid": true
+          },
+          {
+            "step_index": 2,
+            "event_id": 1,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "BREAK_ON_REJECT(REJECT_GUARD)",
+            "verdict": "REJECT_GUARD",
+            "pre_w0": 25,
+            "post_w0": 25,
+            "param": -5,
+            "param_valid": true
+          },
+          {
+            "step_index": 3,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "WATCH_CID(C0:Counter)",
+            "verdict": "REJECT_FAULT",
+            "pre_w0": 25,
+            "post_w0": 25,
+            "param": 0,
+            "param_valid": false
+          },
+          {
+            "step_index": 3,
+            "event_id": 2,
+            "cascade_depth": 0,
+            "cid": 0,
+            "concept_name": "Counter",
+            "reason": "BREAK_ON_REJECT(REJECT_FAULT)",
+            "verdict": "REJECT_FAULT",
+            "pre_w0": 25,
+            "post_w0": 25,
+            "param": 0,
+            "param_valid": false
+          }
+        ]
+      },
+      "stdio": {
+        "stdout": [
+          "COMMIT: Counter[cid=0] = 25 (pre=10, depth=0, param=25, valid=1)",
+          "COMMIT: Mirror[cid=1] = 1 (pre=0, depth=1, param=25, valid=1)"
+        ],
+        "stderr": [
+          "REJECT_GUARD: Counter[cid=0] kept W0=25 (depth=0, param=-5, valid=1, pred=(param > 0)=>False, cand=-5, gate=(cand >= 0 && !ovf32)=>False)",
+          "REJECT_FAULT: Counter[cid=0] kept W0=25 (depth=0, param=0, valid=_, pred=(param > 0)=>False, cand=0, gate=(cand >= 0 && !ovf32)=>False)"
+        ]
+      }
+    },
+    "nod": {
+      "if_toggle": {
+        "example_id": "author_slide_if_toggle",
+        "title": "T-тригер `If` зі станом невизначеності `_` та правилом анти-зациклення (`RFC-001`)",
+        "source_text": "Boolean If _\n  _ -> If = !\n  ! -> If = ¬\n  ¬ -> If = !",
+        "initial_state": "_",
+        "final_state": "!",
+        "state_trajectory": [
+          "_",
+          "!",
+          "¬",
+          "!"
+        ],
+        "steps": [
+          {
+            "step": 1,
+            "stimulus": "Go If ← (Write impulse #1)",
+            "active_concept": "If",
+            "pre_state": "_ (uninitialized, valid=0)",
+            "event_evaluated": "If :: _ => True",
+            "rule_or_bar_action": "If ← ! (True, code 0)",
+            "post_state": "! (True, valid=1)",
+            "anti_loop_or_convergence_note": "RFC-001 Cycle Prevention: write to `If` inside subscription of `If` suppresses recursive re-triggering (`self_suppress = 1`). Wave stops after 1 step."
+          },
+          {
+            "step": 2,
+            "stimulus": "Go If ← (Write impulse #2)",
+            "active_concept": "If",
+            "pre_state": "! (True, valid=1)",
+            "event_evaluated": "If :: ! => True",
+            "rule_or_bar_action": "If ← ¬ (False, code 1)",
+            "post_state": "¬ (False, valid=1)",
+            "anti_loop_or_convergence_note": "Single-reaction per write impulse: `If` flips `! -> ¬` and stops without oscillating."
+          },
+          {
+            "step": 3,
+            "stimulus": "Go If ← (Write impulse #3)",
+            "active_concept": "If",
+            "pre_state": "¬ (False, valid=1)",
+            "event_evaluated": "If :: ¬ => True",
+            "rule_or_bar_action": "If ← ! (True, code 0)",
+            "post_state": "! (True, valid=1)",
+            "anti_loop_or_convergence_note": "Single-reaction per write impulse: `If` flips `¬ -> !` and stops."
+          }
+        ]
+      },
+      "sum_post_read_reset": {
+        "example_id": "author_slide_sum_post_read_reset",
+        "title": "Акумулятор `Sum` із пост-адресним скиданням після читання `→ • Sum = 0` (`RFC-013`)",
+        "source_text": "Int32 Sum = 0\n  ← @ Int32 x : Sum += x\n  → • Sum = 0",
+        "read_returned_value": 35,
+        "post_read_state": 0,
+        "steps": [
+          {
+            "step": 1,
+            "stimulus": "Init(Sum = 0)",
+            "active_concept": "Sum",
+            "pre_state": "_",
+            "event_evaluated": "Init(:)",
+            "rule_or_bar_action": "Sum := 0",
+            "post_state": "Sum = 0",
+            "anti_loop_or_convergence_note": "Accumulator initialized to 0."
+          },
+          {
+            "step": 2,
+            "stimulus": "Go Sum ← 10 (Write x=10)",
+            "active_concept": "Sum",
+            "pre_state": "Sum = 0",
+            "event_evaluated": "← (Write event, x=10)",
+            "rule_or_bar_action": "Sum := Sum + 10",
+            "post_state": "Sum = 10",
+            "anti_loop_or_convergence_note": "Write subscription accumulates +10."
+          },
+          {
+            "step": 3,
+            "stimulus": "Go Sum ← 25 (Write x=25)",
+            "active_concept": "Sum",
+            "pre_state": "Sum = 10",
+            "event_evaluated": "← (Write event, x=25)",
+            "rule_or_bar_action": "Sum := Sum + 25",
+            "post_state": "Sum = 35",
+            "anti_loop_or_convergence_note": "Write subscription accumulates +25 (total 35)."
+          },
+          {
+            "step": 4,
+            "stimulus": "Go Sum → (Read & Post-Read • Reset)",
+            "active_concept": "Sum",
+            "pre_state": "Sum = 35",
+            "event_evaluated": "→ (Read phase 1) then • (Post-Read barrier phase 2, RFC-013)",
+            "rule_or_bar_action": "BusRead := 35; then • executes Sum := 0",
+            "post_state": "Sum = 0 (Read value = 35)",
+            "anti_loop_or_convergence_note": "RFC-013 / RFC-017: current value 35 is placed on read bus first, then post-addressing subscription after `•` resets `Sum = 0`."
+          }
+        ]
+      },
+      "nod_120_6": {
+        "example_id": "author_slide_nod_120_6",
+        "title": "Реактивний алгоритм Евкліда `Nod(120, 6) = 6`",
+        "source_text": "U64 Nod | @ U64 ( a_ > b -=b , b_ > a -=a ) =a\nZ = Nod(120, 6)",
+        "a_init": 120,
+        "b_init": 6,
+        "subtraction_iterations": 19,
+        "total_eval_steps": 20,
+        "hardware_cycles_at_3cyc_per_sub_plus_1": 58,
+        "result": 6,
+        "steps": [
+          {
+            "step": 1,
+            "stimulus": "Reactive wave #1 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=120, b=6",
+            "event_evaluated": "(a > b): 120 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (120 - 6 = 114)",
+            "post_state": "a=114, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 2,
+            "stimulus": "Reactive wave #2 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=114, b=6",
+            "event_evaluated": "(a > b): 114 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (114 - 6 = 108)",
+            "post_state": "a=108, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 3,
+            "stimulus": "Reactive wave #3 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=108, b=6",
+            "event_evaluated": "(a > b): 108 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (108 - 6 = 102)",
+            "post_state": "a=102, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 4,
+            "stimulus": "Reactive wave #4 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=102, b=6",
+            "event_evaluated": "(a > b): 102 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (102 - 6 = 96)",
+            "post_state": "a=96, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 5,
+            "stimulus": "Reactive wave #5 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=96, b=6",
+            "event_evaluated": "(a > b): 96 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (96 - 6 = 90)",
+            "post_state": "a=90, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 6,
+            "stimulus": "Reactive wave #6 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=90, b=6",
+            "event_evaluated": "(a > b): 90 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (90 - 6 = 84)",
+            "post_state": "a=84, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 7,
+            "stimulus": "Reactive wave #7 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=84, b=6",
+            "event_evaluated": "(a > b): 84 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (84 - 6 = 78)",
+            "post_state": "a=78, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 8,
+            "stimulus": "Reactive wave #8 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=78, b=6",
+            "event_evaluated": "(a > b): 78 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (78 - 6 = 72)",
+            "post_state": "a=72, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 9,
+            "stimulus": "Reactive wave #9 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=72, b=6",
+            "event_evaluated": "(a > b): 72 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (72 - 6 = 66)",
+            "post_state": "a=66, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 10,
+            "stimulus": "Reactive wave #10 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=66, b=6",
+            "event_evaluated": "(a > b): 66 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (66 - 6 = 60)",
+            "post_state": "a=60, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 11,
+            "stimulus": "Reactive wave #11 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=60, b=6",
+            "event_evaluated": "(a > b): 60 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (60 - 6 = 54)",
+            "post_state": "a=54, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 12,
+            "stimulus": "Reactive wave #12 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=54, b=6",
+            "event_evaluated": "(a > b): 54 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (54 - 6 = 48)",
+            "post_state": "a=48, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 13,
+            "stimulus": "Reactive wave #13 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=48, b=6",
+            "event_evaluated": "(a > b): 48 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (48 - 6 = 42)",
+            "post_state": "a=42, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 14,
+            "stimulus": "Reactive wave #14 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=42, b=6",
+            "event_evaluated": "(a > b): 42 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (42 - 6 = 36)",
+            "post_state": "a=36, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 15,
+            "stimulus": "Reactive wave #15 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=36, b=6",
+            "event_evaluated": "(a > b): 36 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (36 - 6 = 30)",
+            "post_state": "a=30, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 16,
+            "stimulus": "Reactive wave #16 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=30, b=6",
+            "event_evaluated": "(a > b): 30 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (30 - 6 = 24)",
+            "post_state": "a=24, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 17,
+            "stimulus": "Reactive wave #17 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=24, b=6",
+            "event_evaluated": "(a > b): 24 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (24 - 6 = 18)",
+            "post_state": "a=18, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 18,
+            "stimulus": "Reactive wave #18 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=18, b=6",
+            "event_evaluated": "(a > b): 18 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (18 - 6 = 12)",
+            "post_state": "a=12, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 19,
+            "stimulus": "Reactive wave #19 (ST_EVAL -> ST_EXEC -> ST_COMMIT)",
+            "active_concept": "Concept a",
+            "pre_state": "a=12, b=6",
+            "event_evaluated": "(a > b): 12 > 6 => True; (b > a) => False",
+            "rule_or_bar_action": "a -= b (12 - 6 = 6)",
+            "post_state": "a=6, b=6",
+            "anti_loop_or_convergence_note": "3 clock cycles in km_euclid_core.sv (EVAL, EXEC, COMMIT)."
+          },
+          {
+            "step": 20,
+            "stimulus": "Convergence check #20 (ST_EVAL final)",
+            "active_concept": "Concept a, b",
+            "pre_state": "a=6, b=6",
+            "event_evaluated": "(a > b): 6 > 6 => False; (b > a): 6 > 6 => False; (a == b) => True",
+            "rule_or_bar_action": "Return =a (6)",
+            "post_state": "result=6 (wave extinguished)",
+            "anti_loop_or_convergence_note": "Both predicates `a > b` and `b > a` are False; reactive wave naturally extinguishes without a `while` counter after 19 subtractions (58 clock cycles = 580 ns @ 100 MHz)."
+          }
+        ]
+      },
+      "km_euclid_core_iverilog": {
+        "a_init": 120,
+        "b_init": 6,
+        "result": 6,
+        "iterations": 19,
+        "cycles": 58,
+        "error": 0,
+        "commits": [
+          {
+            "iter": 1,
+            "a_pre": 120,
+            "b_pre": 6,
+            "next_val": 114,
+            "target_a": 1
+          },
+          {
+            "iter": 2,
+            "a_pre": 114,
+            "b_pre": 6,
+            "next_val": 108,
+            "target_a": 1
+          },
+          {
+            "iter": 3,
+            "a_pre": 108,
+            "b_pre": 6,
+            "next_val": 102,
+            "target_a": 1
+          },
+          {
+            "iter": 4,
+            "a_pre": 102,
+            "b_pre": 6,
+            "next_val": 96,
+            "target_a": 1
+          },
+          {
+            "iter": 5,
+            "a_pre": 96,
+            "b_pre": 6,
+            "next_val": 90,
+            "target_a": 1
+          },
+          {
+            "iter": 6,
+            "a_pre": 90,
+            "b_pre": 6,
+            "next_val": 84,
+            "target_a": 1
+          },
+          {
+            "iter": 7,
+            "a_pre": 84,
+            "b_pre": 6,
+            "next_val": 78,
+            "target_a": 1
+          },
+          {
+            "iter": 8,
+            "a_pre": 78,
+            "b_pre": 6,
+            "next_val": 72,
+            "target_a": 1
+          },
+          {
+            "iter": 9,
+            "a_pre": 72,
+            "b_pre": 6,
+            "next_val": 66,
+            "target_a": 1
+          },
+          {
+            "iter": 10,
+            "a_pre": 66,
+            "b_pre": 6,
+            "next_val": 60,
+            "target_a": 1
+          },
+          {
+            "iter": 11,
+            "a_pre": 60,
+            "b_pre": 6,
+            "next_val": 54,
+            "target_a": 1
+          },
+          {
+            "iter": 12,
+            "a_pre": 54,
+            "b_pre": 6,
+            "next_val": 48,
+            "target_a": 1
+          },
+          {
+            "iter": 13,
+            "a_pre": 48,
+            "b_pre": 6,
+            "next_val": 42,
+            "target_a": 1
+          },
+          {
+            "iter": 14,
+            "a_pre": 42,
+            "b_pre": 6,
+            "next_val": 36,
+            "target_a": 1
+          },
+          {
+            "iter": 15,
+            "a_pre": 36,
+            "b_pre": 6,
+            "next_val": 30,
+            "target_a": 1
+          },
+          {
+            "iter": 16,
+            "a_pre": 30,
+            "b_pre": 6,
+            "next_val": 24,
+            "target_a": 1
+          },
+          {
+            "iter": 17,
+            "a_pre": 24,
+            "b_pre": 6,
+            "next_val": 18,
+            "target_a": 1
+          },
+          {
+            "iter": 18,
+            "a_pre": 18,
+            "b_pre": 6,
+            "next_val": 12,
+            "target_a": 1
+          },
+          {
+            "iter": 19,
+            "a_pre": 12,
+            "b_pre": 6,
+            "next_val": 6,
+            "target_a": 1
+          }
+        ],
+        "raw_stdout": "EUCLID_COMMIT iter=1 a_pre=120 b_pre=6 next_val=114 target_a=1\nEUCLID_COMMIT iter=2 a_pre=114 b_pre=6 next_val=108 target_a=1\nEUCLID_COMMIT iter=3 a_pre=108 b_pre=6 next_val=102 target_a=1\nEUCLID_COMMIT iter=4 a_pre=102 b_pre=6 next_val=96 target_a=1\nEUCLID_COMMIT iter=5 a_pre=96 b_pre=6 next_val=90 target_a=1\nEUCLID_COMMIT iter=6 a_pre=90 b_pre=6 next_val=84 target_a=1\nEUCLID_COMMIT iter=7 a_pre=84 b_pre=6 next_val=78 target_a=1\nEUCLID_COMMIT iter=8 a_pre=78 b_pre=6 next_val=72 target_a=1\nEUCLID_COMMIT iter=9 a_pre=72 b_pre=6 next_val=66 target_a=1\nEUCLID_COMMIT iter=10 a_pre=66 b_pre=6 next_val=60 target_a=1\nEUCLID_COMMIT iter=11 a_pre=60 b_pre=6 next_val=54 target_a=1\nEUCLID_COMMIT iter=12 a_pre=54 b_pre=6 next_val=48 target_a=1\nEUCLID_COMMIT iter=13 a_pre=48 b_pre=6 next_val=42 target_a=1\nEUCLID_COMMIT iter=14 a_pre=42 b_pre=6 next_val=36 target_a=1\nEUCLID_COMMIT iter=15 a_pre=36 b_pre=6 next_val=30 target_a=1\nEUCLID_COMMIT iter=16 a_pre=30 b_pre=6 next_val=24 target_a=1\nEUCLID_COMMIT iter=17 a_pre=24 b_pre=6 next_val=18 target_a=1\nEUCLID_COMMIT iter=18 a_pre=18 b_pre=6 next_val=12 target_a=1\nEUCLID_COMMIT iter=19 a_pre=12 b_pre=6 next_val=6 target_a=1\nEUCLID_DONE result=6 iterations=19 cycles=58 error=0\n/home/mfedchyk/GitHub/nick-fedchik/km-wt-272-debugger/.pytest_cache/euclid272_247e22cdf5f54ac1ada69aabb3345690/km_euclid_verify_tb.sv:37: $finish called at 645000 (1ps)\n"
+      },
+      "article_examples_status_matrix": [
+        {
+          "example": "Increase / Decrease (Counter >= 0)",
+          "profile_or_dialect": "KPOL-CME-1",
+          "cfg_p_and_cfg_p_ha_rtl": "SUPPORTED (100% bit-exact, 1 RAMB36E1, 8 cyc/event)",
+          "emit_c99_and_z3_smt": "SUPPORTED (VERIFIED P1..P4)",
+          "km_euclid_core_sv": "N/A (single-concept counter)",
+          "open_rfcs": "None (closed in #150/#153/#8)"
+        },
+        {
+          "example": "4-Concept Acyclic Cascade (C0 -> C1 -> C2 -> C3)",
+          "profile_or_dialect": "KPOL-CME-2",
+          "cfg_p_and_cfg_p_ha_rtl": "SUPPORTED (100% bit-exact on CFG-P & Dual-Bank CFG-P-HA)",
+          "emit_c99_and_z3_smt": "SUPPORTED (VERIFIED P1..P4, WCET=4 steps)",
+          "km_euclid_core_sv": "N/A",
+          "open_rfcs": "None (closed in #184/#227/#253)"
+        },
+        {
+          "example": "BMS 4-Stage Safety Cascade with Sensor Fault '_'",
+          "profile_or_dialect": "KPOL-CME-2 + valid_mask (SYS-02)",
+          "cfg_p_and_cfg_p_ha_rtl": "SUPPORTED for valid trace (pynq2 silicon); '_' bit in ADR B7 / C99 valid_mask",
+          "emit_c99_and_z3_smt": "SUPPORTED (VERIFIED P1..P4 incl. P3 Fail-Closed '_' non-masking)",
+          "km_euclid_core_sv": "N/A",
+          "open_rfcs": "ADR B7 accepted (#185/#215); RFC-017 p.3 arithmetic on '_' open (#186)"
+        },
+        {
+          "example": "Author Native Counter / Thermal Subset (Concept + • + Assign)",
+          "profile_or_dialect": "KPOL-AUTH deterministic subset",
+          "cfg_p_and_cfg_p_ha_rtl": "SUPPORTED via CME-RAW-1 routing + Do/Go VM (km_mcu_fpga_bridge.c)",
+          "emit_c99_and_z3_smt": "SUPPORTED on lowered CME-RAW-1 descriptors",
+          "km_euclid_core_sv": "N/A",
+          "open_rfcs": "12 open uncertainty points KPOL-AUTH-U01..U12 blocked fail-closed (#186)"
+        },
+        {
+          "example": "T-Flip-Flop `If` (_ -> ! -> ¬ -> !) & `Sum` Post-Read Reset (→ • Sum = 0)",
+          "profile_or_dialect": "Author Slide Extended Model (RFC-001, RFC-005, RFC-013)",
+          "cfg_p_and_cfg_p_ha_rtl": "Reference tracer (requires read-triggered post-phase • & '_' bit in CME-RAW-2)",
+          "emit_c99_and_z3_smt": "State '_' tracked via valid_mask; read-triggered • outside CME-RAW-1",
+          "km_euclid_core_sv": "N/A",
+          "open_rfcs": "RFC-013 / RFC-017 p.1-2 (busy & boolean meaning of '•')"
+        },
+        {
+          "example": "Euclidean GCD `Nod(120, 6) = 6` (19 reactive subtractions)",
+          "profile_or_dialect": "Author Slide Cyclic Reactive Model (DOU 36556 / Slide 3)",
+          "cfg_p_and_cfg_p_ha_rtl": "Rejected by static DAG check (P1 Lyapunov acyclicity requires acyclic W3)",
+          "emit_c99_and_z3_smt": "Rejected by P1_dag_lyapunov_acyclicity (prevents unbounded WCET loops)",
+          "km_euclid_core_sv": "SUPPORTED & VERIFIED in iverilog (19 sub steps, 58 cycles = 580 ns @ 100 MHz, result = 6)",
+          "open_rfcs": "RFC-001 vs cyclic re-addressing (DOU 36556 `Do [...] ↓ a~b ↑ a≠b`, RFC-009/012)"
+        },
+        {
+          "example": "Slide Sketches: `Factorial`, `Tachometer / Electricity Meter`, `Static(OpenBracket)`",
+          "profile_or_dialect": "Author Slide Unfinished Sketches",
+          "cfg_p_and_cfg_p_ha_rtl": "NOT SUPPORTED (fail-closed in KPOL-AUTH U01..U12)",
+          "emit_c99_and_z3_smt": "NOT SUPPORTED (outside deterministic safety subset)",
+          "km_euclid_core_sv": "N/A",
+          "open_rfcs": "Blocked on open RFC-009, RFC-015, RFC-016, RFC-017, RFC-018 (#186)"
+        }
+      ]
+    }
+  }
+}

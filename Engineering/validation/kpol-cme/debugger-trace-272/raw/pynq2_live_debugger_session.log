@@ -1,0 +1,265 @@
+# cmd: flock -w 120 /tmp/km-bench.lock python3 Engineering/sw/kpol-ref/kpol_debugger.py --program Engineering/validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol --profile KPOL-CME-2 --stdio --render-tui-frame --target pynq2
+# timestamp: 2026-11-18T10:51:54.650140+02:00
+# git_commit: 6c234bcf513734e8f024024b27379e08a13a35cb
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+# bench_lock: flock -w 120 /tmp/km-bench.lock (acquired)
+# evidence_kind: physical_hil_pynq_z1_debugger_pre_post_load_and_trace
+# board: Digilent PYNQ-Z1 (pynq2 @ xilinx@192.168.68.69, HW_ID=0x4B504D43 'KPMC')
+=== MACHINE CONNECTION & PROGRAMMING SNAPSHOT (PYNQ2 | HW_ID=0x4B504D43 'KPMC') ===
+  Capacity          : 64 concept slots (1024 B CME-RAW-1 BRAM)
+  PRE-LOAD State    : 1 / 64 active concepts (free=63, SHA-256=ef5e343eb743d5e4...) | HW Counters: events=88, commits=61, rejects=27
+  POST-LOAD State   : 4 / 64 active concepts (entry=[0], internal=[1, 2], leaf=[3], free=60, SHA-256=de03442454424b5c...)
+  Readback & Diff   : 256/256 words verified OK; 4 slot(s) modified during programming
++-----+----------------------+---------+-------------+--------------+-----------------------------------------------------+--------------------------------------------------------------+------------------------------------------+
+| CID | Name                 | Changed | Pre-Load W0 | Post-Load W0 | Pre-Load Rule (W2)                                  | Post-Load Rule (W2)                                          | Pre Sub -> Post Sub (W3)                 |
++-----+----------------------+---------+-------------+--------------+-----------------------------------------------------+--------------------------------------------------------------+------------------------------------------+
+| C00 | Cell_Delta_mV        | YES     | 11          | 0            | ::(param < 20) | W0' := W0 + 1 | •(cand>=0 && !ovf) | ::(50 <= param <= 5000) | W0' := W0 + 1 | •(cand>=0 && !ovf) | None (0) => -> C1 (Module_Thermal_Guard) |
+| C01 | Module_Thermal_Guard | YES     | _ (empty)   | 0            | EMPTY                                               | ::(!(param < 1) [>= 1]) | W0' := W0 + 1 | •(cand>=0 && !ovf) | None => -> C2 (Pack_Fault_Latch)         |
+| C02 | Pack_Fault_Latch     | YES     | _ (empty)   | 2            | EMPTY                                               | ::(!(param < 1) [>= 1]) | W0' := W0 - 1 | •(cand>=0 && !ovf) | None => -> C3 (Contactor_Interlock)      |
+| C03 | Contactor_Interlock  | YES     | _ (empty)   | 10           | EMPTY                                               | ::(!(param == 2) [!= 2]) | W0' := param | •(cand>=0 && !ovf) | None => None (0)                         |
++-----+----------------------+---------+-------------+--------------+-----------------------------------------------------+--------------------------------------------------------------+------------------------------------------+
+
+=== [BLOCK 1] SOURCE CODE / PROGRAM SPECIFICATION (BmsSafetyCascade, KPOL-CME-2) ===
+  01 | Problem BmsSafetyCascade {
+  02 |     Invariants {
+  03 |         inv_cell_delta: Cell_Delta_mV >= 0;
+  04 |         inv_mod_thermal: Module_Thermal_Guard >= 0;
+  05 |         inv_pack_latch: Pack_Fault_Latch >= 0;
+  06 |         inv_contactor: Contactor_Interlock >= 0;
+  07 |     }
+  08 | }
+  09 |
+  10 | Solution BmsSafetyCascade {
+  11 |     state Cell_Delta_mV: Int32 = 0;
+  12 |     state Module_Thermal_Guard: Int32 = 0;
+  13 |     state Pack_Fault_Latch: Int32 = 2;
+  14 |     state Contactor_Interlock: Int32 = 10;
+  15 |
+  16 |     event EvCellDelta(delta_mv: Int32);
+  17 |
+  18 |     rule RCellDelta on EvCellDelta when delta_mv >= 50 and delta_mv <= 5000 {
+  19 |         set Cell_Delta_mV := Cell_Delta_mV + 1;
+  20 |     }
+  21 |     rule RModuleThermal on change(Cell_Delta_mV) when Cell_Delta_mV >= 1 {
+  22 |         set Module_Thermal_Guard := Module_Thermal_Guard + 1;
+  23 |     }
+  24 |     rule RPackFaultLatch on change(Module_Thermal_Guard) when Module_Thermal_Guard >= 1 {
+  25 |         set Pack_Fault_Latch := Pack_Fault_Latch - 1;
+  26 |     }
+  27 |     rule RContactorInterlock on change(Pack_Fault_Latch) when not (Pack_Fault_Latch == 2) {
+  28 |         set Contactor_Interlock := Pack_Fault_Latch;
+  29 |     }
+  30 | }
+  31 |
+  32 | Proof BmsSafetyCascade {
+  33 |     scenario BmsFourLevelProtectionAndLatch {
+  34 |         step EvCellDelta(delta_mv = 15);
+  35 |         expect Cell_Delta_mV == 0;
+  36 |         expect Contactor_Interlock == 10;
+  37 |
+  38 |         step EvCellDelta(delta_mv = 120);
+  39 |         expect Cell_Delta_mV == 1;
+  40 |         expect Module_Thermal_Guard == 1;
+  41 |         expect Pack_Fault_Latch == 1;
+  42 |         expect Contactor_Interlock == 1;
+  43 |
+  44 |         step EvCellDelta(delta_mv = 180);
+  45 |         expect Cell_Delta_mV == 2;
+  46 |         expect Module_Thermal_Guard == 2;
+  47 |         expect Pack_Fault_Latch == 0;
+  48 |         expect Contactor_Interlock == 0;
+  49 |
+  50 |         step EvCellDelta(delta_mv = 250);
+  51 |         expect Cell_Delta_mV == 3;
+  52 |         expect Module_Thermal_Guard == 3;
+  53 |         expect Pack_Fault_Latch == 0;
+  54 |         expect Contactor_Interlock == 0;
+  55 |     }
+  56 | }
+
+=== [BLOCK 2] BRAM DESCRIPTOR TABLE (--dump-concepts, 4 active of 64 slots) ===
++-----+----------------------+-----------------+-----------+------------------------+---------------------------------------------------------------------------+----------------------------------+
+| CID | Name                 | W0 (Init State) | Valid (_) | W1 (Operand)           | W2 (Hex & Decoded: Predicate ::, Action, Invariant •)                     | W3 (Subscriber -> CID)           |
++-----+----------------------+-----------------+-----------+------------------------+---------------------------------------------------------------------------+----------------------------------+
+| C00 | Cell_Delta_mV        | 0 (0x00000000)  | 1 (valid) | 327680050 (0x13880032) | 0x01001305 [::(50 <= param <= 5000) | W0' := W0 + 1 | •(cand>=0 && !ovf)] | 1 (-> C1 (Module_Thermal_Guard)) |
+| C01 | Module_Thermal_Guard | 0 (0x00000000)  | 1 (valid) | 1 (0x00000001)         | 0x01001B04 [::(!(param < 1) [>= 1]) | W0' := W0 + 1 | •(cand>=0 && !ovf)] | 2 (-> C2 (Pack_Fault_Latch))     |
+| C02 | Pack_Fault_Latch     | 2 (0x00000002)  | 1 (valid) | 1 (0x00000001)         | 0x02001B04 [::(!(param < 1) [>= 1]) | W0' := W0 - 1 | •(cand>=0 && !ovf)] | 3 (-> C3 (Contactor_Interlock))  |
+| C03 | Contactor_Interlock  | 10 (0x0000000A) | 1 (valid) | 2 (0x00000002)         | 0x00000B01 [::(!(param == 2) [!= 2]) | W0' := param | •(cand>=0 && !ovf)] | 0 (None (0))                     |
++-----+----------------------+-----------------+-----------+------------------------+---------------------------------------------------------------------------+----------------------------------+
+
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 19 steps) ===
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| Step       | Depth | CID (Name)                 | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                       | Verdict                                                                            | Post-State    | Next Subscriber            |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| E0.0 (#0)  | 0     | C00 (Cell_Delta_mV)        | param=15, valid=1   | W0=0, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=0, valid=1 | None                       |
+| E1.0 (#1)  | 0     | C00 (Cell_Delta_mV)        | param=5500, valid=1 | W0=0, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=0, valid=1 | None                       |
+| E2.0 (#2)  | 0     | C00 (Cell_Delta_mV)        | param=0, valid=_    | W0=0, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => False | REJECT_FAULT *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_FAULT)            | W0=0, valid=1 | None                       |
+| E3.0 (#3)  | 0     | C00 (Cell_Delta_mV)        | param=120, valid=1  | W0=0, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(0->1)                             | W0=1, valid=1 | C01 (Module_Thermal_Guard) |
+| E3.1 (#4)  | 1     | C01 (Module_Thermal_Guard) | param=1, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C02 (Pack_Fault_Latch)     |
+| E3.2 (#5)  | 2     | C02 (Pack_Fault_Latch)     | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(2->1)                          | W0=1, valid=1 | C03 (Contactor_Interlock)  |
+| E3.3 (#6)  | 3     | C03 (Contactor_Interlock)  | param=1, valid=1    | W0=10, valid=1 | !(param == 2) [!= 2] => True | W0' := param => 1   | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(10->1)                      | W0=1, valid=1 | None                       |
+| E4.0 (#7)  | 0     | C00 (Cell_Delta_mV)        | param=49, valid=1   | W0=1, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=1, valid=1 | None                       |
+| E5.0 (#8)  | 0     | C00 (Cell_Delta_mV)        | param=180, valid=1  | W0=1, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(1->2)                             | W0=2, valid=1 | C01 (Module_Thermal_Guard) |
+| E5.1 (#9)  | 1     | C01 (Module_Thermal_Guard) | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(1->2)                                                         | W0=2, valid=1 | C02 (Pack_Fault_Latch)     |
+| E5.2 (#10) | 2     | C02 (Pack_Fault_Latch)     | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(1->0)                          | W0=0, valid=1 | C03 (Contactor_Interlock)  |
+| E5.3 (#11) | 3     | C03 (Contactor_Interlock)  | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => True | W0' := param => 0   | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(1->0)                       | W0=0, valid=1 | None                       |
+| E6.0 (#12) | 0     | C00 (Cell_Delta_mV)        | param=250, valid=1  | W0=2, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(2->3)                             | W0=3, valid=1 | C01 (Module_Thermal_Guard) |
+| E6.1 (#13) | 1     | C01 (Module_Thermal_Guard) | param=3, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C02 (Pack_Fault_Latch)     |
+| E6.2 (#14) | 2     | C02 (Pack_Fault_Latch)     | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => False | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
+| E7.0 (#15) | 0     | C00 (Cell_Delta_mV)        | param=5000, valid=1 | W0=3, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 4  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(3->4)                             | W0=4, valid=1 | C01 (Module_Thermal_Guard) |
+| E7.1 (#16) | 1     | C01 (Module_Thermal_Guard) | param=4, valid=1    | W0=3, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 4  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(3->4)                                                         | W0=4, valid=1 | C02 (Pack_Fault_Latch)     |
+| E7.2 (#17) | 2     | C02 (Pack_Fault_Latch)     | param=4, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => False | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
+| E8.0 (#18) | 0     | C00 (Cell_Delta_mV)        | param=-10, valid=1  | W0=4, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 5  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=4, valid=1 | None                       |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 0 -> 0, param=15, valid=1)
+  * [Step #0 | E0.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=15, valid=1)
+  * [Step #1 | E1.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 0 -> 0, param=5500, valid=1)
+  * [Step #1 | E1.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=5500, valid=1)
+  * [Step #2 | E2.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_FAULT (W0: 0 -> 0, param=0, valid=_)
+  * [Step #2 | E2.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 0 -> 0, param=0, valid=_)
+  * [Step #3 | E3.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 0 -> 1, param=120, valid=1)
+  * [Step #3 | E3.0] C00 (Cell_Delta_mV): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=120, valid=1)
+  * [Step #4 | E3.1] C01 (Module_Thermal_Guard): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): STATE_CHANGE(2->1) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): STATE_CHANGE(10->1) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 1 -> 1, param=49, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 1 -> 1, param=49, valid=1)
+  * [Step #8 | E5.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #8 | E5.0] C00 (Cell_Delta_mV): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #9 | E5.1] C01 (Module_Thermal_Guard): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=2, valid=1)
+  * [Step #10 | E5.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #10 | E5.2] C02 (Pack_Fault_Latch): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #11 | E5.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #11 | E5.3] C03 (Contactor_Interlock): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #12 | E6.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 2 -> 3, param=250, valid=1)
+  * [Step #12 | E6.0] C00 (Cell_Delta_mV): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=250, valid=1)
+  * [Step #13 | E6.1] C01 (Module_Thermal_Guard): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=3, valid=1)
+  * [Step #14 | E6.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+  * [Step #14 | E6.2] C02 (Pack_Fault_Latch): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+  * [Step #15 | E7.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 3 -> 4, param=5000, valid=1)
+  * [Step #15 | E7.0] C00 (Cell_Delta_mV): STATE_CHANGE(3->4) -> COMMIT (W0: 3 -> 4, param=5000, valid=1)
+  * [Step #16 | E7.1] C01 (Module_Thermal_Guard): STATE_CHANGE(3->4) -> COMMIT (W0: 3 -> 4, param=4, valid=1)
+  * [Step #17 | E7.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> REJECT_INVARIANT (W0: 0 -> 0, param=4, valid=1)
+  * [Step #17 | E7.2] C02 (Pack_Fault_Latch): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=4, valid=1)
+  * [Step #18 | E8.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 4 -> 4, param=-10, valid=1)
+  * [Step #18 | E8.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 4 -> 4, param=-10, valid=1)
+
+=== [BLOCK 4] STATE DIFF (Before -> After) & TELEMETRY COUNTERS ===
++-----+----------------------+--------------------+-------------------+-------+---------+
+| CID | Name                 | Before (W0, valid) | After (W0, valid) | Delta | Status  |
++-----+----------------------+--------------------+-------------------+-------+---------+
+| C00 | Cell_Delta_mV        | W0=0, valid=1      | W0=4, valid=1     | +4    | CHANGED |
+| C01 | Module_Thermal_Guard | W0=0, valid=1      | W0=4, valid=1     | +4    | CHANGED |
+| C02 | Pack_Fault_Latch     | W0=2, valid=1      | W0=0, valid=1     | -2    | CHANGED |
+| C03 | Contactor_Interlock  | W0=10, valid=1     | W0=0, valid=1     | -10   | CHANGED |
++-----+----------------------+--------------------+-------------------+-------+---------+
+Telemetry Summary: events_processed=19, commits=12, rejects=7, fault_propagations=1, last_committed_state=4
+
+====================================================================================================================
+ KUZMIN MACHINE STEP DEBUGGER TUI | Target: PYNQ2 (0x4B504D43 'KPMC') | State: PRE-LOAD -> POST-LOAD -> RUNNING
+ Concepts: Active: 4 / 64 (Pre-load: 1 / 64, Changed on load: 4, Free: 60) | Entry: [0] Internal: [1, 2] Leaf: [3]
+ Counters: Events=19 | Commits=12 | Rejects=7 | Faults(_)=1 | LastState=4
+====================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+----------------------+-------------+--------------+------------+----------+----------------------+---------------+---------------------+------------------------------+
+| CID | Name                 | Pre-Load W0 | Post-Load W0 | Current W0 | Valid(_) | Predicate ::         | Action        | Gate •              | Subscriber -> CID            |
++-----+----------------------+-------------+--------------+------------+----------+----------------------+---------------+---------------------+------------------------------+
+| C00 | Cell_Delta_mV        | 11          | 0            | 4 (+4)     | 1        | 50 <= param <= 5000  | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C1 (Module_Thermal_Guard) |
+| C01 | Module_Thermal_Guard | _ (empty)   | 0            | 4 (+4)     | 1        | !(param < 1) [>= 1]  | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C2 (Pack_Fault_Latch)     |
+| C02 | Pack_Fault_Latch     | _ (empty)   | 2            | 0 (-2)     | 1        | !(param < 1) [>= 1]  | W0' := W0 - 1 | cand >= 0 && !ovf32 | -> C3 (Contactor_Interlock)  |
+| C03 | Contactor_Interlock  | _ (empty)   | 10           | 0 (-10)    | 1        | !(param == 2) [!= 2] | W0' := param  | cand >= 0 && !ovf32 | None (0)                     |
++-----+----------------------+-------------+--------------+------------+----------+----------------------+---------------+---------------------+------------------------------+
+--------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | Problem BmsSafetyCascade {
+   SRC 02 |     Invariants {
+   SRC 03 |         inv_cell_delta: Cell_Delta_mV >= 0;
+   SRC 04 |         inv_mod_thermal: Module_Thermal_Guard >= 0;
+   SRC 05 |         inv_pack_latch: Pack_Fault_Latch >= 0;
+   SRC 06 |         inv_contactor: Contactor_Interlock >= 0;
+   SRC 07 |     }
+   SRC 08 | }
+   SRC 09 |
+   SRC 10 | Solution BmsSafetyCascade {
+   SRC 11 |     state Cell_Delta_mV: Int32 = 0;
+   SRC 12 |     state Module_Thermal_Guard: Int32 = 0;
+   STDIN  (9 events) : (C0:15,valid=1), (C0:5500,valid=1), (C0:0,valid=_), (C0:120,valid=1), (C0:49,valid=1), (C0:180,valid=1), (C0:250,valid=1), (C0:5000,valid=1), (C0:-10,valid=1)
+   STDOUT -> COMMIT: Pack_Fault_Latch[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)
+   STDOUT -> COMMIT: Contactor_Interlock[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)
+   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 3 (pre=2, depth=0, param=250, valid=1)
+   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3, valid=1)
+   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 4 (pre=3, depth=0, param=5000, valid=1)
+   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 4 (pre=3, depth=1, param=4, valid=1)
+   STDERR -> REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=5500, valid=1, pred=(50 <= param <= 5000)=>False, cand=1, gate=(cand >= 0 && !ovf32)=>True)
+   STDERR -> REJECT_FAULT: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=0, valid=_, pred=(50 <= param <= 5000)=>False, cand=1, gate=(cand >= 0 && !ovf32)=>False)
+   STDERR -> REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=1 (depth=0, param=49, valid=1, pred=(50 <= param <= 5000)=>False, cand=2, gate=(cand >= 0 && !ovf32)=>True)
+   STDERR -> REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>True, cand=-1, gate=(cand >= 0 && !ovf32)=>False)
+   STDERR -> REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=4, valid=1, pred=(!(param < 1) [>= 1])=>True, cand=-1, gate=(cand >= 0 && !ovf32)=>False)
+   STDERR -> REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=4 (depth=0, param=-10, valid=1, pred=(50 <= param <= 5000)=>False, cand=5, gate=(cand >= 0 && !ovf32)=>True)
+--------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 19 steps) ===
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| Step       | Depth | CID (Name)                 | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                       | Verdict                                                                            | Post-State    | Next Subscriber            |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| E0.0 (#0)  | 0     | C00 (Cell_Delta_mV)        | param=15, valid=1   | W0=0, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=0, valid=1 | None                       |
+| E1.0 (#1)  | 0     | C00 (Cell_Delta_mV)        | param=5500, valid=1 | W0=0, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=0, valid=1 | None                       |
+| E2.0 (#2)  | 0     | C00 (Cell_Delta_mV)        | param=0, valid=_    | W0=0, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => False | REJECT_FAULT *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_FAULT)            | W0=0, valid=1 | None                       |
+| E3.0 (#3)  | 0     | C00 (Cell_Delta_mV)        | param=120, valid=1  | W0=0, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(0->1)                             | W0=1, valid=1 | C01 (Module_Thermal_Guard) |
+| E3.1 (#4)  | 1     | C01 (Module_Thermal_Guard) | param=1, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C02 (Pack_Fault_Latch)     |
+| E3.2 (#5)  | 2     | C02 (Pack_Fault_Latch)     | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(2->1)                          | W0=1, valid=1 | C03 (Contactor_Interlock)  |
+| E3.3 (#6)  | 3     | C03 (Contactor_Interlock)  | param=1, valid=1    | W0=10, valid=1 | !(param == 2) [!= 2] => True | W0' := param => 1   | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(10->1)                      | W0=1, valid=1 | None                       |
+| E4.0 (#7)  | 0     | C00 (Cell_Delta_mV)        | param=49, valid=1   | W0=1, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=1, valid=1 | None                       |
+| E5.0 (#8)  | 0     | C00 (Cell_Delta_mV)        | param=180, valid=1  | W0=1, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(1->2)                             | W0=2, valid=1 | C01 (Module_Thermal_Guard) |
+| E5.1 (#9)  | 1     | C01 (Module_Thermal_Guard) | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(1->2)                                                         | W0=2, valid=1 | C02 (Pack_Fault_Latch)     |
+| E5.2 (#10) | 2     | C02 (Pack_Fault_Latch)     | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(1->0)                          | W0=0, valid=1 | C03 (Contactor_Interlock)  |
+| E5.3 (#11) | 3     | C03 (Contactor_Interlock)  | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => True | W0' := param => 0   | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(1->0)                       | W0=0, valid=1 | None                       |
+| E6.0 (#12) | 0     | C00 (Cell_Delta_mV)        | param=250, valid=1  | W0=2, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(2->3)                             | W0=3, valid=1 | C01 (Module_Thermal_Guard) |
+| E6.1 (#13) | 1     | C01 (Module_Thermal_Guard) | param=3, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C02 (Pack_Fault_Latch)     |
+| E6.2 (#14) | 2     | C02 (Pack_Fault_Latch)     | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => False | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
+| E7.0 (#15) | 0     | C00 (Cell_Delta_mV)        | param=5000, valid=1 | W0=3, valid=1  | 50 <= param <= 5000 => True  | W0' := W0 + 1 => 4  | cand >= 0 && !ovf32 => True  | COMMIT *WATCH_CID(C0:Cell_Delta_mV),STATE_CHANGE(3->4)                             | W0=4, valid=1 | C01 (Module_Thermal_Guard) |
+| E7.1 (#16) | 1     | C01 (Module_Thermal_Guard) | param=4, valid=1    | W0=3, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 + 1 => 4  | cand >= 0 && !ovf32 => True  | COMMIT *STATE_CHANGE(3->4)                                                         | W0=4, valid=1 | C02 (Pack_Fault_Latch)     |
+| E7.2 (#17) | 2     | C02 (Pack_Fault_Latch)     | param=4, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => True  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => False | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
+| E8.0 (#18) | 0     | C00 (Cell_Delta_mV)        | param=-10, valid=1  | W0=4, valid=1  | 50 <= param <= 5000 => False | W0' := W0 + 1 => 5  | cand >= 0 && !ovf32 => True  | REJECT_GUARD *WATCH_CID(C0:Cell_Delta_mV),BREAK_ON_REJECT(REJECT_GUARD)            | W0=4, valid=1 | None                       |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 0 -> 0, param=15, valid=1)
+  * [Step #0 | E0.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=15, valid=1)
+  * [Step #1 | E1.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 0 -> 0, param=5500, valid=1)
+  * [Step #1 | E1.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=5500, valid=1)
+  * [Step #2 | E2.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_FAULT (W0: 0 -> 0, param=0, valid=_)
+  * [Step #2 | E2.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 0 -> 0, param=0, valid=_)
+  * [Step #3 | E3.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 0 -> 1, param=120, valid=1)
+  * [Step #3 | E3.0] C00 (Cell_Delta_mV): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=120, valid=1)
+  * [Step #4 | E3.1] C01 (Module_Thermal_Guard): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): STATE_CHANGE(2->1) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): STATE_CHANGE(10->1) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 1 -> 1, param=49, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 1 -> 1, param=49, valid=1)
+  * [Step #8 | E5.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #8 | E5.0] C00 (Cell_Delta_mV): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #9 | E5.1] C01 (Module_Thermal_Guard): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=2, valid=1)
+  * [Step #10 | E5.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #10 | E5.2] C02 (Pack_Fault_Latch): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #11 | E5.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #11 | E5.3] C03 (Contactor_Interlock): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #12 | E6.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 2 -> 3, param=250, valid=1)
+  * [Step #12 | E6.0] C00 (Cell_Delta_mV): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=250, valid=1)
+  * [Step #13 | E6.1] C01 (Module_Thermal_Guard): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=3, valid=1)
+  * [Step #14 | E6.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+  * [Step #14 | E6.2] C02 (Pack_Fault_Latch): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+  * [Step #15 | E7.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> COMMIT (W0: 3 -> 4, param=5000, valid=1)
+  * [Step #15 | E7.0] C00 (Cell_Delta_mV): STATE_CHANGE(3->4) -> COMMIT (W0: 3 -> 4, param=5000, valid=1)
+  * [Step #16 | E7.1] C01 (Module_Thermal_Guard): STATE_CHANGE(3->4) -> COMMIT (W0: 3 -> 4, param=4, valid=1)
+  * [Step #17 | E7.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> REJECT_INVARIANT (W0: 0 -> 0, param=4, valid=1)
+  * [Step #17 | E7.2] C02 (Pack_Fault_Latch): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=4, valid=1)
+  * [Step #18 | E8.0] C00 (Cell_Delta_mV): WATCH_CID(C0:Cell_Delta_mV) -> REJECT_GUARD (W0: 4 -> 4, param=-10, valid=1)
+  * [Step #18 | E8.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 4 -> 4, param=-10, valid=1)
+====================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+====================================================================================================================
