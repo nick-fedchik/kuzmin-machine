@@ -1,11 +1,11 @@
 # Звіт DEBUGGER-TRACE-272: Покроковий дебагер-трасувальник каскадів МК (`--trace-events`, `--stdio`, `--tui`), підключення до `PYNQ-Z1` (`PRE-LOAD` / `POST-LOAD`) та верифікація прикладів програм зі статей (Issue #272)
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP редакції NG:** Report
 * **Issue:** `Closes` [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272). **PR:** [#273](https://github.com/nick-fedchik/kuzmin-machine/pull/273) у гілці `feat/272-step-debugger-and-example-traces`.
-* **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент:** очікується незалежна рецензія (`claude-sonnet-5.5` за правилом `PROJECT-MANUAL §2.1`).
-* **Коміт бази, на якому виконано:** `6c234bcf513734e8f024024b27379e08a13a35cb` (`origin/main`).
+* **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент:** `claude-sonnet-5.5` ([рецензія PR #273 на `4c6174c`](https://github.com/nick-fedchik/kuzmin-machine/pull/273#issuecomment-6974146624) — «Прийнято із зауваженнями», `F1..F7` виправлено у версії `1.0.1`).
+* **Коміт виконання:** `4c6174c9e3b220e060523525f215ae24f5cff16b` (`origin/main`: `6c234bcf513734e8f024024b27379e08a13a35cb`).
 * **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`GCC 15.2.0`, `Python 3.14.4`, `pytest 9.0.2`, `z3-solver 5.4.1`, `/usr/bin/z3 4.13.3`, `Icarus Verilog 12.0`).
 * **Фізична плата HIL (`pynq2`, під `flock -w 120 /tmp/km-bench.lock`):** `Digilent PYNQ-Z1` (`xilinx@192.168.68.69`, двоядерний `ARM Cortex-A9 @ 650 МГц` + кристал `Xilinx Zynq-7020 XC7Z020-1CLG400C` @ `100.0 МГц`, активний конвеєр `CFG-P` `HW_ID = 0x4B504D43` `"KPMC"`).
 * **Критерії успіху (зафіксовано до виконання в Issue #272 та командах власника):**
@@ -111,7 +111,7 @@
 | **`M2_debugger_ignore_invariant_gate`** | Пропуск перевірки вентиля Великої Крапки `•` (`_eval_invariant_gate -> True`) при декременті з `0` | Дебагер помилково комітить `Counter = -1` замість `REJECT_INVARIANT` і падає при звірці з еталоном (`AssertionError: mismatch`). | **Killed** |
 | **`M3_debugger_drop_cascade_subscriber`** | Втрата підписника `W3` (`_resolve_subscriber -> (None, False)`) | 4-концептний каскад BMS обривається на `depth = 0` (`1` крок замість `4`) і ловиться тестом (`AssertionError: step count mismatch`). | **Killed** |
 | **`M4_debugger_mask_uncertainty_bit`** | Ігнорування `param_valid = False` (підміна невалідного кадру `_` на `param_valid = True`) | Замість `REJECT_FAULT` відбувається хибне обчислення над нулем; тест падає на розбіжності `fault_propagations` та стану. | **Killed** |
-| **`M5_debugger_corrupt_preload_postload_diff`** | Повернення порожнього списку змін у `compute_pre_post_load_diff` між `PRE-LOAD` та `POST-LOAD` | Перевірка зміни 4 слотів під час програмування `Increase -> BMS` падає на `AssertionError`. | **Killed** |
+| **`M5_debugger_corrupt_preload_postload_diff`** | Текстова мутація `compute_pre_post_load_diff` у `kpol_debugger.py`: `changed = d0.pack() != d1.pack()` $\to$ `changed = d0.current_state != d1.current_state` (`F3`: ігнорування змін `W1/W2/W3`) | При завантаженні `Cascade4Concept` поверх `Increase` (де `C00` має однаковий `W0 = 10`, але змінені `W1: 20 -> 50` та `W3: 0 -> 1`) мутант пропускає зміну `C00` і падає на `AssertionError`. | **Killed** |
 
 ---
 
@@ -123,7 +123,7 @@
 | **2. Потокове `STDIO` (`stdin` / `stdout` / `stderr`) у мові й рантаймі МК** | Прийом подій зі `stdin`, вивід `COMMIT` у `stdout` та `REJECT_*` у `stderr` через UNIX-пайп `--stdio` | Реалізовано директиви `# @stdin` / `# @stdout` та прапорець `--stdio` ([`raw/stdio_unix_pipe_bms.log`](raw/stdio_unix_pipe_bms.log)) | **Виконано** |
 | **3. Підключення TUI-дебагера до машини (`sim` та фізичної `pynq2`) зі станом `PRE-LOAD` і `POST-LOAD`** | Відображення кількості активних концептів (`K / 64`) та diff слотів до і після програмування | Підтверджено на живій платі `pynq2` під `flock /tmp/km-bench.lock`: `PRE-LOAD: 1/64` (`Counter=11`) $\to$ `POST-LOAD: 4/64` (`BMS`) $\to$ `POST-RUN: [4,4,0,0]`, $\Delta = +18/+12/+6$ ([`raw/pynq2_live_debugger_session.log`](raw/pynq2_live_debugger_session.log)) | **Виконано** |
 | **4. Верифікація 5 груп прикладів зі статей та `Nod(120, 6) = 6` проти `km_euclid_core.sv`** | 100% збіг дебагера з `ReferenceCmeSafetyEngine`, `C99`, `CFG-P` (`iverilog`) та `km_euclid_core.sv` (`19` ітерацій, `58` тактів, результат `6`) | Підтверджено в [`raw/article_examples_all_traces.log`](raw/article_examples_all_traces.log) та [`raw/article_examples_summary.json`](raw/article_examples_summary.json) | **Виконано** |
-| **5. Негативні мутантні тести (`AGENTS.md §4.1`)** | Щонайменше 4 мутанти (`M1..M4`) детерміновано вбиваються | Усі 5 мутантів `M1..M5` у [`test_kpol_debugger_272.py`](../../../sw/tests/test_kpol_debugger_272.py) вбиті (`12 passed`) | **Виконано** |
+| **5. Негативні мутантні тести (`AGENTS.md §4.1`)** | Щонайменше 4 мутанти (`M1..M4`) детерміновано вбиваються | Усі 5 мутантів `M1..M5` у [`test_kpol_debugger_272.py`](../../../sw/tests/test_kpol_debugger_272.py) вбиті (`13 passed`) | **Виконано** |
 
 ---
 
@@ -160,6 +160,7 @@ python3 -m pytest -v Engineering/sw/tests/test_kpol_debugger_272.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | Враховано зауваження рецензії `claude-sonnet-5.5` (`F1..F7` у PR #273): видалено зайвий порожній рядок наприкінці `kpol_debugger.py` (`F1`), оновлено `git_commit` у `raw/*` на `4c6174c9e3b220e060523525f215ae24f5cff16b` (`F2`), посилено мутант `M5` реальною текстовою мутацією `compute_pre_post_load_diff` (`F3`), додано позначку перевірки артефакту `pynq2` (`F4`), чисте перехоплення помилок SSH (`DBG-TARGET-IO`, код `2`, `F5`), негативний тест фільтрації `# @stdout Contactor_Interlock` (`F6`) та прапорець `--fail-on-reject` (`F7`). |
 | 1.0.0 | 2026-11-18 | Перша редакція звіту Issue #272: реалізовано 4-блоковий покроковий дебагер `kpol_debugger.py`, прапорці `--dump-concepts` і `--trace-events` у `compile_kpol_bram_image.py`, потоковий інтерфейс `STDIO` (`--stdio`), підключення TUI-дебагера до `PYNQ-Z1` (`pynq2`) зі знімками `PRE-LOAD` / `POST-LOAD` / `POST-RUN`, покрокову верифікацію 5 груп прикладів зі статей (включно з `Nod(120, 6) = 6` на `km_euclid_core.sv`) та мутантні тести `M1..M5`. |
 
 ## Абревіатури та глосарій

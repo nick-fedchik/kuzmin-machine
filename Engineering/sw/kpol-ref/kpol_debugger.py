@@ -2124,7 +2124,8 @@ class MachineDebugConnection:
         if self.target == "sim":
             return None
         if self.target in self.TARGET_HOSTS:
-            return self.TARGET_HOSTS[self.target]
+            env_key = f"KM_{self.target.upper()}_HOST"
+            return os.environ.get(env_key, self.TARGET_HOSTS[self.target])
         return self.target
 
     def connect_and_capture_pre_load(
@@ -2227,63 +2228,54 @@ class MachineDebugConnection:
                 bin_path.write_bytes(program_bram)
 
                 remote_dir = "/home/xilinx/km_dbg_272_work"
-                subprocess.run(
-                    [
-                        "ssh",
-                        "-o",
-                        "StrictHostKeyChecking=no",
-                        ssh_host,
-                        f"mkdir -p {remote_dir}",
-                    ],
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                )
+                assert remote_dir == "/home/xilinx/km_dbg_272_work"
+                # Note: StrictHostKeyChecking=no is used intentionally for non-interactive lab
+                # bench SSH sessions to isolated local PYNQ-Z1 boards (192.168.68.69/.81).
+                ssh_opts = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=no"]
                 try:
                     subprocess.run(
-                        [
-                            "scp",
-                            "-o",
-                            "StrictHostKeyChecking=no",
-                            str(c_path),
-                            str(bin_path),
-                            f"{ssh_host}:{remote_dir}/",
-                        ],
+                        ["ssh", *ssh_opts, ssh_host, f"mkdir -p {remote_dir}"],
                         check=True,
                         capture_output=True,
                         text=True,
                     )
-                    param_args = " ".join(str(int(p)) for p in hw_params)
-                    remote_cmd = (
-                        f"cd {remote_dir} && "
-                        "gcc -std=c99 -O2 -Wall -Wextra -Werror km_pynq_debug_probe.c -o km_pynq_debug_probe && "
-                        f"echo xilinx | sudo -S -p '' ./km_pynq_debug_probe program_image.bin {param_args}"
-                    )
-                    res = subprocess.run(
-                        [
-                            "ssh",
-                            "-o",
-                            "StrictHostKeyChecking=no",
-                            ssh_host,
-                            remote_cmd,
-                        ],
-                        check=True,
-                        capture_output=True,
-                        text=True,
-                    )
-                finally:
-                    subprocess.run(
-                        [
-                            "ssh",
-                            "-o",
-                            "StrictHostKeyChecking=no",
-                            ssh_host,
-                            f"rm -rf {remote_dir}",
-                        ],
-                        check=False,
-                        capture_output=True,
-                        text=True,
-                    )
+                    try:
+                        subprocess.run(
+                            [
+                                "scp",
+                                *ssh_opts,
+                                str(c_path),
+                                str(bin_path),
+                                f"{ssh_host}:{remote_dir}/",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                        param_args = " ".join(str(int(p)) for p in hw_params)
+                        remote_cmd = (
+                            f"cd {remote_dir} && "
+                            "gcc -std=c99 -O2 -Wall -Wextra -Werror km_pynq_debug_probe.c -o km_pynq_debug_probe && "
+                            f"echo xilinx | sudo -S -p '' ./km_pynq_debug_probe program_image.bin {param_args}"
+                        )
+                        res = subprocess.run(
+                            ["ssh", *ssh_opts, ssh_host, remote_cmd],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                    finally:
+                        subprocess.run(
+                            ["ssh", *ssh_opts, ssh_host, f"rm -rf {remote_dir}"],
+                            check=False,
+                            capture_output=True,
+                            text=True,
+                        )
+                except subprocess.CalledProcessError as error:
+                    err_detail = (error.stderr or error.stdout or str(error)).strip()
+                    raise KpolError(
+                        f"DBG-TARGET-IO: failed to connect or execute on target {self.target!r} ({ssh_host}): {err_detail}"
+                    ) from error
 
             payload = json.loads(res.stdout)
             snaps = payload["snapshots"]
@@ -3466,7 +3458,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--stdio",
         action="store_true",
-        help="read events line-by-line from STDIN, emit COMMITs to STDOUT and REJECTs to STDERR",
+        help="read events line-by-line from STDIN, emit COMMITs to STDOUT and REJECTs to STDERR (exit code 0 unless --fail-on-reject is set)",
+    )
+    parser.add_argument(
+        "--fail-on-reject",
+        "--exit-on-reject",
+        dest="fail_on_reject",
+        action="store_true",
+        help="return exit code 1 in --stdio mode if any event or cascade step was rejected (REJECT_GUARD, REJECT_INVARIANT, or REJECT_FAULT)",
     )
     parser.add_argument(
         "--tui",
@@ -3530,72 +3529,78 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("either --example or --program is required")
 
     prog_path: Path = args.program
-    raw_bytes = prog_path.read_bytes()
+    try:
+        raw_bytes = prog_path.read_bytes()
+    except OSError as error:
+        parser.exit(2, f"DBG-IO: {prog_path}: {error}\n")
     source_text = ""
     concept_names: list[str] | None = None
     mod_name = prog_path.stem
 
-    if len(raw_bytes) == 1024 and prog_path.suffix.lower() == ".bin":
-        bram_image = raw_bytes
-    else:
-        source_text = raw_bytes.decode("utf-8")
-        if args.profile == "KPOL-AUTH":
-            ka = _load_kpol_auth_package()
-            cst_prog = ka.parse_kpol_auth(source_text)
-            art = ka.lower_kpol_auth(cst_prog)
-            bram_image = art.bram_image
-            concept_names = [c.name for c in art.concepts]
+    try:
+        if len(raw_bytes) == 1024 and prog_path.suffix.lower() == ".bin":
+            bram_image = raw_bytes
         else:
-            mod = Parser(source_text).parse()
-            mod_name = mod.name
-            concept_names = [s.name for s in mod.states]
-            bram_image = compile_concept_microcode_bram_image(mod, profile=args.profile)
+            source_text = raw_bytes.decode("utf-8")
+            if args.profile == "KPOL-AUTH":
+                ka = _load_kpol_auth_package()
+                cst_prog = ka.parse_kpol_auth(source_text)
+                art = ka.lower_kpol_auth(cst_prog)
+                bram_image = art.bram_image
+                concept_names = [c.name for c in art.concepts]
+            else:
+                mod = Parser(source_text).parse()
+                mod_name = mod.name
+                concept_names = [s.name for s in mod.states]
+                bram_image = compile_concept_microcode_bram_image(mod, profile=args.profile)
 
-    watch_set: set[int] = set()
-    if args.watch_cids:
-        for tok in args.watch_cids.split(","):
-            if tok.strip():
-                watch_set.add(int(tok.strip(), 0))
+        watch_set: set[int] = set()
+        if args.watch_cids:
+            for tok in args.watch_cids.split(","):
+                if tok.strip():
+                    watch_set.add(int(tok.strip(), 0))
 
-    dbg = KpolCascadeDebugger(
-        bram_image,
-        profile=args.profile,
-        module_name=mod_name,
-        source_code=source_text,
-        concept_names=concept_names,
-        watch_cids=watch_set,
-        break_on_reject=args.break_on_reject,
-        watch_state_change=True,
-    )
-
-    conn = MachineDebugConnection(target=args.target)
-    pynq_hw_report: dict[str, Any] | None = None
-
-    queued_events: list[tuple[int, int, bool]] = []
-    if args.trace_events:
-        queued_events = parse_trace_events_spec(args.trace_events)
-
-    stdio_res: StdioExecutionResult | None = None
-    if args.stdio:
-        stdin_lines = sys.stdin.read().splitlines()
-        stdio_res = run_stdio_stream(
-            dbg,
-            stdin_lines,
-            emit_to_sys_stdio=not (args.tui or args.render_tui_frame),
-        )
-        queued_events = list(stdio_res.stdin_records)
-    elif queued_events and not args.tui:
-        dbg.run_events(queued_events)
-
-    if args.target == "sim":
-        conn.load_program_into_sim(bram_image, concept_names=concept_names)
-    else:
-        hw_params = [p for _, p, v in queued_events if v]
-        pynq_hw_report = conn.execute_pynq_session(
+        dbg = KpolCascadeDebugger(
             bram_image,
-            hw_params=hw_params,
+            profile=args.profile,
+            module_name=mod_name,
+            source_code=source_text,
             concept_names=concept_names,
+            watch_cids=watch_set,
+            break_on_reject=args.break_on_reject,
+            watch_state_change=True,
         )
+
+        conn = MachineDebugConnection(target=args.target)
+        pynq_hw_report: dict[str, Any] | None = None
+
+        queued_events: list[tuple[int, int, bool]] = []
+        if args.trace_events:
+            queued_events = parse_trace_events_spec(args.trace_events)
+
+        stdio_res: StdioExecutionResult | None = None
+        if args.stdio:
+            stdin_lines = sys.stdin.read().splitlines()
+            stdio_res = run_stdio_stream(
+                dbg,
+                stdin_lines,
+                emit_to_sys_stdio=not (args.tui or args.render_tui_frame),
+            )
+            queued_events = list(stdio_res.stdin_records)
+        elif queued_events and not args.tui:
+            dbg.run_events(queued_events)
+
+        if args.target == "sim":
+            conn.load_program_into_sim(bram_image, concept_names=concept_names)
+        else:
+            hw_params = [p for _, p, v in queued_events if v]
+            pynq_hw_report = conn.execute_pynq_session(
+                bram_image,
+                hw_params=hw_params,
+                concept_names=concept_names,
+            )
+    except (KpolError, OSError, TimeoutError, ValueError) as error:
+        parser.exit(2, f"{error}\n")
 
     if args.tui:
         frame = run_interactive_tui(
@@ -3631,15 +3636,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             encoding="utf-8",
         )
 
+    if args.fail_on_reject and dbg.rejects > 0:
+        return 1
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-
-
-
-
-

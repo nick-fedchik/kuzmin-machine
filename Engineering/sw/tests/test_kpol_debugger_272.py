@@ -374,6 +374,97 @@ def test_stdio_binding_and_unix_pipe_cli():
         assert "REJECT_GUARD: Counter[cid=0] kept W0=11" in proc.stderr
         assert "REJECT_FAULT: Counter[cid=0] kept W0=11" in proc.stderr
 
+        # F7: Verify --fail-on-reject returns exit code 1 when rejects occur, and 0 when all commit
+        proc_fail = subprocess.run(
+            [
+                sys.executable,
+                str(DEBUGGER_CLI),
+                "--program",
+                str(INCREASE_KPOL),
+                "--profile",
+                "KPOL-CME-1",
+                "--stdio",
+                "--fail-on-reject",
+            ],
+            input="5\n25\n",
+            env=_subproc_env(scratch),
+            capture_output=True,
+            text=True,
+        )
+        assert proc_fail.returncode == 1
+
+        proc_ok = subprocess.run(
+            [
+                sys.executable,
+                str(DEBUGGER_CLI),
+                "--program",
+                str(INCREASE_KPOL),
+                "--profile",
+                "KPOL-CME-1",
+                "--stdio",
+                "--fail-on-reject",
+            ],
+            input="5\n10\n",
+            env=_subproc_env(scratch),
+            capture_output=True,
+            text=True,
+        )
+        assert proc_ok.returncode == 0
+
+    # F6: Negative filtering check for `# @stdout`: when `# @stdout Contactor_Interlock` is set on
+    # a 4-stage BMS cascade, intermediate commits on `Cell_Delta_mV`, `Module_Thermal_Guard`, and
+    # `Pack_Fault_Latch` MUST NOT appear in `stdout_lines`; only `Contactor_Interlock` may appear.
+    bms_filtered_src = (
+        "# @stdin Cell_Delta_mV\n"
+        "# @stdout Contactor_Interlock\n"
+        + BMS_KPOL.read_text(encoding="utf-8")
+    )
+    bms_mod = kr.parse_module(bms_filtered_src)
+    bms_names = [s.name for s in bms_mod.states]
+    bms_img = kr.compile_concept_microcode_bram_image(bms_mod, profile="KPOL-CME-2")
+    dbg_bms = KpolCascadeDebugger(
+        bms_img,
+        profile="KPOL-CME-2",
+        module_name=bms_mod.name,
+        source_code=bms_filtered_src,
+        concept_names=bms_names,
+    )
+    cfg_bms = parse_stdio_directives(dbg_bms.source_code, dbg_bms.descriptors, dbg_bms.active_cids)
+    assert cfg_bms.stdout_concepts == ("Contactor_Interlock",)
+    res_bms = run_stdio_stream(dbg_bms, ["120", "180"], stdio_config=cfg_bms)
+    assert dbg_bms.commits == 8  # 4 cascade commits per event
+    assert len(res_bms.stdout_lines) == 2  # Only Contactor_Interlock[cid=3] emitted!
+    for line in res_bms.stdout_lines:
+        assert "Contactor_Interlock[cid=3]" in line
+        assert "Cell_Delta_mV" not in line
+        assert "Module_Thermal_Guard" not in line
+        assert "Pack_Fault_Latch" not in line
+
+
+def test_unreachable_target_exits_cleanly_without_traceback():
+    """F5: Verify that an unreachable `--target` fails closed with exit code 2 and a clean
+    `DBG-TARGET-IO:` message on stderr, without an unhandled Python traceback.
+    """
+    with _workspace_scratch_dir("bad_target_272") as scratch:
+        res = subprocess.run(
+            [
+                sys.executable,
+                str(DEBUGGER_CLI),
+                "--program",
+                str(INCREASE_KPOL),
+                "--profile",
+                "KPOL-CME-1",
+                "--target",
+                "xilinx@127.0.0.1:1",
+            ],
+            env=_subproc_env(scratch),
+            capture_output=True,
+            text=True,
+        )
+        assert res.returncode == 2
+        assert "DBG-TARGET-IO:" in res.stderr
+        assert "Traceback (most recent call last)" not in res.stderr
+
 
 def test_machine_connection_pre_load_post_load_and_tui_rendering():
     """Verify `MachineDebugConnection` captures `PRE-LOAD` vs `POST-LOAD` concept counts,
@@ -495,9 +586,10 @@ def test_author_slide_examples_if_sum_and_nod_120_6_vs_km_euclid_core_iverilog()
     assert euclid_rtl["commits"][-1]["next_val"] == 6
 
 
-def test_committed_raw_logs_and_report_provenance_272():
-    """Verify that raw logs and `report.md` exist in `Engineering/validation/kpol-cme/debugger-trace-272/`
-    and start with `# cmd:`, `# timestamp:`, `# git_commit:`, `# host:`.
+def test_committed_raw_logs_and_pynq2_hil_artifact_provenance_272():
+    """Verify committed raw logs, `report.md`, and the saved `pynq2` physical HIL session
+    artifact (`pynq2_live_debugger_session.json`) in `Engineering/validation/kpol-cme/debugger-trace-272/`.
+    (Artifact provenance check per F4; live hardware execution is performed by `run_debugger_verification.py`).
     """
     assert REPORT_MD.is_file(), f"Missing report.md: {REPORT_MD}"
     expected_logs = (
@@ -602,21 +694,51 @@ def test_mutant_m4_debugger_mask_uncertainty_bit_killed():
 
 
 def test_mutant_m5_debugger_corrupt_preload_postload_diff_killed():
-    """Mutant M5 (`M5_debugger_corrupt_preload_postload_diff`): if `compute_pre_post_load_diff`
-    fails to detect descriptor changes between `PRE-LOAD` and `POST-LOAD`, the connection
-    verification test fails.
+    """Mutant M5 (`M5_debugger_corrupt_preload_postload_diff`, F3): mutate the source code of
+    `kpol_debugger.py` so `compute_pre_post_load_diff` only compares `d0.current_state != d1.current_state`
+    (ignoring `W1` operand, `W2` predicate/action/guard opcodes, and `W3` subscriber changes) or
+    `analyze_concept_topology` miscounts `active_concepts`. Verify that the real mutated function
+    fails when loading a modified rule with the same initial `W0`.
     """
-    inc_mod = kr.parse_module(kd.EXAMPLE_1_INCREASE_SOURCE)
-    inc_img = kr.compile_concept_microcode_bram_image(inc_mod, profile="KPOL-CME-1")
-    bms_mod = kr.parse_module(kd.EXAMPLE_3_BMS_SAFETY_CASCADE_SOURCE)
-    bms_img = kr.compile_concept_microcode_bram_image(bms_mod, profile="KPOL-CME-2")
+    import importlib.util
 
-    conn = MachineDebugConnection(target="sim", initial_machine_bram=inc_img)
-    with mock.patch.object(
-        kd,
-        "compute_pre_post_load_diff",
-        return_value=[],
-    ):
-        _, _, diffs = conn.load_program_into_sim(bms_img)
-        with pytest.raises(AssertionError):
-            assert sum(1 for d in diffs if d.changed) == 4
+    dbg_src = DEBUGGER_CLI.read_text(encoding="utf-8")
+    target_snippet = "changed = d0.pack() != d1.pack()"
+    mutant_snippet = "changed = d0.current_state != d1.current_state"
+    assert dbg_src.count(target_snippet) == 1
+    mutated_src = dbg_src.replace(target_snippet, mutant_snippet, 1)
+
+    with _workspace_scratch_dir("mut_m5_272") as scratch:
+        mut_path = scratch / "kpol_debugger_m5_mutant.py"
+        mut_path.write_text(mutated_src, encoding="utf-8")
+        spec = importlib.util.spec_from_file_location("kpol_debugger_m5_mutant", mut_path)
+        assert spec is not None and spec.loader is not None
+        mut_mod = importlib.util.module_from_spec(spec)
+        sys.modules["kpol_debugger_m5_mutant"] = mut_mod
+        try:
+            spec.loader.exec_module(mut_mod)
+            # Build two images where C0 has the exact same initial W0=10, but different W1/W2 rule
+            inc_mod = kr.parse_module(kd.EXAMPLE_1_INCREASE_SOURCE)
+            inc_img = kr.compile_concept_microcode_bram_image(inc_mod, profile="KPOL-CME-1")
+            cas_mod = kr.parse_module(kd.EXAMPLE_2_CASCADE_4STAGE_SOURCE)
+            cas_img = kr.compile_concept_microcode_bram_image(cas_mod, profile="KPOL-CME-2")
+
+            # Unmutated connection detects that C0 changed (W1: 20 -> 50, W3: 0 -> 1) even though W0 == 10 in both!
+            clean_conn = MachineDebugConnection(target="sim", initial_machine_bram=inc_img)
+            _, _, clean_diffs = clean_conn.load_program_into_sim(cas_img)
+            assert clean_diffs[0].cid == 0 and clean_diffs[0].pre_w0 == 10 and clean_diffs[0].post_w0 == 10
+            assert clean_diffs[0].changed is True
+            assert sum(1 for d in clean_diffs if d.changed) == 4
+
+            # Also verify zero-diff case when identical image is loaded
+            same_conn = MachineDebugConnection(target="sim", initial_machine_bram=cas_img)
+            _, _, same_diffs = same_conn.load_program_into_sim(cas_img)
+            assert sum(1 for d in same_diffs if d.changed) == 0
+
+            # Mutated module ignores W1/W2/W3 when W0 is unchanged, missing the C0 rule change!
+            mut_conn = mut_mod.MachineDebugConnection(target="sim", initial_machine_bram=inc_img)
+            _, _, mut_diffs = mut_conn.load_program_into_sim(cas_img)
+            with pytest.raises(AssertionError):
+                assert mut_diffs[0].changed is True and sum(1 for d in mut_diffs if d.changed) == 4
+        finally:
+            sys.modules.pop("kpol_debugger_m5_mutant", None)

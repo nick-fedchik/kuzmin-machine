@@ -63,7 +63,14 @@ def _git_head_sha() -> str:
         text=True,
         check=True,
     )
-    return res.stdout.strip()
+    sha = res.stdout.strip()
+    dirty = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "status", "--porcelain"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    return f"{sha}-dirty" if dirty else sha
 
 
 def _write_raw_log(
