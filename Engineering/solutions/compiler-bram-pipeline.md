@@ -12,7 +12,7 @@
 Реалізація системної межі [B1](../design/system-boundary-allocation-b1.md):
 програма → підтримувана компіляція → 1024-байтний CME-образ → loader →
 апаратний sequencer/CME/gate v2.
-Підтримуваний контракт визначає [KPOL-CME-1](../specifications/kpol/kpol-cme-subset-0.1.0.md),
+Підтримуваний контракт визначає [KPOL-CME-1](../specifications/kpol/kpol-cme-subset.md),
 а не ширина граматики поточного парсера.
 
 ## 2. Склад і залежності

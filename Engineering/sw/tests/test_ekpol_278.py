@@ -29,6 +29,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -514,6 +515,34 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
     wp_index = json.loads((REPO_ROOT / "Project" / "registers" / "wp-index.json").read_text(encoding="utf-8"))
     by_path = {e["path"]: e for e in wp_index["entries"]}
     assert by_path.get("Engineering/specifications/kpol/ekpol-specification.md", {}).get("wp_type") == "Specification"
+    assert by_path.get("Engineering/specifications/kpol/kpol-auth-subset.md", {}).get("wp_type") == "Specification"
+    assert by_path.get("Engineering/specifications/kpol/kpol-cme-subset.md", {}).get("wp_type") == "Specification"
+    assert by_path.get("Engineering/specifications/kpol/kpol-cme2-profile.md", {}).get("wp_type") == "Specification"
+    assert by_path.get("Engineering/specifications/kpol/kpol-consolidated.md", {}).get("wp_type") == "Specification"
     assert by_path.get("Engineering/validation/kpol-cme/ekpol-278/report.md", {}).get("wp_type") == "Report"
     assert by_path.get("Engineering/sw/kpol-ref/ekpol_frontend.py", {}).get("wp_type") == "Source Code"
     assert by_path.get("Engineering/sw/vmk-go/internal/vmk/ekpol.go", {}).get("wp_type") == "Source Code"
+
+
+def _find_versioned_spec_markdown_files(specs_root: Path) -> list[str]:
+    version_suffix_re = re.compile(r"-\d+\.\d+\.\d+\.md$")
+    return sorted(
+        p.relative_to(specs_root).as_posix()
+        for p in specs_root.rglob("*.md")
+        if version_suffix_re.search(p.name)
+    )
+
+
+def test_specifications_have_no_version_suffix_in_filenames():
+    """Issue #282 invariant: no `.md` file in `Engineering/specifications/` may carry a `-X.Y.Z.md` version suffix."""
+    specs_root = REPO_ROOT / "Engineering" / "specifications"
+    assert specs_root.is_dir()
+    assert _find_versioned_spec_markdown_files(specs_root) == []
+
+    # Mutant / negative control (AGENTS.md §4 п. 1): verify detector catches a versioned spec filename
+    with _workspace_scratch_dir("spec_ver_neg") as scratch:
+        (scratch / "kpol").mkdir(parents=True, exist_ok=True)
+        (scratch / "kpol" / "kpol-consolidated.md").write_text("# ok\n", encoding="utf-8")
+        assert _find_versioned_spec_markdown_files(scratch) == []
+        (scratch / "kpol" / "kpol-consolidated-0.1.0.md").write_text("# bad\n", encoding="utf-8")
+        assert _find_versioned_spec_markdown_files(scratch) == ["kpol/kpol-consolidated-0.1.0.md"]

@@ -10,8 +10,8 @@
 ## 1. Контекст і межа
 
 Поточне рішення визначають [B1](../system-boundary-allocation-b1.md),
-[профіль KPOL-CME-1](../../specifications/kpol/kpol-cme-subset-0.1.0.md),
-[профіль KPOL-CME-2](../../specifications/kpol/kpol-cme2-profile-0.1.0.md)
+[профіль KPOL-CME-1](../../specifications/kpol/kpol-cme-subset.md),
+[профіль KPOL-CME-2](../../specifications/kpol/kpol-cme2-profile.md)
 та [loader-контракт B4](../../specifications/hw/kpol-image-loader-pipeline-contract.md).
 Старий ескіз ASDL/ASN.1, стекового асемблера, `.kmc`, O+SR і
 повного graph-splitting не є описом реалізованого NG-компілятора;
@@ -105,7 +105,7 @@ backend або однотактовий fan-out. [Report #157](../../../Research
 
 ### 3.5. Багатоконцептний профіль `KPOL-CME-2` на `CME-RAW-1` (#184)
 
-У межах [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) у [`kpol_reference.py`](../../sw/kpol-ref/kpol_reference.py) та CLI [`compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py) додано опціональний профіль `--profile KPOL-CME-2` ([специфікація](../../specifications/kpol/kpol-cme2-profile-0.1.0.md), [Report #184](../../validation/kpol-cme/cme2-profile-184/report.md)) без зміни `KPOL-CME-1` і без модифікації RTL `CFG-P`:
+У межах [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) у [`kpol_reference.py`](../../sw/kpol-ref/kpol_reference.py) та CLI [`compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py) додано опціональний профіль `--profile KPOL-CME-2` ([специфікація](../../specifications/kpol/kpol-cme2-profile.md), [Report #184](../../validation/kpol-cme/cme2-profile-184/report.md)) без зміни `KPOL-CME-1` і без модифікації RTL `CFG-P`:
 до 64 станів `Int32`, 3-кольорова перевірка ациклічності та `fan-out <= 1` для каскадів `on change(...)` (включно з `guard_flags[4] = 0x10` для каскаду в `CID 0`), розширені предикати (`>=`, `<=`, знаковий `int16` `RANGE`), дії `INC/DEC/ADD/SUB/ASSIGN`, явний fail-closed детектор `CME2-OPERAND-COLLISION` і обов'язковий невакуумний гейт `Proof`. Межі `CME-RAW-2` (`_`, розділені операнди, константний `ASSIGN`, `Hazards`) винесені в `#185`.
 
 ## Історія версій

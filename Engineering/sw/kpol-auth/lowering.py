@@ -7,7 +7,7 @@ KPOL-AUTH CST into:
   1) 32-bit Do/Go stack-VM bytecode (`code_o`) and subscription tables (`km_sub_t`)
      bit-compatible with `Engineering/sw/runtime/mcu/km_mcu_fpga_bridge.c`;
   2) 1024-byte `CME-RAW-1` BRAM routing descriptors (`W0..W3`, 64 x 16 bytes)
-     compatible with `Engineering/specifications/kpol/kpol-cme2-profile-0.1.0.md`.
+     compatible with `Engineering/specifications/kpol/kpol-cme2-profile.md`.
 """
 
 from __future__ import annotations

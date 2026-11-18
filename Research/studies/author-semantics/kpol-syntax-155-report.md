@@ -52,8 +52,8 @@ Compiler/RTL, KPOL-CME-1 та CME-RAW-1 не змінено.
 
 Зіставлення виконано з
 [референсом](../../../Engineering/sw/kpol-ref/kpol_reference.py),
-[консолідованим контрактом](../../../Engineering/specifications/kpol/kpol-consolidated-0.1.0.md),
-[профілем](../../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md)
+[консолідованим контрактом](../../../Engineering/specifications/kpol/kpol-consolidated.md),
+[профілем](../../../Engineering/specifications/kpol/kpol-cme-subset.md)
 та [переданими RFC-відповідями](../../sources/author/rfc-2026-11-12.md).
 Результати окремих probes — у
 [frontend-probes-01.log](data/kpol-syntax-155/frontend-probes-01.log);

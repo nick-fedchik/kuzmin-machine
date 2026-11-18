@@ -1309,7 +1309,7 @@ def generate_acceptance_summary() -> dict:
                 ],
             },
             "KPOL-AUTH": {
-                "subset_spec": "Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md",
+                "subset_spec": "Engineering/specifications/kpol/kpol-auth-subset.md",
                 "bram_bytes": 1024,
                 "thermal_bram_sha256": hashlib.sha256(auth_thermal.bram_image).hexdigest(),
                 "thermal_dogo_words": len(auth_thermal.code_o),

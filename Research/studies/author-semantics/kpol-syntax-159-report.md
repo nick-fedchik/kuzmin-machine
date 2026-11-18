@@ -98,7 +98,7 @@ notes/comments, CRC та 36 XML/relationship-частин; відсутніх в
 G1/N1–N2, G3/N4 → [Source](../../sources/author/group-execution-2026-11-13.md)
 → [AUTH-03/Q-AUTH-01](../../../Engineering/requirements/kpol.md#31-кандидати-за-новою-презентацією)
 → [Compiler Design](../../../Engineering/design/software/compiler.md)
-/ [межа Specification](../../../Engineering/specifications/kpol/kpol-consolidated-0.1.0.md#11-авторський-синтаксис-і-нинішній-діалект)
+/ [межа Specification](../../../Engineering/specifications/kpol/kpol-consolidated.md#11-авторський-синтаксис-і-нинішній-діалект)
 → цей Report/Data. Оновлено тематичну навігацію й реєстри.
 
 | Критерій #159 | Результат / межа |

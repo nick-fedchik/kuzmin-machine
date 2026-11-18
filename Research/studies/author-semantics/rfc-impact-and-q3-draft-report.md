@@ -79,7 +79,7 @@
 ### 3.4. Оновлена чернетка протоколу Q3 для Issue `#120` (не запускати без погодження власника)
 
 * **Об'єкт дослідження (актуалізовано до `main` `26ab37326e2a77beb6cbdd2c37bf6774010dd248`):** інженерні профілі `KPOL-CME-1` і `KPOL-CME-2` у [`kpol_reference.py`](../../../Engineering/sw/kpol-ref/kpol_reference.py) (CLI [`compile_kpol_bram_image.py`](../../../Engineering/hw/scripts/compile_kpol_bram_image.py)). Попередня залежність `#19` закрита.
-* **Матеріали учасника:** лише [`Engineering/specifications/kpol/`](../../../Engineering/specifications/kpol/README.md) (`kpol-cme-subset-0.1.0.md`, `kpol-cme2-profile-0.1.0.md`, `kpol-consolidated-0.1.0.md`).
+* **Матеріали учасника:** лише [`Engineering/specifications/kpol/`](../../../Engineering/specifications/kpol/README.md) (`kpol-cme-subset.md`, `kpol-cme2-profile.md`, `kpol-consolidated.md`).
 * **Учасники:** основна група — ≥ 3 програмісти-люди без досвіду МК; допоміжний пілот на LLM-агентах — **виключно для пошуку дефектів документації** (не дає висновку про зручність для людей).
 * **3 задачі зі зростанням складності (приймальні тести та `Proof` фіксуються до запуску):**
   1. Один стан з інваріантом `S >= 0` та одноразовим предикатом на подію (`KPOL-CME-1`).

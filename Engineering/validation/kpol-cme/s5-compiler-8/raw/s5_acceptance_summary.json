@@ -37,7 +37,7 @@
       ]
     },
     "KPOL-AUTH": {
-      "subset_spec": "Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md",
+      "subset_spec": "Engineering/specifications/kpol/kpol-auth-subset.md",
       "bram_bytes": 1024,
       "thermal_bram_sha256": "6ef255e19b367c8540e4bd8f785b8c5127bfc12208b147406a5e76fb90d39543",
       "thermal_dogo_words": 18,

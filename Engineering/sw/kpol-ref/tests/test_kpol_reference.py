@@ -92,7 +92,7 @@ class KpolReferenceTests(unittest.TestCase):
 
     def test_consolidated_example_proof_and_cme_pipeline(self):
         examples = examples_from_spec(
-            REPO_ROOT / "specifications" / "kpol" / "kpol-consolidated-0.1.0.md"
+            REPO_ROOT / "specifications" / "kpol" / "kpol-consolidated.md"
         )
         self.assertEqual(len(examples), 1)
         module = parse_module(examples[0])

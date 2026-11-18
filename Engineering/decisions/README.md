@@ -13,7 +13,7 @@
 |---|---|
 | B1: системна межа | [Compiler + loader + PL](../design/system-boundary-allocation-b1.md). |
 | B2: вхід події | [Інтеграція фізичного входу](../design/bram-pipeline-event-integration.md). |
-| B3-01 / B3-02: KPOL-CME-1 та KPOL-CME-2 | [Профіль `KPOL-CME-1`](../specifications/kpol/kpol-cme-subset-0.1.0.md) та [багатоконцептний профіль `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile-0.1.0.md) на `CME-RAW-1`. |
+| B3-01 / B3-02: KPOL-CME-1 та KPOL-CME-2 | [Профіль `KPOL-CME-1`](../specifications/kpol/kpol-cme-subset.md) та [багатоконцептний профіль `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile.md) на `CME-RAW-1`. |
 | B4: образ і loader (`CFG-P` та `CFG-P-HA`) | [Контракт завантаження v2.4.0](../specifications/hw/kpol-image-loader-pipeline-contract.md) (Варіант 1 `CFG-P` + двобанковий Варіант 2 `CFG-P-HA`, верифікований у `Z3`, `OpenXC7` `100.69 МГц` та на `PYNQ-Z1` у [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252)/[#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253)). |
 | B5: черга та ingress | [Контракт черги](../specifications/hw/event-queue-ingress-specification.md). |
 | B6: гетерогенний симбіоз із GPU | [Persistent Mega-Kernel для підписників v0.4.0](b6-gpu-persistent-kernel-subscribers.md) (верифіковано на GPU до `1024` підписників у `EXP-GPU-01` і `EXP-GPU-03`). |
