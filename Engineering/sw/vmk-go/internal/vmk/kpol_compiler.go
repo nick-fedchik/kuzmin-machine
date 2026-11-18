@@ -9,23 +9,23 @@ import (
 
 // CompiledKPOL holds the result of compiling a .kpol source file or loading a 1024-byte .bin image.
 type CompiledKPOL struct {
-	ModuleName       string
-	Profile          string
-	SourceCode       string
-	ConceptNames     []string
-	BRAMImage        []byte
-	DoGoBytecodeHex  []string
-	ExecDescriptors  *[64]ConceptDescriptor
+	ModuleName      string
+	Profile         string
+	SourceCode      string
+	ConceptNames    []string
+	BRAMImage       []byte
+	DoGoBytecodeHex []string
+	ExecDescriptors *[64]ConceptDescriptor
 }
 
 var (
-	reProblemName  = regexp.MustCompile(`(?m)\bProblem\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
-	reStateDecl    = regexp.MustCompile(`(?m)\bstate\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Za-z0-9_]+)\s*=\s*(-?[0-9]+)\s*;`)
-	reEventDecl    = regexp.MustCompile(`(?m)\bevent\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Za-z0-9_]+)\s*\)\s*;`)
-	reRuleDecl     = regexp.MustCompile(`(?ms)\brule\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+(change\s*\(\s*[A-Za-z_][A-Za-z0-9_]*\s*\)|[A-Za-z_][A-Za-z0-9_]*)(?:\s+when\s+([^{]+))?\s*\{\s*set\s+([A-Za-z_][A-Za-z0-9_]*)\s*:=\s*([^;]+);\s*\}`)
-	reChangeWatch  = regexp.MustCompile(`^change\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)$`)
-	reAuthConcept  = regexp.MustCompile(`(?m)\bConcept\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*(-?[0-9]+)`)
-	reAuthSub      = regexp.MustCompile(`(?m)\b([A-Za-z_][A-Za-z0-9_]*)\s*(?:•|\(\*\))\s*Assign\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*([A-Za-z_][A-Za-z0-9_]*)\s*([+\-*])\s*(-?[0-9]+)\s*\)`)
+	reProblemName = regexp.MustCompile(`(?m)\bProblem\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
+	reStateDecl   = regexp.MustCompile(`(?m)\bstate\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Za-z0-9_]+)\s*=\s*(-?[0-9]+)\s*;`)
+	reEventDecl   = regexp.MustCompile(`(?m)\bevent\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Za-z0-9_]+)\s*\)\s*;`)
+	reRuleDecl    = regexp.MustCompile(`(?ms)\brule\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+(change\s*\(\s*[A-Za-z_][A-Za-z0-9_]*\s*\)|[A-Za-z_][A-Za-z0-9_]*)(?:\s+when\s+([^{]+))?\s*\{\s*set\s+([A-Za-z_][A-Za-z0-9_]*)\s*:=\s*([^;]+);\s*\}`)
+	reChangeWatch = regexp.MustCompile(`^change\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)$`)
+	reAuthConcept = regexp.MustCompile(`(?m)\bConcept\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*(-?[0-9]+)`)
+	reAuthSub     = regexp.MustCompile(`(?m)\b([A-Za-z_][A-Za-z0-9_]*)\s*(?:•|\(\*\))\s*Assign\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*([A-Za-z_][A-Za-z0-9_]*)\s*([+\-*])\s*(-?[0-9]+)\s*\)`)
 )
 
 func stripComments(src string) string {

@@ -364,6 +364,15 @@ func TestAllPredicatesActionsSelfSuppressAndExamplesAll(t *testing.T) {
 	if code := RunCLI([]string{"--example", "bms", "--fail-on-reject"}, strings.NewReader(""), &exOut, &exErr); code != 1 {
 		t.Fatalf("expected exit code 1 for --example bms --fail-on-reject, got %d", code)
 	}
+
+	// Verify --mode conceptual --stdio works for all BRAM-lowered examples (bms, cascade, increase, decrease, auth)
+	for _, exName := range []string{"bms", "cascade", "increase", "decrease", "auth"} {
+		exOut.Reset()
+		exErr.Reset()
+		code := RunCLI([]string{"--mode", "conceptual", "--example", exName, "--stdio", "--render-tui-frame"}, strings.NewReader("0:120\n"), &exOut, &exErr)
+		if code != 0 || !strings.Contains(exOut.String(), "Mode: conceptual (descriptor-backed)") {
+			t.Fatalf("--mode conceptual --stdio --example %s failed: code=%d stderr=%s\nout=%s",
+				exName, code, exErr.String(), exOut.String())
+		}
+	}
 }
-
-

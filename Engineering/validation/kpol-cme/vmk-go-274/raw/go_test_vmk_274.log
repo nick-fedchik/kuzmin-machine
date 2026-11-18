@@ -1,6 +1,6 @@
 # cmd: (cd Engineering/sw/vmk-go && go test -v ./...)
 # timestamp: 2026-11-18T11:50:45.502417+02:00
-# git_commit: 6616ab80dd196919980a6f1ba7f8c362a81bf525
+# git_commit: c366224485c8210784b1cba041832c24d7d666a9
 # host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
 # evidence_kind: go_unit_test_suite
 === RUN   TestMainVersionAndSubcommands

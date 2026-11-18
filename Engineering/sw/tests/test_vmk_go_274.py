@@ -155,12 +155,31 @@ def _compile_c99_lib(c_source: str, scratch_dir: Path) -> ctypes.CDLL:
 
 
 def test_go_unit_test_suite_passes():
-    """Verify `go test -v ./...` in `Engineering/sw/vmk-go/` passes with zero external dependencies."""
+    """Verify `gofmt -l`, `go vet ./...`, and `go test -v ./...` in `Engineering/sw/vmk-go/` pass with zero external dependencies."""
     go_mod_txt = (VMK_GO_DIR / "go.mod").read_text(encoding="utf-8")
     assert "module github.com/nick-fedchik/kuzmin-machine/Engineering/sw/vmk-go" in go_mod_txt
     assert "require" not in go_mod_txt, "go.mod must have zero external dependencies"
 
     with _workspace_scratch_dir("gotest") as scratch:
+        fmt_res = subprocess.run(
+            ["gofmt", "-l", "."],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert fmt_res.stdout.strip() == "", f"Unformatted Go files:\n{fmt_res.stdout}"
+
+        subprocess.run(
+            ["go", "vet", "./..."],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
         res = subprocess.run(
             ["go", "test", "-v", "./..."],
             cwd=str(VMK_GO_DIR),

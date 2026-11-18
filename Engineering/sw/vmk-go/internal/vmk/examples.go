@@ -325,16 +325,16 @@ func RunSingleExampleDemo(exampleName string) (string, map[string]any, error) {
 		resVal, subSteps, _ := vm.ExecuteNodCall(120, 6)
 		txt := RenderConceptualTUIFrame(vm, "COMPLETED")
 		return txt, map[string]any{
-			"example":                               "nod",
-			"mode":                                  ModeConceptual,
-			"a_init":                                120,
-			"b_init":                                6,
-			"result":                                resVal,
-			"subtraction_iterations":                subSteps,
-			"total_eval_steps":                      subSteps + 1,
+			"example":                                "nod",
+			"mode":                                   ModeConceptual,
+			"a_init":                                 120,
+			"b_init":                                 6,
+			"result":                                 resVal,
+			"subtraction_iterations":                 subSteps,
+			"total_eval_steps":                       subSteps + 1,
 			"hardware_cycles_at_3cyc_per_sub_plus_1": subSteps*3 + 1,
-			"steps":                                 vm.Steps,
-			"stdout":                                vm.StdoutHistory,
+			"steps":                                  vm.Steps,
+			"stdout":                                 vm.StdoutHistory,
 		}, nil
 
 	case "factorial":

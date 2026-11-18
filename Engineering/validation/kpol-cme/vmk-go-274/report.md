@@ -1,11 +1,11 @@
 # Звіт VMK-GO-274: Двомодовий емулятор Віртуальної Машини Кузьміна (`VMK`) та 4-панельний TUI-дебагер на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`, Issue #274)
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP редакції NG:** Report
-* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274). **PR:** у гілці `feat/274-vmk-go-emulator-and-tui-debugger`.
-* **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент:** незалежна рецензія очікується після відкриття PR (`AGENTS.md §1.4`).
-* **Базовий коміт `origin/main`:** `6616ab80dd196919980a6f1ba7f8c362a81bf525`.
+* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274). **PR:** [#275](https://github.com/nick-fedchik/kuzmin-machine/pull/275) у гілці `feat/274-vmk-go-emulator-and-tui-debugger`.
+* **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент:** `claude-sonnet-5.5` ([рецензія PR #275 на `c366224`](https://github.com/nick-fedchik/kuzmin-machine/pull/275#issuecomment-6975587372) — «Прийнято із зауваженнями», `N1..N6` закрито у версії `1.0.1`).
+* **Коміт виконання:** `c366224485c8210784b1cba041832c24d7d666a9` (`origin/main`: `6616ab80dd196919980a6f1ba7f8c362a81bf525`).
 * **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`go1.27.1 linux/amd64`, `GCC 15.2.0`, `Python 3.14.4`, `pytest 9.0.2`, `Icarus Verilog 12.0`).
 * **Фізична плата HIL (`pynq2`, під `flock` `/tmp/km-bench.lock`):** `Digilent PYNQ-Z1` (`xilinx@192.168.68.69`, двоядерний `ARM Cortex-A9 @ 650 МГц` + кристал `Xilinx Zynq-7020 XC7Z020-1CLG400C` @ `100.0 МГц`, активний конвеєр `CFG-P` `HW_ID = 0x4B504D43` `"KPMC"`).
 * **Критерії успіху (зафіксовано до виконання в Issue #274 та командах власника):**
@@ -35,8 +35,11 @@
 1. **Чиста модульна архітектура на Go (`std` only, `go 1.22`):**
    * У каталозі [`Engineering/sw/vmk-go/`](../../../sw/vmk-go/go.mod) створено точку входу [`cmd/vmk/main.go`](../../../sw/vmk-go/cmd/vmk/main.go) та внутрішній пакет `internal/vmk` із 7 модулів: [`version.go`](../../../sw/vmk-go/internal/vmk/version.go), [`bram64.go`](../../../sw/vmk-go/internal/vmk/bram64.go), [`kpol_compiler.go`](../../../sw/vmk-go/internal/vmk/kpol_compiler.go), [`snapshot.go`](../../../sw/vmk-go/internal/vmk/snapshot.go), [`conceptual.go`](../../../sw/vmk-go/internal/vmk/conceptual.go), [`stdio.go`](../../../sw/vmk-go/internal/vmk/stdio.go), [`tui.go`](../../../sw/vmk-go/internal/vmk/tui.go) та [`examples.go`](../../../sw/vmk-go/internal/vmk/examples.go).
    * Детальний архітектурний контракт зафіксовано в специфікації [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`](../../../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) (`1.0.0`).
-2. **Чотирирівнева перехресна звірка (`Go VMK` $\leftrightarrow$ `Python` $\leftrightarrow$ `C99` $\leftrightarrow$ `Icarus Verilog RTL` $\leftrightarrow$ `PYNQ-Z1 Silicon`):**
-   * Для 4-концептного каскаду захисту BMS ([`bms_safety_cascade.kpol`](../c99-emitter-270/bms_safety_cascade.kpol)) перевірено побітовий збіг скомпільованого у Go 1024-байтного образу BRAM (`SHA-256 = de03442454424b5c...`), усіх 19 кроків каскадної траси, кінцевих станів `[4, 4, 0, 0]` та лічильників телеметрії між Go `vmk`, Python `KpolCascadeDebugger`, C99 (`--emit-c99`), `Icarus Verilog` (`kpol_bram_pipeline_axi.sv`) та фізичним кристалом `Zynq-7020` на платі `pynq2`.
+2. **Чотирирівнева перехресна звірка з незалежними еталонами (`AGENTS.md §4.3`, `N5`):**
+   * Очікування для режиму `bram64` у [`test_vmk_go_274.py`](../../../sw/tests/test_vmk_go_274.py) беруться не з виходу самої Go-реалізації, а з чотирьох незалежних еталонів: (а) Python-компілятора `kpol_reference.py` (`compile_concept_microcode_bram_image`, побітовий збіг 1024-байтного образу `SHA-256 = de03442454424b5c...`) і `ReferenceCmeSafetyEngine`; (б) покрокового трасувальника `KpolCascadeDebugger` (збіг усіх 19 кроків, вердиктів і станів `[4, 4, 0, 0]`); (в) скомпільованого `gcc -std=c99 -O2` C99-модуля безпеки (`emit_c99_safety_module`); (г) RTL-симуляції `kpol_bram_pipeline_axi.sv` та `km_euclid_core.sv` у `Icarus Verilog 12.0`.
+   * **Походження початкового стану `PRE-LOAD` у `--target sim` проти `--target pynq2` (`N3`, `N4`, `N6`):**
+     - На фізичній платі `PYNQ-Z1` (`--target pynq2`, записані HIL-артефакти [`raw/pynq2_live_vmk_session.log`](raw/pynq2_live_vmk_session.log) та `.json`, не повторювані офлайн-рецензентом без доступу до стенда) знімок `PRE-LOAD` вичитується безпосередньо з апаратної BRAM кристала `Zynq-7020` через MMIO `0x40000000` (`256` слів).
+     - У локальному симуляторі (`--target sim`) для вбудованих прикладів `PRE-LOAD` формується детерміновано: у концептуальних прикладах (`if`, `sum`, `nod`, `factorial`, `tachometer`) до завантаження користувацьких концептів у VMK присутні `3 / 64` вбудовані віртуальні потоки (`STDIN`, `STDOUT`, `STDERR`); у прикладі `bms` симулятор навмисно передініціалізується образом 1-концептної програми `Increase.kpol` (`Pre-load: 1 / 64`, `C00 = 10`), щоб без фізичної плати демонструвати нетривіальну таблицю `Pre-Load -> Post-Load Diff` (`1 / 64 -> 4 / 64`); у прикладах `increase`, `decrease`, `cascade`, `auth` симулятор стартує з нульової BRAM (`Pre-load: 0 / 64`). При запуску дескрипторних прикладів (`bms`, `cascade`, `increase`, `decrease`, `auth`) із `--mode conceptual` (зокрема з `--stdio`) вони виконуються на дескрипторному трасувальнику з позначкою `Mode: conceptual (descriptor-backed)`.
 3. **Мутаційний контроль Go-коду (`AGENTS.md §4.1`):**
    * У [`Engineering/sw/tests/test_vmk_go_274.py`](../../../sw/tests/test_vmk_go_274.py) реалізовано 5 мутантів Go-коду (`M1..M5`), кожен із яких копіює дерево `Engineering/sw/vmk-go` в ізольований каталог `.pytest_cache`, вносить точкову синтаксично коректну мутацію в `.go`-файл і перевіряє, що `go test ./...` завершується з ненульовим кодом.
 
@@ -134,6 +137,7 @@ python3 Project/tools/check_wp_documents.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | За рецензією PR #275 (`claude-sonnet-5.5`, `N1..N6`): виконано `gofmt -w`, усунено trailing whitespace, додано підтримку всіх 10 прикладів у `--mode conceptual --stdio` (`conceptual (descriptor-backed)`), роз'яснено походження станів `PRE-LOAD` у `sim` (`3/64`, `1/64`, `0/64`) проти фізичної `pynq2`, незалежні еталони `kpol_reference.py`/`C99`/`iverilog` та оновлено `# git_commit:` у `raw/*.log` на `c366224485c8210784b1cba041832c24d7d666a9`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск звіту верифікації двомодового емулятора VMK та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`), натурної сесії на `pynq2` та 5 мутантів `M1..M5` за Issue #274. |
 
 ## Абревіатури та глосарій

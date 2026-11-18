@@ -1,6 +1,6 @@
 # cmd: vmk --example all --json-out Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_examples_all_summary.json
 # timestamp: 2026-11-18T11:50:45.486308+02:00
-# git_commit: 6616ab80dd196919980a6f1ba7f8c362a81bf525
+# git_commit: c366224485c8210784b1cba041832c24d7d666a9
 # host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
 # evidence_kind: vmk_go_dual_mode_canonical_examples_trace
 ################################################################################
@@ -276,9 +276,9 @@
   13 |     state Module_Thermal_Guard: Int32 = 0;
   14 |     state Pack_Fault_Latch: Int32 = 2;
   15 |     state Contactor_Interlock: Int32 = 10;
-  16 | 
+  16 |
   17 |     event EvCellDelta(delta_mv: Int32);
-  18 | 
+  18 |
   19 |     rule RCellDelta on EvCellDelta when delta_mv >= 50 and delta_mv <= 5000 {
   20 |         set Cell_Delta_mV := Cell_Delta_mV + 1;
   21 |     }
@@ -720,9 +720,9 @@ Watchpoints / Breakpoints Triggered:
   13 |     state C1: Int32 = 0;
   14 |     state C2: Int32 = 2;
   15 |     state C3: Int32 = 0;
-  16 | 
+  16 |
   17 |     event E0(param: Int32);
-  18 | 
+  18 |
   19 |     rule R0 on E0 when param < 50 { set C0 := C0 + 1; }
   20 |     rule R1 on change(C0) when C0 > 10 { set C1 := C1 + 1; }
   21 |     rule R2 on change(C1) when C1 >= 1 { set C2 := C2 - 1; }

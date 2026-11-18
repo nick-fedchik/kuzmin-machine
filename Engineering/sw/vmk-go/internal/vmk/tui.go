@@ -61,7 +61,12 @@ func (e *BRAM64Engine) FormatSourceBlock() string {
 	}
 	if e.SourceCode != "" {
 		for idx, line := range strings.Split(e.SourceCode, "\n") {
-			lines = append(lines, fmt.Sprintf("  %02d | %s", idx+1, line))
+			r := strings.TrimRight(line, " \t\r")
+			if r == "" {
+				lines = append(lines, fmt.Sprintf("  %02d |", idx+1))
+			} else {
+				lines = append(lines, fmt.Sprintf("  %02d | %s", idx+1, r))
+			}
 		}
 	} else {
 		lines = append(lines, fmt.Sprintf("  Active Concepts (%d): %v", len(e.ActiveCIDs), e.ActiveCIDs))
@@ -300,11 +305,15 @@ func RenderBRAM64TUIFrame(
 
 	border := strings.Repeat("=", 118)
 	thin := strings.Repeat("-", 118)
+	modeLbl := ModeBRAM64
+	if eng.ModeLabel != "" {
+		modeLbl = eng.ModeLabel
+	}
 
 	lines := []string{
 		border,
 		fmt.Sprintf(" VMK (Virtual Machine of Kuzmin) v%s | Target: %s | Mode: %s | State: PRE-LOAD -> POST-LOAD -> %s",
-			Version, targetLbl, ModeBRAM64, phaseStatus),
+			Version, targetLbl, modeLbl, phaseStatus),
 		fmt.Sprintf(" Concepts: Active: %d / %d (Pre-load: %d / %d, Changed on load: %d, Free: %d) | Entry: %v Internal: %v Leaf: %v",
 			postActive, topo.TotalSlots, preActive, topo.TotalSlots, changedOnLoad, topo.FreeSlots,
 			topo.EntryConcepts, topo.InternalCascadeConcepts, topo.LeafConcepts),
@@ -364,7 +373,12 @@ func RenderBRAM64TUIFrame(
 			srcLines = srcLines[:12]
 		}
 		for idx, sl := range srcLines {
-			lines = append(lines, fmt.Sprintf("   SRC %02d | %s", idx+1, sl))
+			r := strings.TrimRight(sl, " \t\r")
+			if r == "" {
+				lines = append(lines, fmt.Sprintf("   SRC %02d |", idx+1))
+			} else {
+				lines = append(lines, fmt.Sprintf("   SRC %02d | %s", idx+1, r))
+			}
 		}
 	}
 	if stdioRes != nil {
@@ -480,7 +494,12 @@ func RenderConceptualTUIFrame(vm *ConceptualVM, phaseStatus string) string {
 	lines = append(lines, thin)
 	lines = append(lines, " [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]")
 	for idx, sl := range strings.Split(vm.SourceCode, "\n") {
-		lines = append(lines, fmt.Sprintf("   SRC %02d | %s", idx+1, sl))
+		r := strings.TrimRight(sl, " \t\r")
+		if r == "" {
+			lines = append(lines, fmt.Sprintf("   SRC %02d |", idx+1))
+		} else {
+			lines = append(lines, fmt.Sprintf("   SRC %02d | %s", idx+1, r))
+		}
 	}
 	inStr := "(empty)"
 	if len(vm.StdinHistory) > 0 {
@@ -579,4 +598,3 @@ func IsCharDeviceTTY(in io.Reader, out io.Writer) bool {
 	}
 	return (inInfo.Mode()&os.ModeCharDevice) != 0 && (outInfo.Mode()&os.ModeCharDevice) != 0
 }
-

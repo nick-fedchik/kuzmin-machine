@@ -288,6 +288,7 @@ type QueuedEvent struct {
 type BRAM64Engine struct {
 	ModuleName       string
 	Profile          string
+	ModeLabel        string
 	SourceCode       string
 	Bank0            [64]ConceptDescriptor
 	Bank1            [64]ConceptDescriptor
@@ -296,17 +297,17 @@ type BRAM64Engine struct {
 	SwapCount        uint32
 	ShadowW0Override [64]bool
 
-	ActiveCIDs        []int
-	TopologicalOrder  []int
-	InitialState      [64]int32
-	State             [64]int32
-	InitialValidMask  uint64
-	ValidMask         uint64
+	ActiveCIDs       []int
+	TopologicalOrder []int
+	InitialState     [64]int32
+	State            [64]int32
+	InitialValidMask uint64
+	ValidMask        uint64
 
-	FIFOQueue         []QueuedEvent
-	FIFOCapacity      int
-	FIFOOverflow      bool
-	DroppedEvents     uint32
+	FIFOQueue     []QueuedEvent
+	FIFOCapacity  int
+	FIFOOverflow  bool
+	DroppedEvents uint32
 
 	WatchCIDs          map[int]bool
 	BreakOnReject      bool

@@ -87,19 +87,19 @@ func AnalyzeConceptTopology(descs [64]ConceptDescriptor) ConceptTopologySummary 
 
 // MachineSnapshot captures the full machine state at PRE-LOAD, POST-LOAD, or POST-RUN.
 type MachineSnapshot struct {
-	Phase        string                 `json:"phase"`
-	Target       string                 `json:"target"`
-	HWIDHex      string                 `json:"hw_id_hex"`
-	HWIDASCII    string                 `json:"hw_id_ascii"`
-	BRAMBytes    []byte                 `json:"-"`
-	BRAMSHA256   string                 `json:"bram_sha256"`
-	Descriptors  [64]ConceptDescriptor  `json:"-"`
-	Topology     ConceptTopologySummary `json:"topology"`
-	HWEvents     uint32                 `json:"hw_events"`
-	HWCommits    uint32                 `json:"hw_commits"`
-	HWRejects    uint32                 `json:"hw_rejects"`
-	HWLastState  int32                  `json:"hw_last_state"`
-	HWDropped    uint32                 `json:"hw_dropped"`
+	Phase       string                 `json:"phase"`
+	Target      string                 `json:"target"`
+	HWIDHex     string                 `json:"hw_id_hex"`
+	HWIDASCII   string                 `json:"hw_id_ascii"`
+	BRAMBytes   []byte                 `json:"-"`
+	BRAMSHA256  string                 `json:"bram_sha256"`
+	Descriptors [64]ConceptDescriptor  `json:"-"`
+	Topology    ConceptTopologySummary `json:"topology"`
+	HWEvents    uint32                 `json:"hw_events"`
+	HWCommits   uint32                 `json:"hw_commits"`
+	HWRejects   uint32                 `json:"hw_rejects"`
+	HWLastState int32                  `json:"hw_last_state"`
+	HWDropped   uint32                 `json:"hw_dropped"`
 }
 
 func hwIDToASCII(hwID uint32) string {
@@ -359,18 +359,18 @@ int main(int argc, char **argv) {
 
 // MachineConnection manages target lifecycle: PRE-LOAD -> POST-LOAD -> RUNNING/POST-RUN.
 type MachineConnection struct {
-	Target           string            `json:"target"`
-	SimHWID          uint32            `json:"-"`
-	SimBRAM          []byte            `json:"-"`
-	SimEvents        uint32            `json:"-"`
-	SimCommits       uint32            `json:"-"`
-	SimRejects       uint32            `json:"-"`
-	SimLastState     int32             `json:"-"`
-	PreLoadSnapshot  *MachineSnapshot  `json:"pre_load_snapshot,omitempty"`
-	PostLoadSnapshot *MachineSnapshot  `json:"post_load_snapshot,omitempty"`
-	PostRunSnapshot  *MachineSnapshot  `json:"post_run_snapshot,omitempty"`
-	LoadDiffs        []SlotLoadDiff    `json:"load_diffs,omitempty"`
-	ReadbackVerified bool              `json:"readback_verified"`
+	Target           string           `json:"target"`
+	SimHWID          uint32           `json:"-"`
+	SimBRAM          []byte           `json:"-"`
+	SimEvents        uint32           `json:"-"`
+	SimCommits       uint32           `json:"-"`
+	SimRejects       uint32           `json:"-"`
+	SimLastState     int32            `json:"-"`
+	PreLoadSnapshot  *MachineSnapshot `json:"pre_load_snapshot,omitempty"`
+	PostLoadSnapshot *MachineSnapshot `json:"post_load_snapshot,omitempty"`
+	PostRunSnapshot  *MachineSnapshot `json:"post_run_snapshot,omitempty"`
+	LoadDiffs        []SlotLoadDiff   `json:"load_diffs,omitempty"`
+	ReadbackVerified bool             `json:"readback_verified"`
 }
 
 // NewMachineConnection creates a MachineConnection for `sim`, `pynq1`, `pynq2`, or an SSH host.

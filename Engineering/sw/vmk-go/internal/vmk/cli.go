@@ -96,6 +96,15 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 2
 	}
 
+	isPureConceptualExample := func(name string) bool {
+		switch name {
+		case "if", "sum", "nod", "factorial", "tachometer":
+			return true
+		default:
+			return false
+		}
+	}
+
 	// Built-in examples without custom --stdio stream
 	if exLower != "" && !stdioMode && programPath == "" {
 		if exLower == "all" {
@@ -118,6 +127,10 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			_, _ = fmt.Fprintf(stderr, "%v\n", err)
 			return 2
 		}
+		if mode == ModeConceptual && !isPureConceptualExample(exLower) {
+			txt = strings.ReplaceAll(txt, "Mode: bram64", "Mode: conceptual (descriptor-backed)")
+			data["mode"] = "conceptual (descriptor-backed)"
+		}
 		_, _ = fmt.Fprintln(stdout, txt)
 		if jsonOutPath != "" {
 			if err := writeJSONFile(jsonOutPath, data); err != nil {
@@ -131,8 +144,8 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 0
 	}
 
-	// Conceptual mode with --stdio
-	if mode == ModeConceptual {
+	// Pure Conceptual mode (if, sum, nod, factorial, tachometer) with --stdio
+	if mode == ModeConceptual && programPath == "" && (exLower == "" || isPureConceptualExample(exLower)) {
 		exName := exLower
 		if exName == "" {
 			exName = "sum"
@@ -260,6 +273,9 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		_, _ = fmt.Fprintf(stderr, "%v\n", err)
 		return 2
 	}
+	if mode == ModeConceptual {
+		eng.ModeLabel = "conceptual (descriptor-backed)"
+	}
 	eng.BreakOnReject = breakOnReject
 	eng.StopOnBreakpoint = stopOnBreakpoint
 	if watchCIDsStr != "" {
@@ -365,11 +381,11 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			finalStates[i] = eng.State[cid]
 		}
 		payload := map[string]any{
-			"version":   Version,
-			"mode":      ModeBRAM64,
-			"module":    eng.ModuleName,
-			"profile":   eng.Profile,
-			"target":    target,
+			"version": Version,
+			"mode":    ModeBRAM64,
+			"module":  eng.ModuleName,
+			"profile": eng.Profile,
+			"target":  target,
 			"telemetry": map[string]any{
 				"events_processed":     eng.EventsProcessed,
 				"commits":              eng.Commits,

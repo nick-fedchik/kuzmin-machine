@@ -1,6 +1,6 @@
 # cmd: vmk --mode bram64 --program Engineering/validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol --profile KPOL-CME-2 --stdio --render-tui-frame --target pynq2 --json-out Engineering/validation/kpol-cme/vmk-go-274/raw/pynq2_live_vmk_session.json
 # timestamp: 2026-11-18T11:50:09.838524+02:00
-# git_commit: 6616ab80dd196919980a6f1ba7f8c362a81bf525
+# git_commit: c366224485c8210784b1cba041832c24d7d666a9
 # host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
 # bench_lock: syscall.Flock(/tmp/km-bench.lock) acquired by vmk
 # evidence_kind: physical_hil_pynq_z1_vmk_go_pre_post_load_and_trace
@@ -43,7 +43,7 @@
    SRC 06 |         inv_contactor: Contactor_Interlock >= 0;
    SRC 07 |     }
    SRC 08 | }
-   SRC 09 | 
+   SRC 09 |
    SRC 10 | Solution BmsSafetyCascade {
    SRC 11 |     state Cell_Delta_mV: Int32 = 0;
    SRC 12 |     state Module_Thermal_Guard: Int32 = 0;

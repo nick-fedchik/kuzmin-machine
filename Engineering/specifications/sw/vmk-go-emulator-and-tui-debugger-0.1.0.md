@@ -1,6 +1,6 @@
 # Специфікація віртуальної машини Кузьміна (VMK) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`)
 
-* **Версія:** 1.0.0
+* **Версія:** 1.0.1
 * **Дата:** 2026-11-18
 * **Тип WP:** Specification
 * **Статус:** Запропоновано на затвердження власником (Proposed)
@@ -72,7 +72,7 @@ flowchart LR
 3. `nod` — реактивний алгоритм Евкліда `Nod(120, 6) = 6` (`19` реактивних віднімань + `1` крок згасання хвилі = `20` кроків оцінки, `58` тактів у `km_euclid_core.sv`);
 4. `factorial` — рекурсивний факторіал `Factorial(5) = 120` із масивом вибору `[ 0 1 ] { Factorial = 1 Exit }`;
 5. `tachometer` — клас `Tachometer` (`Revolutions`, `Distance`, `Speed` при імпульсах колеса `Tick` і таймері `_Tick`);
-6. `bms` — 4-концептний каскад захисту батареї BMS (`Cell_Delta_mV -> Module_Thermal_Guard -> Pack_Fault_Latch -> Contactor_Interlock`), а також профілі `increase`, `decrease` (`KPOL-CME-1`), `cascade` (`KPOL-CME-2`) та `auth` (`KPOL-AUTH`).
+6. `bms` — 4-концептний каскад захисту батареї BMS (`Cell_Delta_mV -> Module_Thermal_Guard -> Pack_Fault_Latch -> Contactor_Interlock`), а також профілі `increase`, `decrease` (`KPOL-CME-1`), `cascade` (`KPOL-CME-2`) та `auth` (`KPOL-AUTH`). При виклику цих дескрипторних прикладів із прапорцем `--mode conceptual` (зокрема з `--stdio`) вони прозоро виконуються на дескрипторному трасувальнику з маркуванням шапки `Mode: conceptual (descriptor-backed)`.
 
 ---
 
@@ -81,7 +81,7 @@ flowchart LR
 Реалізований у [`internal/vmk/snapshot.go`](../../sw/vmk-go/internal/vmk/snapshot.go) (`MachineConnection`):
 1. **Фаза `PRE-LOAD` (до внесення нової програми):**
    - При підключенні до симулятора (`--target sim`) або фізичної плати `PYNQ-Z1` (`--target pynq1|pynq2` під `syscall.Flock` на `/tmp/km-bench.lock` через SSH та C99 MMIO-зонд за адресою `0x40000000`) VMK спочатку вичитує `REG_ID (0x000)`, апаратні лічильники (`events`, `commits`, `rejects`, `last_state`, `dropped`) та всі `256` 32-бітних слів BRAM (`1024 B`).
-   - Будується `PreLoadSnapshot` із хешем `SHA-256` та топологією активних концептів до програмування (`PreLoadActiveConcepts / 64`).
+   - Будується `PreLoadSnapshot` із хешем `SHA-256` та топологією активних концептів до програмування (`PreLoadActiveConcepts / 64`). У симуляційному режимі (`--target sim`) для демонстраційних прикладів стан `PRE-LOAD` ініціалізується детерміновано: у `--mode conceptual` (`if`, `sum`, `nod`, `factorial`, `tachometer`) передіснують `3 / 64` віртуальні потокові концепти (`STDIN`, `STDOUT`, `STDERR`); у `--example bms` перед завантаженням BMS у симулятор завантажено 1-концептну програму `Increase.kpol` (`1 / 64`), щоб відтворити натурний стендовий перехід `1 / 64 -> 4 / 64`; у решті BRAM-прикладів (`increase`, `decrease`, `cascade`, `auth`) симулятор стартує з чистої нульової BRAM (`0 / 64`).
 2. **Фаза `POST-LOAD` та таблиця `Pre-Load vs Post-Load Diff`:**
    - Після запису 256 слів нової програми VMK виконує повне зворотне вичитування (`ReadbackVerified: 256/256 words OK`), класифікує слоти на `Entry`, `Internal`, `Leaf`, `Free` та порівнює всі 4 слова кожного слота (`W0`, `W1`, `W2`, `W3`) у `ComputePrePostLoadDiff`.
 3. **Обробка помилок зв'язку з ціллю:**
@@ -110,6 +110,7 @@ flowchart LR
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.1 | 2026-11-18 | За рецензією PR #275 (`claude-sonnet-5.5`, `N1..N6`): задокументовано виконання BRAM-прикладів (`bms`, `cascade`, `increase`, `decrease`, `auth`) у `--mode conceptual --stdio` як `conceptual (descriptor-backed)` та походження початкового стану `PRE-LOAD` у симуляторі (`3/64`, `1/64`, `0/64`) проти фізичної плати `PYNQ-Z1`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск специфікації двомодового емулятора VMK (`bram64` + `conceptual`) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.1.0`) за Issue #274. |
 
 ## Абревіатури та глосарій
