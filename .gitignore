@@ -8,3 +8,4 @@ build/
 /tmp/
 # VDA QMC prohibits redistribution of the locally obtained PAM.
 Automotive-SPICE-PAM-v41.pdf
+Engineering/sw/vmk-go/vmk

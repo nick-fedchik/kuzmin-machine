@@ -1,19 +1,19 @@
-# Посібник користувача VMK (Virtual Machine of Kuzmin) та 4-панельного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.2.0`)
+# Посібник користувача VMK (Virtual Machine of Kuzmin) та повноекранного інтерактивного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.3.0`)
 
-* **Версія:** 1.1.0
+* **Версія:** 1.2.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача
-* **Issue:** `Closes` [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
+* **Issue:** `Closes` [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) та [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280); пов'язані задачі [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Documentation Engineer).
-* **Цільовий модуль ПЗ:** [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) ([`cmd/vmk/main.go`](../sw/vmk-go/cmd/vmk/main.go), [`internal/vmk/`](../sw/vmk-go/internal/vmk/cli.go), [`examples/*.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), `go 1.22`+, `std` only).
-* **Нормативна специфікація та звіт верифікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) (`1.1.0`), [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.0`), [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../validation/kpol-cme/vmk-go-274/report.md) (`1.0.1`), [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../validation/kpol-cme/ekpol-278/report.md) (`1.0.0`).
+* **Цільовий модуль ПЗ:** [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) ([`cmd/vmk/main.go`](../sw/vmk-go/cmd/vmk/main.go), [`internal/vmk/tui_fullscreen.go`](../sw/vmk-go/internal/vmk/tui_fullscreen.go), [`examples/*.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), `go 1.22`+, `std` only).
+* **Нормативна специфікація та звіт верифікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) (`1.2.0`), [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../validation/kpol-cme/vmk-go-274/report.md) (`1.1.0`), [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
 
 ---
 
 ## Призначення
 
-Цей посібник призначений для системних, апаратних (FPGA/RTL) та вбудованих (C99/Go/Python) інженерів, дослідників реактивних обчислень та верифікаторів проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Документ покроково пояснює, як збирати та використовувати виконуваний бінарник **`vmk` (`VMK — Virtual Machine of Kuzmin v0.2.0`)**, розташований у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md).
+Цей посібник призначений для системних, апаратних (FPGA/RTL) та вбудованих (C99/Go/Python) інженерів, дослідників реактивних обчислень та верифікаторів проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Документ покроково пояснює, як збирати та використовувати виконуваний бінарник **`vmk` (`VMK — Virtual Machine of Kuzmin v0.3.0`)**, розташований у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md).
 
 ### Що таке VMK і яку задачу він вирішує
 
@@ -78,7 +78,7 @@ go build -o vmk ./cmd/vmk
 Вивід:
 
 ```text
-VMK (Virtual Machine of Kuzmin) v0.2.0
+VMK (Virtual Machine of Kuzmin) v0.3.0
 ```
 
 #### Крок 3. Миттєвий демонстраційний прогін обох режимів
@@ -203,13 +203,102 @@ go run ./cmd/vmk --mode bram64 \
 
 ---
 
-### 2.4. Покрокове налагодження в 4-панельному TUI-дебагері (`--tui` та `--render-tui-frame`)
+### 2.4. Повноекранний інтерактивний TUI-дебагер (`--tui`, `--tui-canvas`, `--render-fullscreen-tui`) та детермінований кадр (`--render-tui-frame`)
 
-TUI-дебагер VMK ([`internal/vmk/tui.go`](../sw/vmk-go/internal/vmk/tui.go)) має два режими відображення:
-1. **Детермінований 4-панельний ASCII-кадр (`--render-tui-frame`):** виводить повний знімок усіх 4 панелей у `stdout` без керівних послідовностей очищення екрана (ідеально підходить для CI-логів, звітів, `grep`/`diff` та перенаправлення у файл);
-2. **Інтерактивний покроковий термінальний режим (`--tui` або підкоманда `vmk tui`):** коли `stdin` і `stdout` є інтерактивним терміналом (`TTY`), запускає цикл живого покрокового керування хвилею подій.
+Починаючи з версії **`VMK v0.3.0`** ([`internal/vmk/tui_fullscreen.go`](../sw/vmk-go/internal/vmk/tui_fullscreen.go) та [`internal/vmk/tui.go`](../sw/vmk-go/internal/vmk/tui.go)), TUI-дебагер надає три взаємодоповнювальні режими візуалізації та керування:
+1. **Повноекранний інтерактивний TUI-дебагер у вікні термінала (`--tui` або `--tui-canvas` / підкоманда `vmk tui`):**
+   - При запуску на реальному терміналі (`TTY`) переводить екран у `alternate screen buffer` (`\x1b[?1049h\x1b[?25l`), вмикає `raw mode` клавіатури через системні виклики Linux `syscall.Syscall(SYS_IOCTL, TCGETS/TCSETS)` без жодних зовнішніх бібліотечних залежностей, автоматично визначає розмір вікна `(rows, cols)` через `TIOCGWINSZ` (за замовчуванням `36 × 124`) і гарантовано відновлює термінал при виході (`q`) або сигналах `SIGINT`/`SIGTERM`;
+   - Підтримує повноцінну навігацію стрілками (`↑`/`↓` або `j`/`k`, `←`/`→`, `PageUp`/`PageDown`, `Tab`) як для апаратно-точного режиму **`bram64`**, так і для концептуального режиму **`conceptual` / `EKPOL`**;
+2. **Одноразовий рендер повноекранного багатопанельного TUI-кадру (`--render-fullscreen-tui`):**
+   - Виводить у термінал або лог повноцінний псевдографічний (`┌─┬─┐│└─┴─┘`) екран із інспектором вибраного концепту без очікування клавіш у `stdin`;
+3. **Детермінований 4-панельний ASCII-кадр (`--render-tui-frame`):**
+   - Виводить плоский ASCII-знімок (`+---+---+`) для батч-тестів, CI-логів і `diff`.
 
-#### Команда запуску 4-панельного TUI-кадру
+#### Команда запуску повноекранного інтерактивного TUI-дебагера
+
+```bash
+cd Engineering/sw/vmk-go
+
+# 1. Інтерактивний повноекранний TUI-дебагер у вікні термінала (bram64 або conceptual)
+./vmk --tui --program examples/bms_safety_cascade.ekpol
+./vmk --tui --program examples/sum_autoreset.ekpol
+
+# 2. Миттєвий перегляд повноекранного багатопанельного полотна без блокування на stdin
+./vmk --example bms --render-fullscreen-tui
+```
+
+#### Компоновка повноекранного інтерфейсу (`Full-Screen Layout` у `tui_fullscreen.go`)
+
+```text
+ VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> POST-LOAD -> INTERACTIVE
+ Concepts: Active 4/64 (Pre-load: 1/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Events:14 | Commits:10 | Rejects:4 | Faults(_):1
+┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
+│ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
+│ >   C00 Cell_Delta_mV      W0=3(+3)    [CHGD]  ->…│ Topology & Role   : ENTRY (@stdin, @stdout) | Bank: 0                │
+│     C01 Module_Thermal_Gu… W0=3(+3)    [CHGD]  ->…│ State Evolution   : Pre-Load W0: 10 -> Post-Load W0: 0 -> Current W0…│
+│     C02 Pack_Fault_Latch   W0=0(-2)    [CHGD]  ->…│ Validity Bit (_)  : 1 (VALID)                                        │
+│     C03 Contactor_Interlo… W0=0(-10)   [CHGD]  No…│ BRAM Words (Hex)  : W0=0x00000003  W1=0x13880032  W2=0x01001305  W3=…│
+│                                                   │ Predicate (::)    : 50 <= param <= 5000 (assump_en=true, op=0x05)    │
+│                                                   │ Action (=>)       : W0' := W0 + 1 (act_op=0x01, W1_i32=327680050)    │
+│                                                   │ Big Dot Gate (•)  : cand >= 0 && !ovf32 (inv_en=true, hazard=0)      │
+│                                                   │ Subscription (W3) : -> C1 (Module_Thermal_Guard)                     │
+│                                                   │ Last Activity     : Step #11 (E5.0): param=250, valid=1 => COMMIT (W…│
+├───────────────────────────────────────────────────┴─ [3] CASCADE WAVE TRACE & PENDING EVENT QUEUE (n/Space: 1-Hop | s: Fu┤
+│ Pending Queue (0): (empty — press [e] to create/queue an event, or [n/Space] to pulse selected concept)                  │
+│ Step    │Dp│Concept        │Event     │Pre    │Predicate ::    │Candidate │Gate •       │Verdict         │Post   │Next   │
+│ E3.0#3  │0 │C00 Cell_Delta…│p=120,v=1 │W0=0,v…│50 <= param <= …│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C01  │
+│ E3.1#4  │1 │C01 Module_The…│p=1,v=1   │W0=0,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C02  │
+│ E3.2#5  │2 │C02 Pack_Fault…│p=1,v=1   │W0=2,v…│!(param < 1) [>…│W0' := W0…│cand >= 0 &&…│COMMIT*         │W0=1,v…│->C03  │
+│ E3.3#6  │3 │C03 Contactor_…│p=1,v=1   │W0=10,…│!(param == 2) […│W0' := pa…│cand >= 0 &&…│COMMIT*         │W0=1,v…│None   │
+├─ [4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR ────────────────────────────────────────────────┤
+│ STDIN  (06) : E2: C00(Cell_Delta_mV) <- param=0, valid=_ ; E3: C00(Cell_Delta_mV) <- param=120, valid=1                  │
+│ STDOUT (10) -> COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3)                                         │
+│ STDERR (04) -> REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1)                           │
+│ STATUS      : Ready. Use Up/Down to select concept, [e] New Event, [n/Space] 1-Hop, [s] Full Step, [d] Inspector/Source/…│
+│ KEYS: [↑/↓] Select Concept │ [e/Enter] New Event │ [n/Space] 1-Hop Wave │ [s] Full Step │ [f] Fault(_) │ [m] Modify W0/_…│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Верхній 2-рядковий інверсний статус-бар:**
+   - Відображає версію `VMK v0.3.0 FULL-SCREEN DEBUGGER`, ціль (`SIM` або `PYNQ2`), виконавчий режим і назву модуля, фазу життєвого циклу (`PRE-LOAD -> POST-LOAD -> INTERACTIVE`), баланс концептів (`Active K/64`, `Pre-load M/64`, `Changed Δ`, `Free F`, списки `Entry`, `Internal`, `Leaf`), розмір черги подій `Queue: Q pending` та лічильники `Events`, `Commits`, `Rejects`, `Faults(_)`.
+2. **Ліва верхня панель `[1] CONCEPTS` + Права верхня панель `[2] CONCEPT INSPECTOR / SOURCE / PRE-POST DIFF`:**
+   - У списку **`[1] CONCEPTS`** курсор `↑`/`↓` (або `j`/`k`) рухається по активних концептах (клавіша `a` перемикає між показом лише активних `K` концептів та всіх `64` слотів BRAM `C00..C63`). Зірочка `*` позначає встановлений `Watchpoint`, `[CHGD]` (зелений) — концепт змінив свій стан відносно `Post-Load`, `[_ FLT]` / `[_ UDF]` (червоний) — концепт перебуває у стані невизначеності `_`;
+   - У панелі **`[2] CONCEPT INSPECTOR`** автоматично відкривається детальна картка вибраного курсором концепту:
+     * `Concept ID & Name`, `Type` (`Int32`, `Float`, `U64`, `?`) та статус `Watch`;
+     * `Topology & Role` (`ENTRY`, `INTERNAL CASCADE`, `LEAF`, прагми `@stdin`, `@stdout`) і номер активного банку `Bank`;
+     * `State Evolution`: повний ланцюжок `Pre-Load W0 -> Post-Load W0 -> Current W0 (Δ)`;
+     * `Validity Bit (_)`: `1 (VALID)` або `_ (UNDEFINED / FAULT)`;
+     * `BRAM Words (Hex)`: шістнадцяткові значення `W0`, `W1`, `W2`, `W3`;
+     * `Predicate (::)`, `Action (=>)`, `Big Dot Gate (•)`, `Subscription (W3)` та `Last Activity` (останній крок хвилі, де цей концепт оцінювався);
+   - Натискання клавіші **`d`** циклічно перемикає панель `[2]` між карткою **`CONCEPT INSPECTOR`**, пронумерованим вихідним кодом **`SOURCE CODE (.ekpol / .kpol)`** та таблицею **`PRE-LOAD vs POST-LOAD DIFF`**!
+3. **Середня панель `[3] CASCADE WAVE TRACE & PENDING EVENT QUEUE`:**
+   - Верхній рядок панелі показує живу чергу запланованих подій **`Pending Queue`**, включно з внутрішніми каскадними переходами (`HOP d=1 C01(param=1,valid=1)`), які очікують на виконання під час покрокового мікро-трасування;
+   - Нижче розташована 11-колонкова таблиця виконаних кроків хвилі (`Step | Dp | Concept | Event | Pre | Predicate :: | Candidate | Gate • | Verdict | Post | Next`) з кольоровою підсвіткою вердиктів (`COMMIT` — зелений, `REJECT_GUARD` — жовтий, `REJECT_INVARIANT` / `REJECT_FAULT` — червоний) та прокруткою при фокусі `Tab`.
+4. **Нижня панель `[4] STDIO STREAMS & INTERACTIVE EVENT CREATOR`:**
+   - Показує живі потоки `STDIN`, `STDOUT` (зелений), `STDERR` (червоний), інформаційний рядок `STATUS`, панель гарячих клавіш `KEYS:` та вбудовані інтерактивні діалоги **Конструктора Подій (`[e]`)**, **Редактора Стану Концепту (`[m]`)** і **Довідки (`[?]`)**.
+
+#### Гарячі клавіші повноекранного TUI-дебагера (`VMK v0.3.0`)
+
+| Клавіша | Дія в повноекранному TUI-дебагері (`--tui` / `--tui-canvas`) |
+| :--- | :--- |
+| **`↑` / `↓`** або **`j` / `k`** | Вибір концепту в панелі `[1] CONCEPTS` (з миттєвим оновленням картки `CONCEPT INSPECTOR` праворуч) або вертикальна прокрутка активної панелі (`[2]`, `[3]`, `[4]`). |
+| **`PageUp` / `PageDown`** | Швидкий перехід на 5 позицій угору/вниз у списку концептів або в таблиці траси каскаду. |
+| **`Tab`** | Перемикання фокуса між 4 панелями: `[1] CONCEPTS` $\to$ `[2] INSPECTOR / SOURCE / DIFF` $\to$ `[3] CASCADE WAVE TRACE` $\to$ `[4] STDIO & EVENT BAR`. |
+| **`e`** або **`Enter`** | Відкрити інтерактивний **Конструктор Подій (`Manual Event Creator Dialog`)** для вибраного концепту: стрілки `←`/`→` змінюють цільовий концепт, `Tab` перемикає операцію (`1:Write/Stimulus(<-)`, `2:Fault/Undef(_)`, `3:Read(->)`, `4:Call(\|)`), з клавіатури вводиться числовий параметр (наприклад, `120`, `-10`, `250`), **`Enter`** виконує подію негайно, а **`+`** **додає подію в чергу `Pending Queue` без негайного виконання**, щоб пройти її покроково! |
+| **`n`** або **`Space`** | **Single Micro-Step (`1-Hop Wave`):** виконує **рівно один мікро-крок (хоп) хвилі каскаду**! Наприклад, для каскаду `C00 -> C01 -> C02 -> C03` перше натискання `Space` оцінює лише `C00` і кладе каскадну подію для підписника `C01` на початок видимої черги `Pending Queue`, щоб інженер бачив перестрибування хвилі по одному концепту за раз. |
+| **`s`** | **Full Event Step:** виконує наступну подію з черги `Pending Queue` разом із усім її каскадом до повної стабілізації хвилі. |
+| **`f`** | **Quick Fault (`_`):** миттєво інжектує подію зі станом невизначеності / збоєм датчика `_` (`param_valid = false`) у вибраний курсором концепт і перевіряє спрацювання `REJECT_FAULT`. |
+| **`m`** | **Modify Concept State (`What-If` редактор стану концепту):** відкриває діалог ручної зміни поточного значення `W0` вибраного концепту або перемикання його біта валідності `Valid (1 <-> _)` клавішею `Tab` чи `_` прямо під час сеансу дебагу. |
+| **`d`** | Циклічно перемикає праву верхню панель `[2]` між `CONCEPT INSPECTOR`, `SOURCE CODE (.ekpol / .kpol)` та `PRE-LOAD vs POST-LOAD DIFF`. |
+| **`a`** | Перемикає список `[1]` між показом лише активних концептів (`K`) та всіх `64` слотів BRAM (`C00..C63`). |
+| **`w`** | Встановити або зняти точку спостереження **`Watchpoint (*)`** на вибраному курсором концепті. |
+| **`r`** | **Reset to Post-Load:** скинути всі стани концептів `W0`, маску `ValidMask`, лічильники та чергу подій до початкового стану відразу після завантаження програми. |
+| **`?`** або **`h`** | Відкрити або закрити модальне вікно повної довідки гарячих клавіш (`Help Overlay`). |
+| **`q`** | Чистий вихід із дебагера з автоматичним відновленням екрана термінала. |
+
+#### Детермінований 4-панельний ASCII-кадр (`--render-tui-frame`) для пакетних перевірок
+
+Для автоматизованих скриптів і логів прапорець `--render-tui-frame` зберігає класичний плоский 4-панельний звіт:
 
 ```bash
 cd Engineering/sw/vmk-go
@@ -219,112 +308,9 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV _\nCell_Delta_mV 120\nCell_Delta_mV 180\
     --stdio --watch-cid 2,3 --break-on-reject --render-tui-frame
 ```
 
-#### Анатомія 4 панелей екрана TUI (реальний вивід)
-
-```text
-======================================================================================================================
- VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 | State: PRE-LOAD -> POST-LOAD -> RUNNING
- Concepts: Active: 4 / 64 (Pre-load: 0 / 64, Changed on load: 4, Free: 60) | Entry: [0] Internal: [1 2] Leaf: [3]
- Counters: Events=13 | Commits=10 | Rejects=3 | Faults(_)=1 | Dropped=0 | Bank=0 | LastState=3
-======================================================================================================================
- [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
-+-----+----------------------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------------------------+
-| CID | Name                 | Type  | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::         | Action        | Gate •            | Subscriber                   |
-+-----+----------------------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------------------------+
-| C00 | Cell_Delta_mV        | Int32 | _ (empty)   | 0            | 3 (+3)          | 1        | 50 <= param <= 5000  | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C1 (Module_Thermal_Guard) |
-| C01 | Module_Thermal_Guard | Int32 | _ (empty)   | 0            | 3 (+3)          | 1        | !(param < 1) [>= 1]  | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C2 (Pack_Fault_Latch)     |
-| C02 | Pack_Fault_Latch     | Int32 | _ (empty)   | 2            | 0 (-2)          | 1        | !(param < 1) [>= 1]  | W0' := W0 - 1 | cand >= 0 && !ovf32 | -> C3 (Contactor_Interlock)  |
-| C03 | Contactor_Interlock  | Int32 | _ (empty)   | 10           | 0 (-10)         | 1        | !(param == 2) [!= 2] | W0' := param  | cand >= 0 && !ovf32 | None (0)                     |
-+-----+----------------------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------------------------+
-----------------------------------------------------------------------------------------------------------------------
- [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
-   SRC 01 | Problem BmsSafetyCascade {
-   SRC 02 |     Invariants {
-   SRC 03 |         inv_cell_delta: Cell_Delta_mV >= 0;
-   SRC 04 |         inv_mod_thermal: Module_Thermal_Guard >= 0;
-   SRC 05 |         inv_pack_latch: Pack_Fault_Latch >= 0;
-   SRC 06 |         inv_contactor: Contactor_Interlock >= 0;
-   SRC 07 |     }
-   SRC 08 | }
-   SRC 09 |
-   SRC 10 | Solution BmsSafetyCascade {
-   SRC 11 |     state Cell_Delta_mV: Int32 = 0;
-   SRC 12 |     state Module_Thermal_Guard: Int32 = 0;
-   STDIN  (5 events) : (C0:15,valid=1), (C0:0,valid=_), (C0:120,valid=1), (C0:180,valid=1), (C0:250,valid=1)
-   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 1 (pre=0, depth=0, param=120, valid=1)
-   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 1 (pre=0, depth=1, param=1, valid=1)
-   STDOUT -> COMMIT: Pack_Fault_Latch[cid=2] = 1 (pre=2, depth=2, param=1, valid=1)
-   STDOUT -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1, valid=1)
-   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 2 (pre=1, depth=0, param=180, valid=1)
-   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 2 (pre=1, depth=1, param=2, valid=1)
-   STDOUT -> COMMIT: Pack_Fault_Latch[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)
-   STDOUT -> COMMIT: Contactor_Interlock[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)
-   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 3 (pre=2, depth=0, param=250, valid=1)
-   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3, valid=1)
-   STDERR -> REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=15, valid=1, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>true)
-   STDERR -> REJECT_FAULT: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=0, valid=_, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>false)
-   STDERR -> REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>true, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
-----------------------------------------------------------------------------------------------------------------------
- [PANEL 3: CASCADE WAVE STEP TRACE]
-=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 13 steps) ===
-+------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
-| Step       | Depth | CID (Name)                 | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                     | Verdict                                                                            | Post-State    | Next Subscriber            |
-+------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
-| E0.0 (#0)  | 0     | C00 (Cell_Delta_mV)        | param=15, valid=1   | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | REJECT_GUARD *BREAK_ON_REJECT(REJECT_GUARD)                                        | W0=0, valid=1 | None                       |
-| E1.0 (#1)  | 0     | C00 (Cell_Delta_mV)        | param=0, valid=_    | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => false | REJECT_FAULT *BREAK_ON_REJECT(REJECT_FAULT)                                        | W0=0, valid=1 | None                       |
-| E2.0 (#2)  | 0     | C00 (Cell_Delta_mV)        | param=120, valid=1  | W0=0, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C01 (Module_Thermal_Guard) |
-| E2.1 (#3)  | 1     | C01 (Module_Thermal_Guard) | param=1, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C02 (Pack_Fault_Latch)     |
-| E2.2 (#4)  | 2     | C02 (Pack_Fault_Latch)     | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(2->1)                          | W0=1, valid=1 | C03 (Contactor_Interlock)  |
-| E2.3 (#5)  | 3     | C03 (Contactor_Interlock)  | param=1, valid=1    | W0=10, valid=1 | !(param == 2) [!= 2] => true | W0' := param => 1   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(10->1)                      | W0=1, valid=1 | None                       |
-| E3.0 (#6)  | 0     | C00 (Cell_Delta_mV)        | param=180, valid=1  | W0=1, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2)                                                         | W0=2, valid=1 | C01 (Module_Thermal_Guard) |
-| E3.1 (#7)  | 1     | C01 (Module_Thermal_Guard) | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2)                                                         | W0=2, valid=1 | C02 (Pack_Fault_Latch)     |
-| E3.2 (#8)  | 2     | C02 (Pack_Fault_Latch)     | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(1->0)                          | W0=0, valid=1 | C03 (Contactor_Interlock)  |
-| E3.3 (#9)  | 3     | C03 (Contactor_Interlock)  | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 0   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(1->0)                       | W0=0, valid=1 | None                       |
-| E4.0 (#10) | 0     | C00 (Cell_Delta_mV)        | param=250, valid=1  | W0=2, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C01 (Module_Thermal_Guard) |
-| E4.1 (#11) | 1     | C01 (Module_Thermal_Guard) | param=3, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C02 (Pack_Fault_Latch)     |
-| E4.2 (#12) | 2     | C02 (Pack_Fault_Latch)     | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
-+------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
-======================================================================================================================
- KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
-======================================================================================================================
-```
-
-1. **Верхній статус-бар машини та лічильників:**
-   - Показує ціль (`Target: SIM` або `PYNQ2 (0x4B504D43 'KPMC')`), режим (`bram64` / `conceptual`), поточну фазу (`PRE-LOAD -> POST-LOAD -> RUNNING | INTERACTIVE | COMPLETED`);
-   - Виводить баланс слотів концептів: `Active: 4 / 64 (Pre-load: 0 / 64, Changed on load: 4, Free: 60) | Entry: [0] Internal: [1 2] Leaf: [3]`;
-   - Виводить лічильники виконання: `Events=13 | Commits=10 | Rejects=3 | Faults(_)=1 | Dropped=0 | Bank=0 | LastState=3`.
-2. **Панель 1 (`[PANEL 1: CONCEPT TABLE]`):**
-   - Одночасно показує для кожного активного концепту **три стани**: `Pre-Load W0` (що було в слоті до програмування), `Post-Load W0` (початковий стан після завантаження програми) та `Current W0 (Δ)` (поточний стан разом із приростом відносно `Post-Load`, наприклад `3 (+3)` або `0 (-10)`), а також біт `Valid(_)`, умову `Predicate ::`, дію `Action`, інваріант `Gate •` і підписника `Subscriber`.
-3. **Панель 2 (`[PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS]`):**
-   - Відображає пронумеровані рядки вихідної програми `.kpol` і живу стрічку трьох потоків: `STDIN` (подані зовнішні події), `STDOUT` (підтверджені `COMMIT` / `READ`) та `STDERR` (відхилені кроки `REJECT_GUARD`, `REJECT_INVARIANT`, `REJECT_FAULT`).
-4. **Панель 3 (`[PANEL 3: CASCADE WAVE STEP TRACE]`):**
-   - Містить 10-колонкову таблицю покрокового проходження хвилі подій:
-     * `Step` — ідентифікатор `E<НомерЗовнішньоїПодії>.<КрокУсерединіХвилі> (#<ГлобальнийІндекс>)`;
-     * `Depth` — глибина каскаду (`0` для зовнішньої події, `1, 2, 3...` для внутрішніх переходів `on change(...)`);
-     * `CID (Name)` — слот і назва концепту;
-     * `Event(param, valid)` — параметр події та його визначеність (`1` або `_`);
-     * `Pre-State` — стан `W0` та `valid` до оцінки кроку;
-     * `Predicate ::` — формула вхідного охоронця та булевий результат (`=> true` або `=> false`);
-     * `Candidate` — формула дії та обчислене значення-кандидат `W0'` (із позначкою `[OVF!]` у разі знакового 32-бітного переповнення);
-     * `Gate •` — формула вентиля інваріанта Великої Крапки та результат перевірки (`=> true` або `=> false`);
-     * `Verdict` — підсумковий вердикт (`COMMIT`, `SUPPRESSED_SELF`, `REJECT_GUARD`, `REJECT_INVARIANT`, `REJECT_FAULT`) і маркери спрацьованих точок спостереження (`*WATCH_CID(...)`, `*BREAK_ON_REJECT(...)`, `*STATE_CHANGE(...)`);
-     * `Post-State` та `Next Subscriber` — підсумковий стан концепту і наступний концепт, поставлений у чергу каскаду (`None`, якщо хвиля загасла або була відхилена).
-
-#### Гарячі клавіші інтерактивного режиму (`--tui`)
-
-Під час запуску в інтерактивному терміналі (`./vmk --mode bram64 --example bms --trace-events "0:15,0:120,0:180" --tui`) у нижньому рядку працює командний запит `vmk-tui [s/i/f/r/q]>`:
-
-| Клавіша / команда | Дія в інтерактивному TUI-дебагері |
-| :--- | :--- |
-| **`s`** або **`Enter`** | Виконати наступну подію з черги `--trace-events` і перемалювати всі 4 панелі каскаду. |
-| **`i <подія>`** | Ввести нову подію в `STDIN` вручну (наприклад, `i 120`, `i Cell_Delta_mV 180`, `i 0:250` або `i _`). |
-| **`f`** | Інжектувати апаратну помилку датчика / стан невизначеності `_` (`param_valid = false`) у кореневий концепт і перевірити спрацювання `REJECT_FAULT`. |
-| **`r`** | Перезавантажити (`Reset`) стани `W0`, маску `ValidMask` і обидва банки `Bank 0 / Bank 1` до чистого стану `POST-LOAD` та відновити початкову чергу подій. |
-| **`q`** | Завершити інтерактивну сесію та вивести фінальний знімок `COMPLETED`. |
-
 #### Точки спостереження та зупинки (`Watchpoints & Breakpoints`)
 
-* `--watch-cid 0,2,3` — відстежує всі звернення до перелічених слотів `CID` і позначає їх у колонці `Verdict` маркером `*WATCH_CID(C2:Pack_Fault_Latch)` та в підсумковому списку `Watchpoints / Breakpoints Triggered`.
+* `--watch-cid 0,2,3` — відстежує всі звернення до перелічених слотів `CID` і позначає їх у колонці `Verdict` маркером `*` (`*WATCH_CID(C2:Pack_Fault_Latch)`) та в підсумковому списку `Watchpoints / Breakpoints Triggered`. У повноекранному TUI точка спостереження також миттєво вмикається/вимикається клавішею **`w`** на вибраному концепті.
 * `--break-on-reject` — генерує спрацювання точки зупинки `*BREAK_ON_REJECT(<Verdict>)` щоразу, коли будь-який концепт відхиляє подію (`REJECT_GUARD`, `REJECT_INVARIANT` або `REJECT_FAULT`).
 * `--stop-on-breakpoint` — негайно зупиняє подальше просування хвилі каскаду на першому ж кроці, де спрацював `Watchpoint` або `Breakpoint` (`HaltedOnBreakpoint = true`).
 
@@ -517,19 +503,21 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 | `--dump-concepts` | Булевий прапорець | `false` | Вивести розшифровану таблицю дескрипторів BRAM (`W0`, `Valid(_)`, `W1`, `W2`, `W3`) для активних концептів. |
 | `--stdio` | Булевий прапорець | `false` | Читати події/команди з `stdin`, направляти `COMMIT`/`READ` у `stdout`, а всі `REJECT_*` — у `stderr`. |
 | `--fail-on-reject` (аліас `--exit-on-reject`) | Булевий прапорець | `false` | Завершувати процес із кодом виходу `1`, якщо під час виконання відбувся хоча б один `REJECT_*` (для CI/CD). |
-| `--tui` (або підкоманда `tui`) | Булевий прапорець | `false` | Запустити 4-панельний TUI-дебагер (інтерактивний цикл `s/i/f/r/q`, якщо підключено до `TTY`, або детермінований кадр). |
+| `--tui` (або підкоманда `tui`) | Булевий прапорець | `false` | Запустити повноекранний інтерактивний TUI-дебагер у вікні термінала (`alternate screen`, `raw mode` клавіатури, навігація `↑/↓`, `Concept Inspector`, `Event Creator [e]`, `1-Hop [n/Space]`). |
+| `--tui-canvas` (або `--tui-Canvas`) | Булевий прапорець | `false` | Запустити повноекранний TUI-дебагер у режимі полотна (`RunFullScreenTUI`), зокрема для автоматизованого покрокового керування через потік клавіш у тестах. |
+| `--render-fullscreen-tui` | Булевий прапорець | `false` | Одноразово відрендерити повноекранне багатопанельне псевдографічне (`┌─┬─┐`) полотно TUI з інспектором вибраного концепту без очікування вводу. |
 | `--render-tui-frame` | Булевий прапорець | `false` | Примусово вивести детермінований 4-панельний ASCII-кадр TUI у `stdout` без інтерактивного очікування клавіш. |
 | `--watch-cid` | `<cids>` (наприклад, `"0,2,3"`) | `""` | Список слотів `CID` через кому, на яких встановлюються точки спостереження (`*WATCH_CID`). |
 | `--break-on-reject` | Булевий прапорець | `false` | Встановити точку спрацювання (`*BREAK_ON_REJECT`) на будь-яку відмову охоронця, інваріанта чи невизначеності. |
 | `--stop-on-breakpoint` | Булевий прапорець | `false` | Негайно зупиняти виконання хвилі подій при першому спрацюванні `Watchpoint` або `Breakpoint`. |
 | `--json-out` | `<шлях до .json>` | `""` | Записати повний структурований звіт сесії (`pre_load`, `post_load`, `load_diffs`, `telemetry`, `steps`, `stdio`, `pynq_hw_report`) у JSON-файл. |
-| `--version` (або `-v`, `version`) | Булевий прапорець | `false` | Вивести версію `VMK (Virtual Machine of Kuzmin) v0.2.0` та завершити роботу з кодом `0`. |
+| `--version` (або `-v`, `version`) | Булевий прапорець | `false` | Вивести версію `VMK (Virtual Machine of Kuzmin) v0.3.0` та завершити роботу з кодом `0`. |
 
 ---
 
 ### 2.9. Ергономічна мова `EKPOL 0.1.0` (`.ekpol`): написання програм у символьній та ключовій нотаціях і двостороння трансляція (`--to-ekpol` / `--to-kpol`)
 
-Починаючи з версії `v0.2.0` ([Issue #278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [специфікація `ekpol-specification-0.1.0.md`](../specifications/kpol/ekpol-specification-0.1.0.md)), поруч із класичними профілями `KPOL-CME-1`, `KPOL-CME-2` та `KPOL-AUTH` підтримується ергономічна мова **`EKPOL 0.1.0` (`Ergonomic KPOL`, файли `.ekpol`)**. Вона дозволяє описувати концепти в чистому 7-бітному ASCII без спецсимволів клавіатури і без багатослівного дублювання між секціями `Problem / Solution / Proof`, генеруючи **100% побітово ідентичний 1024-байтний образ BRAM (`SHA-256`)**, C99-код (`--emit-c99`) та Z3-сертифікат (`--emit-z3-cert`).
+Починаючи з версії `v0.2.0` ([Issue #278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [специфікація `ekpol-specification.md`](../specifications/kpol/ekpol-specification.md)), поруч із класичними профілями `KPOL-CME-1`, `KPOL-CME-2` та `KPOL-AUTH` підтримується ергономічна мова **`EKPOL 0.1.0` (`Ergonomic KPOL`, файли `.ekpol`)**. Вона дозволяє описувати концепти в чистому 7-бітному ASCII без спецсимволів клавіатури і без багатослівного дублювання між секціями `Problem / Solution / Proof`, генеруючи **100% побітово ідентичний 1024-байтний образ BRAM (`SHA-256`)**, C99-код (`--emit-c99`) та Z3-сертифікат (`--emit-z3-cert`).
 
 #### 1. Дві взаємозамінні нотації `EKPOL`: символьна (`symbolic`) та ключова (`keyword`)
 
@@ -596,7 +584,7 @@ rm -f bms.bin bms_safety.c bms_z3.json
 ## Обмеження
 
 1. **Атрибуція та розмежування з первинними авторськими джерелами (`AGENTS.md §6.1`):**
-   * Автор концепції Машини Кузьміна — **Михайло Ювеналійович Кузьмін** (первинні матеріали у [`Research/sources/`](../../Research/sources/README.md)). Програмний модуль [`Engineering/sw/vmk-go/`](../sw/vmk-go/go.mod), специфікація [`vmk-go-emulator-and-tui-debugger-0.1.0.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) та цей посібник є похідними інженерними напрацюваннями проєкту (М. Федчик, інженерні агенти) і не приписуються Автору концепції.
+   * Автор концепції Машини Кузьміна — **Михайло Ювеналійович Кузьмін** (первинні матеріали у [`Research/sources/`](../../Research/sources/README.md)). Програмний модуль [`Engineering/sw/vmk-go/`](../sw/vmk-go/go.mod), специфікація [`vmk-go-emulator-and-tui-debugger.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) та цей посібник є похідними інженерними напрацюваннями проєкту (М. Федчик, інженерні агенти) і не приписуються Автору концепції.
 2. **Межа між концептуальним режимом (`--mode conceptual`) та апаратним конвеєром `CME-RAW-1` (`--mode bram64`):**
    * Апаратний конвеєр `CFG-P` (`kpol_bram_pipeline_axi.sv`) та його двобанкова версія `CFG-P-HA` (`kpol_bram_pipeline_axi_ha.sv`) оперують 16-байтними дескрипторами `CME-RAW-1` над 32-бітними цілими `Int32` та вимагають ациклічності графа підписок (`DAG`).
    * Рекурсивні й циклічні конструкції (`Nod(120, 6)`, `Factorial(5)`), тип `Float64`, пост-адресне скидання після читання (`→ • Sum = 0`) та клас `Tachometer` виконуються у концептуальній віртуальній машині `--mode conceptual` і не транслюються в 16-байтний слот `CME-RAW-1`.
@@ -613,6 +601,7 @@ rm -f bms.bin bms_safety.c bms_z3.json
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.2.0 | 2026-11-18 | #280: оновлено під `VMK v0.3.0` та повноекранний інтерактивний TUI-дебагер (`internal/vmk/tui_fullscreen.go`, `--tui`, `--tui-canvas`, `--render-fullscreen-tui`), описано навігацію по концептах (`↑/↓`, `Tab`), картку `CONCEPT INSPECTOR`, діалог ручного створення подій (`[e]` та `+` у чергу), покроковий мікро-хоп хвилі (`[n]` / `Space`), ручне редагування стану концепту (`[m]`) та перемикання `Inspector / Source / Pre-Post Diff` (`[d]`). |
 | 1.1.0 | 2026-11-18 | #278: оновлено під `VMK v0.2.0` та мову `EKPOL 0.1.0` (додано §2.9 про символьну та ключову нотації `.ekpol`, каталог `examples/*.ekpol` і прапорці двосторонньої трансляції `--to-kpol`, `--to-ekpol`, `--ekpol-style symbolic\|keyword`). |
 | 1.0.1 | 2026-11-18 | Ураховано всі 5 зауважень незалежної рецензії `claude-sonnet-5.5` у PR #277 (`F1..F5`): виправлено відносні шляхи `../../validation/...` у командах запуску з `Engineering/sw/vmk-go` (`F1`); винесено PYNQ-драйвер у `internal/vmk/pynq.go` з безпечною передачею `PYNQ_SUDO_PASS` через `stdin` (`sudo -S -p ''`) або `sudo -n` без інтерполяції в оболонку та замінено пароль на плейсхолдер `<ваш_пароль_sudo>` (`F2, F4`); показано роздільний вивід потоків `stdout` і `stderr` у прикладі `sum --stdio` (`F3`); уточнено атрибуцію `19` реактивних віднімань у VMK проти `58` тактів спеціалізованого RTL-ядра `km_euclid_core.sv` у симуляції `iverilog` і звірено всі фінальні стани таблиці §2.6 із `vmk --example all` (`F5`). |
 | 1.0.0 | 2026-11-18 | Перша редакція практичного Посібника користувача VMK (`Virtual Machine of Kuzmin v0.1.0`) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go/`) за Issue #276. |

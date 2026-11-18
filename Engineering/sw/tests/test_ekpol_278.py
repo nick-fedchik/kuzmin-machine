@@ -47,7 +47,7 @@ INC_KPOL = REPO_ROOT / "Engineering" / "hw" / "tests" / "kpol_bram_pipeline_incr
 DEC_KPOL = REPO_ROOT / "Engineering" / "hw" / "tests" / "kpol_bram_pipeline_decrease.kpol"
 BMS_KPOL = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "c99-emitter-270" / "bms_safety_cascade.kpol"
 
-SPEC_EKPOL_MD = REPO_ROOT / "Engineering" / "specifications" / "kpol" / "ekpol-specification-0.1.0.md"
+SPEC_EKPOL_MD = REPO_ROOT / "Engineering" / "specifications" / "kpol" / "ekpol-specification.md"
 REPORT_EKPOL_MD = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "ekpol-278" / "report.md"
 RAW_EKPOL_DIR = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "ekpol-278" / "raw"
 
@@ -156,7 +156,7 @@ def test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go():
     with _workspace_scratch_dir("roundtrip") as scratch:
         vmk_bin = _build_vmk_binary(scratch)
 
-        # Check VMK version is v0.2.0
+        # Check VMK version is v0.3.0
         ver_res = subprocess.run(
             [str(vmk_bin), "--version"],
             env=_go_env(scratch),
@@ -164,7 +164,7 @@ def test_ekpol_bit_identical_bram_and_bidirectional_roundtrip_python_and_go():
             capture_output=True,
             text=True,
         )
-        assert ver_res.stdout.strip() == "VMK (Virtual Machine of Kuzmin) v0.2.0"
+        assert ver_res.stdout.strip() == "VMK (Virtual Machine of Kuzmin) v0.3.0"
 
         for name, (kpol_src, cme_prof, ekpol_example_path) in classic_sources.items():
             assert ekpol_example_path.is_file(), f"Missing canonical example {ekpol_example_path}"
@@ -354,7 +354,7 @@ def test_all_nine_ekpol_examples_in_vmk_v020():
                 capture_output=True,
                 text=True,
             )
-            assert "VMK (Virtual Machine of Kuzmin) v0.2.0" in res.stdout
+            assert "VMK (Virtual Machine of Kuzmin) v0.3.0" in res.stdout
             payload = json.loads(json_out.read_text(encoding="utf-8"))
             assert payload["mode"] == "conceptual"
             assert payload["profile"] == "EKPOL"
@@ -466,7 +466,7 @@ def test_mutants_m1_to_m5_all_killed():
 
 
 def test_ekpol_spec_report_raw_provenance_and_wp_index():
-    """Verify `ekpol-specification-0.1.0.md`, `ekpol-278/report.md`, raw logs provenance, and `wp-index.json`."""
+    """Verify `ekpol-specification.md`, `ekpol-278/report.md`, raw logs provenance, and `wp-index.json`."""
     assert SPEC_EKPOL_MD.is_file(), f"Missing {SPEC_EKPOL_MD}"
     assert REPORT_EKPOL_MD.is_file(), f"Missing {REPORT_EKPOL_MD}"
     spec_txt = SPEC_EKPOL_MD.read_text(encoding="utf-8")
@@ -513,7 +513,7 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
 
     wp_index = json.loads((REPO_ROOT / "Project" / "registers" / "wp-index.json").read_text(encoding="utf-8"))
     by_path = {e["path"]: e for e in wp_index["entries"]}
-    assert by_path.get("Engineering/specifications/kpol/ekpol-specification-0.1.0.md", {}).get("wp_type") == "Specification"
+    assert by_path.get("Engineering/specifications/kpol/ekpol-specification.md", {}).get("wp_type") == "Specification"
     assert by_path.get("Engineering/validation/kpol-cme/ekpol-278/report.md", {}).get("wp_type") == "Report"
     assert by_path.get("Engineering/sw/kpol-ref/ekpol_frontend.py", {}).get("wp_type") == "Source Code"
     assert by_path.get("Engineering/sw/vmk-go/internal/vmk/ekpol.go", {}).get("wp_type") == "Source Code"

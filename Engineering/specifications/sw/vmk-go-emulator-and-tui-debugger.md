@@ -1,14 +1,14 @@
-# Специфікація віртуальної машини Кузьміна (VMK) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.2.0`)
+# Специфікація віртуальної машини Кузьміна (VMK) та повноекранного TUI-дебагера на Go (`Engineering/sw/vmk-go`, SemVer `0.3.0`)
 
-* **Версія:** 1.1.0
+* **Версія:** 1.2.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Specification
 * **Статус:** Запропоновано на затвердження власником (Proposed)
 * **ASPICE 4.0 процеси:** `SWE.1` (Software Requirements Analysis), `SWE.2` (Software Architectural Design), `SWE.3` (Software Detailed Design and Unit Construction)
-* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
+* **Issue:** `Closes` [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) та [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Architect).
-* **Цільовий програмний модуль та посібник:** [`Engineering/sw/vmk-go/`](../../sw/vmk-go/README.md) (`cmd/vmk`, `internal/vmk`, `examples/*.ekpol`, Go `1.22`+, виключно стандартна бібліотека `std`), [Посібник користувача VMK `1.1.0`](../../guides/vmk-users-guide.md), [Специфікація `EKPOL 0.1.0`](../kpol/ekpol-specification-0.1.0.md).
-* **Верифікація:** [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go), [`Engineering/sw/tests/test_vmk_go_274.py`](../../sw/tests/test_vmk_go_274.py), [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), звіти [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md) та [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md).
+* **Цільовий програмний модуль та посібник:** [`Engineering/sw/vmk-go/`](../../sw/vmk-go/README.md) (`cmd/vmk`, `internal/vmk`, `examples/*.ekpol`, Go `1.22`+, виключно стандартна бібліотека `std`), [Посібник користувача VMK `1.2.0`](../../guides/vmk-users-guide.md), [Специфікація `EKPOL 0.1.0`](../kpol/ekpol-specification.md).
+* **Верифікація:** [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go), [`Engineering/sw/tests/test_vmk_go_274.py`](../../sw/tests/test_vmk_go_274.py), [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), звіти [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md) (`1.1.0`) та [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
 
 ---
 
@@ -97,12 +97,17 @@ flowchart LR
 - Маршрутизує всі підтверджені переходи та читання у `stdout` (`COMMIT: <Name>[cid=...] = <val> ...` або `READ: <Name> = <val>`), а всі відмови охоронців, інваріанта чи невизначеності (`REJECT_GUARD`, `REJECT_INVARIANT`, `REJECT_FAULT`) — у `stderr`.
 - За наявності прапорця `--fail-on-reject` (або `--exit-on-reject`) повертає код виходу `1`, якщо під час сесії відбувся хоча б один `REJECT_*`.
 
-### 4.2. 4-панельний TUI-дебагер (`--tui`, `--render-tui-frame`)
-Формує детермінований 4-панельний кадр (`RenderBRAM64TUIFrame` / `RenderConceptualTUIFrame`) та інтерактивний цикл керування (`s` Step, `i` STDIN, `f` Fault `_`, `r` Reload, `q` Quit):
-1. **Шапка машини:** версія `VMK (Virtual Machine of Kuzmin) v0.1.0`, ціль (`SIM` / `PYNQ2`), режим (`bram64` / `conceptual`), стан `PRE-LOAD -> POST-LOAD -> RUNNING`, лічильники концептів (`Active: K / 64`, `Pre-load: M / 64`, `Changed on load: Δ`, `Free: 64 - K`, `Entry / Internal / Leaf`) та телеметрія (`Events`, `Commits`, `Rejects`, `Faults(_)`).
-2. **Панель 1 (`CONCEPT TABLE`):** таблиця концептів (`CID | Name | Type | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate :: | Action | Gate • | Subscriber`).
-3. **Панель 2 (`PROGRAM SOURCE CODE & LIVE STDIO STREAMS`):** вихідний код програми та живі потоки `STDIN`, `STDOUT`, `STDERR`.
-4. **Панель 3 (`CASCADE WAVE STEP TRACE`):** покрокова 10-колонкова таблиця трасування хвилі подій (`Step | Depth | CID (Name) | Event(param, valid) | Pre-State | Predicate :: | Candidate | Gate • | Verdict | Post-State | Next Subscriber`) та спрацьовані `Watchpoints / Breakpoints`.
+### 4.2. Повноекранний інтерактивний TUI-дебагер (`tui_fullscreen.go`: `--tui`, `--tui-canvas`, `--render-fullscreen-tui`) та детермінований 4-панельний рендер (`tui.go`: `--render-tui-frame`)
+У версії `VMK v0.3.0` реалізовано повноцінний повноекранний TUI-дебагер у [`internal/vmk/tui_fullscreen.go`](../../sw/vmk-go/internal/vmk/tui_fullscreen.go), який працює однаково для обох режимів (`bram64` та `conceptual` / `EKPOL`) без зовнішніх залежностей:
+1. **Термінальний драйвер (`raw mode` + `alternate screen`):**
+   - Керування терміналом через Linux `syscall.Syscall(SYS_IOCTL, fd, TCGETS/TCSETS)` (`EnableRawTerminal`), визначення розміру вікна `(rows, cols)` через `TIOCGWINSZ` (`GetTerminalSize`, за замовчуванням `36 × 124`), перехід у `alternate screen buffer` (`\x1b[?1049h\x1b[?25l`) з гарантованим відновленням при виході або сигналах `SIGINT`/`SIGTERM`, декодування керуючих послідовностей клавіш (`↑`, `↓`, `←`, `→`, `PageUp`, `PageDown`, `Tab`, `Enter`, `Space`, `Backspace`, `Esc`).
+2. **Чотири інтерактивні вікна з фокусом (`Tab`) і прокруткою (`↑/↓`):**
+   - **Верхній 2-рядковий статус-бар:** версія `VMK v0.3.0 FULL-SCREEN DEBUGGER`, ціль, режим, фаза `PRE-LOAD -> POST-LOAD -> INTERACTIVE`, баланс концептів (`Active K/64`, `Pre-load M/64`, `Changed Δ`, `Free F`, `Entry / Internal / Leaf`), черга `Queue: Q pending` та лічильники `Events`, `Commits`, `Rejects`, `Faults(_)`.
+   - **Панель `[1] CONCEPTS` + Панель `[2] CONCEPT INSPECTOR / SOURCE / PRE-POST DIFF`:** навігація курсором по концептах (`↑/↓`, `a` для перемикання активних `K` або всіх `64` слотів, `w` для `Watchpoint *`), детальна картка вибраного концепту (`Pre-Load -> Post-Load -> Current W0`, `Valid (_)`, `W0..W3 hex`, `::`, дія `=>`, вентиль `•`, підписник `W3`, `Last Activity`) та перемикання клавішею `d` між `Concept Inspector`, `Source Code` і `Pre-Load vs Post-Load Diff`.
+   - **Панель `[3] CASCADE WAVE TRACE & PENDING EVENT QUEUE`:** відображення видимої черги запланованих подій та проміжних каскадних хопів (`Pending Queue`) і 11-колонкової таблиці трасування хвилі подій.
+   - **Панель `[4] STDIO STREAMS & INTERACTIVE EVENT CREATOR`:** живі потоки `STDIN / STDOUT / STDERR` та модальні діалоги ручного створення подій (`[e]`: вибір концепту `←/→`, операції `Write <-`, `Fault _`, `Read ->`, `Call |`, негайне виконання `Enter` або постановка в чергу `+`), покрокового мікро-хопу хвилі (`[n]` / `Space` через `BRAM64Engine.StepSingleHop`), повного кроку події (`[s]`), інжекції помилки `_` (`[f]`), ручної зміни стану концепту `W0 / _` (`[m]` через `ModifyConceptState` / `ModifySlotState`), скидання до `Post-Load` (`[r]`), довідки (`[?]`) та виходу (`[q]`).
+3. **Детермінований 4-панельний ASCII-кадр (`--render-tui-frame`):**
+   - Зберігає плоский 4-панельний звіт (`RenderBRAM64TUIFrame` / `RenderConceptualTUIFrame`) для пакетних CI-перевірок.
 
 ---
 
@@ -110,6 +115,7 @@ flowchart LR
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.2.0 | 2026-11-18 | #280: піднято SemVer релізу Go `VMK` до `v0.3.0`; додано специфікацію повноекранного інтерактивного TUI-дебагера `internal/vmk/tui_fullscreen.go` (`--tui`, `--tui-canvas`, `--render-fullscreen-tui`, `Concept Inspector`, `Manual Event Creator [e]`, `Single Micro-Step [n/Space]` через `StepSingleHop`, `ModifyConceptState [m]`). |
 | 1.1.0 | 2026-11-18 | #278: піднято SemVer релізу Go `VMK` до `v0.2.0`; додано нативну підтримку мови `EKPOL 0.1.0` (`internal/vmk/ekpol.go`, `--profile EKPOL`, `--to-kpol`, `--to-ekpol`, `--ekpol-style symbolic\|keyword`) та каталог `examples/*.ekpol`. |
 | 1.0.2 | 2026-11-18 | #276: додано взаємне перехресне посилання на практичний Посібник користувача VMK [`Engineering/guides/vmk-users-guide.md`](../../guides/vmk-users-guide.md) та [`Engineering/sw/vmk-go/README.md`](../../sw/vmk-go/README.md). |
 | 1.0.1 | 2026-11-18 | За рецензією PR #275 (`claude-sonnet-5.5`, `N1..N6`): задокументовано виконання BRAM-прикладів (`bms`, `cascade`, `increase`, `decrease`, `auth`) у `--mode conceptual --stdio` як `conceptual (descriptor-backed)` та походження початкового стану `PRE-LOAD` у симуляторі (`3/64`, `1/64`, `0/64`) проти фізичної плати `PYNQ-Z1`. |

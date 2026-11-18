@@ -1,0 +1,21 @@
+# cmd: python3 -m pytest -v Engineering/sw/tests/test_vmk_go_274.py
+# timestamp: 2026-11-18T16:08:10+02:00
+# git_commit: c0208bcfaffd43af9d98382fc2d833a0f201d46b
+# host: Linux 7.0.0-42-generic x86_64 GNU/Linux
+
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-280-fullscreen-tui
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 5 items
+
+Engineering/sw/tests/test_vmk_go_274.py::test_go_unit_test_suite_passes PASSED [ 20%]
+Engineering/sw/tests/test_vmk_go_274.py::test_vmk_go_equivalence_with_python_c99_iverilog_and_pynq2 PASSED [ 40%]
+Engineering/sw/tests/test_vmk_go_274.py::test_go_code_mutants_m1_to_m7 PASSED [ 60%]
+Engineering/sw/tests/test_vmk_go_274.py::test_vmk_users_guide_and_readme_276 PASSED [ 80%]
+Engineering/sw/tests/test_vmk_go_274.py::test_fullscreen_tui_debugger_interactive_280 PASSED [100%]
+
+============================== 5 passed in 8.58s ===============================

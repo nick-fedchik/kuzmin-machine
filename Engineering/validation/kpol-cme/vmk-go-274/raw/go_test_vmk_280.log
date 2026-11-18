@@ -1,0 +1,31 @@
+# cmd: (cd Engineering/sw/vmk-go && go test -v ./...)
+# timestamp: 2026-11-18T16:08:05+02:00
+# git_commit: c0208bcfaffd43af9d98382fc2d833a0f201d46b
+# host: Linux 7.0.0-42-generic x86_64 GNU/Linux
+
+=== RUN   TestMainVersionAndSubcommands
+--- PASS: TestMainVersionAndSubcommands (0.00s)
+PASS
+ok  	github.com/nick-fedchik/kuzmin-machine/Engineering/sw/vmk-go/cmd/vmk	(cached)
+=== RUN   TestBRAM64PredicatesActionsInvariantsAndUncertainties
+--- PASS: TestBRAM64PredicatesActionsInvariantsAndUncertainties (0.00s)
+=== RUN   TestBRAM64OverflowFIFO16AndDualBankCRC8
+--- PASS: TestBRAM64OverflowFIFO16AndDualBankCRC8 (0.00s)
+=== RUN   TestBMSSafetyCascadeAndPrePostLoadDiff
+--- PASS: TestBMSSafetyCascadeAndPrePostLoadDiff (0.00s)
+=== RUN   TestConceptualModeAllSixExamples
+--- PASS: TestConceptualModeAllSixExamples (0.00s)
+=== RUN   TestCLIStdioFailOnRejectTUIAndUnreachableTarget
+--- PASS: TestCLIStdioFailOnRejectTUIAndUnreachableTarget (0.00s)
+=== RUN   TestAllPredicatesActionsSelfSuppressAndExamplesAll
+--- PASS: TestAllPredicatesActionsSelfSuppressAndExamplesAll (0.01s)
+=== RUN   TestEKPOLBRAMBitIdenticalSHA256AndRoundtrip
+--- PASS: TestEKPOLBRAMBitIdenticalSHA256AndRoundtrip (0.01s)
+=== RUN   TestEKPOLConceptualExamplesAndPostReadBarrier
+--- PASS: TestEKPOLConceptualExamplesAndPostReadBarrier (0.00s)
+=== RUN   TestEKPOLStaticVerificationErrors
+--- PASS: TestEKPOLStaticVerificationErrors (0.00s)
+=== RUN   TestFullScreenTUIDebuggerBRAM64AndConceptual
+--- PASS: TestFullScreenTUIDebuggerBRAM64AndConceptual (0.00s)
+PASS
+ok  	github.com/nick-fedchik/kuzmin-machine/Engineering/sw/vmk-go/internal/vmk	0.028s

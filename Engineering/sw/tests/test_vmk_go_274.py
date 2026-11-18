@@ -40,7 +40,7 @@ VMK_GO_DIR = REPO_ROOT / "Engineering" / "sw" / "vmk-go"
 SW_REF_DIR = REPO_ROOT / "Engineering" / "sw" / "kpol-ref"
 VAL_DIR = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "vmk-go-274"
 RAW_DIR = VAL_DIR / "raw"
-SPEC_MD = REPO_ROOT / "Engineering" / "specifications" / "sw" / "vmk-go-emulator-and-tui-debugger-0.1.0.md"
+SPEC_MD = REPO_ROOT / "Engineering" / "specifications" / "sw" / "vmk-go-emulator-and-tui-debugger.md"
 REPORT_MD = VAL_DIR / "report.md"
 BMS_KPOL = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "c99-emitter-270" / "bms_safety_cascade.kpol"
 
@@ -311,8 +311,8 @@ def test_vmk_go_equivalence_with_python_c99_iverilog_and_pynq2():
         assert all_data["nod"]["hardware_cycles_at_3cyc_per_sub_plus_1"] == euclid_rtl["cycles"] == 58
 
 
-def test_raw_hil_artifacts_and_mutants_m1_to_m5():
-    """Verify recorded `pynq2` HIL artifacts and ensure all 5 Go mutants `M1..M5` are killed by `go test`."""
+def test_go_code_mutants_m1_to_m7():
+    """Verify recorded `pynq2` HIL artifacts and ensure all 7 Go mutants `M1..M7` are killed by `go test`."""
     pynq_json_path = RAW_DIR / "pynq2_live_vmk_session.json"
     pynq_log_path = RAW_DIR / "pynq2_live_vmk_session.log"
     assert pynq_json_path.is_file(), f"Missing {pynq_json_path}"
@@ -367,6 +367,18 @@ def test_raw_hil_artifacts_and_mutants_m1_to_m5():
             "slotChanged := w0Changed || w123Changed",
             "slotChanged := w0Changed",
         ),
+        (
+            "M6_go_break_single_hop_subscriber_enqueue",
+            "internal/vmk/bram64.go",
+            "if enqueuedCID != nil && depth+1 < 64 {",
+            "if false && enqueuedCID != nil && depth+1 < 64 {",
+        ),
+        (
+            "M7_go_break_modify_concept_state",
+            "internal/vmk/bram64.go",
+            "e.State[cid] = newW0",
+            "e.State[cid] = 0",
+        ),
     ]
 
     for m_name, rel_file, orig_snippet, mut_snippet in mutants:
@@ -395,7 +407,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
     import re
 
     required_guide_headings = [
-        "* **Версія:** 1.1.0",
+        "* **Версія:** 1.2.0",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
@@ -413,6 +425,8 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
         "## Абревіатури та глосарій",
         "<ваш_пароль_sudo>",
         "--program ../../validation/kpol-cme/c99-emitter-270/bms_safety_cascade.kpol",
+        "--render-fullscreen-tui",
+        "CONCEPT INSPECTOR",
     ]
     for marker in required_guide_headings:
         if marker not in guide_txt:
@@ -432,7 +446,9 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
         "--stdio",
         "--fail-on-reject",
         "--tui",
+        "--tui-canvas",
         "--render-tui-frame",
+        "--render-fullscreen-tui",
         "--watch-cid",
         "--break-on-reject",
         "--stop-on-breakpoint",
@@ -444,12 +460,12 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
             raise AssertionError(f"vmk-users-guide.md missing CLI flag {flag_name!r}")
 
     required_readme_markers = [
-        "* **Версія:** 1.1.0",
+        "* **Версія:** 1.2.0",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
         "../../guides/vmk-users-guide.md",
-        "../../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md",
+        "../../specifications/sw/vmk-go-emulator-and-tui-debugger.md",
         "## Обмеження",
         "## Історія версій",
         "## Абревіатури та глосарій",
@@ -548,3 +564,60 @@ def test_vmk_users_guide_and_readme_276():
         )
         assert "BRAM DESCRIPTOR TABLE" in res_dump.stdout
         assert "Cell_Delta_mV" in res_dump.stdout
+
+
+def test_fullscreen_tui_debugger_interactive_280():
+    """Issue #280: Verify full-screen interactive TUI debugger (`VMK v0.3.0`) across both
+    `bram64` and `conceptual` modes using automated keystroke streams (`↑/↓`, `e` manual event
+    creation, `+` queue addition, `n` single micro-step wave hop `C0 -> C1 -> C2 -> C3`,
+    `f` fault injection `_`, `m` manual state modification, `d` diff/source toggle, `r` reset, `q` quit).
+    """
+    with _workspace_scratch_dir("tui_280") as scratch:
+        vmk_bin = _build_vmk_binary(scratch)
+
+        # 1. Verify --render-fullscreen-tui on BMS (bram64)
+        res_fs = subprocess.run(
+            [str(vmk_bin), "--example", "bms", "--render-fullscreen-tui"],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert "VMK v0.3.0 FULL-SCREEN DEBUGGER" in res_fs.stdout
+        assert "[1] CONCEPTS" in res_fs.stdout
+        assert "[2] CONCEPT INSPECTOR" in res_fs.stdout
+        assert "Concept ID & Name : C00 (Cell_Delta_mV)" in res_fs.stdout
+        assert "[3] CASCADE WAVE TRACE & PENDING EVENT QUEUE" in res_fs.stdout
+        assert "[4] STDIO STREAMS (STDIN / STDOUT / STDERR) & INTERACTIVE EVENT CREATOR" in res_fs.stdout
+
+        # 2. Verify interactive keystroke session on BMS via --tui-canvas:
+        #    Down arrow (\x1b[B) -> select C01 -> 'w' watchpoint -> Up arrow (\x1b[A) ->
+        #    'e' open Event Creator -> "120+" enqueue into Pending Queue ->
+        #    'n' 4 times (1 hop per press: C00 -> C01 -> C02 -> C03) ->
+        #    'f' inject fault '_' -> 'm99\n' modify C00 W0 to 99 -> 'd' toggle Source -> 'd' toggle Diff -> 'q' quit
+        json_out = scratch / "tui_bms_session.json"
+        keystrokes = "\x1b[Bw\x1b[Ae120+nnnnfm99\nddq"
+        res_int = subprocess.run(
+            [
+                str(vmk_bin),
+                "--program",
+                "examples/bms_safety_cascade.ekpol",
+                "--tui-canvas",
+                "--json-out",
+                str(json_out),
+            ],
+            cwd=str(VMK_GO_DIR),
+            input=keystrokes,
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert "PRE-LOAD vs POST-LOAD DIFF" in res_int.stdout
+        payload = json.loads(json_out.read_text(encoding="utf-8"))
+        assert payload["version"] == "0.3.0"
+        assert payload["final_active_states"] == [1, 1, 1, 99]
+        assert payload["telemetry"]["events_processed"] == 5
+        assert payload["telemetry"]["commits"] == 4
+        assert payload["telemetry"]["fault_propagations"] == 1
