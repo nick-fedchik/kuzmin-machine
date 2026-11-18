@@ -13,9 +13,11 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq iverilog verilator yosys python3-z3 gcc python3-pytest
+          sudo apt-get install -y -qq iverilog verilator yosys python3-z3 gcc golang-go python3-pytest
       - name: Tool versions
-        run: iverilog -V 2>&1 | head -1; verilator --version; yosys -V; python3 -c "import z3; print('z3', z3.get_version_string())"; gcc --version | head -1; python3 --version
+        run: iverilog -V 2>&1 | head -1; verilator --version; yosys -V; python3 -c "import z3; print('z3', z3.get_version_string())"; gcc --version | head -1; go version; python3 --version
+      - name: Go VMK unit tests
+        run: cd Engineering/sw/vmk-go && go test -v ./...
       - name: Link check
         run: python3 Project/tools/check_links.py
       - name: WP structure and immutable-input hashes

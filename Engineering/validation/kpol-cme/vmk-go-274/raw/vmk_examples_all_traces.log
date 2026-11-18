@@ -1,0 +1,988 @@
+# cmd: vmk --example all --json-out Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_examples_all_summary.json
+# timestamp: 2026-11-18T11:50:45.486308+02:00
+# git_commit: 6616ab80dd196919980a6f1ba7f8c362a81bf525
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+# evidence_kind: vmk_go_dual_mode_canonical_examples_trace
+################################################################################
+# EXAMPLE: IF
+################################################################################
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (RFC-001..018) | Mode: conceptual | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 4 / 64 (Pre-load: 3 / 64, Changed on load: 1, Free: 60) | Program: IfToggle
+ Counters: Events=3 | Commits=3 | Rejects=0 | Faults(_)=0 | LastState=0
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------------+----------------------------+------------------------+-------------------+
+| CID | Name   | Type   | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::               | Action                     | Gate •               | Subscriber        |
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------------+----------------------------+------------------------+-------------------+
+| C00 | If     | ?      | _ (empty)   | _            | !               | 1        | _ -> ! ; ! -> ¬ ; ¬ -> ! | _ -> ! ; ! -> ¬ ; ¬ -> ! | •(RFC-001 Busy lock) | Self (suppressed) |
+| C01 | STDIN  | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream       | Virtual STDIO Stream       | •(Stream)            | Host OS Pipe      |
+| C02 | STDOUT | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream       | Virtual STDIO Stream       | •(Stream)            | Host OS Pipe      |
+| C03 | STDERR | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream       | Virtual STDIO Stream       | •(Stream)            | Host OS Pipe      |
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------------+----------------------------+------------------------+-------------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | ? If _
+   SRC 02 |   _ -> If = !
+   SRC 03 |   ! -> If = ¬
+   SRC 04 |   ¬ -> If = !
+   STDIN  (3 cmds) : write If 1 ; write If 1 ; write If 1
+   STDOUT -> COMMIT: If[cid=0] = ! (pre=_, RFC-001 Busy=self_suppress)
+   STDOUT -> COMMIT: If[cid=0] = ¬ (pre=!, RFC-001 Busy=self_suppress)
+   STDOUT -> COMMIT: If[cid=0] = ! (pre=¬, RFC-001 Busy=self_suppress)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 3 steps) ===
++-----------+-------+------------+---------------------+-----------+--------------------------+-----------------------------------------------+--------------------------------+-----------------+------------+-----------------+
+| Step      | Depth | CID (Name) | Event(param, valid) | Pre-State | Predicate ::             | Candidate                                     | Gate •                       | Verdict         | Post-State | Next Subscriber |
++-----------+-------+------------+---------------------+-----------+--------------------------+-----------------------------------------------+--------------------------------+-----------------+------------+-----------------+
+| E0.0 (#0) | 0     | C00 (If)   | Go If ← (Write)   | _         | If :: _ => true => true  | If ← ! (Busy=1 suppresses re-trigger) => 0  | •(RFC-001 Busy lock) => true | SUPPRESSED_SELF | !          | None            |
+| E1.0 (#1) | 0     | C00 (If)   | Go If ← (Write)   | !         | If :: ! => true => true  | If ← ¬ (Busy=1 suppresses re-trigger) => 1 | •(RFC-001 Busy lock) => true | SUPPRESSED_SELF | ¬         | None            |
+| E2.0 (#2) | 0     | C00 (If)   | Go If ← (Write)   | ¬        | If :: ¬ => true => true | If ← ! (Busy=1 suppresses re-trigger) => 0  | •(RFC-001 Busy lock) => true | SUPPRESSED_SELF | !          | None            |
++-----------+-------+------------+---------------------+-----------+--------------------------+-----------------------------------------------+--------------------------------+-----------------+------------+-----------------+
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: SUM
+################################################################################
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (RFC-001..018) | Mode: conceptual | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 4 / 64 (Pre-load: 3 / 64, Changed on load: 1, Free: 60) | Program: SumPostReadReset
+ Counters: Events=3 | Commits=3 | Rejects=0 | Faults(_)=0 | LastState=0
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------------+----------------------------+------------------------------+---------------------+
+| CID | Name   | Type   | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::               | Action                     | Gate •                     | Subscriber          |
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------------+----------------------------+------------------------------+---------------------+
+| C00 | Sum    | Float  | _ (empty)   | 0            | 0               | 1        | ← += x ; → • Sum = 0 | ← += x ; → • Sum = 0 | •(RFC-013 Post-Read Reset) | STDOUT -> • Sum=0 |
+| C01 | STDIN  | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream       | Virtual STDIO Stream       | •(Stream)                  | Host OS Pipe        |
+| C02 | STDOUT | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream       | Virtual STDIO Stream       | •(Stream)                  | Host OS Pipe        |
+| C03 | STDERR | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream       | Virtual STDIO Stream       | •(Stream)                  | Host OS Pipe        |
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------------+----------------------------+------------------------------+---------------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | Float Sum 0
+   SRC 02 |   ← @ Float x : Sum += x
+   SRC 03 |   → • Sum = 0
+   STDIN  (3 cmds) : write Sum 10 ; write Sum 25 ; read Sum
+   STDOUT -> COMMIT: Sum[cid=0] = 10 (pre=0, ← += 10)
+   STDOUT -> COMMIT: Sum[cid=0] = 35 (pre=10, ← += 25)
+   STDOUT -> READ: Sum = 35 (post-dot → • reset Sum = 0)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 3 steps) ===
++-----------+-------+------------+---------------------+-----------+------------------------------------+----------------------------------+----------------------------------------+---------+-------------+-----------------+
+| Step      | Depth | CID (Name) | Event(param, valid) | Pre-State | Predicate ::                       | Candidate                        | Gate •                               | Verdict | Post-State  | Next Subscriber |
++-----------+-------+------------+---------------------+-----------+------------------------------------+----------------------------------+----------------------------------------+---------+-------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Sum)  | Go Sum ← 10       | 0         | ← @ Float x => true => true      | Sum += 10 => 10 => 10            | •(finite Float) => true              | COMMIT  | 10          | None            |
+| E1.0 (#1) | 0     | C00 (Sum)  | Go Sum ← 25       | 10        | ← @ Float x => true => true      | Sum += 25 => 35 => 35            | •(finite Float) => true              | COMMIT  | 35          | None            |
+| E2.0 (#2) | 0     | C00 (Sum)  | Go Sum → •      | 35        | → (Read phase 1) => true => true | STDOUT ← 35; • Sum := 0 => 0 | •(RFC-013 Post-Read Barrier) => true | COMMIT  | 0 (Read=35) | None            |
++-----------+-------+------------+---------------------+-----------+------------------------------------+----------------------------------+----------------------------------------+---------+-------------+-----------------+
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: NOD
+################################################################################
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (RFC-001..018) | Mode: conceptual | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 6 / 64 (Pre-load: 3 / 64, Changed on load: 3, Free: 58) | Program: EuclidNod
+ Counters: Events=20 | Commits=20 | Rejects=0 | Faults(_)=0 | LastState=6
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------+----------------------+------------------------+--------------+
+| CID | Name   | Type   | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::         | Action               | Gate •               | Subscriber   |
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------+----------------------+------------------------+--------------+
+| C00 | a      | U64    | _ (empty)   | 120          | 6               | 1        | a > b : a -= b       | a > b : a -= b       | •(a > 0)             | -> b         |
+| C01 | b      | U64    | _ (empty)   | 6            | 6               | 1        | b > a : b -= a       | b > a : b -= a       | •(b > 0)             | -> a         |
+| C02 | Nod    | U64    | _ (empty)   | _            | 6               | 1        | | (a == b) => =a     | | (a == b) => =a     | •(Wave extinguished) | STDOUT       |
+| C03 | STDIN  | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream | Virtual STDIO Stream | •(Stream)            | Host OS Pipe |
+| C04 | STDOUT | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream | Virtual STDIO Stream | •(Stream)            | Host OS Pipe |
+| C05 | STDERR | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream | Virtual STDIO Stream | •(Stream)            | Host OS Pipe |
++-----+--------+--------+-------------+--------------+-----------------+----------+----------------------+----------------------+------------------------+--------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | U64 Nod | @ U64 ( a_ > b -=b , b_ > a -=a ) =a
+   SRC 02 | Z = Nod(120, 6)
+   STDIN  (1 cmds) : call Nod 120 6
+   STDOUT -> COMMIT: Nod[cid=2] = 6 (a_init=120, b_init=6, sub_steps=19, total_steps=20)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 20 steps) ===
++-------------+-------+------------+---------------------+------------+----------------------------------------+----------------------+--------------------------------+---------+------------+-----------------+
+| Step        | Depth | CID (Name) | Event(param, valid) | Pre-State  | Predicate ::                           | Candidate            | Gate •                       | Verdict | Post-State | Next Subscriber |
++-------------+-------+------------+---------------------+------------+----------------------------------------+----------------------+--------------------------------+---------+------------+-----------------+
+| E0.0 (#0)   | 0     | C00 (a)    | Wave #1 (a=120,b=6) | a=120, b=6 | a > b (120 > 6) => true                | a -= b => 114 => 114 | •(a > 0) => true             | COMMIT  | a=114, b=6 | C01 (b)         |
+| E0.1 (#1)   | 1     | C00 (a)    | Wave #2 (a=114,b=6) | a=114, b=6 | a > b (114 > 6) => true                | a -= b => 108 => 108 | •(a > 0) => true             | COMMIT  | a=108, b=6 | C01 (b)         |
+| E0.2 (#2)   | 2     | C00 (a)    | Wave #3 (a=108,b=6) | a=108, b=6 | a > b (108 > 6) => true                | a -= b => 102 => 102 | •(a > 0) => true             | COMMIT  | a=102, b=6 | C01 (b)         |
+| E0.3 (#3)   | 3     | C00 (a)    | Wave #4 (a=102,b=6) | a=102, b=6 | a > b (102 > 6) => true                | a -= b => 96 => 96   | •(a > 0) => true             | COMMIT  | a=96, b=6  | C01 (b)         |
+| E0.4 (#4)   | 4     | C00 (a)    | Wave #5 (a=96,b=6)  | a=96, b=6  | a > b (96 > 6) => true                 | a -= b => 90 => 90   | •(a > 0) => true             | COMMIT  | a=90, b=6  | C01 (b)         |
+| E0.5 (#5)   | 5     | C00 (a)    | Wave #6 (a=90,b=6)  | a=90, b=6  | a > b (90 > 6) => true                 | a -= b => 84 => 84   | •(a > 0) => true             | COMMIT  | a=84, b=6  | C01 (b)         |
+| E0.6 (#6)   | 6     | C00 (a)    | Wave #7 (a=84,b=6)  | a=84, b=6  | a > b (84 > 6) => true                 | a -= b => 78 => 78   | •(a > 0) => true             | COMMIT  | a=78, b=6  | C01 (b)         |
+| E0.7 (#7)   | 7     | C00 (a)    | Wave #8 (a=78,b=6)  | a=78, b=6  | a > b (78 > 6) => true                 | a -= b => 72 => 72   | •(a > 0) => true             | COMMIT  | a=72, b=6  | C01 (b)         |
+| E0.8 (#8)   | 8     | C00 (a)    | Wave #9 (a=72,b=6)  | a=72, b=6  | a > b (72 > 6) => true                 | a -= b => 66 => 66   | •(a > 0) => true             | COMMIT  | a=66, b=6  | C01 (b)         |
+| E0.9 (#9)   | 9     | C00 (a)    | Wave #10 (a=66,b=6) | a=66, b=6  | a > b (66 > 6) => true                 | a -= b => 60 => 60   | •(a > 0) => true             | COMMIT  | a=60, b=6  | C01 (b)         |
+| E0.10 (#10) | 10    | C00 (a)    | Wave #11 (a=60,b=6) | a=60, b=6  | a > b (60 > 6) => true                 | a -= b => 54 => 54   | •(a > 0) => true             | COMMIT  | a=54, b=6  | C01 (b)         |
+| E0.11 (#11) | 11    | C00 (a)    | Wave #12 (a=54,b=6) | a=54, b=6  | a > b (54 > 6) => true                 | a -= b => 48 => 48   | •(a > 0) => true             | COMMIT  | a=48, b=6  | C01 (b)         |
+| E0.12 (#12) | 12    | C00 (a)    | Wave #13 (a=48,b=6) | a=48, b=6  | a > b (48 > 6) => true                 | a -= b => 42 => 42   | •(a > 0) => true             | COMMIT  | a=42, b=6  | C01 (b)         |
+| E0.13 (#13) | 13    | C00 (a)    | Wave #14 (a=42,b=6) | a=42, b=6  | a > b (42 > 6) => true                 | a -= b => 36 => 36   | •(a > 0) => true             | COMMIT  | a=36, b=6  | C01 (b)         |
+| E0.14 (#14) | 14    | C00 (a)    | Wave #15 (a=36,b=6) | a=36, b=6  | a > b (36 > 6) => true                 | a -= b => 30 => 30   | •(a > 0) => true             | COMMIT  | a=30, b=6  | C01 (b)         |
+| E0.15 (#15) | 15    | C00 (a)    | Wave #16 (a=30,b=6) | a=30, b=6  | a > b (30 > 6) => true                 | a -= b => 24 => 24   | •(a > 0) => true             | COMMIT  | a=24, b=6  | C01 (b)         |
+| E0.16 (#16) | 16    | C00 (a)    | Wave #17 (a=24,b=6) | a=24, b=6  | a > b (24 > 6) => true                 | a -= b => 18 => 18   | •(a > 0) => true             | COMMIT  | a=18, b=6  | C01 (b)         |
+| E0.17 (#17) | 17    | C00 (a)    | Wave #18 (a=18,b=6) | a=18, b=6  | a > b (18 > 6) => true                 | a -= b => 12 => 12   | •(a > 0) => true             | COMMIT  | a=12, b=6  | C01 (b)         |
+| E0.18 (#18) | 18    | C00 (a)    | Wave #19 (a=12,b=6) | a=12, b=6  | a > b (12 > 6) => true                 | a -= b => 6 => 6     | •(a > 0) => true             | COMMIT  | a=6, b=6   | C01 (b)         |
+| E0.19 (#19) | 19    | C02 (Nod)  | Converged (a==b==6) | a=6, b=6   | a > b (false) && b > a (false) => true | Return =a (6) => 6   | •(Wave extinguished) => true | COMMIT  | Nod=6      | None            |
++-------------+-------+------------+---------------------+------------+----------------------------------------+----------------------+--------------------------------+---------+------------+-----------------+
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: FACTORIAL
+################################################################################
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (RFC-001..018) | Mode: conceptual | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 5 / 64 (Pre-load: 3 / 64, Changed on load: 2, Free: 59) | Program: FactorialRecursive
+ Counters: Events=9 | Commits=9 | Rejects=0 | Faults(_)=0 | LastState=120
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+-----------+--------+-------------+--------------+-----------------+----------+------------------------------+------------------------------+----------------------+--------------+
+| CID | Name      | Type   | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::                 | Action                       | Gate •             | Subscriber   |
++-----+-----------+--------+-------------+--------------+-----------------+----------+------------------------------+------------------------------+----------------------+--------------+
+| C00 | n         | U64    | _ (empty)   | 5            | 1               | 1        | [ 0 1 ] -> Exit ; else n - 1 | [ 0 1 ] -> Exit ; else n - 1 | •(n >= 0)          | -> Factorial |
+| C01 | Factorial | U64    | _ (empty)   | _            | 120             | 1        | | Factorial(n-1) * n         | | Factorial(n-1) * n         | •(U64 no overflow) | STDOUT       |
+| C02 | STDIN     | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream         | Virtual STDIO Stream         | •(Stream)          | Host OS Pipe |
+| C03 | STDOUT    | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream         | Virtual STDIO Stream         | •(Stream)          | Host OS Pipe |
+| C04 | STDERR    | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream         | Virtual STDIO Stream         | •(Stream)          | Host OS Pipe |
++-----+-----------+--------+-------------+--------------+-----------------+----------+------------------------------+------------------------------+----------------------+--------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | U64 Factorial | @ U64 n
+   SRC 02 |   [ 0 1 ] { Factorial = 1 Exit }
+   SRC 03 |   = Factorial(n - 1) * n
+   SRC 04 | Z = Factorial(5)
+   STDIN  (1 cmds) : call Factorial 5
+   STDOUT -> COMMIT: Factorial[cid=1] = 120 (n=5)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 9 steps) ===
++-----------+-------+-----------------+---------------------+--------------+---------------------------------------+-----------------------------------+------------------------------+---------+--------------------+-----------------+
+| Step      | Depth | CID (Name)      | Event(param, valid) | Pre-State    | Predicate ::                          | Candidate                         | Gate •                     | Verdict | Post-State         | Next Subscriber |
++-----------+-------+-----------------+---------------------+--------------+---------------------------------------+-----------------------------------+------------------------------+---------+--------------------+-----------------+
+| E0.0 (#0) | 0     | C00 (n)         | Call | n=5          | n=5          | n [ 0 1 ] (n=5) => false => true      | defer * 5; call Factorial(4) => 4 | •(n > 1) => true           | COMMIT  | recurse n-1=4      | C01 (Factorial) |
+| E0.1 (#1) | 1     | C00 (n)         | Call | n=4          | n=4          | n [ 0 1 ] (n=4) => false => true      | defer * 4; call Factorial(3) => 3 | •(n > 1) => true           | COMMIT  | recurse n-1=3      | C01 (Factorial) |
+| E0.2 (#2) | 2     | C00 (n)         | Call | n=3          | n=3          | n [ 0 1 ] (n=3) => false => true      | defer * 3; call Factorial(2) => 2 | •(n > 1) => true           | COMMIT  | recurse n-1=2      | C01 (Factorial) |
+| E0.3 (#3) | 3     | C00 (n)         | Call | n=2          | n=2          | n [ 0 1 ] (n=2) => false => true      | defer * 2; call Factorial(1) => 1 | •(n > 1) => true           | COMMIT  | recurse n-1=1      | C01 (Factorial) |
+| E0.4 (#4) | 4     | C01 (Factorial) | Call | n=1          | n=1          | n [ 0 1 ] (n=1) => true => true       | { Factorial = 1; Exit } => 1      | •(Base case Exit) => true  | COMMIT  | Factorial=1 (Exit) | None            |
+| E0.5 (#5) | 5     | C01 (Factorial) | Return * n=2        | Factorial=1  | unwind multiplication => true => true | Factorial := 1 * 2 => 2 => 2      | •(U64 no overflow) => true | COMMIT  | Factorial=2        | None            |
+| E0.6 (#6) | 6     | C01 (Factorial) | Return * n=3        | Factorial=2  | unwind multiplication => true => true | Factorial := 2 * 3 => 6 => 6      | •(U64 no overflow) => true | COMMIT  | Factorial=6        | None            |
+| E0.7 (#7) | 7     | C01 (Factorial) | Return * n=4        | Factorial=6  | unwind multiplication => true => true | Factorial := 6 * 4 => 24 => 24    | •(U64 no overflow) => true | COMMIT  | Factorial=24       | None            |
+| E0.8 (#8) | 8     | C01 (Factorial) | Return * n=5        | Factorial=24 | unwind multiplication => true => true | Factorial := 24 * 5 => 120 => 120 | •(U64 no overflow) => true | COMMIT  | Factorial=120      | None            |
++-----------+-------+-----------------+---------------------+--------------+---------------------------------------+-----------------------------------+------------------------------+---------+--------------------+-----------------+
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: TACHOMETER
+################################################################################
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (RFC-001..018) | Mode: conceptual | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 6 / 64 (Pre-load: 3 / 64, Changed on load: 3, Free: 58) | Program: TachometerClass
+ Counters: Events=7 | Commits=7 | Rejects=0 | Faults(_)=0 | LastState=6
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+-------------+--------+-------------+--------------+-----------------+----------+---------------------------------------+---------------------------------------+------------------------+--------------+
+| CID | Name        | Type   | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::                          | Action                                | Gate •               | Subscriber   |
++-----+-------------+--------+-------------+--------------+-----------------+----------+---------------------------------------+---------------------------------------+------------------------+--------------+
+| C00 | Revolutions | U64    | _ (empty)   | 0            | 0               | 1        | Tick ← Revolutions += 1             | Tick ← Revolutions += 1             | •(Revolutions >= 0)  | -> Distance  |
+| C01 | Distance    | Float  | _ (empty)   | 0            | 6               | 1        | Tick • Distance += 2                | Tick • Distance += 2                | •(Distance >= 0)     | None         |
+| C02 | Speed       | Float  | _ (empty)   | 0            | 6               | 1        | _Tick → • Speed=(Rev*2)/dt; Rev=0 | _Tick → • Speed=(Rev*2)/dt; Rev=0 | •(RFC-013 Post-Read) | STDOUT       |
+| C03 | STDIN       | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream                  | Virtual STDIO Stream                  | •(Stream)            | Host OS Pipe |
+| C04 | STDOUT      | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream                  | Virtual STDIO Stream                  | •(Stream)            | Host OS Pipe |
+| C05 | STDERR      | Stream | 0 (stream)  | 0            | 0               | 1        | Virtual STDIO Stream                  | Virtual STDIO Stream                  | •(Stream)            | Host OS Pipe |
++-----+-------------+--------+-------------+--------------+-----------------+----------+---------------------------------------+---------------------------------------+------------------------+--------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | Class Tachometer {
+   SRC 02 |   U64 Revolutions = 0
+   SRC 03 |   Float Distance = 0
+   SRC 04 |   Float Speed = 0
+   SRC 05 |   Tick  ← { Revolutions += 1; Distance += 2 }
+   SRC 06 |   _Tick → • { Speed = (Revolutions * 2) / dt; Revolutions = 0 }
+   SRC 07 | }
+   STDIN  (4 cmds) : call Tachometer Tick ; call Tachometer Tick ; call Tachometer Tick ; call Tachometer _Tick 1
+   STDOUT -> COMMIT: Tachometer.Tick -> Revolutions=1, Distance=2
+   STDOUT -> COMMIT: Tachometer.Tick -> Revolutions=2, Distance=4
+   STDOUT -> COMMIT: Tachometer.Tick -> Revolutions=3, Distance=6
+   STDOUT -> COMMIT: Tachometer._Tick -> Speed=6, Revolutions=0 (Distance=6)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 7 steps) ===
++-----------+-------+-------------------+----------------------+----------------+--------------------------------+------------------------------------------------------+----------------------------------------------+---------+----------------+-----------------+
+| Step      | Depth | CID (Name)        | Event(param, valid)  | Pre-State      | Predicate ::                   | Candidate                                            | Gate •                                     | Verdict | Post-State     | Next Subscriber |
++-----------+-------+-------------------+----------------------+----------------+--------------------------------+------------------------------------------------------+----------------------------------------------+---------+----------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Revolutions) | Tick ← 1           | 0              | on Tick => true => true        | Revolutions += 1 => 1 => 1                           | •(Revolutions >= 0) => true                | COMMIT  | 1              | C01 (Distance)  |
+| E0.1 (#1) | 1     | C01 (Distance)    | Tick • Distance    | 0              | on Tick => true => true        | Distance += 2 => 2 => 2                              | •(Distance >= 0) => true                   | COMMIT  | 2              | None            |
+| E1.0 (#2) | 0     | C00 (Revolutions) | Tick ← 1           | 1              | on Tick => true => true        | Revolutions += 1 => 2 => 2                           | •(Revolutions >= 0) => true                | COMMIT  | 2              | C01 (Distance)  |
+| E1.1 (#3) | 1     | C01 (Distance)    | Tick • Distance    | 2              | on Tick => true => true        | Distance += 2 => 4 => 4                              | •(Distance >= 0) => true                   | COMMIT  | 4              | None            |
+| E2.0 (#4) | 0     | C00 (Revolutions) | Tick ← 1           | 2              | on Tick => true => true        | Revolutions += 1 => 3 => 3                           | •(Revolutions >= 0) => true                | COMMIT  | 3              | C01 (Distance)  |
+| E2.1 (#5) | 1     | C01 (Distance)    | Tick • Distance    | 4              | on Tick => true => true        | Distance += 2 => 6 => 6                              | •(Distance >= 0) => true                   | COMMIT  | 6              | None            |
+| E3.0 (#6) | 0     | C02 (Speed)       | _Tick(dt=1s) → • | Speed=0, Rev=3 | on _Tick timer => true => true | Speed := (3 * 2) / 1 => 6; • Revolutions := 0 => 6 | •(RFC-013 Post-Read Revolutions=0) => true | COMMIT  | Speed=6, Rev=0 | None            |
++-----------+-------+-------------------+----------------------+----------------+--------------------------------+------------------------------------------------------+----------------------------------------------+---------+----------------+-----------------+
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: BMS
+################################################################################
+
+=== MACHINE CONNECTION & PROGRAMMING SNAPSHOT (SIM | HW_ID=0x4B504D43 'KPMC') ===
+  Capacity          : 64 concept slots (1024 B CME-RAW-1 BRAM)
+  PRE-LOAD State    : 1 / 64 active concepts (free=63, SHA-256=4df05b189b9bf120...) | HW Counters: events=0, commits=0, rejects=0, dropped=0
+  POST-LOAD State   : 4 / 64 active concepts (entry=[0], internal=[1 2], leaf=[3], free=60, SHA-256=de03442454424b5c...)
+  Readback & Diff   : 256/256 words OK (verified=true); 4 slot(s) modified during programming
++-----+----------------------+---------+-------------+--------------+-------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
+| CID | Name                 | Changed | Pre-Load W0 | Post-Load W0 | Pre-Load Rule -> Post-Load Rule                                                                                         | Pre-Sub -> Post-Sub (W3)                 |
++-----+----------------------+---------+-------------+--------------+-------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
+| C00 | Cell_Delta_mV        | YES     | 10          | 0            | ::(param < 20) | W0' := W0 + 1 | •(cand>=0 && !ovf) => ::(50 <= param <= 5000) | W0' := W0 + 1 | •(cand>=0 && !ovf) | None (0) => -> C1 (Module_Thermal_Guard) |
+| C01 | Module_Thermal_Guard | YES     | _ (empty)   | 0            | EMPTY => ::(!(param < 1) [>= 1]) | W0' := W0 + 1 | •(cand>=0 && !ovf)                                                 | None => -> C2 (Pack_Fault_Latch)         |
+| C02 | Pack_Fault_Latch     | YES     | _ (empty)   | 2            | EMPTY => ::(!(param < 1) [>= 1]) | W0' := W0 - 1 | •(cand>=0 && !ovf)                                                 | None => -> C3 (Contactor_Interlock)      |
+| C03 | Contactor_Interlock  | YES     | _ (empty)   | 10           | EMPTY => ::(!(param == 2) [!= 2]) | W0' := param | •(cand>=0 && !ovf)                                                 | None => None (0)                         |
++-----+----------------------+---------+-------------+--------------+-------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
+
+=== [BLOCK 1] SOURCE CODE / PROGRAM SPECIFICATION (BmsSafetyCascade, KPOL-CME-2) ===
+  01 | # @stdin Cell_Delta_mV
+  02 | # @stdout Cell_Delta_mV, Module_Thermal_Guard, Pack_Fault_Latch, Contactor_Interlock
+  03 | Problem BmsSafetyCascade {
+  04 |     Invariants {
+  05 |         inv_cell_delta: Cell_Delta_mV >= 0;
+  06 |         inv_mod_thermal: Module_Thermal_Guard >= 0;
+  07 |         inv_pack_latch: Pack_Fault_Latch >= 0;
+  08 |         inv_contactor: Contactor_Interlock >= 0;
+  09 |     }
+  10 | }
+  11 | Solution BmsSafetyCascade {
+  12 |     state Cell_Delta_mV: Int32 = 0;
+  13 |     state Module_Thermal_Guard: Int32 = 0;
+  14 |     state Pack_Fault_Latch: Int32 = 2;
+  15 |     state Contactor_Interlock: Int32 = 10;
+  16 | 
+  17 |     event EvCellDelta(delta_mv: Int32);
+  18 | 
+  19 |     rule RCellDelta on EvCellDelta when delta_mv >= 50 and delta_mv <= 5000 {
+  20 |         set Cell_Delta_mV := Cell_Delta_mV + 1;
+  21 |     }
+  22 |     rule RModuleThermal on change(Cell_Delta_mV) when Cell_Delta_mV >= 1 {
+  23 |         set Module_Thermal_Guard := Module_Thermal_Guard + 1;
+  24 |     }
+  25 |     rule RPackFaultLatch on change(Module_Thermal_Guard) when Module_Thermal_Guard >= 1 {
+  26 |         set Pack_Fault_Latch := Pack_Fault_Latch - 1;
+  27 |     }
+  28 |     rule RContactorInterlock on change(Pack_Fault_Latch) when not (Pack_Fault_Latch == 2) {
+  29 |         set Contactor_Interlock := Pack_Fault_Latch;
+  30 |     }
+  31 | }
+  32 | Proof BmsSafetyCascade {
+  33 |     scenario BmsFourLevelProtectionAndLatch {
+  34 |         step EvCellDelta(delta_mv = 15);
+  35 |         expect Cell_Delta_mV == 0;
+  36 |         expect Contactor_Interlock == 10;
+  37 |         step EvCellDelta(delta_mv = 120);
+  38 |         expect Cell_Delta_mV == 1;
+  39 |         expect Module_Thermal_Guard == 1;
+  40 |         expect Pack_Fault_Latch == 1;
+  41 |         expect Contactor_Interlock == 1;
+  42 |         step EvCellDelta(delta_mv = 180);
+  43 |         expect Cell_Delta_mV == 2;
+  44 |         expect Module_Thermal_Guard == 2;
+  45 |         expect Pack_Fault_Latch == 0;
+  46 |         expect Contactor_Interlock == 0;
+  47 |         step EvCellDelta(delta_mv = 250);
+  48 |         expect Cell_Delta_mV == 3;
+  49 |         expect Module_Thermal_Guard == 3;
+  50 |         expect Pack_Fault_Latch == 0;
+  51 |         expect Contactor_Interlock == 0;
+  52 |     }
+  53 | }
+
+=== [BLOCK 2] BRAM DESCRIPTOR TABLE (--dump-concepts, 4 active of 64 slots) ===
++-----+----------------------+-----------------+-----------+------------------------+-----------------------------------------------------------------------------+----------------------------------+
+| CID | Name                 | W0 (Init State) | Valid (_) | W1 (Operand)           | W2 (Hex & Decoded: Predicate ::, Action, Invariant •)                     | W3 (Subscriber -> CID)           |
++-----+----------------------+-----------------+-----------+------------------------+-----------------------------------------------------------------------------+----------------------------------+
+| C00 | Cell_Delta_mV        | 0 (0x00000000)  | 1 (valid) | 327680050 (0x13880032) | 0x01001305 [::(50 <= param <= 5000) | W0' := W0 + 1 | •(cand>=0 && !ovf)] | 1 (-> C1 (Module_Thermal_Guard)) |
+| C01 | Module_Thermal_Guard | 0 (0x00000000)  | 1 (valid) | 1 (0x00000001)         | 0x01001B04 [::(!(param < 1) [>= 1]) | W0' := W0 + 1 | •(cand>=0 && !ovf)] | 2 (-> C2 (Pack_Fault_Latch))     |
+| C02 | Pack_Fault_Latch     | 2 (0x00000002)  | 1 (valid) | 1 (0x00000001)         | 0x02001B04 [::(!(param < 1) [>= 1]) | W0' := W0 - 1 | •(cand>=0 && !ovf)] | 3 (-> C3 (Contactor_Interlock))  |
+| C03 | Contactor_Interlock  | 10 (0x0000000A) | 1 (valid) | 2 (0x00000002)         | 0x00000B01 [::(!(param == 2) [!= 2]) | W0' := param | •(cand>=0 && !ovf)] | 0 (None (0))                     |
++-----+----------------------+-----------------+-----------+------------------------+-----------------------------------------------------------------------------+----------------------------------+
+
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 14 steps) ===
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| Step       | Depth | CID (Name)                 | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                     | Verdict                                                                            | Post-State    | Next Subscriber            |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| E0.0 (#0)  | 0     | C00 (Cell_Delta_mV)        | param=15, valid=1   | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | REJECT_GUARD *BREAK_ON_REJECT(REJECT_GUARD)                                        | W0=0, valid=1 | None                       |
+| E1.0 (#1)  | 0     | C00 (Cell_Delta_mV)        | param=5500, valid=1 | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | REJECT_GUARD *BREAK_ON_REJECT(REJECT_GUARD)                                        | W0=0, valid=1 | None                       |
+| E2.0 (#2)  | 0     | C00 (Cell_Delta_mV)        | param=0, valid=_    | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => false | REJECT_FAULT *BREAK_ON_REJECT(REJECT_FAULT)                                        | W0=0, valid=1 | None                       |
+| E3.0 (#3)  | 0     | C00 (Cell_Delta_mV)        | param=120, valid=1  | W0=0, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C01 (Module_Thermal_Guard) |
+| E3.1 (#4)  | 1     | C01 (Module_Thermal_Guard) | param=1, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C02 (Pack_Fault_Latch)     |
+| E3.2 (#5)  | 2     | C02 (Pack_Fault_Latch)     | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(2->1)                          | W0=1, valid=1 | C03 (Contactor_Interlock)  |
+| E3.3 (#6)  | 3     | C03 (Contactor_Interlock)  | param=1, valid=1    | W0=10, valid=1 | !(param == 2) [!= 2] => true | W0' := param => 1   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(10->1)                      | W0=1, valid=1 | None                       |
+| E4.0 (#7)  | 0     | C00 (Cell_Delta_mV)        | param=180, valid=1  | W0=1, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2),THRESHOLD_REACHED(C0>=2)                                | W0=2, valid=1 | C01 (Module_Thermal_Guard) |
+| E4.1 (#8)  | 1     | C01 (Module_Thermal_Guard) | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2)                                                         | W0=2, valid=1 | C02 (Pack_Fault_Latch)     |
+| E4.2 (#9)  | 2     | C02 (Pack_Fault_Latch)     | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(1->0)                          | W0=0, valid=1 | C03 (Contactor_Interlock)  |
+| E4.3 (#10) | 3     | C03 (Contactor_Interlock)  | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 0   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(1->0)                       | W0=0, valid=1 | None                       |
+| E5.0 (#11) | 0     | C00 (Cell_Delta_mV)        | param=250, valid=1  | W0=2, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C01 (Module_Thermal_Guard) |
+| E5.1 (#12) | 1     | C01 (Module_Thermal_Guard) | param=3, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C02 (Pack_Fault_Latch)     |
+| E5.2 (#13) | 2     | C02 (Pack_Fault_Latch)     | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=15, valid=1)
+  * [Step #1 | E1.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=5500, valid=1)
+  * [Step #2 | E2.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 0 -> 0, param=0, valid=_)
+  * [Step #3 | E3.0] C00 (Cell_Delta_mV): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=120, valid=1)
+  * [Step #4 | E3.1] C01 (Module_Thermal_Guard): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): STATE_CHANGE(2->1) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): STATE_CHANGE(10->1) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): THRESHOLD_REACHED(C0>=2) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #8 | E4.1] C01 (Module_Thermal_Guard): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=2, valid=1)
+  * [Step #9 | E4.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #9 | E4.2] C02 (Pack_Fault_Latch): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #10 | E4.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #10 | E4.3] C03 (Contactor_Interlock): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #11 | E5.0] C00 (Cell_Delta_mV): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=250, valid=1)
+  * [Step #12 | E5.1] C01 (Module_Thermal_Guard): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=3, valid=1)
+  * [Step #13 | E5.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+  * [Step #13 | E5.2] C02 (Pack_Fault_Latch): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+
+=== [BLOCK 4] STATE DIFF (Before -> After) & TELEMETRY COUNTERS ===
++-----+----------------------+--------------------+-------------------+-------+---------+
+| CID | Name                 | Before (W0, valid) | After (W0, valid) | Delta | Status  |
++-----+----------------------+--------------------+-------------------+-------+---------+
+| C00 | Cell_Delta_mV        | W0=0, valid=1      | W0=3, valid=1     | +3    | CHANGED |
+| C01 | Module_Thermal_Guard | W0=0, valid=1      | W0=3, valid=1     | +3    | CHANGED |
+| C02 | Pack_Fault_Latch     | W0=2, valid=1      | W0=0, valid=1     | -2    | CHANGED |
+| C03 | Contactor_Interlock  | W0=10, valid=1     | W0=0, valid=1     | -10   | CHANGED |
++-----+----------------------+--------------------+-------------------+-------+---------+
+Telemetry Summary: events_processed=14, commits=10, rejects=4, fault_propagations=1, last_committed_state=3
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 4 / 64 (Pre-load: 1 / 64, Changed on load: 4, Free: 60) | Entry: [0] Internal: [1 2] Leaf: [3]
+ Counters: Events=14 | Commits=10 | Rejects=4 | Faults(_)=1 | Dropped=0 | Bank=0 | LastState=3
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+----------------------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------------------------+
+| CID | Name                 | Type  | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::         | Action        | Gate •            | Subscriber                   |
++-----+----------------------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------------------------+
+| C00 | Cell_Delta_mV        | Int32 | 10          | 0            | 3 (+3)          | 1        | 50 <= param <= 5000  | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C1 (Module_Thermal_Guard) |
+| C01 | Module_Thermal_Guard | Int32 | _ (empty)   | 0            | 3 (+3)          | 1        | !(param < 1) [>= 1]  | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C2 (Pack_Fault_Latch)     |
+| C02 | Pack_Fault_Latch     | Int32 | _ (empty)   | 2            | 0 (-2)          | 1        | !(param < 1) [>= 1]  | W0' := W0 - 1 | cand >= 0 && !ovf32 | -> C3 (Contactor_Interlock)  |
+| C03 | Contactor_Interlock  | Int32 | _ (empty)   | 10           | 0 (-10)         | 1        | !(param == 2) [!= 2] | W0' := param  | cand >= 0 && !ovf32 | None (0)                     |
++-----+----------------------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------------------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | # @stdin Cell_Delta_mV
+   SRC 02 | # @stdout Cell_Delta_mV, Module_Thermal_Guard, Pack_Fault_Latch, Contactor_Interlock
+   SRC 03 | Problem BmsSafetyCascade {
+   SRC 04 |     Invariants {
+   SRC 05 |         inv_cell_delta: Cell_Delta_mV >= 0;
+   SRC 06 |         inv_mod_thermal: Module_Thermal_Guard >= 0;
+   SRC 07 |         inv_pack_latch: Pack_Fault_Latch >= 0;
+   SRC 08 |         inv_contactor: Contactor_Interlock >= 0;
+   SRC 09 |     }
+   SRC 10 | }
+   SRC 11 | Solution BmsSafetyCascade {
+   SRC 12 |     state Cell_Delta_mV: Int32 = 0;
+   STDIN  (6 events) : (C0:15,valid=1), (C0:5500,valid=1), (C0:0,valid=_), (C0:120,valid=1), (C0:180,valid=1), (C0:250,valid=1)
+   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 1 (pre=0, depth=0, param=120, valid=1)
+   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 1 (pre=0, depth=1, param=1, valid=1)
+   STDOUT -> COMMIT: Pack_Fault_Latch[cid=2] = 1 (pre=2, depth=2, param=1, valid=1)
+   STDOUT -> COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1, valid=1)
+   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 2 (pre=1, depth=0, param=180, valid=1)
+   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 2 (pre=1, depth=1, param=2, valid=1)
+   STDOUT -> COMMIT: Pack_Fault_Latch[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)
+   STDOUT -> COMMIT: Contactor_Interlock[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)
+   STDOUT -> COMMIT: Cell_Delta_mV[cid=0] = 3 (pre=2, depth=0, param=250, valid=1)
+   STDOUT -> COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3, valid=1)
+   STDERR -> REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=15, valid=1, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>true)
+   STDERR -> REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=5500, valid=1, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>true)
+   STDERR -> REJECT_FAULT: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=0, valid=_, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>false)
+   STDERR -> REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>true, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 14 steps) ===
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| Step       | Depth | CID (Name)                 | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                     | Verdict                                                                            | Post-State    | Next Subscriber            |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+| E0.0 (#0)  | 0     | C00 (Cell_Delta_mV)        | param=15, valid=1   | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | REJECT_GUARD *BREAK_ON_REJECT(REJECT_GUARD)                                        | W0=0, valid=1 | None                       |
+| E1.0 (#1)  | 0     | C00 (Cell_Delta_mV)        | param=5500, valid=1 | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | REJECT_GUARD *BREAK_ON_REJECT(REJECT_GUARD)                                        | W0=0, valid=1 | None                       |
+| E2.0 (#2)  | 0     | C00 (Cell_Delta_mV)        | param=0, valid=_    | W0=0, valid=1  | 50 <= param <= 5000 => false | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => false | REJECT_FAULT *BREAK_ON_REJECT(REJECT_FAULT)                                        | W0=0, valid=1 | None                       |
+| E3.0 (#3)  | 0     | C00 (Cell_Delta_mV)        | param=120, valid=1  | W0=0, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C01 (Module_Thermal_Guard) |
+| E3.1 (#4)  | 1     | C01 (Module_Thermal_Guard) | param=1, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                                         | W0=1, valid=1 | C02 (Pack_Fault_Latch)     |
+| E3.2 (#5)  | 2     | C02 (Pack_Fault_Latch)     | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(2->1)                          | W0=1, valid=1 | C03 (Contactor_Interlock)  |
+| E3.3 (#6)  | 3     | C03 (Contactor_Interlock)  | param=1, valid=1    | W0=10, valid=1 | !(param == 2) [!= 2] => true | W0' := param => 1   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(10->1)                      | W0=1, valid=1 | None                       |
+| E4.0 (#7)  | 0     | C00 (Cell_Delta_mV)        | param=180, valid=1  | W0=1, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2),THRESHOLD_REACHED(C0>=2)                                | W0=2, valid=1 | C01 (Module_Thermal_Guard) |
+| E4.1 (#8)  | 1     | C01 (Module_Thermal_Guard) | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2)                                                         | W0=2, valid=1 | C02 (Pack_Fault_Latch)     |
+| E4.2 (#9)  | 2     | C02 (Pack_Fault_Latch)     | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C2:Pack_Fault_Latch),STATE_CHANGE(1->0)                          | W0=0, valid=1 | C03 (Contactor_Interlock)  |
+| E4.3 (#10) | 3     | C03 (Contactor_Interlock)  | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 0   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:Contactor_Interlock),STATE_CHANGE(1->0)                       | W0=0, valid=1 | None                       |
+| E5.0 (#11) | 0     | C00 (Cell_Delta_mV)        | param=250, valid=1  | W0=2, valid=1  | 50 <= param <= 5000 => true  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C01 (Module_Thermal_Guard) |
+| E5.1 (#12) | 1     | C01 (Module_Thermal_Guard) | param=3, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                                         | W0=3, valid=1 | C02 (Pack_Fault_Latch)     |
+| E5.2 (#13) | 2     | C02 (Pack_Fault_Latch)     | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *WATCH_CID(C2:Pack_Fault_Latch),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None                       |
++------------+-------+----------------------------+---------------------+----------------+------------------------------+---------------------+------------------------------+------------------------------------------------------------------------------------+---------------+----------------------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=15, valid=1)
+  * [Step #1 | E1.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=5500, valid=1)
+  * [Step #2 | E2.0] C00 (Cell_Delta_mV): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 0 -> 0, param=0, valid=_)
+  * [Step #3 | E3.0] C00 (Cell_Delta_mV): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=120, valid=1)
+  * [Step #4 | E3.1] C01 (Module_Thermal_Guard): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #5 | E3.2] C02 (Pack_Fault_Latch): STATE_CHANGE(2->1) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #6 | E3.3] C03 (Contactor_Interlock): STATE_CHANGE(10->1) -> COMMIT (W0: 10 -> 1, param=1, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #7 | E4.0] C00 (Cell_Delta_mV): THRESHOLD_REACHED(C0>=2) -> COMMIT (W0: 1 -> 2, param=180, valid=1)
+  * [Step #8 | E4.1] C01 (Module_Thermal_Guard): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=2, valid=1)
+  * [Step #9 | E4.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #9 | E4.2] C02 (Pack_Fault_Latch): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #10 | E4.3] C03 (Contactor_Interlock): WATCH_CID(C3:Contactor_Interlock) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #10 | E4.3] C03 (Contactor_Interlock): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #11 | E5.0] C00 (Cell_Delta_mV): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=250, valid=1)
+  * [Step #12 | E5.1] C01 (Module_Thermal_Guard): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=3, valid=1)
+  * [Step #13 | E5.2] C02 (Pack_Fault_Latch): WATCH_CID(C2:Pack_Fault_Latch) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+  * [Step #13 | E5.2] C02 (Pack_Fault_Latch): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: INCREASE
+################################################################################
+
+=== MACHINE CONNECTION & PROGRAMMING SNAPSHOT (SIM | HW_ID=0x4B504D43 'KPMC') ===
+  Capacity          : 64 concept slots (1024 B CME-RAW-1 BRAM)
+  PRE-LOAD State    : 0 / 64 active concepts (free=64, SHA-256=5f70bf18a0860070...) | HW Counters: events=0, commits=0, rejects=0, dropped=0
+  POST-LOAD State   : 1 / 64 active concepts (entry=[0], internal=[], leaf=[], free=63, SHA-256=4df05b189b9bf120...)
+  Readback & Diff   : 256/256 words OK (verified=true); 1 slot(s) modified during programming
++-----+---------+---------+-------------+--------------+----------------------------------------------------------------+--------------------------+
+| CID | Name    | Changed | Pre-Load W0 | Post-Load W0 | Pre-Load Rule -> Post-Load Rule                                | Pre-Sub -> Post-Sub (W3) |
++-----+---------+---------+-------------+--------------+----------------------------------------------------------------+--------------------------+
+| C00 | Counter | YES     | _ (empty)   | 10           | EMPTY => ::(param < 20) | W0' := W0 + 1 | •(cand>=0 && !ovf) | None => None (0)         |
++-----+---------+---------+-------------+--------------+----------------------------------------------------------------+--------------------------+
+
+=== [BLOCK 1] SOURCE CODE / PROGRAM SPECIFICATION (Increase, KPOL-CME-1) ===
+  01 | # @stdin Counter
+  02 | # @stdout Counter
+  03 | Problem Increase {
+  04 |     Invariants { NonNeg: Counter >= 0; }
+  05 | }
+  06 | Solution Increase {
+  07 |     state Counter: Int32 = 10;
+  08 |     event Pulse(param: Int32);
+  09 |     rule Step on Pulse when param < 20 {
+  10 |         set Counter := Counter + 1;
+  11 |     }
+  12 | }
+
+=== [BLOCK 2] BRAM DESCRIPTOR TABLE (--dump-concepts, 1 active of 64 slots) ===
++-----+---------+-----------------+-----------+-----------------+--------------------------------------------------------------------+------------------------+
+| CID | Name    | W0 (Init State) | Valid (_) | W1 (Operand)    | W2 (Hex & Decoded: Predicate ::, Action, Invariant •)            | W3 (Subscriber -> CID) |
++-----+---------+-----------------+-----------+-----------------+--------------------------------------------------------------------+------------------------+
+| C00 | Counter | 10 (0x0000000A) | 1 (valid) | 20 (0x00000014) | 0x01000304 [::(param < 20) | W0' := W0 + 1 | •(cand>=0 && !ovf)] | 0 (None (0))           |
++-----+---------+-----------------+-----------+-----------------+--------------------------------------------------------------------+------------------------+
+
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 3 steps) ===
++-----------+-------+---------------+---------------------+----------------+---------------------+---------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| Step      | Depth | CID (Name)    | Event(param, valid) | Pre-State      | Predicate ::        | Candidate           | Gate •                     | Verdict                                                           | Post-State     | Next Subscriber |
++-----------+-------+---------------+---------------------+----------------+---------------------+---------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Counter) | param=5, valid=1    | W0=10, valid=1 | param < 20 => true  | W0' := W0 + 1 => 11 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:Counter),STATE_CHANGE(10->11)                | W0=11, valid=1 | None            |
+| E1.0 (#1) | 0     | C00 (Counter) | param=25, valid=1   | W0=11, valid=1 | param < 20 => false | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => true  | REJECT_GUARD *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_GUARD) | W0=11, valid=1 | None            |
+| E2.0 (#2) | 0     | C00 (Counter) | param=0, valid=_    | W0=11, valid=1 | param < 20 => false | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => false | REJECT_FAULT *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_FAULT) | W0=11, valid=1 | None            |
++-----------+-------+---------------+---------------------+----------------+---------------------+---------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Counter): WATCH_CID(C0:Counter) -> COMMIT (W0: 10 -> 11, param=5, valid=1)
+  * [Step #0 | E0.0] C00 (Counter): STATE_CHANGE(10->11) -> COMMIT (W0: 10 -> 11, param=5, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_GUARD (W0: 11 -> 11, param=25, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 11 -> 11, param=25, valid=1)
+  * [Step #2 | E2.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_FAULT (W0: 11 -> 11, param=0, valid=_)
+  * [Step #2 | E2.0] C00 (Counter): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 11 -> 11, param=0, valid=_)
+
+=== [BLOCK 4] STATE DIFF (Before -> After) & TELEMETRY COUNTERS ===
++-----+---------+--------------------+-------------------+-------+---------+
+| CID | Name    | Before (W0, valid) | After (W0, valid) | Delta | Status  |
++-----+---------+--------------------+-------------------+-------+---------+
+| C00 | Counter | W0=10, valid=1     | W0=11, valid=1    | +1    | CHANGED |
++-----+---------+--------------------+-------------------+-------+---------+
+Telemetry Summary: events_processed=3, commits=1, rejects=2, fault_propagations=1, last_committed_state=11
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 1 / 64 (Pre-load: 0 / 64, Changed on load: 1, Free: 63) | Entry: [0] Internal: [] Leaf: []
+ Counters: Events=3 | Commits=1 | Rejects=2 | Faults(_)=1 | Dropped=0 | Bank=0 | LastState=11
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+------------+
+| CID | Name    | Type  | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate :: | Action        | Gate •            | Subscriber |
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+------------+
+| C00 | Counter | Int32 | _ (empty)   | 10           | 11 (+1)         | 1        | param < 20   | W0' := W0 + 1 | cand >= 0 && !ovf32 | None (0)   |
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | # @stdin Counter
+   SRC 02 | # @stdout Counter
+   SRC 03 | Problem Increase {
+   SRC 04 |     Invariants { NonNeg: Counter >= 0; }
+   SRC 05 | }
+   SRC 06 | Solution Increase {
+   SRC 07 |     state Counter: Int32 = 10;
+   SRC 08 |     event Pulse(param: Int32);
+   SRC 09 |     rule Step on Pulse when param < 20 {
+   SRC 10 |         set Counter := Counter + 1;
+   SRC 11 |     }
+   SRC 12 | }
+   STDIN  (3 events) : (C0:5,valid=1), (C0:25,valid=1), (C0:0,valid=_)
+   STDOUT -> COMMIT: Counter[cid=0] = 11 (pre=10, depth=0, param=5, valid=1)
+   STDERR -> REJECT_GUARD: Counter[cid=0] kept W0=11 (depth=0, param=25, valid=1, pred=(param < 20)=>false, cand=12, gate=(cand >= 0 && !ovf32)=>true)
+   STDERR -> REJECT_FAULT: Counter[cid=0] kept W0=11 (depth=0, param=0, valid=_, pred=(param < 20)=>false, cand=12, gate=(cand >= 0 && !ovf32)=>false)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 3 steps) ===
++-----------+-------+---------------+---------------------+----------------+---------------------+---------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| Step      | Depth | CID (Name)    | Event(param, valid) | Pre-State      | Predicate ::        | Candidate           | Gate •                     | Verdict                                                           | Post-State     | Next Subscriber |
++-----------+-------+---------------+---------------------+----------------+---------------------+---------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Counter) | param=5, valid=1    | W0=10, valid=1 | param < 20 => true  | W0' := W0 + 1 => 11 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:Counter),STATE_CHANGE(10->11)                | W0=11, valid=1 | None            |
+| E1.0 (#1) | 0     | C00 (Counter) | param=25, valid=1   | W0=11, valid=1 | param < 20 => false | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => true  | REJECT_GUARD *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_GUARD) | W0=11, valid=1 | None            |
+| E2.0 (#2) | 0     | C00 (Counter) | param=0, valid=_    | W0=11, valid=1 | param < 20 => false | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => false | REJECT_FAULT *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_FAULT) | W0=11, valid=1 | None            |
++-----------+-------+---------------+---------------------+----------------+---------------------+---------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Counter): WATCH_CID(C0:Counter) -> COMMIT (W0: 10 -> 11, param=5, valid=1)
+  * [Step #0 | E0.0] C00 (Counter): STATE_CHANGE(10->11) -> COMMIT (W0: 10 -> 11, param=5, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_GUARD (W0: 11 -> 11, param=25, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 11 -> 11, param=25, valid=1)
+  * [Step #2 | E2.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_FAULT (W0: 11 -> 11, param=0, valid=_)
+  * [Step #2 | E2.0] C00 (Counter): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 11 -> 11, param=0, valid=_)
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: DECREASE
+################################################################################
+
+=== MACHINE CONNECTION & PROGRAMMING SNAPSHOT (SIM | HW_ID=0x4B504D43 'KPMC') ===
+  Capacity          : 64 concept slots (1024 B CME-RAW-1 BRAM)
+  PRE-LOAD State    : 0 / 64 active concepts (free=64, SHA-256=5f70bf18a0860070...) | HW Counters: events=0, commits=0, rejects=0, dropped=0
+  POST-LOAD State   : 1 / 64 active concepts (entry=[0], internal=[], leaf=[], free=63, SHA-256=59722479879abafd...)
+  Readback & Diff   : 256/256 words OK (verified=true); 1 slot(s) modified during programming
++-----+---------+---------+-------------+--------------+----------------------------------------------------------------+--------------------------+
+| CID | Name    | Changed | Pre-Load W0 | Post-Load W0 | Pre-Load Rule -> Post-Load Rule                                | Pre-Sub -> Post-Sub (W3) |
++-----+---------+---------+-------------+--------------+----------------------------------------------------------------+--------------------------+
+| C00 | Counter | YES     | _ (empty)   | 1            | EMPTY => ::(param < 20) | W0' := W0 - 1 | •(cand>=0 && !ovf) | None => None (0)         |
++-----+---------+---------+-------------+--------------+----------------------------------------------------------------+--------------------------+
+
+=== [BLOCK 1] SOURCE CODE / PROGRAM SPECIFICATION (DecreaseFromOne, KPOL-CME-1) ===
+  01 | # @stdin Counter
+  02 | # @stdout Counter
+  03 | Problem DecreaseFromOne {
+  04 |     Invariants { NonNeg: Counter >= 0; }
+  05 | }
+  06 | Solution DecreaseFromOne {
+  07 |     state Counter: Int32 = 1;
+  08 |     event Pulse(param: Int32);
+  09 |     rule Step on Pulse when param < 20 {
+  10 |         set Counter := Counter - 1;
+  11 |     }
+  12 | }
+
+=== [BLOCK 2] BRAM DESCRIPTOR TABLE (--dump-concepts, 1 active of 64 slots) ===
++-----+---------+-----------------+-----------+-----------------+--------------------------------------------------------------------+------------------------+
+| CID | Name    | W0 (Init State) | Valid (_) | W1 (Operand)    | W2 (Hex & Decoded: Predicate ::, Action, Invariant •)            | W3 (Subscriber -> CID) |
++-----+---------+-----------------+-----------+-----------------+--------------------------------------------------------------------+------------------------+
+| C00 | Counter | 1 (0x00000001)  | 1 (valid) | 20 (0x00000014) | 0x02000304 [::(param < 20) | W0' := W0 - 1 | •(cand>=0 && !ovf)] | 0 (None (0))           |
++-----+---------+-----------------+-----------+-----------------+--------------------------------------------------------------------+------------------------+
+
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 3 steps) ===
++-----------+-------+---------------+---------------------+---------------+---------------------+---------------------+------------------------------+---------------------------------------------------------------------------+---------------+-----------------+
+| Step      | Depth | CID (Name)    | Event(param, valid) | Pre-State     | Predicate ::        | Candidate           | Gate •                     | Verdict                                                                   | Post-State    | Next Subscriber |
++-----------+-------+---------------+---------------------+---------------+---------------------+---------------------+------------------------------+---------------------------------------------------------------------------+---------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Counter) | param=5, valid=1    | W0=1, valid=1 | param < 20 => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:Counter),STATE_CHANGE(1->0)                          | W0=0, valid=1 | None            |
+| E1.0 (#1) | 0     | C00 (Counter) | param=5, valid=1    | W0=0, valid=1 | param < 20 => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None            |
+| E2.0 (#2) | 0     | C00 (Counter) | param=25, valid=1   | W0=0, valid=1 | param < 20 => false | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_GUARD *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_GUARD)         | W0=0, valid=1 | None            |
++-----------+-------+---------------+---------------------+---------------+---------------------+---------------------+------------------------------+---------------------------------------------------------------------------+---------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Counter): WATCH_CID(C0:Counter) -> COMMIT (W0: 1 -> 0, param=5, valid=1)
+  * [Step #0 | E0.0] C00 (Counter): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=5, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_INVARIANT (W0: 0 -> 0, param=5, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=5, valid=1)
+  * [Step #2 | E2.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_GUARD (W0: 0 -> 0, param=25, valid=1)
+  * [Step #2 | E2.0] C00 (Counter): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=25, valid=1)
+
+=== [BLOCK 4] STATE DIFF (Before -> After) & TELEMETRY COUNTERS ===
++-----+---------+--------------------+-------------------+-------+---------+
+| CID | Name    | Before (W0, valid) | After (W0, valid) | Delta | Status  |
++-----+---------+--------------------+-------------------+-------+---------+
+| C00 | Counter | W0=1, valid=1      | W0=0, valid=1     | -1    | CHANGED |
++-----+---------+--------------------+-------------------+-------+---------+
+Telemetry Summary: events_processed=3, commits=1, rejects=2, fault_propagations=0, last_committed_state=0
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 1 / 64 (Pre-load: 0 / 64, Changed on load: 1, Free: 63) | Entry: [0] Internal: [] Leaf: []
+ Counters: Events=3 | Commits=1 | Rejects=2 | Faults(_)=0 | Dropped=0 | Bank=0 | LastState=0
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+------------+
+| CID | Name    | Type  | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate :: | Action        | Gate •            | Subscriber |
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+------------+
+| C00 | Counter | Int32 | _ (empty)   | 1            | 0 (-1)          | 1        | param < 20   | W0' := W0 - 1 | cand >= 0 && !ovf32 | None (0)   |
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | # @stdin Counter
+   SRC 02 | # @stdout Counter
+   SRC 03 | Problem DecreaseFromOne {
+   SRC 04 |     Invariants { NonNeg: Counter >= 0; }
+   SRC 05 | }
+   SRC 06 | Solution DecreaseFromOne {
+   SRC 07 |     state Counter: Int32 = 1;
+   SRC 08 |     event Pulse(param: Int32);
+   SRC 09 |     rule Step on Pulse when param < 20 {
+   SRC 10 |         set Counter := Counter - 1;
+   SRC 11 |     }
+   SRC 12 | }
+   STDIN  (3 events) : (C0:5,valid=1), (C0:5,valid=1), (C0:25,valid=1)
+   STDOUT -> COMMIT: Counter[cid=0] = 0 (pre=1, depth=0, param=5, valid=1)
+   STDERR -> REJECT_INVARIANT: Counter[cid=0] kept W0=0 (depth=0, param=5, valid=1, pred=(param < 20)=>true, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
+   STDERR -> REJECT_GUARD: Counter[cid=0] kept W0=0 (depth=0, param=25, valid=1, pred=(param < 20)=>false, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 3 steps) ===
++-----------+-------+---------------+---------------------+---------------+---------------------+---------------------+------------------------------+---------------------------------------------------------------------------+---------------+-----------------+
+| Step      | Depth | CID (Name)    | Event(param, valid) | Pre-State     | Predicate ::        | Candidate           | Gate •                     | Verdict                                                                   | Post-State    | Next Subscriber |
++-----------+-------+---------------+---------------------+---------------+---------------------+---------------------+------------------------------+---------------------------------------------------------------------------+---------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Counter) | param=5, valid=1    | W0=1, valid=1 | param < 20 => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:Counter),STATE_CHANGE(1->0)                          | W0=0, valid=1 | None            |
+| E1.0 (#1) | 0     | C00 (Counter) | param=5, valid=1    | W0=0, valid=1 | param < 20 => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_INVARIANT) | W0=0, valid=1 | None            |
+| E2.0 (#2) | 0     | C00 (Counter) | param=25, valid=1   | W0=0, valid=1 | param < 20 => false | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_GUARD *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_GUARD)         | W0=0, valid=1 | None            |
++-----------+-------+---------------+---------------------+---------------+---------------------+---------------------+------------------------------+---------------------------------------------------------------------------+---------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Counter): WATCH_CID(C0:Counter) -> COMMIT (W0: 1 -> 0, param=5, valid=1)
+  * [Step #0 | E0.0] C00 (Counter): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=5, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_INVARIANT (W0: 0 -> 0, param=5, valid=1)
+  * [Step #1 | E1.0] C00 (Counter): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=5, valid=1)
+  * [Step #2 | E2.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_GUARD (W0: 0 -> 0, param=25, valid=1)
+  * [Step #2 | E2.0] C00 (Counter): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 0 -> 0, param=25, valid=1)
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: CASCADE
+################################################################################
+
+=== MACHINE CONNECTION & PROGRAMMING SNAPSHOT (SIM | HW_ID=0x4B504D43 'KPMC') ===
+  Capacity          : 64 concept slots (1024 B CME-RAW-1 BRAM)
+  PRE-LOAD State    : 0 / 64 active concepts (free=64, SHA-256=5f70bf18a0860070...) | HW Counters: events=0, commits=0, rejects=0, dropped=0
+  POST-LOAD State   : 4 / 64 active concepts (entry=[0], internal=[1 2], leaf=[3], free=60, SHA-256=032c4705c91cea6d...)
+  Readback & Diff   : 256/256 words OK (verified=true); 4 slot(s) modified during programming
++-----+------+---------+-------------+--------------+-------------------------------------------------------------------------+--------------------------+
+| CID | Name | Changed | Pre-Load W0 | Post-Load W0 | Pre-Load Rule -> Post-Load Rule                                         | Pre-Sub -> Post-Sub (W3) |
++-----+------+---------+-------------+--------------+-------------------------------------------------------------------------+--------------------------+
+| C00 | C0   | YES     | _ (empty)   | 10           | EMPTY => ::(param < 50) | W0' := W0 + 1 | •(cand>=0 && !ovf)          | None => -> C1 (C1)       |
+| C01 | C1   | YES     | _ (empty)   | 0            | EMPTY => ::(param > 10) | W0' := W0 + 1 | •(cand>=0 && !ovf)          | None => -> C2 (C2)       |
+| C02 | C2   | YES     | _ (empty)   | 2            | EMPTY => ::(!(param < 1) [>= 1]) | W0' := W0 - 1 | •(cand>=0 && !ovf) | None => -> C3 (C3)       |
+| C03 | C3   | YES     | _ (empty)   | 0            | EMPTY => ::(!(param == 2) [!= 2]) | W0' := param | •(cand>=0 && !ovf) | None => None (0)         |
++-----+------+---------+-------------+--------------+-------------------------------------------------------------------------+--------------------------+
+
+=== [BLOCK 1] SOURCE CODE / PROGRAM SPECIFICATION (Cascade4Concept, KPOL-CME-2) ===
+  01 | # @stdin C0
+  02 | # @stdout C0, C1, C2, C3
+  03 | Problem Cascade4Concept {
+  04 |     Invariants {
+  05 |         I0: C0 >= 0;
+  06 |         I1: C1 >= 0;
+  07 |         I2: C2 >= 0;
+  08 |         I3: C3 >= 0;
+  09 |     }
+  10 | }
+  11 | Solution Cascade4Concept {
+  12 |     state C0: Int32 = 10;
+  13 |     state C1: Int32 = 0;
+  14 |     state C2: Int32 = 2;
+  15 |     state C3: Int32 = 0;
+  16 | 
+  17 |     event E0(param: Int32);
+  18 | 
+  19 |     rule R0 on E0 when param < 50 { set C0 := C0 + 1; }
+  20 |     rule R1 on change(C0) when C0 > 10 { set C1 := C1 + 1; }
+  21 |     rule R2 on change(C1) when C1 >= 1 { set C2 := C2 - 1; }
+  22 |     rule R3 on change(C2) when not (C2 == 2) { set C3 := C2; }
+  23 | }
+  24 | Proof Cascade4Concept {
+  25 |     scenario CheckCascadeAndGuardBlock {
+  26 |         step E0(param = 10);
+  27 |         expect C0 == 11;
+  28 |         expect C1 == 1;
+  29 |         expect C2 == 1;
+  30 |         expect C3 == 1;
+  31 |         step E0(param = 100);
+  32 |         expect C0 == 11;
+  33 |         expect C3 == 1;
+  34 |     }
+  35 | }
+
+=== [BLOCK 2] BRAM DESCRIPTOR TABLE (--dump-concepts, 4 active of 64 slots) ===
++-----+------+-----------------+-----------+-----------------+-----------------------------------------------------------------------------+------------------------+
+| CID | Name | W0 (Init State) | Valid (_) | W1 (Operand)    | W2 (Hex & Decoded: Predicate ::, Action, Invariant •)                     | W3 (Subscriber -> CID) |
++-----+------+-----------------+-----------+-----------------+-----------------------------------------------------------------------------+------------------------+
+| C00 | C0   | 10 (0x0000000A) | 1 (valid) | 50 (0x00000032) | 0x01001304 [::(param < 50) | W0' := W0 + 1 | •(cand>=0 && !ovf)]          | 1 (-> C1 (C1))         |
+| C01 | C1   | 0 (0x00000000)  | 1 (valid) | 10 (0x0000000A) | 0x01001303 [::(param > 10) | W0' := W0 + 1 | •(cand>=0 && !ovf)]          | 2 (-> C2 (C2))         |
+| C02 | C2   | 2 (0x00000002)  | 1 (valid) | 1 (0x00000001)  | 0x02001B04 [::(!(param < 1) [>= 1]) | W0' := W0 - 1 | •(cand>=0 && !ovf)] | 3 (-> C3 (C3))         |
+| C03 | C3   | 0 (0x00000000)  | 1 (valid) | 2 (0x00000002)  | 0x00000B01 [::(!(param == 2) [!= 2]) | W0' := param | •(cand>=0 && !ovf)] | 0 (None (0))           |
++-----+------+-----------------+-----------+-----------------+-----------------------------------------------------------------------------+------------------------+
+
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 12 steps) ===
++------------+-------+------------+---------------------+----------------+------------------------------+---------------------+------------------------------+--------------------------------------------------------------+----------------+-----------------+
+| Step       | Depth | CID (Name) | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                     | Verdict                                                      | Post-State     | Next Subscriber |
++------------+-------+------------+---------------------+----------------+------------------------------+---------------------+------------------------------+--------------------------------------------------------------+----------------+-----------------+
+| E0.0 (#0)  | 0     | C00 (C0)   | param=10, valid=1   | W0=10, valid=1 | param < 50 => true           | W0' := W0 + 1 => 11 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:C0),STATE_CHANGE(10->11)                | W0=11, valid=1 | C01 (C1)        |
+| E0.1 (#1)  | 1     | C01 (C1)   | param=11, valid=1   | W0=0, valid=1  | param > 10 => true           | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                   | W0=1, valid=1  | C02 (C2)        |
+| E0.2 (#2)  | 2     | C02 (C2)   | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->1)                                   | W0=1, valid=1  | C03 (C3)        |
+| E0.3 (#3)  | 3     | C03 (C3)   | param=1, valid=1    | W0=0, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 1   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:C3),STATE_CHANGE(0->1)                  | W0=1, valid=1  | None            |
+| E1.0 (#4)  | 0     | C00 (C0)   | param=100, valid=1  | W0=11, valid=1 | param < 50 => false          | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => true  | REJECT_GUARD *WATCH_CID(C0:C0),BREAK_ON_REJECT(REJECT_GUARD) | W0=11, valid=1 | None            |
+| E2.0 (#5)  | 0     | C00 (C0)   | param=10, valid=1   | W0=11, valid=1 | param < 50 => true           | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:C0),STATE_CHANGE(11->12)                | W0=12, valid=1 | C01 (C1)        |
+| E2.1 (#6)  | 1     | C01 (C1)   | param=12, valid=1   | W0=1, valid=1  | param > 10 => true           | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2)                                   | W0=2, valid=1  | C02 (C2)        |
+| E2.2 (#7)  | 2     | C02 (C2)   | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->0)                                   | W0=0, valid=1  | C03 (C3)        |
+| E2.3 (#8)  | 3     | C03 (C3)   | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 0   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:C3),STATE_CHANGE(1->0)                  | W0=0, valid=1  | None            |
+| E3.0 (#9)  | 0     | C00 (C0)   | param=10, valid=1   | W0=12, valid=1 | param < 50 => true           | W0' := W0 + 1 => 13 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:C0),STATE_CHANGE(12->13)                | W0=13, valid=1 | C01 (C1)        |
+| E3.1 (#10) | 1     | C01 (C1)   | param=13, valid=1   | W0=2, valid=1  | param > 10 => true           | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                   | W0=3, valid=1  | C02 (C2)        |
+| E3.2 (#11) | 2     | C02 (C2)   | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *BREAK_ON_REJECT(REJECT_INVARIANT)          | W0=0, valid=1  | None            |
++------------+-------+------------+---------------------+----------------+------------------------------+---------------------+------------------------------+--------------------------------------------------------------+----------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (C0): WATCH_CID(C0:C0) -> COMMIT (W0: 10 -> 11, param=10, valid=1)
+  * [Step #0 | E0.0] C00 (C0): STATE_CHANGE(10->11) -> COMMIT (W0: 10 -> 11, param=10, valid=1)
+  * [Step #1 | E0.1] C01 (C1): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=11, valid=1)
+  * [Step #2 | E0.2] C02 (C2): STATE_CHANGE(2->1) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #3 | E0.3] C03 (C3): WATCH_CID(C3:C3) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #3 | E0.3] C03 (C3): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #4 | E1.0] C00 (C0): WATCH_CID(C0:C0) -> REJECT_GUARD (W0: 11 -> 11, param=100, valid=1)
+  * [Step #4 | E1.0] C00 (C0): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 11 -> 11, param=100, valid=1)
+  * [Step #5 | E2.0] C00 (C0): WATCH_CID(C0:C0) -> COMMIT (W0: 11 -> 12, param=10, valid=1)
+  * [Step #5 | E2.0] C00 (C0): STATE_CHANGE(11->12) -> COMMIT (W0: 11 -> 12, param=10, valid=1)
+  * [Step #6 | E2.1] C01 (C1): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=12, valid=1)
+  * [Step #7 | E2.2] C02 (C2): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #8 | E2.3] C03 (C3): WATCH_CID(C3:C3) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #8 | E2.3] C03 (C3): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #9 | E3.0] C00 (C0): WATCH_CID(C0:C0) -> COMMIT (W0: 12 -> 13, param=10, valid=1)
+  * [Step #9 | E3.0] C00 (C0): STATE_CHANGE(12->13) -> COMMIT (W0: 12 -> 13, param=10, valid=1)
+  * [Step #10 | E3.1] C01 (C1): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=13, valid=1)
+  * [Step #11 | E3.2] C02 (C2): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+
+=== [BLOCK 4] STATE DIFF (Before -> After) & TELEMETRY COUNTERS ===
++-----+------+--------------------+-------------------+-------+-----------+
+| CID | Name | Before (W0, valid) | After (W0, valid) | Delta | Status    |
++-----+------+--------------------+-------------------+-------+-----------+
+| C00 | C0   | W0=10, valid=1     | W0=13, valid=1    | +3    | CHANGED   |
+| C01 | C1   | W0=0, valid=1      | W0=3, valid=1     | +3    | CHANGED   |
+| C02 | C2   | W0=2, valid=1      | W0=0, valid=1     | -2    | CHANGED   |
+| C03 | C3   | W0=0, valid=1      | W0=0, valid=1     | 0     | UNCHANGED |
++-----+------+--------------------+-------------------+-------+-----------+
+Telemetry Summary: events_processed=12, commits=10, rejects=2, fault_propagations=0, last_committed_state=3
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 4 / 64 (Pre-load: 0 / 64, Changed on load: 4, Free: 60) | Entry: [0] Internal: [1 2] Leaf: [3]
+ Counters: Events=12 | Commits=10 | Rejects=2 | Faults(_)=0 | Dropped=0 | Bank=0 | LastState=3
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------+
+| CID | Name | Type  | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate ::         | Action        | Gate •            | Subscriber |
++-----+------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------+
+| C00 | C0   | Int32 | _ (empty)   | 10           | 13 (+3)         | 1        | param < 50           | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C1 (C1) |
+| C01 | C1   | Int32 | _ (empty)   | 0            | 3 (+3)          | 1        | param > 10           | W0' := W0 + 1 | cand >= 0 && !ovf32 | -> C2 (C2) |
+| C02 | C2   | Int32 | _ (empty)   | 2            | 0 (-2)          | 1        | !(param < 1) [>= 1]  | W0' := W0 - 1 | cand >= 0 && !ovf32 | -> C3 (C3) |
+| C03 | C3   | Int32 | _ (empty)   | 0            | 0               | 1        | !(param == 2) [!= 2] | W0' := param  | cand >= 0 && !ovf32 | None (0)   |
++-----+------+-------+-------------+--------------+-----------------+----------+----------------------+---------------+---------------------+------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | # @stdin C0
+   SRC 02 | # @stdout C0, C1, C2, C3
+   SRC 03 | Problem Cascade4Concept {
+   SRC 04 |     Invariants {
+   SRC 05 |         I0: C0 >= 0;
+   SRC 06 |         I1: C1 >= 0;
+   SRC 07 |         I2: C2 >= 0;
+   SRC 08 |         I3: C3 >= 0;
+   SRC 09 |     }
+   SRC 10 | }
+   SRC 11 | Solution Cascade4Concept {
+   SRC 12 |     state C0: Int32 = 10;
+   STDIN  (4 events) : (C0:10,valid=1), (C0:100,valid=1), (C0:10,valid=1), (C0:10,valid=1)
+   STDOUT -> COMMIT: C0[cid=0] = 11 (pre=10, depth=0, param=10, valid=1)
+   STDOUT -> COMMIT: C1[cid=1] = 1 (pre=0, depth=1, param=11, valid=1)
+   STDOUT -> COMMIT: C2[cid=2] = 1 (pre=2, depth=2, param=1, valid=1)
+   STDOUT -> COMMIT: C3[cid=3] = 1 (pre=0, depth=3, param=1, valid=1)
+   STDOUT -> COMMIT: C0[cid=0] = 12 (pre=11, depth=0, param=10, valid=1)
+   STDOUT -> COMMIT: C1[cid=1] = 2 (pre=1, depth=1, param=12, valid=1)
+   STDOUT -> COMMIT: C2[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)
+   STDOUT -> COMMIT: C3[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)
+   STDOUT -> COMMIT: C0[cid=0] = 13 (pre=12, depth=0, param=10, valid=1)
+   STDOUT -> COMMIT: C1[cid=1] = 3 (pre=2, depth=1, param=13, valid=1)
+   STDERR -> REJECT_GUARD: C0[cid=0] kept W0=11 (depth=0, param=100, valid=1, pred=(param < 50)=>false, cand=12, gate=(cand >= 0 && !ovf32)=>true)
+   STDERR -> REJECT_INVARIANT: C2[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>true, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 12 steps) ===
++------------+-------+------------+---------------------+----------------+------------------------------+---------------------+------------------------------+--------------------------------------------------------------+----------------+-----------------+
+| Step       | Depth | CID (Name) | Event(param, valid) | Pre-State      | Predicate ::                 | Candidate           | Gate •                     | Verdict                                                      | Post-State     | Next Subscriber |
++------------+-------+------------+---------------------+----------------+------------------------------+---------------------+------------------------------+--------------------------------------------------------------+----------------+-----------------+
+| E0.0 (#0)  | 0     | C00 (C0)   | param=10, valid=1   | W0=10, valid=1 | param < 50 => true           | W0' := W0 + 1 => 11 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:C0),STATE_CHANGE(10->11)                | W0=11, valid=1 | C01 (C1)        |
+| E0.1 (#1)  | 1     | C01 (C1)   | param=11, valid=1   | W0=0, valid=1  | param > 10 => true           | W0' := W0 + 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(0->1)                                   | W0=1, valid=1  | C02 (C2)        |
+| E0.2 (#2)  | 2     | C02 (C2)   | param=1, valid=1    | W0=2, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 1  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->1)                                   | W0=1, valid=1  | C03 (C3)        |
+| E0.3 (#3)  | 3     | C03 (C3)   | param=1, valid=1    | W0=0, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 1   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:C3),STATE_CHANGE(0->1)                  | W0=1, valid=1  | None            |
+| E1.0 (#4)  | 0     | C00 (C0)   | param=100, valid=1  | W0=11, valid=1 | param < 50 => false          | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => true  | REJECT_GUARD *WATCH_CID(C0:C0),BREAK_ON_REJECT(REJECT_GUARD) | W0=11, valid=1 | None            |
+| E2.0 (#5)  | 0     | C00 (C0)   | param=10, valid=1   | W0=11, valid=1 | param < 50 => true           | W0' := W0 + 1 => 12 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:C0),STATE_CHANGE(11->12)                | W0=12, valid=1 | C01 (C1)        |
+| E2.1 (#6)  | 1     | C01 (C1)   | param=12, valid=1   | W0=1, valid=1  | param > 10 => true           | W0' := W0 + 1 => 2  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->2)                                   | W0=2, valid=1  | C02 (C2)        |
+| E2.2 (#7)  | 2     | C02 (C2)   | param=2, valid=1    | W0=1, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => 0  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(1->0)                                   | W0=0, valid=1  | C03 (C3)        |
+| E2.3 (#8)  | 3     | C03 (C3)   | param=0, valid=1    | W0=1, valid=1  | !(param == 2) [!= 2] => true | W0' := param => 0   | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C3:C3),STATE_CHANGE(1->0)                  | W0=0, valid=1  | None            |
+| E3.0 (#9)  | 0     | C00 (C0)   | param=10, valid=1   | W0=12, valid=1 | param < 50 => true           | W0' := W0 + 1 => 13 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:C0),STATE_CHANGE(12->13)                | W0=13, valid=1 | C01 (C1)        |
+| E3.1 (#10) | 1     | C01 (C1)   | param=13, valid=1   | W0=2, valid=1  | param > 10 => true           | W0' := W0 + 1 => 3  | cand >= 0 && !ovf32 => true  | COMMIT *STATE_CHANGE(2->3)                                   | W0=3, valid=1  | C02 (C2)        |
+| E3.2 (#11) | 2     | C02 (C2)   | param=3, valid=1    | W0=0, valid=1  | !(param < 1) [>= 1] => true  | W0' := W0 - 1 => -1 | cand >= 0 && !ovf32 => false | REJECT_INVARIANT *BREAK_ON_REJECT(REJECT_INVARIANT)          | W0=0, valid=1  | None            |
++------------+-------+------------+---------------------+----------------+------------------------------+---------------------+------------------------------+--------------------------------------------------------------+----------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (C0): WATCH_CID(C0:C0) -> COMMIT (W0: 10 -> 11, param=10, valid=1)
+  * [Step #0 | E0.0] C00 (C0): STATE_CHANGE(10->11) -> COMMIT (W0: 10 -> 11, param=10, valid=1)
+  * [Step #1 | E0.1] C01 (C1): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=11, valid=1)
+  * [Step #2 | E0.2] C02 (C2): STATE_CHANGE(2->1) -> COMMIT (W0: 2 -> 1, param=1, valid=1)
+  * [Step #3 | E0.3] C03 (C3): WATCH_CID(C3:C3) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #3 | E0.3] C03 (C3): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=1, valid=1)
+  * [Step #4 | E1.0] C00 (C0): WATCH_CID(C0:C0) -> REJECT_GUARD (W0: 11 -> 11, param=100, valid=1)
+  * [Step #4 | E1.0] C00 (C0): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 11 -> 11, param=100, valid=1)
+  * [Step #5 | E2.0] C00 (C0): WATCH_CID(C0:C0) -> COMMIT (W0: 11 -> 12, param=10, valid=1)
+  * [Step #5 | E2.0] C00 (C0): STATE_CHANGE(11->12) -> COMMIT (W0: 11 -> 12, param=10, valid=1)
+  * [Step #6 | E2.1] C01 (C1): STATE_CHANGE(1->2) -> COMMIT (W0: 1 -> 2, param=12, valid=1)
+  * [Step #7 | E2.2] C02 (C2): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=2, valid=1)
+  * [Step #8 | E2.3] C03 (C3): WATCH_CID(C3:C3) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #8 | E2.3] C03 (C3): STATE_CHANGE(1->0) -> COMMIT (W0: 1 -> 0, param=0, valid=1)
+  * [Step #9 | E3.0] C00 (C0): WATCH_CID(C0:C0) -> COMMIT (W0: 12 -> 13, param=10, valid=1)
+  * [Step #9 | E3.0] C00 (C0): STATE_CHANGE(12->13) -> COMMIT (W0: 12 -> 13, param=10, valid=1)
+  * [Step #10 | E3.1] C01 (C1): STATE_CHANGE(2->3) -> COMMIT (W0: 2 -> 3, param=13, valid=1)
+  * [Step #11 | E3.2] C02 (C2): BREAK_ON_REJECT(REJECT_INVARIANT) -> REJECT_INVARIANT (W0: 0 -> 0, param=3, valid=1)
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================
+
+################################################################################
+# EXAMPLE: AUTH
+################################################################################
+
+=== MACHINE CONNECTION & PROGRAMMING SNAPSHOT (SIM | HW_ID=0x4B504D43 'KPMC') ===
+  Capacity          : 64 concept slots (1024 B CME-RAW-1 BRAM)
+  PRE-LOAD State    : 0 / 64 active concepts (free=64, SHA-256=5f70bf18a0860070...) | HW Counters: events=0, commits=0, rejects=0, dropped=0
+  POST-LOAD State   : 2 / 64 active concepts (entry=[0], internal=[], leaf=[1], free=62, SHA-256=b376fd48e410379e...)
+  Readback & Diff   : 256/256 words OK (verified=true); 2 slot(s) modified during programming
++-----+---------+---------+-------------+--------------+---------------------------------------------------------------------------+--------------------------+
+| CID | Name    | Changed | Pre-Load W0 | Post-Load W0 | Pre-Load Rule -> Post-Load Rule                                           | Pre-Sub -> Post-Sub (W3) |
++-----+---------+---------+-------------+--------------+---------------------------------------------------------------------------+--------------------------+
+| C00 | Counter | YES     | _ (empty)   | 10           | EMPTY => ::(ASSUMP_DISABLED(false)) | W0' := param | •(cand>=0 && !ovf) | None => -> C1 (Mirror)   |
+| C01 | Mirror  | YES     | _ (empty)   | 0            | EMPTY => ::(ASSUMP_DISABLED(false)) | W0' := param | •(cand>=0 && !ovf) | None => None (0)         |
++-----+---------+---------+-------------+--------------+---------------------------------------------------------------------------+--------------------------+
+
+Lowered KPOL-AUTH Do/Go Bytecode (5 words): 0x12000000, 0x30000001, 0x20000000, 0x11000001, 0x50000000
+
+=== [BLOCK 1] SOURCE CODE / PROGRAM SPECIFICATION (AuthCounterSubset, KPOL-AUTH) ===
+  01 | Concept(Counter, 10, Lower=0, Upper=500)
+  02 | Concept(Mirror, 0, Lower=0, Upper=500)
+  03 | Counter • Assign(Mirror, Counter + 1)
+
+=== [BLOCK 2] BRAM DESCRIPTOR TABLE (--dump-concepts, 2 active of 64 slots) ===
++-----+---------+-----------------+-----------+----------------+------------------------------------------------------------------+------------------------+
+| CID | Name    | W0 (Init State) | Valid (_) | W1 (Operand)   | W2 (Hex & Decoded: Predicate ::, Action, Invariant •)          | W3 (Subscriber -> CID) |
++-----+---------+-----------------+-----------+----------------+------------------------------------------------------------------+------------------------+
+| C00 | Counter | 10 (0x0000000A) | 1 (valid) | 0 (0x00000000) | 0x00001303 [::(param > 0) | W0' := param | •(cand>=0 && !ovf)] | 1 (-> C1 (Mirror))     |
+| C01 | Mirror  | 0 (0x00000000)  | 1 (valid) | 1 (0x00000001) | 0x03000300 [::(true) | W0' := W0 + 1 | •(cand>=0 && !ovf)]     | 0 (None (0))           |
++-----+---------+-----------------+-----------+----------------+------------------------------------------------------------------+------------------------+
+
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 4 steps) ===
++-----------+-------+---------------+---------------------+----------------+--------------------+--------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| Step      | Depth | CID (Name)    | Event(param, valid) | Pre-State      | Predicate ::       | Candidate          | Gate •                     | Verdict                                                           | Post-State     | Next Subscriber |
++-----------+-------+---------------+---------------------+----------------+--------------------+--------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Counter) | param=25, valid=1   | W0=10, valid=1 | param > 0 => true  | W0' := param => 25 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:Counter),STATE_CHANGE(10->25)                | W0=25, valid=1 | C01 (Mirror)    |
+| E0.1 (#1) | 1     | C01 (Mirror)  | param=25, valid=1   | W0=0, valid=1  | true => true       | W0' := W0 + 1 => 1 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C1:Mirror),STATE_CHANGE(0->1)                   | W0=1, valid=1  | None            |
+| E1.0 (#2) | 0     | C00 (Counter) | param=-5, valid=1   | W0=25, valid=1 | param > 0 => false | W0' := param => -5 | cand >= 0 && !ovf32 => false | REJECT_GUARD *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_GUARD) | W0=25, valid=1 | None            |
+| E2.0 (#3) | 0     | C00 (Counter) | param=0, valid=_    | W0=25, valid=1 | param > 0 => false | W0' := param => 0  | cand >= 0 && !ovf32 => false | REJECT_FAULT *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_FAULT) | W0=25, valid=1 | None            |
++-----------+-------+---------------+---------------------+----------------+--------------------+--------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Counter): WATCH_CID(C0:Counter) -> COMMIT (W0: 10 -> 25, param=25, valid=1)
+  * [Step #0 | E0.0] C00 (Counter): STATE_CHANGE(10->25) -> COMMIT (W0: 10 -> 25, param=25, valid=1)
+  * [Step #1 | E0.1] C01 (Mirror): WATCH_CID(C1:Mirror) -> COMMIT (W0: 0 -> 1, param=25, valid=1)
+  * [Step #1 | E0.1] C01 (Mirror): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=25, valid=1)
+  * [Step #2 | E1.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_GUARD (W0: 25 -> 25, param=-5, valid=1)
+  * [Step #2 | E1.0] C00 (Counter): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 25 -> 25, param=-5, valid=1)
+  * [Step #3 | E2.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_FAULT (W0: 25 -> 25, param=0, valid=_)
+  * [Step #3 | E2.0] C00 (Counter): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 25 -> 25, param=0, valid=_)
+
+=== [BLOCK 4] STATE DIFF (Before -> After) & TELEMETRY COUNTERS ===
++-----+---------+--------------------+-------------------+-------+---------+
+| CID | Name    | Before (W0, valid) | After (W0, valid) | Delta | Status  |
++-----+---------+--------------------+-------------------+-------+---------+
+| C00 | Counter | W0=10, valid=1     | W0=25, valid=1    | +15   | CHANGED |
+| C01 | Mirror  | W0=0, valid=1      | W0=1, valid=1     | +1    | CHANGED |
++-----+---------+--------------------+-------------------+-------+---------+
+Telemetry Summary: events_processed=4, commits=2, rejects=2, fault_propagations=1, last_committed_state=1
+
+======================================================================================================================
+ VMK (Virtual Machine of Kuzmin) v0.1.0 | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 | State: PRE-LOAD -> POST-LOAD -> COMPLETED
+ Concepts: Active: 2 / 64 (Pre-load: 0 / 64, Changed on load: 2, Free: 62) | Entry: [0] Internal: [] Leaf: [1]
+ Counters: Events=4 | Commits=2 | Rejects=2 | Faults(_)=1 | Dropped=0 | Bank=0 | LastState=1
+======================================================================================================================
+ [PANEL 1: CONCEPT TABLE (PRE-LOAD vs POST-LOAD vs CURRENT STATE)]
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+----------------+
+| CID | Name    | Type  | Pre-Load W0 | Post-Load W0 | Current W0 (Δ) | Valid(_) | Predicate :: | Action        | Gate •            | Subscriber     |
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+----------------+
+| C00 | Counter | Int32 | _ (empty)   | 10           | 25 (+15)        | 1        | param > 0    | W0' := param  | cand >= 0 && !ovf32 | -> C1 (Mirror) |
+| C01 | Mirror  | Int32 | _ (empty)   | 0            | 1 (+1)          | 1        | true         | W0' := W0 + 1 | cand >= 0 && !ovf32 | None (0)       |
++-----+---------+-------+-------------+--------------+-----------------+----------+--------------+---------------+---------------------+----------------+
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS (STDIN / STDOUT / STDERR)]
+   SRC 01 | Concept(Counter, 10, Lower=0, Upper=500)
+   SRC 02 | Concept(Mirror, 0, Lower=0, Upper=500)
+   SRC 03 | Counter • Assign(Mirror, Counter + 1)
+   STDIN  (3 events) : (C0:25,valid=1), (C0:-5,valid=1), (C0:0,valid=_)
+   STDOUT -> COMMIT: Counter[cid=0] = 25 (pre=10, depth=0, param=25, valid=1)
+   STDOUT -> COMMIT: Mirror[cid=1] = 1 (pre=0, depth=1, param=25, valid=1)
+   STDERR -> REJECT_GUARD: Counter[cid=0] kept W0=25 (depth=0, param=-5, valid=1, pred=(param > 0)=>false, cand=-5, gate=(cand >= 0 && !ovf32)=>false)
+   STDERR -> REJECT_FAULT: Counter[cid=0] kept W0=25 (depth=0, param=0, valid=_, pred=(param > 0)=>false, cand=0, gate=(cand >= 0 && !ovf32)=>false)
+----------------------------------------------------------------------------------------------------------------------
+ [PANEL 3: CASCADE WAVE STEP TRACE]
+=== [BLOCK 3] STEP-BY-STEP EVENT & CASCADE TRACE (--trace-events, 4 steps) ===
++-----------+-------+---------------+---------------------+----------------+--------------------+--------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| Step      | Depth | CID (Name)    | Event(param, valid) | Pre-State      | Predicate ::       | Candidate          | Gate •                     | Verdict                                                           | Post-State     | Next Subscriber |
++-----------+-------+---------------+---------------------+----------------+--------------------+--------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+| E0.0 (#0) | 0     | C00 (Counter) | param=25, valid=1   | W0=10, valid=1 | param > 0 => true  | W0' := param => 25 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C0:Counter),STATE_CHANGE(10->25)                | W0=25, valid=1 | C01 (Mirror)    |
+| E0.1 (#1) | 1     | C01 (Mirror)  | param=25, valid=1   | W0=0, valid=1  | true => true       | W0' := W0 + 1 => 1 | cand >= 0 && !ovf32 => true  | COMMIT *WATCH_CID(C1:Mirror),STATE_CHANGE(0->1)                   | W0=1, valid=1  | None            |
+| E1.0 (#2) | 0     | C00 (Counter) | param=-5, valid=1   | W0=25, valid=1 | param > 0 => false | W0' := param => -5 | cand >= 0 && !ovf32 => false | REJECT_GUARD *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_GUARD) | W0=25, valid=1 | None            |
+| E2.0 (#3) | 0     | C00 (Counter) | param=0, valid=_    | W0=25, valid=1 | param > 0 => false | W0' := param => 0  | cand >= 0 && !ovf32 => false | REJECT_FAULT *WATCH_CID(C0:Counter),BREAK_ON_REJECT(REJECT_FAULT) | W0=25, valid=1 | None            |
++-----------+-------+---------------+---------------------+----------------+--------------------+--------------------+------------------------------+-------------------------------------------------------------------+----------------+-----------------+
+Watchpoints / Breakpoints Triggered:
+  * [Step #0 | E0.0] C00 (Counter): WATCH_CID(C0:Counter) -> COMMIT (W0: 10 -> 25, param=25, valid=1)
+  * [Step #0 | E0.0] C00 (Counter): STATE_CHANGE(10->25) -> COMMIT (W0: 10 -> 25, param=25, valid=1)
+  * [Step #1 | E0.1] C01 (Mirror): WATCH_CID(C1:Mirror) -> COMMIT (W0: 0 -> 1, param=25, valid=1)
+  * [Step #1 | E0.1] C01 (Mirror): STATE_CHANGE(0->1) -> COMMIT (W0: 0 -> 1, param=25, valid=1)
+  * [Step #2 | E1.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_GUARD (W0: 25 -> 25, param=-5, valid=1)
+  * [Step #2 | E1.0] C00 (Counter): BREAK_ON_REJECT(REJECT_GUARD) -> REJECT_GUARD (W0: 25 -> 25, param=-5, valid=1)
+  * [Step #3 | E2.0] C00 (Counter): WATCH_CID(C0:Counter) -> REJECT_FAULT (W0: 25 -> 25, param=0, valid=_)
+  * [Step #3 | E2.0] C00 (Counter): BREAK_ON_REJECT(REJECT_FAULT) -> REJECT_FAULT (W0: 25 -> 25, param=0, valid=_)
+======================================================================================================================
+ KEYS: [s] Step Next Event | [i] Input STDIN | [f] Inject Fault (_) | [r] Reload BRAM | [q] Quit
+======================================================================================================================

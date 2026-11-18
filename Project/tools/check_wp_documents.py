@@ -1,12 +1,74 @@
 #!/usr/bin/env python3
 """Check NG document envelopes and immutable inputs, not semantic acceptance."""
 
+import argparse
+import datetime
 import hashlib
 import json
 from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _infer_direction(rel_path: str) -> str:
+    if rel_path.startswith("Engineering/"):
+        return "Engineering"
+    if rel_path.startswith("Research/"):
+        return "Research"
+    if rel_path.startswith("Project/"):
+        return "Project"
+    return "technical-root"
+
+
+def _infer_wp_type(path: Path, rel_path: str) -> str:
+    if path.suffix.lower() == ".md":
+        text = path.read_text(encoding="utf-8", errors="replace")
+        m = re.search(r"(?m)^\* \*\*Тип WP(?: редакції NG)?:\*\*\s+(.+?)\s*$", text)
+        if m:
+            return m.group(1).strip().strip("`")
+        return "Guide"
+    if "/raw/" in f"/{rel_path}" or rel_path.endswith((".log", ".json", ".csv", ".hex", ".bin", ".lac")):
+        if rel_path.endswith("go.mod"):
+            return "Configuration"
+        return "Data"
+    if rel_path.endswith(("go.mod", ".yml", ".yaml", ".ini", ".gitignore")):
+        return "Configuration"
+    return "Source Code"
+
+
+def write_wp_index(root: Path) -> None:
+    index_path = root / "Project/registers/wp-index.json"
+    existing_data = json.loads(index_path.read_text(encoding="utf-8"))
+    by_path = {e["path"]: dict(e) for e in existing_data.get("entries", [])}
+
+    added = 0
+    for p in sorted(root.rglob("*")):
+        if not p.is_file():
+            continue
+        if any(part in {".git", ".pytest_cache", "__pycache__"} for part in p.parts):
+            continue
+        rel = p.relative_to(root).as_posix()
+        if rel not in by_path:
+            by_path[rel] = {
+                "path": rel,
+                "direction": _infer_direction(rel),
+                "wp_type": _infer_wp_type(p, rel),
+                "immutable_input": False,
+            }
+            added += 1
+
+    entries = [by_path[k] for k in sorted(by_path)]
+    ver_parts = [int(x) for x in existing_data.get("version", "0.21.0").split(".")]
+    if added > 0:
+        ver_parts[1] += 1
+        ver_parts[2] = 0
+    new_obj = {
+        "version": ".".join(str(x) for x in ver_parts),
+        "date": datetime.date.today().isoformat(),
+        "entries": entries,
+    }
+    index_path.write_text(json.dumps(new_obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def check(root):
@@ -52,6 +114,11 @@ def check(root):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Check WP documents and optionally update wp-index.json")
+    parser.add_argument("--write-index", action="store_true", help="update Project/registers/wp-index.json")
+    args = parser.parse_args()
+    if args.write_index:
+        write_wp_index(ROOT)
     result = check(ROOT)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     raise SystemExit(bool(result["errors"]))

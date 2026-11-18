@@ -1,0 +1,35 @@
+# cmd: vmk --mode bram64 --example bms --stdio --fail-on-reject && vmk --mode conceptual --example sum --stdio --fail-on-reject
+# timestamp: 2026-11-18T11:50:45.496632+02:00
+# git_commit: 6616ab80dd196919980a6f1ba7f8c362a81bf525
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+# evidence_kind: vmk_go_stdio_unix_pipe_session
+=== [1] BRAM64 BMS STDIO (exit_code=1) ===
+--- STDOUT ---
+COMMIT: Cell_Delta_mV[cid=0] = 1 (pre=0, depth=0, param=120, valid=1)
+COMMIT: Module_Thermal_Guard[cid=1] = 1 (pre=0, depth=1, param=1, valid=1)
+COMMIT: Pack_Fault_Latch[cid=2] = 1 (pre=2, depth=2, param=1, valid=1)
+COMMIT: Contactor_Interlock[cid=3] = 1 (pre=10, depth=3, param=1, valid=1)
+COMMIT: Cell_Delta_mV[cid=0] = 2 (pre=1, depth=0, param=180, valid=1)
+COMMIT: Module_Thermal_Guard[cid=1] = 2 (pre=1, depth=1, param=2, valid=1)
+COMMIT: Pack_Fault_Latch[cid=2] = 0 (pre=1, depth=2, param=2, valid=1)
+COMMIT: Contactor_Interlock[cid=3] = 0 (pre=1, depth=3, param=0, valid=1)
+COMMIT: Cell_Delta_mV[cid=0] = 3 (pre=2, depth=0, param=250, valid=1)
+COMMIT: Module_Thermal_Guard[cid=1] = 3 (pre=2, depth=1, param=3, valid=1)
+COMMIT: Cell_Delta_mV[cid=0] = 4 (pre=3, depth=0, param=5000, valid=1)
+COMMIT: Module_Thermal_Guard[cid=1] = 4 (pre=3, depth=1, param=4, valid=1)
+--- STDERR ---
+REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=15, valid=1, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>true)
+REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=5500, valid=1, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>true)
+REJECT_FAULT: Cell_Delta_mV[cid=0] kept W0=0 (depth=0, param=0, valid=_, pred=(50 <= param <= 5000)=>false, cand=1, gate=(cand >= 0 && !ovf32)=>false)
+REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=1 (depth=0, param=49, valid=1, pred=(50 <= param <= 5000)=>false, cand=2, gate=(cand >= 0 && !ovf32)=>true)
+REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=3, valid=1, pred=(!(param < 1) [>= 1])=>true, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
+REJECT_INVARIANT: Pack_Fault_Latch[cid=2] kept W0=0 (depth=2, param=4, valid=1, pred=(!(param < 1) [>= 1])=>true, cand=-1, gate=(cand >= 0 && !ovf32)=>false)
+REJECT_GUARD: Cell_Delta_mV[cid=0] kept W0=4 (depth=0, param=-10, valid=1, pred=(50 <= param <= 5000)=>false, cand=5, gate=(cand >= 0 && !ovf32)=>true)
+
+=== [2] CONCEPTUAL SUM STDIO (exit_code=1) ===
+--- STDOUT ---
+COMMIT: Sum[cid=0] = 10 (pre=0, ← += 10)
+COMMIT: Sum[cid=0] = 35 (pre=10, ← += 25)
+READ: Sum = 35 (post-dot → • reset Sum = 0)
+--- STDERR ---
+REJECT_FAULT: Sum[cid=0] kept 0 (input valid=_)
