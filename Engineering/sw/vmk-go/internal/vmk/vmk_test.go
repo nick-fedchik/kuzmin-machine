@@ -365,7 +365,12 @@ func TestAllPredicatesActionsSelfSuppressAndExamplesAll(t *testing.T) {
 		t.Fatalf("expected exit code 1 for --example bms --fail-on-reject, got %d", code)
 	}
 
-	// Verify --mode conceptual --stdio works for all BRAM-lowered examples (bms, cascade, increase, decrease, auth)
+	// Verify --mode conceptual --stdio works for `toggle If` and all BRAM-lowered examples (bms, cascade, increase, decrease, auth)
+	exOut.Reset()
+	exErr.Reset()
+	if code := RunCLI([]string{"--mode", "conceptual", "--example", "if", "--stdio"}, strings.NewReader("toggle If\ntoggle If\n"), &exOut, &exErr); code != 0 || !strings.Contains(exOut.String(), "COMMIT: If[cid=0] = ¬") {
+		t.Fatalf("toggle If in conceptual stdio failed: code=%d stderr=%s out=%s", code, exErr.String(), exOut.String())
+	}
 	for _, exName := range []string{"bms", "cascade", "increase", "decrease", "auth"} {
 		exOut.Reset()
 		exErr.Reset()
@@ -374,5 +379,19 @@ func TestAllPredicatesActionsSelfSuppressAndExamplesAll(t *testing.T) {
 			t.Fatalf("--mode conceptual --stdio --example %s failed: code=%d stderr=%s\nout=%s",
 				exName, code, exErr.String(), exOut.String())
 		}
+	}
+
+	// Verify safe PYNQ_SUDO_PASS handling in BuildPYNQRemoteExec (no shell interpolation, no default password)
+	cmdNoPass, stdinNoPass := BuildPYNQRemoteExec("/home/xilinx/km_vmk_274_work", []int32{120, 180}, "")
+	if stdinNoPass != "" || !strings.Contains(cmdNoPass, "sudo -n ./km_pynq_debug_probe program_image.bin 120 180") {
+		t.Fatalf("unexpected BuildPYNQRemoteExec for empty password: cmd=%q stdin=%q", cmdNoPass, stdinNoPass)
+	}
+	specialPass := "p@ss'w0rd; echo $(id) `uname`"
+	cmdWithPass, stdinWithPass := BuildPYNQRemoteExec("/home/xilinx/km_vmk_274_work", []int32{120}, specialPass)
+	if strings.Contains(cmdWithPass, specialPass) || !strings.Contains(cmdWithPass, "sudo -S -p '' ./km_pynq_debug_probe program_image.bin 120") || stdinWithPass != specialPass+"\n" {
+		t.Fatalf("unsafe BuildPYNQRemoteExec with special password: cmd=%q stdin=%q", cmdWithPass, stdinWithPass)
+	}
+	if gotQuote := ShellQuoteSingle("a'b"); gotQuote != "'a'\\''b'" {
+		t.Fatalf("unexpected ShellQuoteSingle('a\\'b'): %q", gotQuote)
 	}
 }

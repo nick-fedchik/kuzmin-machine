@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.9.0
+* **Версія:** 0.9.1
 * **Дата:** 2026-11-18
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -44,7 +44,7 @@
 |---|---|---|
 | Plan | [NG](../plans/ng-transition.md), [EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/plan.md), [EXP-GPU-02](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/plan.md); [форма](../templates/work-products/plan.md) | Додано плани експериментів EXP-GPU-01 та EXP-GPU-02. |
 | Specification / Patent Draft | [Портфель](../patents/README.md), [KM-PAT-01](../patents/patent-apparatus-heterogeneous-event-engine.md), [KM-PAT-02](../patents/patent-method-hierarchical-event-control.md), [звіт #177](../patents/report-177-timing-dependent-claims.md) | Чернетки заявок на винахід (пристрій та спосіб) для УКРНОІВІ/PCT/USPTO. |
-| Guide | [Навігація](../README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md); [форма](../templates/work-products/guide.md) | README пакетів не потребують окремого сховища docs. |
+| Guide | [Навігація](../README.md), [Посібник користувача VMK v1.0.1](../../Engineering/guides/vmk-users-guide.md), [`vmk-go` README](../../Engineering/sw/vmk-go/README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md); [форма](../templates/work-products/guide.md) | Практичний посібник користувача VMK (`bram64` + `conceptual`, `STDIO`, 4-панельний TUI, `PYNQ-Z1`) та навігаційні README пакетів. |
 | Policy | [Розміщення](../policies/layout.md), [ліцензійний режим](../policies/licensing.md), [WP](../policies/work-products.md); [форма](../templates/work-products/policy.md) | Межі й повноваження визначає власник. |
 | Register | Цей запис, [цілі](goals-needs-work-items.md), [відкриті WI](open-work-items.md), [CI](configuration-items.md), [інвентар обладнання](hardware-inventory.md); [форма](../templates/work-products/register.md) | Нові актуальні карти та інвентар, не копії історичних зрізів. |
 | Template | [Єдине місце](../templates/README.md), [покриття](../templates/work-products/README.md) | Усі 19 типів, 4 підтипи Report, SYS/HW/SW; placeholder дозволений у формі. |
@@ -73,6 +73,7 @@
 | 0.3.0 | 2026-11-12 | Додано реєстрацію B6 (ADR GPU симбіоз) та пакету експерименту EXP-GPU-01 (Protocol, Plan, Guide). |
 | 0.4.0 | 2026-11-13 | #151: оновлено стан B5 v2.1 та додано реєстрацію звіту верифікації черги `queue-retention-151/report.md`. |
 | 0.5.0 | 2026-11-14 | #169: зареєстровано звіти перевірок #115, #164, #167, #168, #169 та оновлено стан специфікацій B4/B5 v2.2.0 і `wp-index.json`. |
+| 0.9.1 | 2026-11-18 | #276: зареєстровано практичний Посібник користувача VMK `Engineering/guides/vmk-users-guide.md` (`1.0.1`, тип WP `Guide`), `Engineering/sw/vmk-go/README.md` (`1.0.0`) та оновлено `wp-index.json` (`0.23.0`). |
 | 0.9.0 | 2026-11-18 | #274: зареєстровано Go-модуль двомодового емулятора VMK та 4-панельного TUI-дебагера `Engineering/sw/vmk-go/`, специфікацію `Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`, пакет верифікації `Engineering/validation/kpol-cme/vmk-go-274/`, тести `Engineering/sw/tests/test_vmk_go_274.py` та оновлено `wp-index.json` (`0.22.0`). |
 | 0.8.0 | 2026-11-18 | #272: зареєстровано покроковий дебагер каскадів МК `Engineering/sw/kpol-ref/kpol_debugger.py`, пакет верифікації `Engineering/validation/kpol-cme/debugger-trace-272/`, тести `Engineering/sw/tests/test_kpol_debugger_272.py` та оновлено `wp-index.json` (`0.21.0`). |
 | 0.7.0 | 2026-11-17 | #270: зареєстровано підсумковий інженерно-комерційний висновок `Research/studies/commercialization-and-final-conclusions.md` (`1.0.0`), генератор детермінованого C99 `Engineering/sw/kpol-ref/c99_emitter.py`, референсний пакет BMS `Engineering/validation/kpol-cme/c99-emitter-270/`, тести `Engineering/sw/tests/test_c99_emitter_270.py` та оновлено `wp-index.json` (`0.20.0`). |

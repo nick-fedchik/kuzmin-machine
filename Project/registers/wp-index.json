@@ -1,5 +1,5 @@
 {
-  "version": "0.22.0",
+  "version": "0.24.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -144,6 +144,12 @@
       "path": "Engineering/design/system-boundary-allocation-b1.md",
       "direction": "Engineering",
       "wp_type": "Design",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/guides/vmk-users-guide.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
       "immutable_input": false
     },
     {
@@ -825,6 +831,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/vmk-go/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/vmk-go/cmd/vmk/main.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -868,6 +880,12 @@
     },
     {
       "path": "Engineering/sw/vmk-go/internal/vmk/kpol_compiler.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/pynq.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
