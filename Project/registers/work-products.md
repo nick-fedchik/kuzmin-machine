@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.11.0
+* **Версія:** 0.12.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -44,7 +44,7 @@
 |---|---|---|
 | Plan | [NG](../plans/ng-transition.md), [EXP-GPU-01](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-01/plan.md), [EXP-GPU-02](../../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/plan.md); [форма](../templates/work-products/plan.md) | Додано плани експериментів EXP-GPU-01 та EXP-GPU-02. |
 | Specification / Patent Draft | [Портфель](../patents/README.md), [KM-PAT-01](../patents/patent-apparatus-heterogeneous-event-engine.md), [KM-PAT-02](../patents/patent-method-hierarchical-event-control.md), [звіт #177](../patents/report-177-timing-dependent-claims.md) | Чернетки заявок на винахід (пристрій та спосіб) для УКРНОІВІ/PCT/USPTO. |
-| Guide | [Навігація](../README.md), [Посібник користувача VMK v1.1.0](../../Engineering/guides/vmk-users-guide.md), [`vmk-go` README](../../Engineering/sw/vmk-go/README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md); [форма](../templates/work-products/guide.md) | Практичний посібник користувача VMK (`bram64` + `conceptual`, `EKPOL`, `STDIO`, 4-панельний TUI, `PYNQ-Z1`) та навігаційні README пакетів. |
+| Guide | [Навігація](../README.md), [Каталог посібників `Engineering/guides/`](../../Engineering/guides/README.md), [Керівництво користувача та чистий код мов KPOL і EKPOL v1.0.0](../../Engineering/guides/kpol-ekpol-language-guide.md), [Посібник користувача VMK v1.2.1](../../Engineering/guides/vmk-users-guide.md), [`vmk-go` README](../../Engineering/sw/vmk-go/README.md), [fpga-gpu-symbiosis](../../Research/studies/fpga-gpu-symbiosis/README.md); [форма](../templates/work-products/guide.md) | Фундаментальне керівництво з мов KPOL та EKPOL за принципами Кернігана, Рітчі та Мартіна (`kpol-ekpol-language-guide.md` `1.0.0`), практичний посібник користувача VMK (`vmk-users-guide.md` `1.2.1`) та навігаційні README пакетів. |
 | Policy | [Розміщення](../policies/layout.md), [ліцензійний режим](../policies/licensing.md), [WP](../policies/work-products.md); [форма](../templates/work-products/policy.md) | Межі й повноваження визначає власник. |
 | Register | Цей запис, [цілі](goals-needs-work-items.md), [відкриті WI](open-work-items.md), [CI](configuration-items.md), [інвентар обладнання](hardware-inventory.md); [форма](../templates/work-products/register.md) | Нові актуальні карти та інвентар, не копії історичних зрізів. |
 | Template | [Єдине місце](../templates/README.md), [покриття](../templates/work-products/README.md) | Усі 19 типів, 4 підтипи Report, SYS/HW/SW; placeholder дозволений у формі. |
@@ -73,6 +73,7 @@
 | 0.3.0 | 2026-11-12 | Додано реєстрацію B6 (ADR GPU симбіоз) та пакету експерименту EXP-GPU-01 (Protocol, Plan, Guide). |
 | 0.4.0 | 2026-11-13 | #151: оновлено стан B5 v2.1 та додано реєстрацію звіту верифікації черги `queue-retention-151/report.md`. |
 | 0.5.0 | 2026-11-14 | #169: зареєстровано звіти перевірок #115, #164, #167, #168, #169 та оновлено стан специфікацій B4/B5 v2.2.0 і `wp-index.json`. |
+| 0.12.0 | 2026-11-18 | #282, #284: зареєстровано Керівництво користувача та чистий код мов KPOL і EKPOL `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.0`, тип WP `Guide`), індекс каталогу посібників `Engineering/guides/README.md` (`1.0.0`, тип WP `Guide`), оновлено `Engineering/guides/vmk-users-guide.md` (`1.2.1`) та `wp-index.json`. |
 | 0.11.0 | 2026-11-18 | #280: зареєстровано повноекранний інтерактивний TUI-дебагер `Engineering/sw/vmk-go/internal/vmk/tui_fullscreen.go` (`VMK v0.3.0`), сирий лог сесії `Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_fullscreen_tui_280.log`, оновлено `vmk-users-guide.md` (`1.2.0`), `vmk-go-emulator-and-tui-debugger.md` (`1.2.0`), `vmk-go-274/report.md` (`1.1.0`) та `wp-index.json`. |
 | 0.10.0 | 2026-11-18 | #278: зареєстровано специфікацію `Engineering/specifications/kpol/ekpol-specification.md` (`1.0.0`), Python-фронтенд `Engineering/sw/kpol-ref/ekpol_frontend.py`, Go-парсер `Engineering/sw/vmk-go/internal/vmk/ekpol.go` (`VMK v0.2.0`), каталог прикладів `Engineering/sw/vmk-go/examples/*.ekpol`, звіт `Engineering/validation/kpol-cme/ekpol-278/report.md` (`1.0.0`), тести `Engineering/sw/tests/test_ekpol_278.py` та оновлено `wp-index.json` (`0.25.0`). |
 | 0.9.1 | 2026-11-18 | #276: зареєстровано практичний Посібник користувача VMK `Engineering/guides/vmk-users-guide.md` (`1.0.1`, тип WP `Guide`), `Engineering/sw/vmk-go/README.md` (`1.0.0`) та оновлено `wp-index.json` (`0.23.0`). |

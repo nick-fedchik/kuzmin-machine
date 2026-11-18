@@ -546,3 +546,117 @@ def test_specifications_have_no_version_suffix_in_filenames():
         assert _find_versioned_spec_markdown_files(scratch) == []
         (scratch / "kpol" / "kpol-consolidated-0.1.0.md").write_text("# bad\n", encoding="utf-8")
         assert _find_versioned_spec_markdown_files(scratch) == ["kpol/kpol-consolidated-0.1.0.md"]
+
+
+def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
+    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` and `Engineering/guides/README.md`
+    structure, compile and execute all embedded valid `.ekpol` (`module ...`) and `.kpol` (`Problem ...`)
+    code blocks in Python and Go `VMK v0.3.0`, and prove negative mutant control (`AGENTS.md §4 п. 1`)
+    on the intentionally cyclic anti-pattern (`EKPOL-CYCLE-ERR`).
+    """
+    guide_md = REPO_ROOT / "Engineering" / "guides" / "kpol-ekpol-language-guide.md"
+    guides_readme = REPO_ROOT / "Engineering" / "guides" / "README.md"
+    assert guide_md.is_file(), f"Missing {guide_md}"
+    assert guides_readme.is_file(), f"Missing {guides_readme}"
+
+    guide_txt = guide_md.read_text(encoding="utf-8")
+    readme_txt = guides_readme.read_text(encoding="utf-8")
+
+    # 1. Verify Guide WP template sections and K&R + Clean Code coverage
+    for required_marker in [
+        "* **Версія:** 1.0.0",
+        "* **Тип WP:** Guide",
+        "## Призначення",
+        "## Навігація чи використання",
+        "Частина I. Вступний курс за методом Кернігана і Рітчі",
+        "Частина II. Дисципліна «Чистого коду» в KPOL та EKPOL за принципами Роберта Мартіна",
+        "Частина III. Довідник мов KPOL та EKPOL",
+        "Правило 1.",
+        "Правило 2.",
+        "Правило 3.",
+        "Правило 4.",
+        "Правило 5.",
+        "Правило 6.",
+        "Правило 7.",
+        "SMELL-01",
+        "SMELL-07",
+        "## Обмеження",
+        "## Історія версій",
+        "## Абревіатури та глосарій",
+    ]:
+        assert required_marker in guide_txt, f"kpol-ekpol-language-guide.md missing {required_marker!r}"
+
+    for readme_marker in [
+        "* **Версія:** 1.0.0",
+        "* **Тип WP:** Guide",
+        "kpol-ekpol-language-guide.md",
+        "vmk-users-guide.md",
+        "## Призначення",
+        "## Навігація чи використання",
+        "## Обмеження",
+        "## Історія версій",
+        "## Абревіатури та глосарій",
+    ]:
+        assert readme_marker in readme_txt, f"Engineering/guides/README.md missing {readme_marker!r}"
+
+    # 2. Extract all ```ekpol and ```kpol fenced blocks from the guide
+    ekpol_blocks = re.findall(r"```ekpol\n(.*?)```", guide_txt, flags=re.DOTALL)
+    kpol_blocks = re.findall(r"```kpol\n(.*?)```", guide_txt, flags=re.DOTALL)
+    assert len(ekpol_blocks) >= 15, f"Expected at least 15 ekpol examples in guide, found {len(ekpol_blocks)}"
+    assert len(kpol_blocks) >= 2, f"Expected at least 2 kpol examples in guide, found {len(kpol_blocks)}"
+
+    valid_ekpol_count = 0
+    anti_pattern_cycle_count = 0
+
+    with _workspace_scratch_dir("guide_284") as scratch:
+        vmk_bin = _build_vmk_binary(scratch)
+
+        for idx, block in enumerate(ekpol_blocks):
+            if "ANTI-PATTERN: EKPOL-CYCLE-ERR" in block:
+                anti_pattern_cycle_count += 1
+                # Negative control (AGENTS.md §4 п. 1): cyclic anti-pattern MUST fail with EKPOL-CYCLE-ERR
+                with pytest.raises(ef.EkpolError, match="EKPOL-CYCLE-ERR"):
+                    ef.compile_ekpol_to_bram_image(block)
+                continue
+
+            valid_ekpol_count += 1
+            prog = ef.parse_ekpol(block)
+            assert len(prog.concepts) >= 1, f"Block #{idx} parsed 0 concepts"
+
+            # Every valid block must run cleanly in Go VMK v0.3.0
+            ek_file = scratch / f"guide_example_{idx}.ekpol"
+            ek_file.write_text(block, encoding="utf-8")
+            res = subprocess.run(
+                [str(vmk_bin), "--program", str(ek_file)],
+                env=_go_env(scratch),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            assert res.returncode == 0
+
+            # If all concepts are Int32 with non-undef init and no read/call rules, also verify BRAM64 compilation
+            is_bram_compatible = all(
+                c.canonical_type == "Int32"
+                and not c.is_undef_init
+                and all(r.trigger_kind in ("write", "change") for r in c.rules)
+                for c in prog.concepts
+            )
+            if is_bram_compatible:
+                bram_img = ef.compile_ekpol_to_bram_image(block)
+                assert len(bram_img) == 1024
+
+        assert valid_ekpol_count >= 14
+        assert anti_pattern_cycle_count == 1, "Guide must include the cyclic anti-pattern negative control block"
+
+        for idx, kblock in enumerate(kpol_blocks):
+            mod = kr.parse_module(kblock)
+            prof = "KPOL-CME-1" if len(mod.states) == 1 else "KPOL-CME-2"
+            img = kr.compile_concept_microcode_bram_image(mod, profile=prof)
+            assert len(img) == 1024
+
+    wp_index = json.loads((REPO_ROOT / "Project" / "registers" / "wp-index.json").read_text(encoding="utf-8"))
+    by_path = {e["path"]: e for e in wp_index["entries"]}
+    assert by_path.get("Engineering/guides/kpol-ekpol-language-guide.md", {}).get("wp_type") == "Guide"
+    assert by_path.get("Engineering/guides/README.md", {}).get("wp_type") == "Guide"
+
