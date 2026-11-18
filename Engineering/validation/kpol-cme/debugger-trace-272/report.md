@@ -3,7 +3,7 @@
 * **Версія:** 1.0.0
 * **Дата:** 2026-11-18
 * **Тип WP редакції NG:** Report
-* **Issue:** `Closes` [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272). **PR:** відкритий у гілці `feat/272-step-debugger-and-example-traces`.
+* **Issue:** `Closes` [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272). **PR:** [#273](https://github.com/nick-fedchik/kuzmin-machine/pull/273) у гілці `feat/272-step-debugger-and-example-traces`.
 * **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент:** очікується незалежна рецензія (`claude-sonnet-5.5` за правилом `PROJECT-MANUAL §2.1`).
 * **Коміт бази, на якому виконано:** `6c234bcf513734e8f024024b27379e08a13a35cb` (`origin/main`).
 * **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`GCC 15.2.0`, `Python 3.14.4`, `pytest 9.0.2`, `z3-solver 5.4.1`, `/usr/bin/z3 4.13.3`, `Icarus Verilog 12.0`).
