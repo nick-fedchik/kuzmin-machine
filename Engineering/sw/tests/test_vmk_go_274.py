@@ -40,7 +40,7 @@ VMK_GO_DIR = REPO_ROOT / "Engineering" / "sw" / "vmk-go"
 SW_REF_DIR = REPO_ROOT / "Engineering" / "sw" / "kpol-ref"
 VAL_DIR = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "vmk-go-274"
 RAW_DIR = VAL_DIR / "raw"
-SPEC_MD = REPO_ROOT / "Engineering" / "specifications" / "sw" / "vmk-go-emulator-and-tui-debugger-0.1.0.md"
+SPEC_MD = REPO_ROOT / "Engineering" / "specifications" / "sw" / "vmk-go-emulator-and-tui-debugger.md"
 REPORT_MD = VAL_DIR / "report.md"
 BMS_KPOL = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "c99-emitter-270" / "bms_safety_cascade.kpol"
 
@@ -465,7 +465,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
         "## Призначення",
         "## Навігація чи використання",
         "../../guides/vmk-users-guide.md",
-        "../../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md",
+        "../../specifications/sw/vmk-go-emulator-and-tui-debugger.md",
         "## Обмеження",
         "## Історія версій",
         "## Абревіатури та глосарій",

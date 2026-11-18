@@ -15,7 +15,7 @@
 ### Основні документи та артефакти
 
 * **Повний практичний Посібник користувача:** [`Engineering/guides/vmk-users-guide.md`](../../guides/vmk-users-guide.md) (`1.2.0`) — детальний розбір обох режимів (`conceptual` та `bram64`), читання знімків `PRE-LOAD -> POST-LOAD`, повноекранного TUI-дебагера (`Concept Inspector`, `Manual Event Creator [e]`, `Single Micro-Step [n/Space]`, `Modify State [m]`, `Diff/Source [d]`), потоків `STDIO` (`# @stdin` / `# @stdout`), 10 вбудованих прикладів, написання програм на `EKPOL` (`symbolic` та `keyword`), роботи з фізичною платою `PYNQ-Z1` та усіх прапорців CLI.
-* **Нормативні специфікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`](../../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) (`1.2.0`) та [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.1`).
+* **Нормативні специфікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md`](../../specifications/sw/vmk-go-emulator-and-tui-debugger.md) (`1.2.0`) та [`Engineering/specifications/kpol/ekpol-specification.md`](../../specifications/kpol/ekpol-specification.md) (`1.0.1`).
 * **Звіти верифікації:** [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../../validation/kpol-cme/vmk-go-274/report.md) (`1.1.0`), [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`) та тестові пакети [`Engineering/sw/tests/test_vmk_go_274.py`](../tests/test_vmk_go_274.py) (`M1..M7`) і [`Engineering/sw/tests/test_ekpol_278.py`](../tests/test_ekpol_278.py) (`M1..M5`).
 
 ### Структура пакета

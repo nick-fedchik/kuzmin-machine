@@ -1,5 +1,5 @@
 {
-  "version": "0.28.0",
+  "version": "0.29.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -627,6 +627,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/specifications/kpol/ekpol-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md",
       "direction": "Engineering",
       "wp_type": "Specification",
@@ -652,6 +658,12 @@
     },
     {
       "path": "Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md",
       "direction": "Engineering",
       "wp_type": "Specification",
       "immutable_input": false

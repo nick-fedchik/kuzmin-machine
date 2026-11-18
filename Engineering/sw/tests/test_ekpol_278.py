@@ -47,7 +47,7 @@ INC_KPOL = REPO_ROOT / "Engineering" / "hw" / "tests" / "kpol_bram_pipeline_incr
 DEC_KPOL = REPO_ROOT / "Engineering" / "hw" / "tests" / "kpol_bram_pipeline_decrease.kpol"
 BMS_KPOL = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "c99-emitter-270" / "bms_safety_cascade.kpol"
 
-SPEC_EKPOL_MD = REPO_ROOT / "Engineering" / "specifications" / "kpol" / "ekpol-specification-0.1.0.md"
+SPEC_EKPOL_MD = REPO_ROOT / "Engineering" / "specifications" / "kpol" / "ekpol-specification.md"
 REPORT_EKPOL_MD = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "ekpol-278" / "report.md"
 RAW_EKPOL_DIR = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "ekpol-278" / "raw"
 
@@ -466,7 +466,7 @@ def test_mutants_m1_to_m5_all_killed():
 
 
 def test_ekpol_spec_report_raw_provenance_and_wp_index():
-    """Verify `ekpol-specification-0.1.0.md`, `ekpol-278/report.md`, raw logs provenance, and `wp-index.json`."""
+    """Verify `ekpol-specification.md`, `ekpol-278/report.md`, raw logs provenance, and `wp-index.json`."""
     assert SPEC_EKPOL_MD.is_file(), f"Missing {SPEC_EKPOL_MD}"
     assert REPORT_EKPOL_MD.is_file(), f"Missing {REPORT_EKPOL_MD}"
     spec_txt = SPEC_EKPOL_MD.read_text(encoding="utf-8")
@@ -513,7 +513,7 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
 
     wp_index = json.loads((REPO_ROOT / "Project" / "registers" / "wp-index.json").read_text(encoding="utf-8"))
     by_path = {e["path"]: e for e in wp_index["entries"]}
-    assert by_path.get("Engineering/specifications/kpol/ekpol-specification-0.1.0.md", {}).get("wp_type") == "Specification"
+    assert by_path.get("Engineering/specifications/kpol/ekpol-specification.md", {}).get("wp_type") == "Specification"
     assert by_path.get("Engineering/validation/kpol-cme/ekpol-278/report.md", {}).get("wp_type") == "Report"
     assert by_path.get("Engineering/sw/kpol-ref/ekpol_frontend.py", {}).get("wp_type") == "Source Code"
     assert by_path.get("Engineering/sw/vmk-go/internal/vmk/ekpol.go", {}).get("wp_type") == "Source Code"
