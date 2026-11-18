@@ -548,8 +548,75 @@ def test_specifications_have_no_version_suffix_in_filenames():
         assert _find_versioned_spec_markdown_files(scratch) == ["kpol/kpol-consolidated-0.1.0.md"]
 
 
+def _find_commonmark_broken_math_escapes(md_text: str) -> list[tuple[str, str]]:
+    """Return `(formula, bad_escape)` pairs for `$ ... $` / `$$ ... $$` formulas
+    (outside fenced code blocks, inline code spans, and GitHub ``$`...`$`` protected math)
+    that contain CommonMark-corrupted ASCII punctuation escapes (`\\{`, `\\}`, `\\_`, `\\&`).
+    """
+    # Strip fenced code blocks
+    cleaned = re.sub(r"```.*?```", "", md_text, flags=re.DOTALL)
+    # Strip GitHub $`...`$ code-protected math spans and regular `...` inline code spans
+    cleaned = re.sub(r"\$`[^`\n]+`\$", "", cleaned)
+    cleaned = re.sub(r"`[^`\n]+`", "", cleaned)
+
+    violations: list[tuple[str, str]] = []
+    math_pattern = re.compile(r"\$\$(.+?)\$\$|\$(?!\s)(.+?)(?<!\s)\$", flags=re.DOTALL)
+    bad_escapes = (r"\{", r"\}", r"\_", r"\&")
+    for match in math_pattern.finditer(cleaned):
+        formula = match.group(1) if match.group(1) is not None else match.group(2)
+        for esc in bad_escapes:
+            if esc in formula:
+                violations.append((match.group(0), esc))
+    return violations
+
+
+def test_markdown_math_formulas_have_no_commonmark_broken_escapes():
+    """Issue #284: Ensure no `$ ... $` or `$$ ... $$` formula (outside ``$`...`$``) in
+    `Engineering/guides/` or `Engineering/specifications/` contains `\\{`, `\\}`, `\\_`, or `\\&`,
+    which GitHub CommonMark (`cmark-gfm`) strips before passing to MathJax, causing
+    `Extra close brace or missing open brace` rendering errors. Includes negative mutant controls.
+    """
+    scan_roots = [
+        REPO_ROOT / "Engineering" / "guides",
+        REPO_ROOT / "Engineering" / "specifications",
+    ]
+    md_files: list[Path] = []
+    for root in scan_roots:
+        md_files.extend(sorted(root.rglob("*.md")))
+    assert len(md_files) >= 15
+
+    all_violations: list[str] = []
+    for md_path in md_files:
+        rel = md_path.relative_to(REPO_ROOT)
+        for formula, esc in _find_commonmark_broken_math_escapes(md_path.read_text(encoding="utf-8")):
+            all_violations.append(f"{rel}: found {esc!r} inside {formula!r}")
+
+    assert not all_violations, "Broken GitHub MathJax escapes found:\n" + "\n".join(all_violations)
+
+    # Verify the fixed formula in kpol-ekpol-language-guide.md uses \lbrace\bot_{\text{undef}}\rbrace
+    guide_txt = (REPO_ROOT / "Engineering" / "guides" / "kpol-ekpol-language-guide.md").read_text(encoding="utf-8")
+    assert (
+        r"$$\text{Concept} = \langle \text{Type},\ \text{Value} \cup \lbrace\bot_{\text{undef}}\rbrace,\ \text{Invariant},\ \text{Reaction Rules} \rangle$$"
+        in guide_txt
+    )
+
+    # Negative controls (AGENTS.md §4 п. 1): prove the detector catches all 4 broken escape kinds
+    broken_samples = [
+        r"$$\text{Concept} = \langle \text{Type}, \text{Value } \cup \{\_\}, \text{Invariant } [\dots], \text{Reaction Rules} \rangle$$",
+        r"Inline set $\in \{0, 1, 2\}$ breaks braces.",
+        r"$$\text{word} = (\text{opc} \ \& \ \text{0xF}) \mid \text{sub\_op}$$",
+    ]
+    for sample in broken_samples:
+        found = _find_commonmark_broken_math_escapes(sample)
+        assert found, f"Negative control failed to catch broken MathJax escape in: {sample!r}"
+
+    # Verify $`...`$ code-protected math and normal code blocks are not falsely flagged
+    safe_sample = "Protected $`\\{\\_\\}`$ and code ``\\{\\_\\}`` and $\\lbrace\\bot_{\\text{undef}}\\rbrace$."
+    assert _find_commonmark_broken_math_escapes(safe_sample) == []
+
+
 def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
-    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.1`) and
+    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.2`) and
     `Engineering/guides/README.md` (`1.0.0`) structure, specification version references (`F1`),
     compile and execute all embedded valid `.ekpol` (`module ...`) and `.kpol` (`Problem ...`)
     code blocks (including `Proof` verification via `kpol_reference.verify_module` / `Interpreter`
@@ -575,7 +642,7 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         "W1 operand_val between guard literal and ADD/SUB step != 1"
     )
     for required_marker in [
-        "* **Версія:** 1.0.1",
+        "* **Версія:** 1.0.2",
         "* **Тип WP:** Guide",
         "ekpol-specification.md) (`1.0.1`)",
         "kpol-cme-subset.md) (`0.4.0`)",
@@ -608,7 +675,7 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         "* **Версія:** 1.0.0",
         "* **Тип WP:** Guide",
         "kpol-ekpol-language-guide.md",
-        "`1.0.1`",
+        "`1.0.2`",
         "vmk-users-guide.md",
         "## Призначення",
         "## Навігація чи використання",
