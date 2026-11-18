@@ -9,7 +9,7 @@
 * **WI:** [#19](https://github.com/nick-fedchik/kuzmin-machine/issues/19);
   реалізація й регресії — [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Походження:** G1/N2, B3 у [кандидатній архітектурі](../../design/s2-candidate-system.md#71-пять-рішень-і-їхній-стан);
-  [опис фактичної реалізації](kpol-consolidated-0.1.0.md).
+  [опис фактичної реалізації](kpol-consolidated.md).
 * **База зіставлення:** `727c19ecb08a6bd45cffea541a64db01acaab148`.
 * **Виконавець:** GitHub Copilot CLI, Auto; конкретна модель цього
   виконання достовірно не встановлена. Сесія

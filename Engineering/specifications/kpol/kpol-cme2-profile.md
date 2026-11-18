@@ -5,7 +5,7 @@
 * **Тип WP:** Specification
 * **Статус:** Реалізовано в референсному компіляторі та CLI для розгляду на рецензії; не змінює погоджений `Decision B3-01` для `KPOL-CME-1` і не змінює RTL `CFG-P`.
 * **WI:** [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184) (sub-issue [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)).
-* **Походження:** розширення виконавчого інженерного профілю понад [KPOL-CME-1](kpol-cme-subset-0.1.0.md) на незмінному 16-байтному слоті `CME-RAW-1` після верифікації семантики ядра CME ([#167](../hw/kpol-image-loader-pipeline-contract.md)), черги B5 v2.2 ([#151](../hw/event-queue-ingress-specification.md)) та виправлень референсу ([#183](../../validation/kpol-cme/verifier-lowering-183/report.md)).
+* **Походження:** розширення виконавчого інженерного профілю понад [KPOL-CME-1](kpol-cme-subset.md) на незмінному 16-байтному слоті `CME-RAW-1` після верифікації семантики ядра CME ([#167](../hw/kpol-image-loader-pipeline-contract.md)), черги B5 v2.2 ([#151](../hw/event-queue-ingress-specification.md)) та виправлень референсу ([#183](../../validation/kpol-cme/verifier-lowering-183/report.md)).
 * **Укладач:** GitHub Copilot CLI (Gemini 4 Carbon, `gemini-4-carbon`); незалежна рецензія не проведена.
 
 ---
@@ -15,7 +15,7 @@
 Профіль `KPOL-CME-2` визначає детерміновану багатоконцептну підмножину поточного інженерного синтаксису KPOL, яка компілюється у чинний 1024-байтний образ BRAM `CME-RAW-1` ($64 \times 16$ байтів) і має побітово ідентичну спостережувану поведінку між еталонним `Interpreter` (`kpol_reference.py`) та RTL-трактом `CFG-P` (`kpol_bram_pipeline_axi.sv`: `km_concept_micro_engine.sv` + `kpol_txn_gate_v2.sv` + `km_autonomous_sequencer.sv`) без жодної модифікації RTL.
 
 * Профіль обирається явно: `compile_concept_microcode_bram_image(module, profile="KPOL-CME-2")` або прапорцем `--profile KPOL-CME-2` у [`compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py).
-* Початковий профіль [`KPOL-CME-1`](kpol-cme-subset-0.1.0.md) залишається типовим значенням CLI (`--profile KPOL-CME-1`) і зберігається без змін.
+* Початковий профіль [`KPOL-CME-1`](kpol-cme-subset.md) залишається типовим значенням CLI (`--profile KPOL-CME-1`) і зберігається без змін.
 * Конструкції, які не можуть бути виконані на `CME-RAW-1` без розходження між програмною моделлю та RTL, відхиляються компілятором до емісії образу (`fail-closed`) із детермінованим префіксом `CME2-*`.
 
 | Межа поза `KPOL-CME-2` | Причина у `CME-RAW-1` / джерелах | Куди віднесено |

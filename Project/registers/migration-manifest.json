@@ -2177,7 +2177,7 @@
     },
     {
       "source": "specs/kpol/kpol-cme-subset-0.1.0.md",
-      "destination": "Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md",
+      "destination": "Engineering/specifications/kpol/kpol-cme-subset.md",
       "source_sha256": "de19e293e15e27147ab52c3e41d9300409ac066e4ae205263dc1d201cfbf482b",
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",
@@ -2186,7 +2186,7 @@
     },
     {
       "source": "specs/kpol/kpol-consolidated-0.1.0.md",
-      "destination": "Engineering/specifications/kpol/kpol-consolidated-0.1.0.md",
+      "destination": "Engineering/specifications/kpol/kpol-consolidated.md",
       "source_sha256": "42f366aff4896b7445947cde5cd7aae07d6dc3bbe00dd3ca3a5fb00df1f4c5a6",
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",

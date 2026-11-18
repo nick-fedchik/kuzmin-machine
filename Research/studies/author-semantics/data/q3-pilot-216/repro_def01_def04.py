@@ -23,7 +23,7 @@ from test_q3_acceptance import GOLDEN_TASK2  # noqa: E402
 LITERAL = GOLDEN_TASK2.replace("on Ev when", "on Ev(p) when")
 assert LITERAL != GOLDEN_TASK2
 
-print("== Q3-DEF-01: literal 'rule R on Ev(p) when G' from kpol-cme2-profile-0.1.0.md section 2 item 4")
+print("== Q3-DEF-01: literal 'rule R on Ev(p) when G' from kpol-cme2-profile.md section 2 item 4")
 for label, source in (("golden (rule R on Ev when ...)", GOLDEN_TASK2), ("literal (rule R on Ev(p) when ...)", LITERAL)):
     try:
         module = Parser(source).parse()

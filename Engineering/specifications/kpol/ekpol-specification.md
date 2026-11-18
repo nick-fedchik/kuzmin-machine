@@ -16,8 +16,8 @@
 
 ### 1.1. Мотивація та архітектурне рішення
 До впровадження Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278) екосистема мов програмування Машини Кузьміна мала два полюси:
-1. **Класичний авторський запис (`KPOL-AUTH`, [специфікація `kpol-auth-subset-0.1.0.md`](kpol-auth-subset-0.1.0.md)):** максимально лаконічний, але спирається на не-ASCII символи Unicode (`•`, `¬`, `←`, `→`, `¤`), які відсутні на стандартній англійській розкладці клавіатури, та має відкриті питання `RFC-009..018` ([#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186));
-2. **Верифікаційні профілі `KPOL-CME-1` ([`kpol-cme-subset-0.1.0.md`](kpol-cme-subset-0.1.0.md)) та `KPOL-CME-2` ([`kpol-cme2-profile-0.1.0.md`](kpol-cme2-profile-0.1.0.md)):** однозначно компілюються в апаратний образ `CME-RAW-1` (`1024 B`), але вимагають багатослівної триблочної обгортки `Problem / Solution / Proof`, де оголошення одного концепту рознесене на три різні секції (`Invariants`, `state` + `event` + `rule`, `scenario`).
+1. **Класичний авторський запис (`KPOL-AUTH`, [специфікація `kpol-auth-subset.md`](kpol-auth-subset.md)):** максимально лаконічний, але спирається на не-ASCII символи Unicode (`•`, `¬`, `←`, `→`, `¤`), які відсутні на стандартній англійській розкладці клавіатури, та має відкриті питання `RFC-009..018` ([#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186));
+2. **Верифікаційні профілі `KPOL-CME-1` ([`kpol-cme-subset.md`](kpol-cme-subset.md)) та `KPOL-CME-2` ([`kpol-cme2-profile.md`](kpol-cme2-profile.md)):** однозначно компілюються в апаратний образ `CME-RAW-1` (`1024 B`), але вимагають багатослівної триблочної обгортки `Problem / Solution / Proof`, де оголошення одного концепту рознесене на три різні секції (`Invariants`, `state` + `event` + `rule`, `scenario`).
 
 За прямою командою власника в межах [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278):
 > *«залиш класичний KPOL і додай EKPOL де можна писати ASCII символами або легко зрозумілою для сучасних програмістів мовною нотацією»*

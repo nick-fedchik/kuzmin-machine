@@ -21,7 +21,7 @@
 | CI-06/07 | [Референс](../../Engineering/sw/kpol-ref/kpol_reference.py), [тести](../../Engineering/sw/kpol-ref/tests/) | Розглядати разом із KPOL-CME-1 та CME/loader. |
 | CI-12 | [Семантика #76](../../Research/studies/author-semantics/report.md) | Джерела й обмеження авторської реконструкції. |
 | CI-13 | [TRL](../assessments/trl/report.md) | Лише самооцінка, з успадкованими межами доказів. |
-| CI-15 | [KPOL-CME-1](../../Engineering/specifications/kpol/kpol-cme-subset-0.1.0.md) | B3-01, CME-RAW-1, emitter, RTL і B4/B5. |
+| CI-15 | [KPOL-CME-1](../../Engineering/specifications/kpol/kpol-cme-subset.md) | B3-01, CME-RAW-1, emitter, RTL і B4/B5. |
 | CFG-P, без нового CI-ID | [Solution](../../Engineering/solutions/compiler-bram-pipeline.md) | Явний склад поточного pipeline та його перевірок. |
 
 ## 3. Ведення й обмеження

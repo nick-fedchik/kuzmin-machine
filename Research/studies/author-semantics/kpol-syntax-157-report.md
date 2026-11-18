@@ -151,7 +151,7 @@ XML всіх слайдів змінилися; у ZIP додано 5, вилу�
 Прямий і зворотний шлях: G1/N1–N2, G3/N4 → дві Source-картки →
 [AUTH-03/05/07/08](../../../Engineering/requirements/kpol.md#31-кандидати-за-новою-презентацією)
 / Q-AUTH → [Compiler Design](../../../Engineering/design/software/compiler.md#32-редакція-static-та-виконувана-граматика)
-→ [межа Specification](../../../Engineering/specifications/kpol/kpol-consolidated-0.1.0.md#11-авторський-синтаксис-і-нинішній-діалект)
+→ [межа Specification](../../../Engineering/specifications/kpol/kpol-consolidated.md#11-авторський-синтаксис-і-нинішній-діалект)
 → цей Report і незмінні Data. Навігацію Research/Source/KPOL, реєстр
 цілей та WP index оновлено. Старі наукові звіти не переатестовано.
 

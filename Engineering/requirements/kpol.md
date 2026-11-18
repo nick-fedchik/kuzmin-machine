@@ -16,7 +16,7 @@
 її межі автентичності й повноти збережено. Це похідні вимоги проєкту,
 не повна специфікація М. Ю. Кузьміна.
 Наявний ширший референс не звужується до CME. Для виконуваного образу
-діє [KPOL-CME-1 / CME-RAW-1](../specifications/kpol/kpol-cme-subset-0.1.0.md).
+діє [KPOL-CME-1 / CME-RAW-1](../specifications/kpol/kpol-cme-subset.md).
 Нові ID нижче введено в #150; вони не замінюють успадковані `REQ-*`.
 У #155 додано [нову презентацію / Source](../../Research/sources/author/introduction-2026-11-13.md)
 та окремі кандидати `KPOL-AUTH-*` для повного native шляху.
@@ -103,7 +103,7 @@ Q-AUTH-02 також переведено до стану «частково у�
 присутності елементів концепту; точний порядок 8 бітів і коди `Class`
 залишаються відкритими). У картці [відповідей 2026-11-15](../../Research/sources/author/rfc-answers-2026-11-15.md) (#218)
 уточнено правило `Min=1, Max=15 → 1..16` (`RFC-009` п. 1), порядок бітів `Def` зліва молодший (`RFC-018` п. 1, де `Child` названо зайвим)
-та заглушковий статус `OpenBracket`/`CloseBracket` (`RFC-015`). На цій основі у пакетах [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#243](https://github.com/nick-fedchik/kuzmin-machine/issues/243) та [#245](https://github.com/nick-fedchik/kuzmin-machine/issues/245) реалізовано ізольований прототип [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) та специфікацію підмножини [`kpol-auth-subset-0.1.0.md`](../specifications/kpol/kpol-auth-subset-0.1.0.md) із детермінованим lowering у `Do/Go` і `CME-RAW-1` (`KPOL-LOWER-CYCLE`) та блокуванням 12 відкритих точок `KPOL-AUTH-U01..U12` (які залишаються в [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)).
+та заглушковий статус `OpenBracket`/`CloseBracket` (`RFC-015`). На цій основі у пакетах [#219](https://github.com/nick-fedchik/kuzmin-machine/issues/219), [#243](https://github.com/nick-fedchik/kuzmin-machine/issues/243) та [#245](https://github.com/nick-fedchik/kuzmin-machine/issues/245) реалізовано ізольований прототип [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) та специфікацію підмножини [`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) із детермінованим lowering у `Do/Go` і `CME-RAW-1` (`KPOL-LOWER-CYCLE`) та блокуванням 12 відкритих точок `KPOL-AUTH-U01..U12` (які залишаються в [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)).
 Відповідь RFC-012 про відсутність циклів не визначає рекурентну
 реалізацію, fan-out за один такт або відсутність усіх лічильників.
 
@@ -117,9 +117,9 @@ Q-AUTH-02 також переведено до стану «частково у�
 Виправлення верифікатора `Proof`, інкрементного `change(...)` і базового lowering `>=`/`<=`/знакового `RANGE` у референсі (#183):
 `kpol_reference.py` → `KpolIssue183LanguageAndLoweringTests` → [Report #183](../validation/kpol-cme/verifier-lowering-183/report.md).
 Багатоконцептний профіль `KPOL-CME-2` на `CME-RAW-1` (#184) та формальна індукція до $N=16$ (#227/#237/#242/#249):
-[специфікація `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile-0.1.0.md) → `KpolCme2ProfileTests` → [Report #184](../validation/kpol-cme/cme2-profile-184/report.md) → [формальний доказ `Z3` на $N=4, 16$](../validation/kpol-cme/cme2-formal-227/report.md).
+[специфікація `KPOL-CME-2`](../specifications/kpol/kpol-cme2-profile.md) → `KpolCme2ProfileTests` → [Report #184](../validation/kpol-cme/cme2-profile-184/report.md) → [формальний доказ `Z3` на $N=4, 16$](../validation/kpol-cme/cme2-formal-227/report.md).
 Підмножинний фронтенд і lowering `KPOL-AUTH` (#219/#243/#245) та приймальне закриття S5 (#8):
-[специфікація `KPOL-AUTH`](../specifications/kpol/kpol-auth-subset-0.1.0.md) → `Engineering/sw/kpol-auth/` → [Report #219](../validation/kpol-cme/kpol-auth-frontend-219/report.md) → `test_s5_compiler_acceptance_8.py` → [Report S5 #8](../validation/kpol-cme/s5-compiler-8/report.md).
+[специфікація `KPOL-AUTH`](../specifications/kpol/kpol-auth-subset.md) → `Engineering/sw/kpol-auth/` → [Report #219](../validation/kpol-cme/kpol-auth-frontend-219/report.md) → `test_s5_compiler_acceptance_8.py` → [Report S5 #8](../validation/kpol-cme/s5-compiler-8/report.md).
 Генератор детермінованого MISRA-орієнтованого C99 та сертифіката `Z3 SMT` (#270):
 [`c99_emitter.py`](../sw/kpol-ref/c99_emitter.py) / [`compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py) (`--emit-c99`, `--emit-z3-cert`) → [`test_c99_emitter_270.py`](../sw/tests/test_c99_emitter_270.py) (`M1..M4`) → [Commercialization & Final Conclusions #270](../../Research/studies/commercialization-and-final-conclusions.md).
 Покроковий дебагер-трасувальник каскадів МК, потокове `STDIO`, двомодовий Go-емулятор `VMK v0.2.0` та ергономічна мова `EKPOL 0.1.0` (#272, #274, #278):
@@ -143,9 +143,9 @@ Specification → Reports #155/#157/#159/#201/#219. Тестований нин�
 | 0.9.0 | 2026-11-18 | #274: додано трасування двомодового Go-емулятора VMK (`bram64` + `conceptual`) та 4-панельного TUI-дебагера (`Engineering/sw/vmk-go/`, `vmk-go-emulator-and-tui-debugger.md`, `vmk-go-274/report.md`). |
 | 0.8.0 | 2026-11-18 | #272: додано трасування покрокового дебагера каскадів (`kpol_debugger.py`, `--dump-concepts`, `--trace-events`, `--stdio`, `--tui`), інспекції `PRE-LOAD` / `POST-LOAD` та верифікації прикладів зі статей (`debugger-trace-272/report.md`, `KPOL-SYS-06`). |
 | 0.7.0 | 2026-11-17 | #270: додано трасування генератора детермінованого C99 (`c99_emitter.py`, `--emit-c99`, `--emit-z3-cert`), явної маски визначеності `valid_mask` (`KPOL-SYS-02`) та підсумкового висновку `commercialization-and-final-conclusions.md`. |
-| 0.6.0 | 2026-11-17 | #8: актуалізовано статуси та трасування `KPOL-SYS-02..06` і `KPOL-AUTH` за результатами `#218/#219/#243/#245` (`kpol-auth-subset-0.1.0.md`), `#227/#237/#242` (формальна $k$-індукція до $N=16$), `#252` (`CFG-P-HA`), `#254` (порівняльний Baseline, $K^* = 26$), `#255` (багатоядерний кластер $N=1..8$) та звіту закриття кроку S5 (`s5-compiler-8/report.md`). |
+| 0.6.0 | 2026-11-17 | #8: актуалізовано статуси та трасування `KPOL-SYS-02..06` і `KPOL-AUTH` за результатами `#218/#219/#243/#245` (`kpol-auth-subset.md`), `#227/#237/#242` (формальна $k$-індукція до $N=16$), `#252` (`CFG-P-HA`), `#254` (порівняльний Baseline, $K^* = 26$), `#255` (багатоядерний кластер $N=1..8$) та звіту закриття кроку S5 (`s5-compiler-8/report.md`). |
 | 0.5.4 | 2026-11-14 | #185: зв'язано `KPOL-SYS-02` із запропонованим проєктом контракту [ADR B7 (`CME-RAW-2`)](../decisions/cme-raw2-kpol-sys02.md) та [Report #185](../validation/kpol-cme/cr-cme-raw2-185/report.md) без модифікації чинного `CFG-P`. |
-| 0.5.3 | 2026-11-14 | #184: додано трасування багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile-0.1.0.md` і `cme2-profile-184/report.md`) зі збереженням `KPOL-CME-1` без змін. |
+| 0.5.3 | 2026-11-14 | #184: додано трасування багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile.md` і `cme2-profile-184/report.md`) зі збереженням `KPOL-CME-1` без змін. |
 | 0.5.2 | 2026-11-14 | #183: інтегровано уточнення RFC-010 у KPOL-AUTH-01 / Q-AUTH-02 (безіменний атрибут розміру `Token`, 8-бітна маска `Def`) та додано трасування звіту виправлень верифікатора й lowering референсу. |
 | 0.5.1 | 2026-11-13 | #151: оновлено стан реалізації та трасування KPOL-SYS-04 на B5 v2.1 і Report #151 зі збереженням межі незупинного джерела та HIL. |
 | 0.5.0 | 2026-11-13 | #159: типізовані індекси AUTH-03, успіх вмісту/групи й часткове уточнення Q-AUTH-01; без нових AUTH-ID або змін профілю. |
