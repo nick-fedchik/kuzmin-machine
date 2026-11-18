@@ -311,8 +311,8 @@ def test_vmk_go_equivalence_with_python_c99_iverilog_and_pynq2():
         assert all_data["nod"]["hardware_cycles_at_3cyc_per_sub_plus_1"] == euclid_rtl["cycles"] == 58
 
 
-def test_raw_hil_artifacts_and_mutants_m1_to_m5():
-    """Verify recorded `pynq2` HIL artifacts and ensure all 5 Go mutants `M1..M5` are killed by `go test`."""
+def test_go_code_mutants_m1_to_m7():
+    """Verify recorded `pynq2` HIL artifacts and ensure all 7 Go mutants `M1..M7` are killed by `go test`."""
     pynq_json_path = RAW_DIR / "pynq2_live_vmk_session.json"
     pynq_log_path = RAW_DIR / "pynq2_live_vmk_session.log"
     assert pynq_json_path.is_file(), f"Missing {pynq_json_path}"
@@ -621,4 +621,3 @@ def test_fullscreen_tui_debugger_interactive_280():
         assert payload["telemetry"]["events_processed"] == 5
         assert payload["telemetry"]["commits"] == 4
         assert payload["telemetry"]["fault_propagations"] == 1
-

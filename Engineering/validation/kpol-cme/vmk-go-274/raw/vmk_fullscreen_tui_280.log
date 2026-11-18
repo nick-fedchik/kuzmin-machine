@@ -1,6 +1,6 @@
 # cmd: (cd Engineering/sw/vmk-go && ./vmk --example bms --render-fullscreen-tui && printf '\x1b[Bw\x1b[Ae120+nnnnfm99\nddq' | ./vmk --program examples/bms_safety_cascade.ekpol --tui-canvas)
-# timestamp: 2026-11-18T15:52:00+02:00
-# git_commit: d556b35bc1cf2c885f6d13c3d018cb7e65d03dc0
+# timestamp: 2026-11-18T16:08:00+02:00
+# git_commit: c0208bcfaffd43af9d98382fc2d833a0f201d46b
 # host: Linux 7.0.0-42-generic x86_64 GNU/Linux
 
 === [1] ./vmk --example bms --render-fullscreen-tui ===

@@ -1,5 +1,5 @@
 {
-  "version": "0.27.0",
+  "version": "0.28.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -3459,6 +3459,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/go_test_vmk_280.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/pynq2_live_vmk_session.json",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -3472,6 +3478,12 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/pytest_vmk_go_274.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/pytest_vmk_go_280.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
