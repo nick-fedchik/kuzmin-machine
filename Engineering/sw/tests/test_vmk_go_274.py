@@ -395,7 +395,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
     import re
 
     required_guide_headings = [
-        "* **Версія:** 1.0.1",
+        "* **Версія:** 1.1.0",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
@@ -407,6 +407,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
         "### 2.6.",
         "### 2.7.",
         "### 2.8.",
+        "### 2.9.",
         "## Обмеження",
         "## Історія версій",
         "## Абревіатури та глосарій",
@@ -443,7 +444,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
             raise AssertionError(f"vmk-users-guide.md missing CLI flag {flag_name!r}")
 
     required_readme_markers = [
-        "* **Версія:** 1.0.0",
+        "* **Версія:** 1.1.0",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",

@@ -1,0 +1,22 @@
+module EuclidNod;
+
+// Reactive Euclidean GCD Nod(120, 6) = 6 without a while counter
+@stdin
+concept a: u64 = 120 [>= 0] {
+    ~ b :: a > b => a -= b .
+}
+
+@stdin
+concept b: u64 = 6 [>= 0] {
+    ~ a :: b > a => b -= a .
+}
+
+@stdout
+concept Nod: u64 = _ {
+    | (a, b) :: a == b => Nod = a .
+}
+
+test CheckEuclidNod120And6 {
+    send Nod(120, 6);
+    expect Nod == 6;
+}

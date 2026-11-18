@@ -1,0 +1,33 @@
+module Cascade4Concept;
+
+@stdin
+@stdout
+concept C0: i32 = 10 [>= 0] {
+    <- E0(param) :: param < 50 => C0 += 1 .
+}
+
+@stdout
+concept C1: i32 = 0 [>= 0] {
+    ~ C0 :: C0 > 10 => C1 += 1 .
+}
+
+@stdout
+concept C2: i32 = 2 [>= 0] {
+    ~ C1 :: C1 >= 1 => C2 -= 1 .
+}
+
+@stdout
+concept C3: i32 = 0 [>= 0] {
+    ~ C2 :: !(C2 == 2) => C3 = C2 .
+}
+
+test CheckCascadeAndGuardBlock {
+    send C0(10);
+    expect C0 == 11;
+    expect C1 == 1;
+    expect C2 == 1;
+    expect C3 == 1;
+    send C0(100);
+    expect C0 == 11;
+    expect C3 == 1;
+}

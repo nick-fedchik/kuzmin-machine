@@ -1,19 +1,19 @@
-# Посібник користувача VMK (Virtual Machine of Kuzmin) та 4-панельного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.1.0`)
+# Посібник користувача VMK (Virtual Machine of Kuzmin) та 4-панельного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.2.0`)
 
-* **Версія:** 1.0.1
+* **Версія:** 1.1.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача
-* **Issue:** `Closes` [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276); пов'язані задачі [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
+* **Issue:** `Closes` [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Documentation Engineer).
-* **Цільовий модуль ПЗ:** [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) ([`cmd/vmk/main.go`](../sw/vmk-go/cmd/vmk/main.go), [`internal/vmk/`](../sw/vmk-go/internal/vmk/cli.go), `go 1.22`+, `std` only).
-* **Нормативна специфікація та звіт верифікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) (`1.0.1`), [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../validation/kpol-cme/vmk-go-274/report.md) (`1.0.1`).
+* **Цільовий модуль ПЗ:** [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) ([`cmd/vmk/main.go`](../sw/vmk-go/cmd/vmk/main.go), [`internal/vmk/`](../sw/vmk-go/internal/vmk/cli.go), [`examples/*.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), `go 1.22`+, `std` only).
+* **Нормативна специфікація та звіт верифікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) (`1.1.0`), [`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`](../specifications/kpol/ekpol-specification-0.1.0.md) (`1.0.0`), [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../validation/kpol-cme/vmk-go-274/report.md) (`1.0.1`), [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../validation/kpol-cme/ekpol-278/report.md) (`1.0.0`).
 
 ---
 
 ## Призначення
 
-Цей посібник призначений для системних, апаратних (FPGA/RTL) та вбудованих (C99/Go/Python) інженерів, дослідників реактивних обчислень та верифікаторів проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Документ покроково пояснює, як збирати та використовувати виконуваний бінарник **`vmk` (`VMK — Virtual Machine of Kuzmin v0.1.0`)**, розташований у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md).
+Цей посібник призначений для системних, апаратних (FPGA/RTL) та вбудованих (C99/Go/Python) інженерів, дослідників реактивних обчислень та верифікаторів проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Документ покроково пояснює, як збирати та використовувати виконуваний бінарник **`vmk` (`VMK — Virtual Machine of Kuzmin v0.2.0`)**, розташований у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md).
 
 ### Що таке VMK і яку задачу він вирішує
 
@@ -78,7 +78,7 @@ go build -o vmk ./cmd/vmk
 Вивід:
 
 ```text
-VMK (Virtual Machine of Kuzmin) v0.1.0
+VMK (Virtual Machine of Kuzmin) v0.2.0
 ```
 
 #### Крок 3. Миттєвий демонстраційний прогін обох режимів
@@ -507,8 +507,11 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 | :--- | :--- | :--- | :--- |
 | `--mode` | `bram64 \| conceptual` | Автовибір за `--example` або `bram64` | Вибір виконавчого режиму: апаратно-точний 64-слотовий BRAM (`bram64`) або навчально-концептуальний (`conceptual`). |
 | `--example` | `if \| sum \| nod \| factorial \| tachometer \| bms \| increase \| decrease \| cascade \| auth \| all` | `""` | Запуск одного з 10 вбудованих канонічних прикладів або всіх 10 прикладів поспіль (`all`). |
-| `--program` | `<шлях до .kpol або .bin>` | `""` | Шлях до вхідного файлу програми `.kpol` або готового 1024-байтного двійкового образу BRAM `.bin`. |
-| `--profile` | `KPOL-CME-1 \| KPOL-CME-2 \| KPOL-AUTH` | `KPOL-CME-2` | Профіль вбудованого компілятора KPOL під час компіляції текстового файлу `--program <file.kpol>`. |
+| `--program` | `<шлях до .kpol, .ekpol або .bin>` | `""` | Шлях до вхідного файлу програми `.kpol`, ергономічного файлу `.ekpol` або готового 1024-байтного двійкового образу BRAM `.bin`. |
+| `--profile` | `KPOL-CME-1 \| KPOL-CME-2 \| KPOL-AUTH \| EKPOL` | `KPOL-CME-2` (або автовибір `EKPOL` для `.ekpol`) | Профіль вбудованого компілятора KPOL/EKPOL під час компіляції текстового файлу `--program`. |
+| `--to-kpol` | Булевий прапорець | `false` | Транслювати вхідну програму `.ekpol` у канонічний класичний `.kpol` (`Problem / Solution / Proof`) і вивести в `stdout`. |
+| `--to-ekpol` | Булевий прапорець | `false` | Транслювати класичний файл `.kpol` або вбудований приклад (`increase`, `decrease`, `cascade`, `bms`) у чистий `.ekpol` і вивести в `stdout`. |
+| `--ekpol-style` | `symbolic \| keyword` | `symbolic` | Стиль форматування під час генерації `.ekpol` (`symbolic`: `<-`, `~`, `::`, `.`; `keyword`: `on write`, `on change`, `when`, `commit;`). |
 | `--target` (аліас `--connect`) | `sim \| pynq1 \| pynq2 \| user@host` | `sim` | Цільова машина: локальний симулятор (`sim`) або фізична плата `PYNQ-Z1` по SSH/MMIO (`pynq1`, `pynq2`, `user@host`). |
 | `--trace-events` | `<spec>` (наприклад, `"0:10,0:100,0:_"`) | `""` | Перелік подій через кому або крапку з комою у форматі `<CID_або_Назва>:<param>[:<valid>]` для пакетного трасування. |
 | `--dump-concepts` | Булевий прапорець | `false` | Вивести розшифровану таблицю дескрипторів BRAM (`W0`, `Valid(_)`, `W1`, `W2`, `W3`) для активних концептів. |
@@ -520,7 +523,73 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 | `--break-on-reject` | Булевий прапорець | `false` | Встановити точку спрацювання (`*BREAK_ON_REJECT`) на будь-яку відмову охоронця, інваріанта чи невизначеності. |
 | `--stop-on-breakpoint` | Булевий прапорець | `false` | Негайно зупиняти виконання хвилі подій при першому спрацюванні `Watchpoint` або `Breakpoint`. |
 | `--json-out` | `<шлях до .json>` | `""` | Записати повний структурований звіт сесії (`pre_load`, `post_load`, `load_diffs`, `telemetry`, `steps`, `stdio`, `pynq_hw_report`) у JSON-файл. |
-| `--version` (або `-v`, `version`) | Булевий прапорець | `false` | Вивести версію `VMK (Virtual Machine of Kuzmin) v0.1.0` та завершити роботу з кодом `0`. |
+| `--version` (або `-v`, `version`) | Булевий прапорець | `false` | Вивести версію `VMK (Virtual Machine of Kuzmin) v0.2.0` та завершити роботу з кодом `0`. |
+
+---
+
+### 2.9. Ергономічна мова `EKPOL 0.1.0` (`.ekpol`): написання програм у символьній та ключовій нотаціях і двостороння трансляція (`--to-ekpol` / `--to-kpol`)
+
+Починаючи з версії `v0.2.0` ([Issue #278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [специфікація `ekpol-specification-0.1.0.md`](../specifications/kpol/ekpol-specification-0.1.0.md)), поруч із класичними профілями `KPOL-CME-1`, `KPOL-CME-2` та `KPOL-AUTH` підтримується ергономічна мова **`EKPOL 0.1.0` (`Ergonomic KPOL`, файли `.ekpol`)**. Вона дозволяє описувати концепти в чистому 7-бітному ASCII без спецсимволів клавіатури і без багатослівного дублювання між секціями `Problem / Solution / Proof`, генеруючи **100% побітово ідентичний 1024-байтний образ BRAM (`SHA-256`)**, C99-код (`--emit-c99`) та Z3-сертифікат (`--emit-z3-cert`).
+
+#### 1. Дві взаємозамінні нотації `EKPOL`: символьна (`symbolic`) та ключова (`keyword`)
+
+У кожному концепті `concept <Name>: <Type> = <Init> [>= 0] { ... }` правила реакції можна писати як короткими ASCII-операторами, так і зрозумілими ключовими словами:
+
+```ekpol
+// Варіант А: Символьна ASCII-нотація (symbolic)
+@stdin
+@stdout
+concept Cell_Delta_mV: i32 = 0 [>= 0] {
+    <- EvCellDelta(delta_mv) :: delta_mv in 50..5000 => Cell_Delta_mV += 1 .
+}
+
+@stdout
+concept Module_Thermal_Guard: i32 = 0 [>= 0] {
+    ~ Cell_Delta_mV :: Cell_Delta_mV >= 1 => Module_Thermal_Guard += 1 .
+}
+```
+
+```ekpol
+// Варіант Б: Ключова програмістська нотація (keyword)
+@stdin
+@stdout
+concept Cell_Delta_mV: int32 = 0 [>= 0] {
+    on EvCellDelta(delta_mv) when delta_mv in 50..5000 => Cell_Delta_mV += 1 commit;
+}
+
+@stdout
+concept Module_Thermal_Guard: int32 = 0 [>= 0] {
+    on change(Cell_Delta_mV) when Cell_Delta_mV >= 1 => Module_Thermal_Guard += 1 commit;
+}
+```
+
+#### 2. Каталог готових прикладів `Engineering/sw/vmk-go/examples/*.ekpol` та команди запуску
+
+У каталозі [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol) розміщено 9 канонічних програм на `EKPOL`:
+* BRAM-програми (`--mode bram64`): [`bms_safety_cascade.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), [`cascade_4concept.ekpol`](../sw/vmk-go/examples/cascade_4concept.ekpol), [`increase.ekpol`](../sw/vmk-go/examples/increase.ekpol), [`decrease.ekpol`](../sw/vmk-go/examples/decrease.ekpol);
+* Концептуальні програми (`--mode conceptual`): [`if_toggle.ekpol`](../sw/vmk-go/examples/if_toggle.ekpol), [`sum_autoreset.ekpol`](../sw/vmk-go/examples/sum_autoreset.ekpol), [`nod_euclid.ekpol`](../sw/vmk-go/examples/nod_euclid.ekpol), [`factorial.ekpol`](../sw/vmk-go/examples/factorial.ekpol), [`tachometer.ekpol`](../sw/vmk-go/examples/tachometer.ekpol).
+
+Приклади запуску та двосторонньої трансляції:
+
+```bash
+cd Engineering/sw/vmk-go
+
+# 1. Прямий запуск .ekpol (автоматично визначає режим bram64 або conceptual)
+go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --trace-events "0:15,0:120,0:180" --render-tui-frame
+go run ./cmd/vmk --program examples/sum_autoreset.ekpol
+
+# 2. Трансляція класичного .kpol або вбудованого прикладу в .ekpol (символьний або ключовий стиль)
+go run ./cmd/vmk --example bms --to-ekpol --ekpol-style symbolic
+go run ./cmd/vmk --example bms --to-ekpol --ekpol-style keyword
+
+# 3. Зворотна трансляція .ekpol у класичний .kpol (Problem / Solution / Proof)
+go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --to-kpol
+
+# 4. Компіляція .ekpol у 1024-Б образ BRAM, C99-модуль і Z3-сертифікат через Python-компілятор
+python3 ../hw/scripts/compile_kpol_bram_image.py examples/bms_safety_cascade.ekpol bms.bin \
+  --emit-c99 bms_safety.c --emit-z3-cert bms_z3.json --dump-concepts
+rm -f bms.bin bms_safety.c bms_z3.json
+```
 
 ---
 
@@ -544,6 +613,7 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.1.0 | 2026-11-18 | #278: оновлено під `VMK v0.2.0` та мову `EKPOL 0.1.0` (додано §2.9 про символьну та ключову нотації `.ekpol`, каталог `examples/*.ekpol` і прапорці двосторонньої трансляції `--to-kpol`, `--to-ekpol`, `--ekpol-style symbolic\|keyword`). |
 | 1.0.1 | 2026-11-18 | Ураховано всі 5 зауважень незалежної рецензії `claude-sonnet-5.5` у PR #277 (`F1..F5`): виправлено відносні шляхи `../../validation/...` у командах запуску з `Engineering/sw/vmk-go` (`F1`); винесено PYNQ-драйвер у `internal/vmk/pynq.go` з безпечною передачею `PYNQ_SUDO_PASS` через `stdin` (`sudo -S -p ''`) або `sudo -n` без інтерполяції в оболонку та замінено пароль на плейсхолдер `<ваш_пароль_sudo>` (`F2, F4`); показано роздільний вивід потоків `stdout` і `stderr` у прикладі `sum --stdio` (`F3`); уточнено атрибуцію `19` реактивних віднімань у VMK проти `58` тактів спеціалізованого RTL-ядра `km_euclid_core.sv` у симуляції `iverilog` і звірено всі фінальні стани таблиці §2.6 із `vmk --example all` (`F5`). |
 | 1.0.0 | 2026-11-18 | Перша редакція практичного Посібника користувача VMK (`Virtual Machine of Kuzmin v0.1.0`) та 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go/`) за Issue #276. |
 

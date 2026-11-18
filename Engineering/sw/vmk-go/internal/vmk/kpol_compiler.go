@@ -46,10 +46,13 @@ func stripComments(src string) string {
 	return strings.Join(lines, "\n")
 }
 
-// CompileKPOLSource compiles KPOL-CME-1, KPOL-CME-2, or KPOL-AUTH source text into a 1024-byte CME-RAW-1 BRAM image.
+// CompileKPOLSource compiles KPOL-CME-1, KPOL-CME-2, KPOL-AUTH, or EKPOL source text into a 1024-byte CME-RAW-1 BRAM image.
 func CompileKPOLSource(sourceCode, profile string) (*CompiledKPOL, error) {
 	if profile == "" {
 		profile = "KPOL-CME-2"
+	}
+	if profile == "EKPOL" || (!strings.Contains(sourceCode, "Problem ") && !strings.Contains(sourceCode, "Concept(") && strings.Contains(sourceCode, "concept ")) {
+		return CompileEKPOLSource(sourceCode, "")
 	}
 	if profile == "KPOL-AUTH" {
 		return compileKPOLAuth(sourceCode)

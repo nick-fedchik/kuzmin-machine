@@ -1,0 +1,16 @@
+module SumPostReadReset;
+
+// Accumulator with RFC-013 post-read Big Dot barrier (-> => . Sum = 0)
+@stdin
+@stdout
+concept Sum: f64 = 0 [>= 0] {
+    <- x :: true => Sum += x .
+    -> => . Sum = 0
+}
+
+test CheckSumAccumulateAndPostReadReset {
+    send Sum(10);
+    send Sum(25);
+    send ReadSum(0);
+    expect Sum == 0;
+}

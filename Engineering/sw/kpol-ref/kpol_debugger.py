@@ -1536,6 +1536,16 @@ def parse_stdio_directives(
                     tokens = body[len("@stdout") :].replace(",", " ").split()
                     stdout_names.extend(tokens)
 
+    if not stdin_names and not stdout_names and "concept " in source_code:
+        try:
+            from ekpol_frontend import parse_ekpol
+
+            ek_prog = parse_ekpol(source_code)
+            stdin_names.extend(ek_prog.stdin_concepts)
+            stdout_names.extend(ek_prog.stdout_concepts)
+        except Exception:
+            pass
+
     if not stdin_names and active_cids:
         stdin_names = [descriptors[active_cids[0]].name]
     if not stdout_names and active_cids:
@@ -3435,13 +3445,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--program",
         type=Path,
         default=None,
-        help="path to a .kpol source file or 1024-byte .bin BRAM image to debug",
+        help="path to a .kpol / .ekpol source file or 1024-byte .bin BRAM image to debug",
     )
     parser.add_argument(
         "--profile",
-        choices=("KPOL-CME-1", "KPOL-CME-2", "KPOL-AUTH"),
+        choices=("KPOL-CME-1", "KPOL-CME-2", "KPOL-AUTH", "EKPOL"),
         default="KPOL-CME-2",
-        help="target profile when compiling a .kpol source file (default: KPOL-CME-2)",
+        help="target profile when compiling a .kpol or .ekpol source file (default: KPOL-CME-2, or EKPOL for .ekpol)",
     )
     parser.add_argument(
         "--dump-concepts",
@@ -3538,11 +3548,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     mod_name = prog_path.stem
 
     try:
+        effective_profile = args.profile
         if len(raw_bytes) == 1024 and prog_path.suffix.lower() == ".bin":
             bram_image = raw_bytes
         else:
             source_text = raw_bytes.decode("utf-8")
-            if args.profile == "KPOL-AUTH":
+            if args.profile == "EKPOL" or prog_path.suffix.lower() == ".ekpol":
+                from ekpol_frontend import compile_ekpol_to_bram_image, parse_ekpol
+
+                effective_profile = "EKPOL"
+                ek_prog = parse_ekpol(source_text, default_module_name=prog_path.stem)
+                mod_name = ek_prog.module_name
+                concept_names = [c.name for c in ek_prog.concepts]
+                bram_image = compile_ekpol_to_bram_image(ek_prog)
+            elif args.profile == "KPOL-AUTH":
                 ka = _load_kpol_auth_package()
                 cst_prog = ka.parse_kpol_auth(source_text)
                 art = ka.lower_kpol_auth(cst_prog)
@@ -3562,7 +3581,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         dbg = KpolCascadeDebugger(
             bram_image,
-            profile=args.profile,
+            profile=effective_profile,
             module_name=mod_name,
             source_code=source_text,
             concept_names=concept_names,

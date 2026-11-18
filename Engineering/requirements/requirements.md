@@ -1,9 +1,9 @@
 # Історичний реєстр успадкованих вимог Машини Кузьміна
 
-* **Версія:** 0.5.0
+* **Версія:** 0.6.0
 * **Перенесено з:** `drafts/KuzminMachine/Kuzmin-Machine-Requirements-UA.md` @ `a4738bc` (2026-11-09)
 * **Дата актуалізації:** 2026-11-18
-* **Issue:** [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274)
+* **Issue:** [#5](https://github.com/nick-fedchik/kuzmin-machine/issues/5), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278)
 
 > Це **інвентар 30 успадкованих кандидатів**, а не прийнята база вимог
 > чи матриця відповідності. Попередні `PASS`, шляхи, відсотки покриття
@@ -124,6 +124,7 @@ Requirement KPOL та [окремому Report](../../Research/studies/author-se
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.6.0 | 2026-11-18 | #278: додано трасування ергономічної мови `EKPOL 0.1.0`, двостороннього транспайлера `EKPOL <-> KPOL` та Go `VMK v0.2.0` (`ekpol-specification-0.1.0.md`, `ekpol-278/report.md`, `test_ekpol_278.py`). |
 | 0.5.0 | 2026-11-18 | #274: додано трасування Go-емулятора VMK та 4-панельного TUI-дебагера (`Engineering/sw/vmk-go/`, `vmk-go-emulator-and-tui-debugger-0.1.0.md`, `vmk-go-274/report.md`, `REQ-SYS-010`, `REQ-SW-001..005`). |
 | 0.4.0 | 2026-11-17 | #270: актуалізовано докази та межі `REQ-SW-008` за результатами реалізації генератора детермінованого C99 (`c99_emitter.py`, `--emit-c99` + `--emit-z3-cert`), формального сертифіката `Z3` та HIL-верифікації кейсу BMS на `ARM Cortex-A9` і `Zynq-7020 PL` (`commercialization-and-final-conclusions.md`). |
 | 0.3.0 | 2026-11-17 | #8: актуалізовано докази та межі `REQ-SYS-003..005`, `REQ-HW-005..009` і `REQ-SW-001..005` за результатами формальної верифікації до $N=16$ (`#227/#237`), модуля PMOD-емісії (`#230/#234`), підмножини `KPOL-AUTH` (`#245`), двобанкового `CFG-P-HA` (`#252`), порівняльного Baseline і порога $K^* = 26$ (`#254`), багатоядерного кластера $N=1..8$ в `OpenXC7` (`#255`) та закриття S5 (`#8`). |

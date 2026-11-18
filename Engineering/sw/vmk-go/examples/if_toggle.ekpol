@@ -1,0 +1,17 @@
+module IfToggle;
+
+// T-flip-flop with uncertainty state '_' and RFC-001 Busy anti-loop lock
+@stdin
+@stdout
+concept If: ? = _ {
+    when If is undef => If = true commit;
+    when If == true  => If = false commit;
+    when If == false => If = true commit;
+}
+
+test CheckIfThreeImpulses {
+    send If(1);
+    send If(1);
+    send If(1);
+    expect If == true;
+}

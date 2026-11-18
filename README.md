@@ -1,10 +1,10 @@
 # Машина Кузьміна
 
-* **Версія:** 0.4.1
+* **Версія:** 0.5.0
 * **Дата:** 2026-11-18
 * **Тип WP:** Guide
 * **Укладач:** GitHub Copilot CLI, Auto.
-* **Підстава:** команди Миколи Федчика підготувати актуальне дерево без legacy та перенести його до Git; [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276).
+* **Підстава:** команди Миколи Федчика підготувати актуальне дерево без legacy та перенести його до Git; [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278).
 
 ## Призначення
 
@@ -24,8 +24,8 @@
 | [Engineering](Engineering/README.md) | Вимоги, контракти, рішення, compiler/loader/BRAM/CME та перевірки. |
 | [Project](Project/README.md) | Правила, плани, реєстри, оцінювання й шаблони WP. |
 
-Поточний цільовий тракт: текст KPOL → CME-образ (`--emit-c99` / `--emit-z3-cert`) → loader → BRAM (`CFG-P` / `CFG-P-HA`) →
-sequencer/CME/gate v2, детермінований C99-автомат безпеки або двомодовий Go-емулятор **VMK** і 4-панельний TUI-дебагер ([`Engineering/sw/vmk-go/`](Engineering/sw/vmk-go/README.md), [Посібник користувача VMK `1.0.1`](Engineering/guides/vmk-users-guide.md), [специфікація `vmk-go` `0.1.0`](Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md)). Опис складу — у
+Поточний цільовий тракт: текст KPOL або ергономічний `EKPOL 0.1.0` ([специфікація `EKPOL`](Engineering/specifications/kpol/ekpol-specification-0.1.0.md)) → CME-образ (`--emit-c99` / `--emit-z3-cert`) → loader → BRAM (`CFG-P` / `CFG-P-HA`) →
+sequencer/CME/gate v2, детермінований C99-автомат безпеки або двомодовий Go-емулятор **VMK (`v0.2.0`)** і 4-панельний TUI-дебагер ([`Engineering/sw/vmk-go/`](Engineering/sw/vmk-go/README.md), [Посібник користувача VMK `1.1.0`](Engineering/guides/vmk-users-guide.md), [специфікація `vmk-go` `1.1.0`](Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md)). Опис складу — у
 [Solution](Engineering/solutions/compiler-bram-pipeline.md), а підсумковий інженерно-комерційний висновок проєкту — у
 [Commercialization & Final Conclusions](Research/studies/commercialization-and-final-conclusions.md).
 Реалізований фронтенд ширший за погоджений цільовий профіль KPOL-CME-1.
@@ -76,6 +76,7 @@ AV-10/11 стосуються попередньої CFG-R. Їхні дані н
 | 0.3.0 | 2026-11-17 | #270: додано навігацію на підсумковий інженерно-комерційний висновок `Research/studies/commercialization-and-final-conclusions.md` та бекенд `--emit-c99` + Z3. |
 | 0.4.0 | 2026-11-18 | #274: додано навігацію на двомодовий Go-емулятор VMK та 4-панельний TUI-дебагер (`Engineering/sw/vmk-go/`, `Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`). |
 | 0.4.1 | 2026-11-18 | #276: додано посилання на Посібник користувача VMK (`Engineering/guides/vmk-users-guide.md`) та `Engineering/sw/vmk-go/README.md`. |
+| 0.5.0 | 2026-11-18 | #278: додано навігацію на специфікацію мови `EKPOL 0.1.0` (`Engineering/specifications/kpol/ekpol-specification-0.1.0.md`) та оновлено версію `VMK v0.2.0`. |
 
 ## Абревіатури та глосарій
 

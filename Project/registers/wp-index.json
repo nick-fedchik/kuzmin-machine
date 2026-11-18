@@ -1,5 +1,5 @@
 {
-  "version": "0.24.0",
+  "version": "0.26.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -621,6 +621,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/specifications/kpol/ekpol-specification-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/specifications/kpol/kpol-auth-subset-0.1.0.md",
       "direction": "Engineering",
       "wp_type": "Specification",
@@ -717,6 +723,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/kpol-ref/ekpol_frontend.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/kpol-ref/kpol_debugger.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -778,6 +790,12 @@
     },
     {
       "path": "Engineering/sw/tests/test_c99_emitter_270.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_ekpol_278.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -849,6 +867,60 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/cascade_4concept.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/decrease.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/factorial.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/if_toggle.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/increase.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/nod_euclid.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/sum_autoreset.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/tachometer.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/vmk-go/go.mod",
       "direction": "Engineering",
       "wp_type": "Configuration",
@@ -868,6 +940,12 @@
     },
     {
       "path": "Engineering/sw/vmk-go/internal/vmk/conceptual.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/ekpol.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -2382,6 +2460,42 @@
       "path": "Engineering/validation/kpol-cme/docs-registers-169/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/raw/ekpol_ergonomics_and_sha256.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/raw/ekpol_ergonomics_and_sha256.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/raw/go_test_v020.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/raw/pytest_ekpol_278.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/raw/pytest_ekpol_278_rerun_a19bca2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/ekpol-278/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
       "immutable_input": false
     },
     {

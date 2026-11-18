@@ -48,6 +48,13 @@ func ParseStdioDirectives(sourceCode string, descs [64]ConceptDescriptor, active
 		}
 	}
 
+	if len(stdinNames) == 0 && len(stdoutNames) == 0 && strings.Contains(sourceCode, "concept ") {
+		if ekProg, err := ParseEKPOL(sourceCode, ""); err == nil {
+			stdinNames = append(stdinNames, ekProg.StdinConcepts...)
+			stdoutNames = append(stdoutNames, ekProg.StdoutConcepts...)
+		}
+	}
+
 	if len(stdinNames) == 0 && len(activeCIDs) > 0 {
 		stdinNames = []string{descs[activeCIDs[0]].Name}
 	}

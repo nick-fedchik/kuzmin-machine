@@ -2,6 +2,7 @@ package vmk
 
 import (
 	"bytes"
+	"os"
 	"strings"
 	"testing"
 )
@@ -265,7 +266,7 @@ func TestCLIStdioFailOnRejectTUIAndUnreachableTarget(t *testing.T) {
 	}
 	tuiStr := outBuf.String()
 	for _, marker := range []string{
-		"VMK (Virtual Machine of Kuzmin) v0.1.0",
+		"VMK (Virtual Machine of Kuzmin) v0.2.0",
 		"State: PRE-LOAD -> POST-LOAD -> RUNNING",
 		"[PANEL 1: CONCEPT TABLE",
 		"[PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS",
@@ -393,5 +394,200 @@ func TestAllPredicatesActionsSelfSuppressAndExamplesAll(t *testing.T) {
 	}
 	if gotQuote := ShellQuoteSingle("a'b"); gotQuote != "'a'\\''b'" {
 		t.Fatalf("unexpected ShellQuoteSingle('a\\'b'): %q", gotQuote)
+	}
+}
+
+func TestEKPOLBRAMBitIdenticalSHA256AndRoundtrip(t *testing.T) {
+	decreaseFromTenKPOL := strings.Replace(ExampleDecreaseSource, "Problem DecreaseFromOne", "Problem Decrease", 1)
+	decreaseFromTenKPOL = strings.Replace(decreaseFromTenKPOL, "Solution DecreaseFromOne", "Solution Decrease", 1)
+	decreaseFromTenKPOL = strings.Replace(decreaseFromTenKPOL, "state Counter: Int32 = 1;", "state Counter: Int32 = 10;", 1)
+
+	cases := []struct {
+		name      string
+		kpolSrc   string
+		profile   string
+		ekpolFile string
+		wantSHA   string
+	}{
+		{
+			name:      "increase",
+			kpolSrc:   ExampleIncreaseSource,
+			profile:   "KPOL-CME-1",
+			ekpolFile: "../../examples/increase.ekpol",
+			wantSHA:   "4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d",
+		},
+		{
+			name:      "decrease",
+			kpolSrc:   decreaseFromTenKPOL,
+			profile:   "KPOL-CME-1",
+			ekpolFile: "../../examples/decrease.ekpol",
+			wantSHA:   "00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3",
+		},
+		{
+			name:      "cascade",
+			kpolSrc:   ExampleCascade4Source,
+			profile:   "KPOL-CME-2",
+			ekpolFile: "../../examples/cascade_4concept.ekpol",
+			wantSHA:   "032c4705c91cea6ddddb7d449cd0dcbd6ba62359af1f9e7a846f33c341a7ef38",
+		},
+		{
+			name:      "bms",
+			kpolSrc:   ExampleBMSSafetyCascadeSource,
+			profile:   "KPOL-CME-2",
+			ekpolFile: "../../examples/bms_safety_cascade.ekpol",
+			wantSHA:   "de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee",
+		},
+	}
+
+	for _, tc := range cases {
+		kComp, err := CompileKPOLSource(tc.kpolSrc, tc.profile)
+		if err != nil {
+			t.Fatalf("%s CompileKPOLSource failed: %v", tc.name, err)
+		}
+		kSnap, err := MakeSnapshotFromBytes(kComp.BRAMImage, "POST-LOAD", "sim", HWIDCfgP, 0, 0, 0, 0, 0, kComp.ConceptNames)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if kSnap.BRAMSHA256 != tc.wantSHA {
+			t.Fatalf("%s KPOL SHA-256 = %s, want %s", tc.name, kSnap.BRAMSHA256, tc.wantSHA)
+		}
+
+		for _, style := range []string{"symbolic", "keyword"} {
+			ekSrc, err := TranspileKPOLToEKPOL(tc.kpolSrc, style)
+			if err != nil {
+				t.Fatalf("%s TranspileKPOLToEKPOL(%s) failed: %v", tc.name, style, err)
+			}
+			for i := 0; i < len(ekSrc); i++ {
+				if ekSrc[i] >= 128 {
+					t.Fatalf("%s (%s) contains non-ASCII byte 0x%02X", tc.name, style, ekSrc[i])
+				}
+			}
+			ekComp, err := CompileEKPOLSource(ekSrc, tc.name)
+			if err != nil {
+				t.Fatalf("%s CompileEKPOLSource(%s) failed: %v", tc.name, style, err)
+			}
+			if !bytes.Equal(ekComp.BRAMImage, kComp.BRAMImage) {
+				t.Fatalf("%s (%s) BRAM mismatch against classic KPOL", tc.name, style)
+			}
+
+			backKPOL, err := TranspileEKPOLToKPOL(ekSrc, tc.name)
+			if err != nil {
+				t.Fatalf("%s TranspileEKPOLToKPOL(%s) failed: %v", tc.name, style, err)
+			}
+			backComp, err := CompileKPOLSource(backKPOL, tc.profile)
+			if err != nil {
+				t.Fatalf("%s roundtrip CompileKPOLSource(%s) failed: %v", tc.name, style, err)
+			}
+			if !bytes.Equal(backComp.BRAMImage, kComp.BRAMImage) {
+				t.Fatalf("%s (%s) roundtrip KPOL->EKPOL->KPOL->BRAM mismatch", tc.name, style)
+			}
+		}
+
+		// Also verify example .ekpol file on disk compiles to exact 64-char SHA-256 and CLI flags work
+		fileBytes, err := os.ReadFile(tc.ekpolFile)
+		if err != nil {
+			t.Fatalf("ReadFile(%s) failed: %v", tc.ekpolFile, err)
+		}
+		fileComp, err := CompileEKPOLSource(string(fileBytes), tc.name)
+		if err != nil {
+			t.Fatalf("CompileEKPOLSource(%s) failed: %v", tc.ekpolFile, err)
+		}
+		fileSnap, err := MakeSnapshotFromBytes(fileComp.BRAMImage, "POST-LOAD", "sim", HWIDCfgP, 0, 0, 0, 0, 0, fileComp.ConceptNames)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fileSnap.BRAMSHA256 != tc.wantSHA {
+			t.Fatalf("%s file SHA-256 = %s, want %s", tc.ekpolFile, fileSnap.BRAMSHA256, tc.wantSHA)
+		}
+
+		var outBuf, errBuf bytes.Buffer
+		if code := RunCLI([]string{"--program", tc.ekpolFile, "--dump-concepts"}, strings.NewReader(""), &outBuf, &errBuf); code != 0 {
+			t.Fatalf("CLI --program %s --dump-concepts failed: code=%d stderr=%s", tc.ekpolFile, code, errBuf.String())
+		}
+		if !strings.Contains(outBuf.String(), tc.wantSHA[:16]) {
+			t.Fatalf("CLI output for %s missing SHA-256 prefix %s:\n%s", tc.ekpolFile, tc.wantSHA[:16], outBuf.String())
+		}
+
+		outBuf.Reset()
+		errBuf.Reset()
+		if code := RunCLI([]string{"--program", tc.ekpolFile, "--to-kpol"}, strings.NewReader(""), &outBuf, &errBuf); code != 0 || !strings.Contains(outBuf.String(), "Problem ") {
+			t.Fatalf("CLI --program %s --to-kpol failed: code=%d stderr=%s", tc.ekpolFile, code, errBuf.String())
+		}
+	}
+}
+
+func TestEKPOLConceptualExamplesAndPostReadBarrier(t *testing.T) {
+	// Verify both symbolic (`-> => . Sum = 0`) and keyword (`on read => after Sum = 0;`) post-read Big Dot reset
+	for _, src := range []string{
+		`concept Sum: f64 = 0 [>= 0] {
+			<- x :: true => Sum += x .
+			-> => . Sum = 0
+		}`,
+		`concept Sum: float64 = 0 [>= 0] {
+			on write(x) => Sum += x commit;
+			on read => after Sum = 0;
+		}`,
+	} {
+		prog, err := ParseEKPOL(src, "SumTest")
+		if err != nil {
+			t.Fatalf("ParseEKPOL(Sum) failed: %v", err)
+		}
+		vm, _, err := NewConceptualVMFromEKPOL(prog, src)
+		if err != nil {
+			t.Fatalf("NewConceptualVMFromEKPOL(Sum) failed: %v", err)
+		}
+		vm.ExecuteSumWrite(10, true)
+		vm.ExecuteSumWrite(25, true)
+		readVal, postState, _ := vm.ExecuteSumReadWithPostDotReset()
+		if readVal != 35 || postState != 0 {
+			t.Fatalf("EKPOL Sum post-read barrier failed: readReturned=%v (want 35), postReadState=%v (want 0)", readVal, postState)
+		}
+	}
+
+	// Verify all 5 conceptual .ekpol files in examples/ execute cleanly via RunCLI
+	for _, exFile := range []string{
+		"../../examples/if_toggle.ekpol",
+		"../../examples/sum_autoreset.ekpol",
+		"../../examples/nod_euclid.ekpol",
+		"../../examples/factorial.ekpol",
+		"../../examples/tachometer.ekpol",
+	} {
+		var outBuf, errBuf bytes.Buffer
+		code := RunCLI([]string{"--program", exFile}, strings.NewReader(""), &outBuf, &errBuf)
+		if code != 0 {
+			t.Fatalf("RunCLI(--program %s) failed: code=%d stderr=%s", exFile, code, errBuf.String())
+		}
+		if !strings.Contains(outBuf.String(), "State: PRE-LOAD -> POST-LOAD -> COMPLETED") {
+			t.Fatalf("missing COMPLETED TUI header for %s:\n%s", exFile, outBuf.String())
+		}
+	}
+}
+
+func TestEKPOLStaticVerificationErrors(t *testing.T) {
+	// 1. Cyclic cascade C0 -> C1 -> C0 must fail with EKPOL-CYCLE-ERR
+	cyclicSrc := `
+	concept C0: i32 = 0 [>= 0] { ~ C1 :: C1 >= 1 => C0 += 1 . }
+	concept C1: i32 = 0 [>= 0] { ~ C0 :: C0 >= 1 => C1 += 1 . }
+	`
+	if _, err := CompileEKPOLSource(cyclicSrc, "Cyclic"); err == nil || !strings.Contains(err.Error(), "EKPOL-CYCLE-ERR") {
+		t.Fatalf("expected EKPOL-CYCLE-ERR on cyclic cascade, got %v", err)
+	}
+
+	// 2. Inverted range 5000..50 must fail with EKPOL-RANGE-ERR
+	badRangeSrc := `concept C0: i32 = 0 [>= 0] { <- x :: x in 5000..50 => C0 += 1 . }`
+	if _, err := CompileEKPOLSource(badRangeSrc, "BadRange"); err == nil || !strings.Contains(err.Error(), "EKPOL-RANGE-ERR") {
+		t.Fatalf("expected EKPOL-RANGE-ERR on inverted range, got %v", err)
+	}
+
+	// 3. Missing [>= 0] invariant must fail with EKPOL-INVARIANT-ERR
+	noInvSrc := `concept C0: i32 = 0 { <- x :: x < 10 => C0 += 1 . }`
+	if _, err := CompileEKPOLSource(noInvSrc, "NoInv"); err == nil || !strings.Contains(err.Error(), "EKPOL-INVARIANT-ERR") {
+		t.Fatalf("expected EKPOL-INVARIANT-ERR on missing invariant, got %v", err)
+	}
+
+	// 4. W1 operand collision (guard literal + step != 1) must fail with EKPOL-COLLISION-ERR
+	collisionSrc := `concept C0: i32 = 0 [>= 0] { <- x :: x < 10 => C0 += 5 . }`
+	if _, err := CompileEKPOLSource(collisionSrc, "Collision"); err == nil || !strings.Contains(err.Error(), "EKPOL-COLLISION-ERR") {
+		t.Fatalf("expected EKPOL-COLLISION-ERR on W1 collision, got %v", err)
 	}
 }

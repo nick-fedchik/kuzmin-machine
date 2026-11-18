@@ -1,0 +1,17 @@
+module FactorialRecursive;
+
+// Recursive Factorial(5) = 120 with choice array [ 0 1 ] base case
+@stdin
+concept n: u64 = 5 [>= 0] {
+    <- val :: val >= 0 => n = val .
+}
+
+@stdout
+concept Factorial: u64 = _ {
+    on call(n) when n in 0..1 => Factorial = 1 commit;
+}
+
+test CheckFactorial5 {
+    send Factorial(5);
+    expect Factorial == 120;
+}
