@@ -1,7 +1,7 @@
 # Контракти KPOL
 
-* **Версія:** 0.7.0
-* **Дата:** 2026-11-16
+* **Версія:** 0.8.0
+* **Дата:** 2026-11-18
 * **Тип WP:** Guide
 
 ## Призначення
@@ -14,6 +14,7 @@
 | [KPOL-CME-2 / CME-RAW-1](kpol-cme2-profile-0.1.0.md) | Багатоконцептний профіль (#184) на незмінному `CME-RAW-1`: до 64 станів, ациклічні каскади `on change(...)` (включно з `CID 0`), `ADD/SUB/ASSIGN`, `>=`/`<=`/`int16` `RANGE` та детектор `CME2-OPERAND-COLLISION`. |
 | [KPOL-AUTH (підмножинний фронтенд і lowering)](kpol-auth-subset-0.1.0.md) | Похідна специфікація ізольованого прототипу [`Engineering/sw/kpol-auth/`](../../sw/kpol-auth/__init__.py) (#245, частина #186 і #8): CST з UTF-8 `Span`, гейти `KPOL-AUTH-U01..U12`, розмежування `•` та lowering у `Do/Go` + `CME-RAW-1` (`KPOL-LOWER-CYCLE`); #186 лишається відкритою до відповідей на `RFC-016` / `RFC-017` п. 3. |
 | [Консолідований контракт](kpol-consolidated-0.1.0.md) | Опис наявного ширшого фронтенду та інтерпретатора; містить відомі прогалини безпрофільного CME-lowering. |
+| [VMK (Virtual Machine of Kuzmin) та TUI-дебагер на Go](../sw/vmk-go-emulator-and-tui-debugger-0.1.0.md) | Специфікація двомодового емулятора МК (`--mode bram64` та `--mode conceptual`), протоколу `PRE-LOAD -> POST-LOAD`, потокового `STDIO` і 4-панельного TUI-дебагера [`Engineering/sw/vmk-go/`](../../sw/vmk-go/go.mod) (#274). |
 
 Референс — [kpol_reference.py](../../sw/kpol-ref/kpol_reference.py).
 Поточні тести — [tests](../../sw/kpol-ref/tests/).
@@ -59,6 +60,7 @@ CLI підтримує явні профілі `--profile KPOL-CME-1` (типо�
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.8.0 | 2026-11-18 | #274: додано навігацію до специфікації двомодового Go-емулятора VMK та 4-панельного TUI-дебагера (`../sw/vmk-go-emulator-and-tui-debugger-0.1.0.md`, `Engineering/sw/vmk-go/`). |
 | 0.7.0 | 2026-11-16 | #245 (частина #186, #8): додано навігацію до специфікації ізольованого підмножинного фронтенду та lowering `KPOL-AUTH` (`kpol-auth-subset-0.1.0.md`) і пакета `Engineering/sw/kpol-auth/` зі збереженням відкритого статусу #186. |
 | 0.6.0 | 2026-11-14 | #184: додано навігацію до специфікації багатоконцептного профілю `KPOL-CME-2` (`kpol-cme2-profile-0.1.0.md`) і звіту перевірки `cme2-profile-184/report.md`. |
 | 0.5.2 | 2026-11-14 | #183: уточнено стан виправлень верифікатора та експериментального CME-lowering і збережені структурні межі `CME-RAW-1`. |

@@ -1,5 +1,5 @@
 {
-  "version": "0.21.0",
+  "version": "0.22.0",
   "date": "2026-11-18",
   "entries": [
     {
@@ -639,6 +639,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger-0.1.0.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/kpol-auth/__init__.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -789,6 +795,12 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/tests/test_vmk_go_274.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/tools/static-analyzer/README.md",
       "direction": "Engineering",
       "wp_type": "Guide",
@@ -808,6 +820,84 @@
     },
     {
       "path": "Engineering/sw/tools/static-analyzer/tests/test_km_static_analyzer.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/cmd/vmk/main.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/cmd/vmk/main_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/go.mod",
+      "direction": "Engineering",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/bram64.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/cli.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/conceptual.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/examples.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/kpol_compiler.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/snapshot.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/stdio.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/tui.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/version.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/vmk_test.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -2385,6 +2475,42 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M4_stage2_skid_overwrite.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M4_stage2_skid_overwrite.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M4_stage2_skid_overwrite.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M5_multigroup_arbiter_fault.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M5_multigroup_arbiter_fault.vcd",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/M5_multigroup_arbiter_fault.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/MC4_cyclic_deadlock_witness.vcd",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2403,6 +2529,18 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_c1_c2_cover_p2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_c1_c2_cover_p2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_base_bmc.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2410,6 +2548,18 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_base_bmc.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_base_bmc_p2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_base_bmc_p2.yosys.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -2427,6 +2577,18 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_ind_p2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc1_mc4_ind_p2.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc3_dag_bmc45.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2434,6 +2596,18 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc3_dag_bmc45.yosys.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc3_dag_bmc49_p2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/formal_mc3_dag_bmc49_p2.yosys.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -2463,6 +2637,18 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/iverilog_traffic_p2_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/iverilog_traffic_p2_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_formal_provenance.json",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2481,7 +2667,19 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_pnr_scaling_p2.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_pnr_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_pnr_summary_p2.json",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -2493,7 +2691,19 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_traffic_profiles_p2.csv",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_traffic_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/manycore_traffic_summary_p2.json",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -2523,6 +2733,24 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_p2_n2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_p2_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_pnr_p2_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n1.json",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2542,6 +2770,24 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_n8.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_p2_n2.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_p2_n4.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/nextpnr_report_p2_n8.json",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -2571,6 +2817,24 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_p2_n2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_p2_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_synth_p2_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_n1.log",
       "direction": "Engineering",
       "wp_type": "Data",
@@ -2590,6 +2854,24 @@
     },
     {
       "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_n8.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_p2_n2.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_p2_n4.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/manycore-scaling-255/raw/yosys_xbar_only_p2_n8.log",
       "direction": "Engineering",
       "wp_type": "Data",
       "immutable_input": false
@@ -3024,6 +3306,54 @@
       "path": "Engineering/validation/kpol-cme/verifier-lowering-183/report.md",
       "direction": "Engineering",
       "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/go_test_vmk_274.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/pynq2_live_vmk_session.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/pynq2_live_vmk_session.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/pytest_vmk_go_274.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_examples_all_summary.json",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_examples_all_traces.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/raw/vmk_stdio_bms_session.log",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/validation/kpol-cme/vmk-go-274/report.md",
+      "direction": "Engineering",
+      "wp_type": "Report",
       "immutable_input": false
     },
     {

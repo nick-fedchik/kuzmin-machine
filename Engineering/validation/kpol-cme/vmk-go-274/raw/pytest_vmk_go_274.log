@@ -1,0 +1,19 @@
+# cmd: python3 -m pytest -v Engineering/sw/tests/test_vmk_go_274.py
+# timestamp: 2026-11-18T11:52:48.157387+02:00
+# git_commit: c366224485c8210784b1cba041832c24d7d666a9
+# host: Linux-7.0.0-42-generic-x86_64-with-glibc2.43
+# evidence_kind: pytest_differential_and_5_go_mutants_suite
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/mfedchyk/GitHub/nick-fedchik/km-wt-274-vmk-go
+configfile: pytest.ini
+plugins: typeguard-4.4.4, hypothesis-6.151.5
+collecting ... collected 3 items
+
+Engineering/sw/tests/test_vmk_go_274.py::test_go_unit_test_suite_passes PASSED [ 33%]
+Engineering/sw/tests/test_vmk_go_274.py::test_vmk_go_equivalence_with_python_c99_iverilog_and_pynq2 PASSED [ 66%]
+Engineering/sw/tests/test_vmk_go_274.py::test_raw_hil_artifacts_and_mutants_m1_to_m5 PASSED [100%]
+
+============================== 3 passed in 1.95s ===============================

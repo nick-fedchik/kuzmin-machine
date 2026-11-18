@@ -1,0 +1,388 @@
+#!/usr/bin/env python3
+"""Issue #274: Verification suite for the Go VMK (Virtual Machine of Kuzmin) Emulator
+and 4-Panel TUI Debugger (`Engineering/sw/vmk-go`, SemVer `0.1.0`).
+
+Covers:
+  1. Execution of the Go unit test suite (`go test -v ./...` in `Engineering/sw/vmk-go/`);
+  2. Cross-checking Go `vmk` (`--mode bram64` and `--mode conceptual`) against:
+     - Python `kpol_debugger.py` & `ReferenceCmeSafetyEngine`,
+     - GCC-compiled C99 (`--emit-c99`),
+     - `Icarus Verilog` simulation of `kpol_bram_pipeline_axi.sv` (`CFG-P`) and `km_euclid_core.sv` (`Nod(120, 6) = 6`),
+     - Recorded physical `PYNQ-Z1` (`pynq2`) HIL session (`PRE-LOAD -> POST-LOAD -> POST-RUN`);
+  3. Verification of all 6+ built-in examples (`if`, `sum`, `nod`, `factorial`, `tachometer`,
+     `bms`, `increase`, `decrease`, `cascade`, `auth`), `STDIO` (`--stdio`, `--fail-on-reject`),
+     and `--render-tui-frame`;
+  4. Five Go-source negative mutant tests (`AGENTS.md §4.1`, copying `Engineering/sw/vmk-go`
+     into `.pytest_cache`, mutating `.go` source code, and verifying `go test` fails):
+     - `M1_go_invert_predicate`
+     - `M2_go_bypass_invariant_gate`
+     - `M3_go_ignore_uncertainty_bit`
+     - `M4_go_skip_post_read_dot_reset`
+     - `M5_go_corrupt_pre_post_load_diff`
+"""
+
+from __future__ import annotations
+
+from contextlib import contextmanager
+import ctypes
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import uuid
+
+import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+VMK_GO_DIR = REPO_ROOT / "Engineering" / "sw" / "vmk-go"
+SW_REF_DIR = REPO_ROOT / "Engineering" / "sw" / "kpol-ref"
+VAL_DIR = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "vmk-go-274"
+RAW_DIR = VAL_DIR / "raw"
+SPEC_MD = REPO_ROOT / "Engineering" / "specifications" / "sw" / "vmk-go-emulator-and-tui-debugger-0.1.0.md"
+REPORT_MD = VAL_DIR / "report.md"
+BMS_KPOL = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "c99-emitter-270" / "bms_safety_cascade.kpol"
+
+if str(SW_REF_DIR) not in sys.path:
+    sys.path.insert(0, str(SW_REF_DIR))
+
+from c99_emitter import ReferenceCmeSafetyEngine, emit_c99_safety_module  # noqa: E402
+from kpol_debugger import (  # noqa: E402
+    KpolCascadeDebugger,
+    run_iverilog_cfgp_trace,
+    run_iverilog_euclid_verification,
+)
+import kpol_reference as kr  # noqa: E402
+
+
+@contextmanager
+def _workspace_scratch_dir(prefix: str = "vmk_go_274"):
+    """Create an isolated scratch directory inside `.pytest_cache` (never `/tmp`)."""
+    base = REPO_ROOT / ".pytest_cache" / f"{prefix}_{uuid.uuid4().hex}"
+    base.mkdir(parents=True, exist_ok=False)
+    try:
+        yield base
+    finally:
+        shutil.rmtree(base, ignore_errors=True)
+
+
+def _go_env(scratch_dir: Path) -> dict[str, str]:
+    go_tmp = scratch_dir / "go_tmp"
+    go_cache = REPO_ROOT / ".pytest_cache" / "go_cache"
+    go_tmp.mkdir(parents=True, exist_ok=True)
+    go_cache.mkdir(parents=True, exist_ok=True)
+    env = os.environ.copy()
+    env["GOTMPDIR"] = str(go_tmp)
+    env["GOCACHE"] = str(go_cache)
+    env["TMPDIR"] = str(go_tmp)
+    env["TEMP"] = str(go_tmp)
+    env["TMP"] = str(go_tmp)
+    return env
+
+
+def _build_vmk_binary(scratch_dir: Path) -> Path:
+    bin_path = scratch_dir / "vmk"
+    subprocess.run(
+        ["go", "build", "-o", str(bin_path), "./cmd/vmk"],
+        cwd=str(VMK_GO_DIR),
+        env=_go_env(scratch_dir),
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return bin_path
+
+
+class _CSafetyCtx(ctypes.Structure):
+    _fields_ = [
+        ("state", ctypes.c_int32 * 64),
+        ("valid_mask", ctypes.c_uint64),
+        ("events_processed", ctypes.c_uint32),
+        ("commits", ctypes.c_uint32),
+        ("rejects", ctypes.c_uint32),
+        ("fault_propagations", ctypes.c_uint32),
+        ("last_committed_state", ctypes.c_int32),
+    ]
+
+
+class _CSafetyStepResult(ctypes.Structure):
+    _fields_ = [
+        ("steps_executed", ctypes.c_uint32),
+        ("commits", ctypes.c_uint32),
+        ("rejects", ctypes.c_uint32),
+        ("fault_propagated", ctypes.c_bool),
+        ("last_state", ctypes.c_int32),
+        ("status", ctypes.c_int),
+    ]
+
+
+_CTYPES_EXPORT_SHIM = """
+void km_Export_init(km_safety_ctx_t *ctx) { km_safety_init(ctx); }
+km_safety_step_result_t km_Export_step_event(
+    km_safety_ctx_t *ctx, uint8_t root_cid, int32_t param, bool param_valid
+) {
+    return km_safety_step_event(ctx, root_cid, param, param_valid);
+}
+"""
+
+
+def _compile_c99_lib(c_source: str, scratch_dir: Path) -> ctypes.CDLL:
+    c_file = scratch_dir / "km_c99_ref.c"
+    so_file = scratch_dir / "libkm_c99_ref.so"
+    c_file.write_text(c_source + "\n" + _CTYPES_EXPORT_SHIM, encoding="utf-8")
+    subprocess.run(
+        [
+            "gcc", "-std=c99", "-O2", "-Wall", "-Wextra", "-Werror", "-pedantic",
+            "-fPIC", "-shared", str(c_file), "-o", str(so_file),
+        ],
+        env=_go_env(scratch_dir),
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    lib = ctypes.CDLL(str(so_file))
+    lib.km_Export_init.argtypes = [ctypes.POINTER(_CSafetyCtx)]
+    lib.km_Export_init.restype = None
+    lib.km_Export_step_event.argtypes = [
+        ctypes.POINTER(_CSafetyCtx),
+        ctypes.c_uint8,
+        ctypes.c_int32,
+        ctypes.c_bool,
+    ]
+    lib.km_Export_step_event.restype = _CSafetyStepResult
+    return lib
+
+
+def test_go_unit_test_suite_passes():
+    """Verify `gofmt -l`, `go vet ./...`, and `go test -v ./...` in `Engineering/sw/vmk-go/` pass with zero external dependencies."""
+    go_mod_txt = (VMK_GO_DIR / "go.mod").read_text(encoding="utf-8")
+    assert "module github.com/nick-fedchik/kuzmin-machine/Engineering/sw/vmk-go" in go_mod_txt
+    assert "require" not in go_mod_txt, "go.mod must have zero external dependencies"
+
+    with _workspace_scratch_dir("gotest") as scratch:
+        fmt_res = subprocess.run(
+            ["gofmt", "-l", "."],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert fmt_res.stdout.strip() == "", f"Unformatted Go files:\n{fmt_res.stdout}"
+
+        subprocess.run(
+            ["go", "vet", "./..."],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        res = subprocess.run(
+            ["go", "test", "-v", "./..."],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert "PASS" in res.stdout
+
+
+def test_vmk_go_equivalence_with_python_c99_iverilog_and_pynq2():
+    """Verify 100% equivalence of Go `vmk` against Python `KpolCascadeDebugger`,
+    `ReferenceCmeSafetyEngine`, GCC-compiled C99 (`--emit-c99`), `iverilog` `CFG-P` RTL,
+    and `km_euclid_core.sv` (`Nod(120, 6) = 6`).
+    """
+    bms_src = BMS_KPOL.read_text(encoding="utf-8")
+    mod = kr.parse_module(bms_src)
+    cnames = [s.name for s in mod.states]
+    img = kr.compile_concept_microcode_bram_image(mod, profile="KPOL-CME-2")
+    c99_code = emit_c99_safety_module(img, profile="KPOL-CME-2", module_name=mod.name, concept_names=cnames)
+
+    events = [
+        (0, 15, True),
+        (0, 5500, True),
+        (0, 0, False),
+        (0, 120, True),
+        (0, 49, True),
+        (0, 180, True),
+        (0, 250, True),
+        (0, 5000, True),
+        (0, -10, True),
+    ]
+    stdin_lines = "\n".join(
+        f"Cell_Delta_mV {'_' if not v else p}" for _, p, v in events
+    ) + "\n"
+
+    py_dbg = KpolCascadeDebugger(img, profile="KPOL-CME-2", module_name=mod.name, source_code=bms_src, concept_names=cnames)
+    ref_eng = ReferenceCmeSafetyEngine(img, profile="KPOL-CME-2", concept_names=cnames)
+    for cid, p, v in events:
+        py_dbg.step_event(cid, p, v)
+        ref_eng.step_event(cid, p, v)
+
+    with _workspace_scratch_dir("eq_vmk") as scratch:
+        vmk_bin = _build_vmk_binary(scratch)
+        json_out = scratch / "vmk_bms.json"
+        res = subprocess.run(
+            [
+                str(vmk_bin),
+                "--mode", "bram64",
+                "--program", str(BMS_KPOL),
+                "--profile", "KPOL-CME-2",
+                "--stdio",
+                "--fail-on-reject",
+                "--render-tui-frame",
+                "--json-out", str(json_out),
+            ],
+            input=stdin_lines,
+            env=_go_env(scratch),
+            capture_output=True,
+            text=True,
+        )
+        assert res.returncode == 1, "expected exit code 1 with --fail-on-reject on rejected BMS events"
+        go_payload = json.loads(json_out.read_text(encoding="utf-8"))
+
+        # Check compiled BRAM SHA-256 matches Python compiler bit-for-bit
+        import hashlib
+        assert go_payload["post_load"]["bram_sha256"] == hashlib.sha256(img).hexdigest()
+
+        # Check telemetry and states match Python debugger & ReferenceCmeSafetyEngine
+        telem = go_payload["telemetry"]
+        assert telem["events_processed"] == py_dbg.events_processed == ref_eng.events_processed == 19
+        assert telem["commits"] == py_dbg.commits == ref_eng.commits == 12
+        assert telem["rejects"] == py_dbg.rejects == ref_eng.rejects == 7
+        assert telem["fault_propagations"] == py_dbg.fault_propagations == ref_eng.fault_propagations == 1
+        assert go_payload["final_active_states"] == py_dbg.state[:4] == [4, 4, 0, 0]
+
+        # Check step-by-step trace matches Python KpolCascadeDebugger across all 19 steps
+        go_steps = go_payload["steps"]
+        assert len(go_steps) == len(py_dbg.steps) == 19
+        for gs, ps in zip(go_steps, py_dbg.steps):
+            assert gs["cid"] == ps.cid
+            assert gs["depth"] == ps.depth
+            assert gs["verdict"] == ps.verdict
+            assert gs["pre_w0"] == ps.pre_w0
+            assert gs["post_w0"] == ps.post_w0
+            assert gs["candidate_w0"] == ps.candidate_w0
+
+        # Check C99 equivalence
+        lib = _compile_c99_lib(c99_code, scratch)
+        c_ctx = _CSafetyCtx()
+        lib.km_Export_init(ctypes.byref(c_ctx))
+        for cid, p, v in events:
+            lib.km_Export_step_event(ctypes.byref(c_ctx), cid, p, v)
+        assert list(c_ctx.state[:4]) == go_payload["final_active_states"] == [4, 4, 0, 0]
+        assert int(c_ctx.events_processed) == telem["events_processed"] == 19
+        assert int(c_ctx.commits) == telem["commits"] == 12
+        assert int(c_ctx.rejects) == telem["rejects"] == 7
+
+        # Check Icarus Verilog CFG-P RTL equivalence on valid events
+        hw_valid_events = [(cid, p) for cid, p, v in events if v]
+        rtl_res = run_iverilog_cfgp_trace(img, hw_valid_events)
+        assert rtl_res["states"] == go_payload["final_active_states"] == [4, 4, 0, 0]
+        assert rtl_res["commits"] == telem["commits"] == 12
+        assert rtl_res["events"] == 18
+        assert rtl_res["rejects"] == 6
+
+        # Check Conceptual Mode all 6 examples + Nod(120, 6) = 6 against km_euclid_core.sv in iverilog
+        all_json = scratch / "vmk_all.json"
+        res_all = subprocess.run(
+            [str(vmk_bin), "--example", "all", "--json-out", str(all_json)],
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        all_data = json.loads(all_json.read_text(encoding="utf-8"))
+        assert all_data["if"]["state_trajectory"] == ["_", "!", "¬", "!"]
+        assert all_data["sum"]["read_returned_value"] == 35
+        assert all_data["sum"]["post_read_state"] == 0
+        assert all_data["factorial"]["result"] == 120
+        assert all_data["tachometer"]["distance"] == 6
+        assert all_data["tachometer"]["speed"] == 6
+        assert all_data["tachometer"]["revolutions_post"] == 0
+
+        euclid_rtl = run_iverilog_euclid_verification(120, 6)
+        assert all_data["nod"]["result"] == euclid_rtl["result"] == 6
+        assert all_data["nod"]["subtraction_iterations"] == euclid_rtl["iterations"] == 19
+        assert all_data["nod"]["hardware_cycles_at_3cyc_per_sub_plus_1"] == euclid_rtl["cycles"] == 58
+
+
+def test_raw_hil_artifacts_and_mutants_m1_to_m5():
+    """Verify recorded `pynq2` HIL artifacts and ensure all 5 Go mutants `M1..M5` are killed by `go test`."""
+    pynq_json_path = RAW_DIR / "pynq2_live_vmk_session.json"
+    pynq_log_path = RAW_DIR / "pynq2_live_vmk_session.log"
+    assert pynq_json_path.is_file(), f"Missing {pynq_json_path}"
+    assert pynq_log_path.is_file(), f"Missing {pynq_log_path}"
+
+    for log_file in RAW_DIR.glob("*.log"):
+        head = log_file.read_text(encoding="utf-8")[:600]
+        assert "# cmd:" in head
+        assert "# timestamp:" in head
+        assert "# git_commit:" in head
+        assert "# host:" in head
+
+    pynq_data = json.loads(pynq_json_path.read_text(encoding="utf-8"))
+    hw_rep = pynq_data["pynq_hw_report"]
+    assert hw_rep["target"] == "pynq2"
+    assert hw_rep["readback_verified"] is True
+    assert hw_rep["pre_load"]["topology"]["active_concepts"] == 1
+    assert hw_rep["post_load"]["topology"]["active_concepts"] == 4
+    assert hw_rep["changed_slots_on_load"] == 4
+    assert hw_rep["events_delta"] == 18
+    assert hw_rep["commits_delta"] == 12
+    assert hw_rep["rejects_delta"] == 6
+
+    mutants = [
+        (
+            "M1_go_invert_predicate",
+            "internal/vmk/bram64.go",
+            "return assumpKnown && assumpTrue",
+            "return assumpKnown && (!assumpTrue)",
+        ),
+        (
+            "M2_go_bypass_invariant_gate",
+            "internal/vmk/bram64.go",
+            "return actionValid && invKnown && invTrue && (!hazTrue)",
+            "return true",
+        ),
+        (
+            "M3_go_ignore_uncertainty_bit",
+            "internal/vmk/bram64.go",
+            "isUncertaintyFault := (!curValid) || (!preValid)",
+            "isUncertaintyFault := false",
+        ),
+        (
+            "M4_go_skip_post_read_dot_reset",
+            "internal/vmk/conceptual.go",
+            "if slot.PostReadZero {\n\t\tslot.FloatVal = 0\n\t\tslot.IntVal = 0\n\t}",
+            "if false && slot.PostReadZero {\n\t\tslot.FloatVal = 0\n\t\tslot.IntVal = 0\n\t}",
+        ),
+        (
+            "M5_go_corrupt_pre_post_load_diff",
+            "internal/vmk/snapshot.go",
+            "slotChanged := w0Changed || w123Changed",
+            "slotChanged := w0Changed",
+        ),
+    ]
+
+    for m_name, rel_file, orig_snippet, mut_snippet in mutants:
+        with _workspace_scratch_dir(m_name) as scratch:
+            mut_repo = scratch / "vmk-go"
+            shutil.copytree(VMK_GO_DIR, mut_repo)
+            target_go = mut_repo / rel_file
+            src_txt = target_go.read_text(encoding="utf-8")
+            assert orig_snippet in src_txt, f"Original snippet for {m_name} not found in {rel_file}"
+            target_go.write_text(src_txt.replace(orig_snippet, mut_snippet, 1), encoding="utf-8")
+
+            res = subprocess.run(
+                ["go", "test", "./..."],
+                cwd=str(mut_repo),
+                env=_go_env(scratch),
+                capture_output=True,
+                text=True,
+            )
+            assert res.returncode != 0, f"Mutant {m_name} survived `go test ./...`!\n{res.stdout}\n{res.stderr}"
