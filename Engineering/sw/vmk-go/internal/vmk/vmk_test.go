@@ -3,6 +3,7 @@ package vmk
 import (
 	"bytes"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -266,7 +267,7 @@ func TestCLIStdioFailOnRejectTUIAndUnreachableTarget(t *testing.T) {
 	}
 	tuiStr := outBuf.String()
 	for _, marker := range []string{
-		"VMK (Virtual Machine of Kuzmin) v0.3.0",
+		"VMK (Virtual Machine of Kuzmin) v0.3.1",
 		"State: PRE-LOAD -> POST-LOAD -> RUNNING",
 		"[PANEL 1: CONCEPT TABLE",
 		"[PANEL 2: PROGRAM SOURCE CODE & LIVE STDIO STREAMS",
@@ -275,14 +276,6 @@ func TestCLIStdioFailOnRejectTUIAndUnreachableTarget(t *testing.T) {
 		if !strings.Contains(tuiStr, marker) {
 			t.Fatalf("TUI frame missing marker %q:\n%s", marker, tuiStr)
 		}
-	}
-
-	// 3. Unreachable hardware target returns VMK-TARGET-IO and exit code 2
-	outBuf.Reset()
-	errBuf.Reset()
-	code = RunCLI([]string{"--mode", "bram64", "--example", "increase", "--stdio", "--target", "root@127.0.0.1:1"}, strings.NewReader("5\n"), &outBuf, &errBuf)
-	if code != 2 || !strings.Contains(errBuf.String(), "VMK-TARGET-IO:") {
-		t.Fatalf("expected exit code 2 and VMK-TARGET-IO on unreachable target, got code=%d stderr=%s", code, errBuf.String())
 	}
 }
 
@@ -382,18 +375,9 @@ func TestAllPredicatesActionsSelfSuppressAndExamplesAll(t *testing.T) {
 		}
 	}
 
-	// Verify safe PYNQ_SUDO_PASS handling in BuildPYNQRemoteExec (no shell interpolation, no default password)
-	cmdNoPass, stdinNoPass := BuildPYNQRemoteExec("/home/xilinx/km_vmk_274_work", []int32{120, 180}, "")
-	if stdinNoPass != "" || !strings.Contains(cmdNoPass, "sudo -n ./km_pynq_debug_probe program_image.bin 120 180") {
-		t.Fatalf("unexpected BuildPYNQRemoteExec for empty password: cmd=%q stdin=%q", cmdNoPass, stdinNoPass)
-	}
-	specialPass := "p@ss'w0rd; echo $(id) `uname`"
-	cmdWithPass, stdinWithPass := BuildPYNQRemoteExec("/home/xilinx/km_vmk_274_work", []int32{120}, specialPass)
-	if strings.Contains(cmdWithPass, specialPass) || !strings.Contains(cmdWithPass, "sudo -S -p '' ./km_pynq_debug_probe program_image.bin 120") || stdinWithPass != specialPass+"\n" {
-		t.Fatalf("unsafe BuildPYNQRemoteExec with special password: cmd=%q stdin=%q", cmdWithPass, stdinWithPass)
-	}
-	if gotQuote := ShellQuoteSingle("a'b"); gotQuote != "'a'\\''b'" {
-		t.Fatalf("unexpected ShellQuoteSingle('a\\'b'): %q", gotQuote)
+	// Verify GetTerminalSize fallback on non-TTY Writer
+	if r, c := GetTerminalSize(&exOut); r != DefaultTUIRows || c != DefaultTUICols {
+		t.Fatalf("expected DefaultTUIRows/Cols (%dx%d), got %dx%d", DefaultTUIRows, DefaultTUICols, r, c)
 	}
 }
 
@@ -512,6 +496,25 @@ func TestEKPOLBRAMBitIdenticalSHA256AndRoundtrip(t *testing.T) {
 		errBuf.Reset()
 		if code := RunCLI([]string{"--program", tc.ekpolFile, "--to-kpol"}, strings.NewReader(""), &outBuf, &errBuf); code != 0 || !strings.Contains(outBuf.String(), "Problem ") {
 			t.Fatalf("CLI --program %s --to-kpol failed: code=%d stderr=%s", tc.ekpolFile, code, errBuf.String())
+		}
+
+		// Also verify classic .kpol counterpart in examples/ compiles to identical SHA-256 and transpiles via --to-ekpol
+		kpolExampleFile := strings.TrimSuffix(tc.ekpolFile, ".ekpol") + ".kpol"
+		kpolBytes, err := os.ReadFile(kpolExampleFile)
+		if err != nil {
+			t.Fatalf("ReadFile(%s) failed: %v", kpolExampleFile, err)
+		}
+		kpolFileComp, err := CompileKPOLSource(string(kpolBytes), tc.profile)
+		if err != nil {
+			t.Fatalf("CompileKPOLSource(%s) failed: %v", kpolExampleFile, err)
+		}
+		if !bytes.Equal(kpolFileComp.BRAMImage, kComp.BRAMImage) {
+			t.Fatalf("%s BRAM image mismatch against %s", kpolExampleFile, tc.ekpolFile)
+		}
+		outBuf.Reset()
+		errBuf.Reset()
+		if code := RunCLI([]string{"--program", kpolExampleFile, "--to-ekpol", "--ekpol-style", "keyword"}, strings.NewReader(""), &outBuf, &errBuf); code != 0 || !strings.Contains(outBuf.String(), "commit;") {
+			t.Fatalf("CLI --program %s --to-ekpol failed: code=%d stderr=%s", kpolExampleFile, code, errBuf.String())
 		}
 	}
 }
@@ -711,21 +714,151 @@ func TestFullScreenTUIDebuggerBRAM64AndConceptual(t *testing.T) {
 	if eng.State[0] != 0 || eng.State[2] != 2 || eng.State[3] != 10 || eng.EventsProcessed != 0 {
 		t.Fatalf("expected Reset ('r') to restore [0,0,2,10] and EventsProcessed=0, got states=%v events=%d", eng.State[:4], eng.EventsProcessed)
 	}
-	if !strings.Contains(finalFrame, "VMK v0.3.0 FULL-SCREEN DEBUGGER") || !strings.Contains(finalFrame, "┌─") {
+	if !strings.Contains(finalFrame, "VMK v0.3.1 FULL-SCREEN DEBUGGER") || !strings.Contains(finalFrame, "┌─") {
 		t.Fatalf("missing full-screen UTF-8 box headers in finalFrame:\n%s", finalFrame)
 	}
 
 	// 2. Test CLI flags `--render-fullscreen-tui` and `--tui-canvas` for both bram64 and conceptual
 	var cliOut, cliErr bytes.Buffer
 	code := RunCLI([]string{"--example", "bms", "--render-fullscreen-tui"}, strings.NewReader(""), &cliOut, &cliErr)
-	if code != 0 || !strings.Contains(cliOut.String(), "VMK v0.3.0 FULL-SCREEN DEBUGGER") || !strings.Contains(cliOut.String(), "Concept ID & Name : C00 (Cell_Delta_mV)") {
+	if code != 0 || !strings.Contains(cliOut.String(), "VMK v0.3.1 FULL-SCREEN DEBUGGER") || !strings.Contains(cliOut.String(), "Concept ID & Name : C00 (Cell_Delta_mV)") {
 		t.Fatalf("--render-fullscreen-tui failed: code=%d stderr=%s\nout=%s", code, cliErr.String(), cliOut.String())
 	}
 
 	cliOut.Reset()
 	cliErr.Reset()
 	code = RunCLI([]string{"--program", "../../examples/sum_autoreset.ekpol", "--tui-canvas"}, strings.NewReader("nnn\x1b[Be15\nq"), &cliOut, &cliErr)
-	if code != 0 || !strings.Contains(cliOut.String(), "VMK v0.3.0 FULL-SCREEN DEBUGGER") || !strings.Contains(cliOut.String(), "READ: Sum = 35") {
+	if code != 0 || !strings.Contains(cliOut.String(), "VMK v0.3.1 FULL-SCREEN DEBUGGER") || !strings.Contains(cliOut.String(), "READ: Sum = 35") {
 		t.Fatalf("conceptual --tui-canvas failed: code=%d stderr=%s\nout=%s", code, cliErr.String(), cliOut.String())
+	}
+}
+
+func findBrokenMathEscapes(md string) []string {
+	cleaned := regexp.MustCompile("(?s)```.*?```").ReplaceAllString(md, "")
+	cleaned = regexp.MustCompile("\\$`[^`\n]+`\\$").ReplaceAllString(cleaned, "")
+	cleaned = regexp.MustCompile("`[^`\n]+`").ReplaceAllString(cleaned, "")
+	mathRe := regexp.MustCompile(`(?s)\$\$(.+?)\$\$|\$([^\s$][^\n$]*?[^\s$])\$`)
+	var bad []string
+	for _, m := range mathRe.FindAllStringSubmatch(cleaned, -1) {
+		formula := m[1]
+		if formula == "" {
+			formula = m[2]
+		}
+		for _, esc := range []string{`\{`, `\}`, `\_`, `\&`} {
+			if strings.Contains(formula, esc) {
+				bad = append(bad, esc+" in "+m[0])
+			}
+		}
+	}
+	return bad
+}
+
+func TestGuideExamplesAndMathJaxEscapes(t *testing.T) {
+	// Negative control for broken MathJax escape detector
+	if got := findBrokenMathEscapes(`Formula $$\text{X} \cup \{\_\}$$ breaks`); len(got) == 0 {
+		t.Fatalf("expected broken MathJax escape detector to catch \\{ and \\_")
+	}
+
+	readmeBytes, err := os.ReadFile("../../README.md")
+	if err != nil {
+		t.Fatalf("ReadFile(../../README.md) failed: %v", err)
+	}
+	if bad := findBrokenMathEscapes(string(readmeBytes)); len(bad) > 0 {
+		t.Fatalf("../../README.md contains CommonMark-broken MathJax escapes: %v", bad)
+	}
+
+	// Resolve guide directory: standalone bundle uses ../../docs/, canonical repo uses ../../../../guides/
+	guidesDir := "../../docs"
+	if _, err := os.Stat(guidesDir + "/kpol-ekpol-language-guide.md"); err != nil {
+		guidesDir = "../../../../guides"
+		if _, err := os.Stat(guidesDir + "/kpol-ekpol-language-guide.md"); err != nil {
+			// Isolated mutant copy of vmk-go without surrounding guides directory
+			return
+		}
+	}
+
+	for _, mdFile := range []string{
+		guidesDir + "/kpol-ekpol-language-guide.md",
+		guidesDir + "/vmk-users-guide.md",
+	} {
+		raw, err := os.ReadFile(mdFile)
+		if err != nil {
+			t.Fatalf("ReadFile(%s) failed: %v", mdFile, err)
+		}
+		if bad := findBrokenMathEscapes(string(raw)); len(bad) > 0 {
+			t.Fatalf("%s contains CommonMark-broken MathJax escapes: %v", mdFile, bad)
+		}
+	}
+
+	guideBytes, err := os.ReadFile(guidesDir + "/kpol-ekpol-language-guide.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	guideTxt := string(guideBytes)
+
+	ekpolRe := regexp.MustCompile("(?s)```ekpol\n(.*?)```")
+	kpolRe := regexp.MustCompile("(?s)```kpol\n(.*?)```")
+	ekBlocks := ekpolRe.FindAllStringSubmatch(guideTxt, -1)
+	kpBlocks := kpolRe.FindAllStringSubmatch(guideTxt, -1)
+	if len(ekBlocks) < 16 || len(kpBlocks) < 2 {
+		t.Fatalf("expected >=16 ekpol and >=2 kpol blocks in language guide, got %d and %d", len(ekBlocks), len(kpBlocks))
+	}
+
+	var antiCycle, antiCollision, validEK int
+	for idx, m := range ekBlocks {
+		block := m[1]
+		if strings.Contains(block, "ANTI-PATTERN: EKPOL-CYCLE-ERR") {
+			antiCycle++
+			_, err := CompileEKPOLSource(block, "BadCyclic")
+			want := `EKPOL-CYCLE-ERR: cyclic cascade subscription detected involving "Thermal_Stage_A"`
+			if err == nil || err.Error() != want {
+				t.Fatalf("expected exact %q, got %v", want, err)
+			}
+			continue
+		}
+		if strings.Contains(block, "ANTI-PATTERN: EKPOL-COLLISION-ERR") {
+			antiCollision++
+			_, err := CompileEKPOLSource(block, "BadCollision")
+			want := `EKPOL-COLLISION-ERR: concept "God_BMS_Controller" uses both guard literal and step != 1 in W1`
+			if err == nil || err.Error() != want {
+				t.Fatalf("expected exact %q, got %v", want, err)
+			}
+			continue
+		}
+		validEK++
+		prog, err := ParseEKPOL(block, "")
+		if err != nil {
+			t.Fatalf("guide ekpol block #%d ParseEKPOL failed: %v", idx, err)
+		}
+		if prog.IsConceptualOnly() {
+			vm, cmds, err := NewConceptualVMFromEKPOL(prog, block)
+			if err != nil {
+				t.Fatalf("guide conceptual ekpol block #%d failed: %v", idx, err)
+			}
+			if len(cmds) > 0 {
+				if _, err := RunConceptualStdioStream(vm, cmds, nil, nil); err != nil {
+					t.Fatalf("guide conceptual ekpol block #%d stdio failed: %v", idx, err)
+				}
+			}
+		} else {
+			if _, err := CompileEKPOLSource(block, ""); err != nil {
+				t.Fatalf("guide bram64 ekpol block #%d CompileEKPOLSource failed: %v", idx, err)
+			}
+		}
+	}
+	if antiCycle != 1 || antiCollision != 1 || validEK < 14 {
+		t.Fatalf("unexpected guide block counts: valid=%d cycle=%d collision=%d", validEK, antiCycle, antiCollision)
+	}
+
+	for idx, m := range kpBlocks {
+		kSrc := m[1]
+		prof := "KPOL-CME-2"
+		if strings.Count(kSrc, "state ") == 1 {
+			prof = "KPOL-CME-1"
+		}
+		comp, err := CompileKPOLSource(kSrc, prof)
+		if err != nil || len(comp.BRAMImage) != 1024 {
+			t.Fatalf("guide kpol block #%d CompileKPOLSource(%s) failed: %v", idx, prof, err)
+		}
 	}
 }

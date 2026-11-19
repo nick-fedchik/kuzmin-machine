@@ -1,3 +1,5 @@
+//go:build !public
+
 package vmk
 
 import (
@@ -8,9 +10,19 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 )
+
+// IsPublicBuild reports whether VMK was compiled with `-tags public`.
+const IsPublicBuild = false
+
+func targetFlagUsage() string {
+	return "machine target: sim, pynq1, pynq2, or ssh host"
+}
+
+func validateTarget(_ string) error {
+	return nil
+}
 
 const pynqDebugProbeCSource = `#define _POSIX_C_SOURCE 200809L
 #include <fcntl.h>
@@ -257,7 +269,7 @@ func (c *MachineConnection) ExecutePYNQSession(programBRAM []byte, hwParams []in
 
 	deadline := time.Now().Add(120 * time.Second)
 	for {
-		err = syscall.Flock(int(lockFile.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
+		err = tryFlockExclusive(lockFile.Fd())
 		if err == nil {
 			break
 		}
@@ -266,7 +278,7 @@ func (c *MachineConnection) ExecutePYNQSession(programBRAM []byte, hwParams []in
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
-	defer syscall.Flock(int(lockFile.Fd()), syscall.LOCK_UN)
+	defer unlockFlock(lockFile.Fd())
 
 	remoteDir := "/home/xilinx/km_vmk_274_work"
 	quotedRemoteDir := ShellQuoteSingle(remoteDir)

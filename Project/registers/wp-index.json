@@ -1,6 +1,6 @@
 {
-  "version": "0.31.0",
-  "date": "2026-11-18",
+  "version": "0.32.0",
+  "date": "2026-11-19",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -885,13 +885,31 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/vmk-go/examples/bms_safety_cascade.kpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/vmk-go/examples/cascade_4concept.ekpol",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/vmk-go/examples/cascade_4concept.kpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/vmk-go/examples/decrease.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/decrease.kpol",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -910,6 +928,12 @@
     },
     {
       "path": "Engineering/sw/vmk-go/examples/increase.ekpol",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/examples/increase.kpol",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -981,6 +1005,24 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/vmk-go/internal/vmk/pynq_public.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/pynq_public_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/pynq_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/vmk-go/internal/vmk/snapshot.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -988,6 +1030,24 @@
     },
     {
       "path": "Engineering/sw/vmk-go/internal/vmk/stdio.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/term_darwin.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/term_linux.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/internal/vmk/term_other.go",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false
@@ -1012,6 +1072,18 @@
     },
     {
       "path": "Engineering/sw/vmk-go/internal/vmk/vmk_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/scripts/build_releases.sh",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/vmk-go/scripts/export_public_bundle.sh",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false

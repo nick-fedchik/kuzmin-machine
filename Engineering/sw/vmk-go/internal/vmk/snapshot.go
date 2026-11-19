@@ -236,11 +236,14 @@ type MachineConnection struct {
 	ReadbackVerified bool             `json:"readback_verified"`
 }
 
-// NewMachineConnection creates a MachineConnection for `sim`, `pynq1`, `pynq2`, or an SSH host.
+// NewMachineConnection creates a MachineConnection for the requested target (`sim` or configured hardware target).
 func NewMachineConnection(target string, initialBRAM []byte) (*MachineConnection, error) {
 	t := strings.TrimSpace(target)
 	if t == "" {
 		t = "sim"
+	}
+	if err := validateTarget(t); err != nil {
+		return nil, err
 	}
 	bram := make([]byte, 1024)
 	if len(initialBRAM) > 0 {

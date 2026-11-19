@@ -1,20 +1,20 @@
-# Посібник користувача VMK (Virtual Machine of Kuzmin) та повноекранного інтерактивного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.3.0`)
+# Посібник користувача VMK (Virtual Machine of Kuzmin) та повноекранного інтерактивного TUI-дебагера (`Engineering/sw/vmk-go`, SemVer `0.3.1`)
 
-* **Версія:** 1.2.1
-* **Дата:** 2026-11-18
+* **Версія:** 1.3.0
+* **Дата:** 2026-11-19
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача
-* **Issue:** `Closes` [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280) та [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284); пов'язані задачі [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
+* **Issue:** `Closes` [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), оновлено в [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280), [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284) та [#289](https://github.com/nick-fedchik/kuzmin-machine/issues/289); пов'язані задачі [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#252](https://github.com/nick-fedchik/kuzmin-machine/issues/252), [#253](https://github.com/nick-fedchik/kuzmin-machine/issues/253), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Documentation Engineer).
-* **Цільовий модуль ПЗ:** [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) ([`cmd/vmk/main.go`](../sw/vmk-go/cmd/vmk/main.go), [`internal/vmk/tui_fullscreen.go`](../sw/vmk-go/internal/vmk/tui_fullscreen.go), [`examples/*.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), `go 1.22`+, `std` only).
+* **Цільовий модуль ПЗ:** [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) ([`cmd/vmk/main.go`](../sw/vmk-go/cmd/vmk/main.go), [`internal/vmk/tui_fullscreen.go`](../sw/vmk-go/internal/vmk/tui_fullscreen.go), [`examples/*.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), [`examples/*.kpol`](../sw/vmk-go/examples/bms_safety_cascade.kpol), `go 1.22`+, `std` only).
 * **Парний підручник з мов програмування:** [`Engineering/guides/kpol-ekpol-language-guide.md`](kpol-ekpol-language-guide.md) (`1.0.2`, [каталог `Engineering/guides/`](README.md)).
-* **Нормативна специфікація та звіт верифікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) (`1.2.0`), [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../validation/kpol-cme/vmk-go-274/report.md) (`1.1.0`), [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
+* **Нормативна специфікація та звіт верифікації:** [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) (`1.3.0`), [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/validation/kpol-cme/vmk-go-274/report.md`](../validation/kpol-cme/vmk-go-274/report.md) (`1.1.0`), [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
 
 ---
 
 ## Призначення
 
-Цей посібник призначений для системних, апаратних (FPGA/RTL) та вбудованих (C99/Go/Python) інженерів, дослідників реактивних обчислень та верифікаторів проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Документ покроково пояснює, як збирати та використовувати виконуваний бінарник **`vmk` (`VMK — Virtual Machine of Kuzmin v0.3.0`)**, розташований у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md).
+Цей посібник призначений для системних, апаратних (FPGA/RTL) та вбудованих (C99/Go/Python) інженерів, дослідників реактивних обчислень та верифікаторів проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Документ покроково пояснює, як збирати та використовувати виконуваний бінарник **`vmk` (`VMK — Virtual Machine of Kuzmin v0.3.1`)**, розташований у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md).
 
 ### Що таке VMK і яку задачу він вирішує
 
@@ -79,7 +79,14 @@ go build -o vmk ./cmd/vmk
 Вивід:
 
 ```text
-VMK (Virtual Machine of Kuzmin) v0.3.0
+VMK (Virtual Machine of Kuzmin) v0.3.1
+```
+
+Для збірки 5 статичних крос-платформних релізних бінарників (`linux/amd64`, `linux/arm64`, `darwin/arm64`, `darwin/amd64`, `windows/amd64.exe` + `dist/SHA256SUMS` із `CGO_ENABLED=0 -tags public`, без лабораторного SSH/MMIO коду) використовується скрипт [`scripts/build_releases.sh`](../sw/vmk-go/scripts/build_releases.sh), а для однокрокового експорту автономного публічного пакета `module vmk` із автоматичним аудитом відсутності приватних даних — [`scripts/export_public_bundle.sh`](../sw/vmk-go/scripts/export_public_bundle.sh):
+
+```bash
+cd Engineering/sw/vmk-go
+bash scripts/build_releases.sh
 ```
 
 #### Крок 3. Миттєвий демонстраційний прогін обох режимів
@@ -206,9 +213,9 @@ go run ./cmd/vmk --mode bram64 \
 
 ### 2.4. Повноекранний інтерактивний TUI-дебагер (`--tui`, `--tui-canvas`, `--render-fullscreen-tui`) та детермінований кадр (`--render-tui-frame`)
 
-Починаючи з версії **`VMK v0.3.0`** ([`internal/vmk/tui_fullscreen.go`](../sw/vmk-go/internal/vmk/tui_fullscreen.go) та [`internal/vmk/tui.go`](../sw/vmk-go/internal/vmk/tui.go)), TUI-дебагер надає три взаємодоповнювальні режими візуалізації та керування:
+Починаючи з версії **`VMK v0.3.0` / `v0.3.1`** ([`internal/vmk/tui_fullscreen.go`](../sw/vmk-go/internal/vmk/tui_fullscreen.go), платформні драйвери [`term_linux.go`](../sw/vmk-go/internal/vmk/term_linux.go), [`term_darwin.go`](../sw/vmk-go/internal/vmk/term_darwin.go), [`term_other.go`](../sw/vmk-go/internal/vmk/term_other.go) та [`internal/vmk/tui.go`](../sw/vmk-go/internal/vmk/tui.go)), TUI-дебагер надає три взаємодоповнювальні режими візуалізації та керування:
 1. **Повноекранний інтерактивний TUI-дебагер у вікні термінала (`--tui` або `--tui-canvas` / підкоманда `vmk tui`):**
-   - При запуску на реальному терміналі (`TTY`) переводить екран у `alternate screen buffer` (`\x1b[?1049h\x1b[?25l`), вмикає `raw mode` клавіатури через системні виклики Linux `syscall.Syscall(SYS_IOCTL, TCGETS/TCSETS)` без жодних зовнішніх бібліотечних залежностей, автоматично визначає розмір вікна `(rows, cols)` через `TIOCGWINSZ` (за замовчуванням `36 × 124`) і гарантовано відновлює термінал при виході (`q`) або сигналах `SIGINT`/`SIGTERM`;
+   - При запуску на реальному терміналі (`TTY`) переводить екран у `alternate screen buffer` (`\x1b[?1049h\x1b[?25l`), вмикає `raw mode` клавіатури через крос-платформні термінальні адаптери (`Linux TCGETS/TCSETS`, `macOS TIOCGETA/TIOCSETA` та non-POSIX fallback для `Windows` при `CGO_ENABLED=0`) без жодних зовнішніх бібліотечних залежностей, автоматично визначає розмір вікна `(rows, cols)` через `TIOCGWINSZ` (за замовчуванням `36 × 124`) і гарантовано відновлює термінал при виході (`q`) або сигналах переривання;
    - Підтримує повноцінну навігацію стрілками (`↑`/`↓` або `j`/`k`, `←`/`→`, `PageUp`/`PageDown`, `Tab`) як для апаратно-точного режиму **`bram64`**, так і для концептуального режиму **`conceptual` / `EKPOL`**;
 2. **Одноразовий рендер повноекранного багатопанельного TUI-кадру (`--render-fullscreen-tui`):**
    - Виводить у термінал або лог повноцінний псевдографічний (`┌─┬─┐│└─┴─┘`) екран із інспектором вибраного концепту без очікування клавіш у `stdin`;
@@ -231,7 +238,7 @@ cd Engineering/sw/vmk-go
 #### Компоновка повноекранного інтерфейсу (`Full-Screen Layout` у `tui_fullscreen.go`)
 
 ```text
- VMK v0.3.0 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> POST-LOAD -> INTERACTIVE
+ VMK v0.3.1 FULL-SCREEN DEBUGGER | Target: SIM (0x4B504D43 'KPMC') | Mode: bram64 (BmsSafetyCascade) | Phase: PRE-LOAD -> POST-LOAD -> INTERACTIVE
  Concepts: Active 4/64 (Pre-load: 1/64, Changed: 4, Free: 60) | Entry:[0] Internal:[1 2] Leaf:[3] | Queue:0 pending | Events:14 | Commits:10 | Rejects:4 | Faults(_):1
 ┌─ *FOCUS* [1] CONCEPTS (↑/↓ Select, a:All/Act, w:W…┬─ [2] CONCEPT INSPECTOR (d:Toggle View) ──────────────────────────────┐
 │ Sel W CID  Name                State (Δ)   Valid …│ Concept ID & Name : C00 (Cell_Delta_mV) | Type: Int32 | Watch: OFF   │
@@ -261,7 +268,7 @@ cd Engineering/sw/vmk-go
 ```
 
 1. **Верхній 2-рядковий інверсний статус-бар:**
-   - Відображає версію `VMK v0.3.0 FULL-SCREEN DEBUGGER`, ціль (`SIM` або `PYNQ2`), виконавчий режим і назву модуля, фазу життєвого циклу (`PRE-LOAD -> POST-LOAD -> INTERACTIVE`), баланс концептів (`Active K/64`, `Pre-load M/64`, `Changed Δ`, `Free F`, списки `Entry`, `Internal`, `Leaf`), розмір черги подій `Queue: Q pending` та лічильники `Events`, `Commits`, `Rejects`, `Faults(_)`.
+   - Відображає версію `VMK v0.3.1 FULL-SCREEN DEBUGGER`, ціль (`SIM` або `PYNQ2`), виконавчий режим і назву модуля, фазу життєвого циклу (`PRE-LOAD -> POST-LOAD -> INTERACTIVE`), баланс концептів (`Active K/64`, `Pre-load M/64`, `Changed Δ`, `Free F`, списки `Entry`, `Internal`, `Leaf`), розмір черги подій `Queue: Q pending` та лічильники `Events`, `Commits`, `Rejects`, `Faults(_)`.
 2. **Ліва верхня панель `[1] CONCEPTS` + Права верхня панель `[2] CONCEPT INSPECTOR / SOURCE / PRE-POST DIFF`:**
    - У списку **`[1] CONCEPTS`** курсор `↑`/`↓` (або `j`/`k`) рухається по активних концептах (клавіша `a` перемикає між показом лише активних `K` концептів та всіх `64` слотів BRAM `C00..C63`). Зірочка `*` позначає встановлений `Watchpoint`, `[CHGD]` (зелений) — концепт змінив свій стан відносно `Post-Load`, `[_ FLT]` / `[_ UDF]` (червоний) — концепт перебуває у стані невизначеності `_`;
    - У панелі **`[2] CONCEPT INSPECTOR`** автоматично відкривається детальна картка вибраного курсором концепту:
@@ -278,7 +285,7 @@ cd Engineering/sw/vmk-go
 4. **Нижня панель `[4] STDIO STREAMS & INTERACTIVE EVENT CREATOR`:**
    - Показує живі потоки `STDIN`, `STDOUT` (зелений), `STDERR` (червоний), інформаційний рядок `STATUS`, панель гарячих клавіш `KEYS:` та вбудовані інтерактивні діалоги **Конструктора Подій (`[e]`)**, **Редактора Стану Концепту (`[m]`)** і **Довідки (`[?]`)**.
 
-#### Гарячі клавіші повноекранного TUI-дебагера (`VMK v0.3.0`)
+#### Гарячі клавіші повноекранного TUI-дебагера (`VMK v0.3.1`)
 
 | Клавіша | Дія в повноекранному TUI-дебагері (`--tui` / `--tui-canvas`) |
 | :--- | :--- |
@@ -512,7 +519,7 @@ printf "Cell_Delta_mV 15\nCell_Delta_mV 5500\nCell_Delta_mV _\nCell_Delta_mV 120
 | `--break-on-reject` | Булевий прапорець | `false` | Встановити точку спрацювання (`*BREAK_ON_REJECT`) на будь-яку відмову охоронця, інваріанта чи невизначеності. |
 | `--stop-on-breakpoint` | Булевий прапорець | `false` | Негайно зупиняти виконання хвилі подій при першому спрацюванні `Watchpoint` або `Breakpoint`. |
 | `--json-out` | `<шлях до .json>` | `""` | Записати повний структурований звіт сесії (`pre_load`, `post_load`, `load_diffs`, `telemetry`, `steps`, `stdio`, `pynq_hw_report`) у JSON-файл. |
-| `--version` (або `-v`, `version`) | Булевий прапорець | `false` | Вивести версію `VMK (Virtual Machine of Kuzmin) v0.3.0` та завершити роботу з кодом `0`. |
+| `--version` (або `-v`, `version`) | Булевий прапорець | `false` | Вивести версію `VMK (Virtual Machine of Kuzmin) v0.3.1` та завершити роботу з кодом `0`. |
 
 ---
 
@@ -554,8 +561,8 @@ concept Module_Thermal_Guard: int32 = 0 [>= 0] {
 
 #### 2. Каталог готових прикладів `Engineering/sw/vmk-go/examples/*.ekpol` та команди запуску
 
-У каталозі [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol) розміщено 9 канонічних програм на `EKPOL`:
-* BRAM-програми (`--mode bram64`): [`bms_safety_cascade.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol), [`cascade_4concept.ekpol`](../sw/vmk-go/examples/cascade_4concept.ekpol), [`increase.ekpol`](../sw/vmk-go/examples/increase.ekpol), [`decrease.ekpol`](../sw/vmk-go/examples/decrease.ekpol);
+У каталозі [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol) розміщено 9 канонічних програм на `EKPOL` та 4 парні класичні відповідники на `.kpol`:
+* BRAM-програми (`--mode bram64`, парні `.ekpol` + `.kpol`): [`bms_safety_cascade.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol) ([`.kpol`](../sw/vmk-go/examples/bms_safety_cascade.kpol)), [`cascade_4concept.ekpol`](../sw/vmk-go/examples/cascade_4concept.ekpol) ([`.kpol`](../sw/vmk-go/examples/cascade_4concept.kpol)), [`increase.ekpol`](../sw/vmk-go/examples/increase.ekpol) ([`.kpol`](../sw/vmk-go/examples/increase.kpol)), [`decrease.ekpol`](../sw/vmk-go/examples/decrease.ekpol) ([`.kpol`](../sw/vmk-go/examples/decrease.kpol));
 * Концептуальні програми (`--mode conceptual`): [`if_toggle.ekpol`](../sw/vmk-go/examples/if_toggle.ekpol), [`sum_autoreset.ekpol`](../sw/vmk-go/examples/sum_autoreset.ekpol), [`nod_euclid.ekpol`](../sw/vmk-go/examples/nod_euclid.ekpol), [`factorial.ekpol`](../sw/vmk-go/examples/factorial.ekpol), [`tachometer.ekpol`](../sw/vmk-go/examples/tachometer.ekpol).
 
 Приклади запуску та двосторонньої трансляції:
@@ -602,6 +609,7 @@ rm -f bms.bin bms_safety.c bms_z3.json
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.3.0 | 2026-11-19 | #289: консолідовано крос-платформний пакет `VMK v0.3.1` у канонічний модуль `Engineering/sw/vmk-go/` (`term_{linux,darwin,other}.go`, build-тег ізоляції `pynq.go` / `pynq_public.go`, 4 класичні приклади `examples/*.kpol`, скрипти `scripts/build_releases.sh` та `scripts/export_public_bundle.sh`). |
 | 1.2.1 | 2026-11-18 | #284: додано перехресну навігацію на парне «Керівництво користувача та чистий код мов KPOL і EKPOL» (`kpol-ekpol-language-guide.md` `1.0.2`) та індекс каталогу `Engineering/guides/README.md`. |
 | 1.2.0 | 2026-11-18 | #280: оновлено під `VMK v0.3.0` та повноекранний інтерактивний TUI-дебагер (`internal/vmk/tui_fullscreen.go`, `--tui`, `--tui-canvas`, `--render-fullscreen-tui`), описано навігацію по концептах (`↑/↓`, `Tab`), картку `CONCEPT INSPECTOR`, діалог ручного створення подій (`[e]` та `+` у чергу), покроковий мікро-хоп хвилі (`[n]` / `Space`), ручне редагування стану концепту (`[m]`) та перемикання `Inspector / Source / Pre-Post Diff` (`[d]`). |
 | 1.1.0 | 2026-11-18 | #278: оновлено під `VMK v0.2.0` та мову `EKPOL 0.1.0` (додано §2.9 про символьну та ключову нотації `.ekpol`, каталог `examples/*.ekpol` і прапорці двосторонньої трансляції `--to-kpol`, `--to-ekpol`, `--ekpol-style symbolic\|keyword`). |

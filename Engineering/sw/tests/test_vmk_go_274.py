@@ -190,6 +190,16 @@ def test_go_unit_test_suite_passes():
         )
         assert "PASS" in res.stdout
 
+        res_pub = subprocess.run(
+            ["go", "test", "-tags", "public", "-v", "./..."],
+            cwd=str(VMK_GO_DIR),
+            env=_go_env(scratch),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert "PASS" in res_pub.stdout
+
 
 def test_vmk_go_equivalence_with_python_c99_iverilog_and_pynq2():
     """Verify 100% equivalence of Go `vmk` against Python `KpolCascadeDebugger`,
@@ -407,7 +417,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
     import re
 
     required_guide_headings = [
-        "* **Версія:** 1.2.1",
+        "* **Версія:** 1.3.0",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
@@ -460,7 +470,7 @@ def _validate_vmk_guide_and_readme(guide_txt: str, readme_txt: str, guide_dir: P
             raise AssertionError(f"vmk-users-guide.md missing CLI flag {flag_name!r}")
 
     required_readme_markers = [
-        "* **Версія:** 1.2.0",
+        "* **Версія:** 1.3.0",
         "* **Тип WP:** Guide",
         "## Призначення",
         "## Навігація чи використання",
@@ -584,7 +594,7 @@ def test_fullscreen_tui_debugger_interactive_280():
             capture_output=True,
             text=True,
         )
-        assert "VMK v0.3.0 FULL-SCREEN DEBUGGER" in res_fs.stdout
+        assert "VMK v0.3.1 FULL-SCREEN DEBUGGER" in res_fs.stdout
         assert "[1] CONCEPTS" in res_fs.stdout
         assert "[2] CONCEPT INSPECTOR" in res_fs.stdout
         assert "Concept ID & Name : C00 (Cell_Delta_mV)" in res_fs.stdout
@@ -616,8 +626,138 @@ def test_fullscreen_tui_debugger_interactive_280():
         )
         assert "PRE-LOAD vs POST-LOAD DIFF" in res_int.stdout
         payload = json.loads(json_out.read_text(encoding="utf-8"))
-        assert payload["version"] == "0.3.0"
+        assert payload["version"] == "0.3.1"
         assert payload["final_active_states"] == [1, 1, 1, 99]
         assert payload["telemetry"]["events_processed"] == 5
         assert payload["telemetry"]["commits"] == 4
         assert payload["telemetry"]["fault_propagations"] == 1
+
+
+def test_crossplatform_builds_and_public_bundle_export_289():
+    """Issue #289: Verify cross-platform static builds (`scripts/build_releases.sh` across 5 OS/arch
+    targets with `CGO_ENABLED=0 -tags public`), `-tags public` isolation of PYNQ MMIO/SSH code,
+    one-command standalone public bundle export (`scripts/export_public_bundle.sh`), and negative
+    mutant control proving private IP leak detection (`192.168.68`, `AGENTS.md §4 п. 1`).
+    """
+    import hashlib
+
+    build_script = VMK_GO_DIR / "scripts" / "build_releases.sh"
+    export_script = VMK_GO_DIR / "scripts" / "export_public_bundle.sh"
+    assert build_script.is_file(), f"Missing {build_script}"
+    assert export_script.is_file(), f"Missing {export_script}"
+
+    # Verify all 13 canonical examples exist in Engineering/sw/vmk-go/examples/ (9 .ekpol + 4 .kpol)
+    ekpol_files = sorted((VMK_GO_DIR / "examples").glob("*.ekpol"))
+    kpol_files = sorted((VMK_GO_DIR / "examples").glob("*.kpol"))
+    assert len(ekpol_files) == 9, f"Expected 9 .ekpol examples, got {len(ekpol_files)}"
+    assert [p.name for p in kpol_files] == [
+        "bms_safety_cascade.kpol",
+        "cascade_4concept.kpol",
+        "decrease.kpol",
+        "increase.kpol",
+    ]
+
+    with _workspace_scratch_dir("vmk_289") as scratch:
+        env = _go_env(scratch)
+
+        # 1. Verify build_releases.sh produces 5 static public binaries + SHA256SUMS with zero private data
+        dist_dir = scratch / "dist"
+        rel_env = dict(env)
+        rel_env["DIST_DIR"] = str(dist_dir)
+        subprocess.run(
+            ["bash", str(build_script)],
+            cwd=str(VMK_GO_DIR),
+            env=rel_env,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        expected_magic = {
+            "vmk-linux-amd64": b"\x7fELF",
+            "vmk-linux-arm64": b"\x7fELF",
+            "vmk-darwin-arm64": b"\xcf\xfa\xed\xfe",
+            "vmk-darwin-amd64": b"\xcf\xfa\xed\xfe",
+            "vmk-windows-amd64.exe": b"MZ",
+        }
+        sums_txt = (dist_dir / "SHA256SUMS").read_text(encoding="utf-8").strip().splitlines()
+        assert len(sums_txt) == 5
+        parsed_sums = {}
+        for line in sums_txt:
+            digest, fname = line.split()
+            parsed_sums[fname] = digest
+
+        for fname, magic in expected_magic.items():
+            bpath = dist_dir / fname
+            assert bpath.is_file(), f"Missing release binary {bpath}"
+            raw = bpath.read_bytes()
+            assert raw.startswith(magic), f"{fname} missing expected binary header {magic!r}"
+            assert hashlib.sha256(raw).hexdigest() == parsed_sums[fname]
+            for forbidden in (b"192.168.68", b"/dev/mem", b"PYNQ_SUDO_PASS", b"km_pynq_debug_probe"):
+                assert forbidden not in raw, f"Private token {forbidden!r} leaked into public binary {fname}"
+
+        linux_bin = dist_dir / "vmk-linux-amd64"
+        ver_out = subprocess.run(
+            [str(linux_bin), "--version"],
+            env=env,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert ver_out.stdout.strip() == "VMK (Virtual Machine of Kuzmin) v0.3.1"
+
+        non_sim = subprocess.run(
+            [str(linux_bin), "--example", "increase", "--target", "pynq2"],
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        assert non_sim.returncode == 2
+        assert 'VMK-TARGET-IO: standalone public VMK supports only "--target sim"' in non_sim.stderr
+
+        # 2. Verify export_public_bundle.sh exports a clean standalone `module vmk` bundle and passes `go test`
+        bundle_dir = scratch / "exported_vmk_bundle"
+        subprocess.run(
+            ["bash", str(export_script), str(bundle_dir)],
+            cwd=str(VMK_GO_DIR),
+            env=env,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert (bundle_dir / "go.mod").read_text(encoding="utf-8").startswith("module vmk\n")
+        assert not (bundle_dir / "internal" / "vmk" / "pynq.go").exists()
+        assert not (bundle_dir / "internal" / "vmk" / "pynq_test.go").exists()
+        assert (bundle_dir / "docs" / "vmk-users-guide.md").is_file()
+        assert (bundle_dir / "docs" / "kpol-ekpol-language-guide.md").is_file()
+        assert len(list((bundle_dir / "examples").glob("*.ekpol"))) == 9
+        assert len(list((bundle_dir / "examples").glob("*.kpol"))) == 4
+
+        for exported_file in bundle_dir.rglob("*"):
+            if exported_file.is_file():
+                txt = exported_file.read_text(encoding="utf-8", errors="replace")
+                assert "192.168.68" not in txt, f"IP leak in exported {exported_file}"
+                assert "kuzmin-machine" not in txt, f"Repo URL leak in exported {exported_file}"
+                assert "/dev/mem" not in txt, f"/dev/mem leak in exported {exported_file}"
+
+        # 3. Negative mutant control (AGENTS.md §4 п. 1): inject private IP 192.168.68.99 into Go source
+        #    and verify export_public_bundle.sh deterministically fails its leak audit!
+        mut_vmk_dir = scratch / "vmk_go_leak_mutant"
+        shutil.copytree(VMK_GO_DIR, mut_vmk_dir)
+        mut_ver_go = mut_vmk_dir / "internal" / "vmk" / "version.go"
+        mut_ver_go.write_text(
+            mut_ver_go.read_text(encoding="utf-8") + "\n// leaked_lab_ip = 192.168.68.99\n",
+            encoding="utf-8",
+        )
+        mut_env = dict(env)
+        mut_env["GUIDES_DIR"] = str(REPO_ROOT / "Engineering" / "guides")
+        mut_bundle_dir = scratch / "mut_exported_bundle"
+        res_mut = subprocess.run(
+            ["bash", str(mut_vmk_dir / "scripts" / "export_public_bundle.sh"), str(mut_bundle_dir)],
+            cwd=str(mut_vmk_dir),
+            env=mut_env,
+            capture_output=True,
+            text=True,
+        )
+        assert res_mut.returncode != 0, "Leak mutant 192.168.68.99 survived export_public_bundle.sh audit!"
+        assert "192.168" in res_mut.stderr

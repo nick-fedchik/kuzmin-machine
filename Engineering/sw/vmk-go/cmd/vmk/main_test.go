@@ -11,7 +11,7 @@ import (
 func TestMainVersionAndSubcommands(t *testing.T) {
 	var out, errBuf bytes.Buffer
 	code := vmk.RunCLI([]string{"version"}, strings.NewReader(""), &out, &errBuf)
-	if code != 0 || !strings.Contains(out.String(), "VMK (Virtual Machine of Kuzmin) v0.3.0") {
+	if code != 0 || !strings.Contains(out.String(), "VMK (Virtual Machine of Kuzmin) v0.3.1") {
 		t.Fatalf("unexpected version output (code=%d): %s", code, out.String())
 	}
 
