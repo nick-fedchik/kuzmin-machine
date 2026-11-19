@@ -1,5 +1,5 @@
 {
-  "version": "0.34.0",
+  "version": "0.35.0",
   "date": "2026-11-19",
   "entries": [
     {
@@ -198,6 +198,12 @@
       "path": "Engineering/guides/README.md",
       "direction": "Engineering",
       "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/guides/ekpol-formal-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
       "immutable_input": false
     },
     {

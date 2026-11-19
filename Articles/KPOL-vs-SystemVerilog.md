@@ -1,6 +1,6 @@
 # KPOL проти SystemVerilog: Як «нова парадигма» Машини Кузьміна відображається на стандартизований кремній (IEEE 1800 SVA)
 
-* **Версія:** 1.2.0
+* **Версія:** 1.3.0
 * **Дата:** 2026-11-19
 * **Тип WP:** Article
 * **Автор:** Микола Мартинович Федчик (Mykola Fedchyk)
@@ -38,46 +38,51 @@ SystemVerilog від свого народження створювався не
 
 ## 2. Порівняльна матриця фундаментальних концепцій
 
-Нижче наведено зв'язок між концептуальними абстракціями KPOL/EKPOL та стандартними конструкціями SystemVerilog / SVA:
+Нижче наведено повний концептуальний міст: від **первинної авторської нотації М. Ю. Кузьміна (`KPOL-AUTH`)** через **ергономічний `EKPOL 0.1.0`** до **стандартизованого кремнію SystemVerilog / SVA**:
 
-| Концепція KPOL / EKPOL | Семантичний зміст у Машині Кузьміна | Реалізація в SystemVerilog / SVA | Апаратне втілення в кремнії |
-| :--- | :--- | :--- | :--- |
-| **Подія (Event Impulse) `•`** | Синхронний строб виклику правила, квант часу | `posedge clk` або строб валідності `event_valid` | Тактовий фронт D-тригера або строб Clock Enable |
-| **Концепт (Concept Descriptor)** | 16-байтний дескриптор стану, порогів та прапорців | `typedef struct packed` або BRAM-слот (`logic [31:0] mem [64]`) | Блок пам'яті Block RAM (RAMB36E1) або банк регістрів |
-| **Тризначна логіка ($`\mathcal{L}_3`$)** | Множина значень $`\lbrace 0, 1, \bot_{\text{undef}} \rbrace`$, де `_` — це Fault / Unknown | Двобітове кодування: `{valid, value}` (або `enum logic [1:0]`) | Окремий провід достовірності (Valid Flag / Ready-Valid) |
-| **Предикат припущення (`::` / `when`)** | Вхідна умова спрацювання: $`P(\text{param}) \implies \text{Action}`$ | Комбінаторні вирази та **SVA `assume property`** | Апаратні цифрові компаратори без затримки тактів |
-| **Інваріант безпеки (`[>= 0]`)** | Непорушна вимога до стану після виконання дії | **SVA `assert property`** з оператором імплікації `\|->` | Комбінаторний вентиль блокування (Fail-Closed Gate) |
-| **Транзакційний бар'єр (`•` / `commit;`)** | Фіксація результату за умови непорушення інваріанта | Фіксація в регістрі за тактовим фронтом `always_ff @(posedge clk)` | Запис у D-FF або запис у порт BRAM (Port A/B Write Enable) |
-| **Підписка на зміну (`~` / `on change`)** | Спрацювання правила в момент зміни стану джерела | Синхронний каскад: зсувний регістр або конвеєрний прапорець | Конвеєризований автомат станів (Pipelined FSM) |
+| № | Концепція Машини Кузьміна | Оригінальна авторська нотація (`KPOL-AUTH` / слайди) | Ергономічний еквівалент `EKPOL 0.1.0` | Реалізація в SystemVerilog / SVA (IEEE 1800) | Апаратне втілення в кремнії |
+|---|:--- |:--- |:--- |:--- |:--- |
+| **1** | **Подія запису / строб `•`** | `← @ Int32 x : ... •` | `<- Pulse(x)` або `on write(x)` | `posedge clk` або строб `pulse_valid` | Тактовий фронт D-тригера або Clock Enable |
+| **2** | **Подія читання / огляд** | `→ • Sum = 0` (пост-скидання) | `-> => . Sum = 0` / `on read => after` | Строби рукостискання `arvalid` / `rready` | Порт читання BRAM (Port A Read Enable) |
+| **3** | **Концепт (дескриптор)** | `Int32 Counter = 10 [>= 0]` | `concept Counter: int32 = 10 [>= 0]` | Апаратний регістр `counter_state`, BRAM-слот | Банк регістрів або Block RAM (RAMB36E1) |
+| **4** | **Тризначна логіка ($`\mathcal{L}_3`$)** | `_` (`? If _ ; ! If = ¬`) | `_` або `undef` | Двобітове кодування `{valid, value}` | Провід достовірності (Valid Flag / Handshake) |
+| **5** | **Предикат припущення** | `: param < 20` або `[ 50 .. 5000 ]` | `:: param < 20` або `when in 50..5000` | Компаратори та SVA `assume property` | Апаратні цифрові компаратори без затримки |
+| **6** | **Інваріант безпеки** | `[>= 0]` (або `Invariants { ... }`) | `[>= 0]` | SVA `assert property (state >= 0)` | Комбінаторний вентиль блокування (Fail-Closed) |
+| **7** | **Транзакційний бар'єр** | Велика Крапка `•` | `.` (крапка) або `commit;` | Фіксація в регістрі `always_ff @(posedge clk)` | Запис у D-FF або Port A/B Write Enable BRAM |
+| **8** | **Підписка на зміну** | `~ C0 • C1 += 1` | `~ C0 => C1 += 1 .` / `on change(C0)` | Конвеєрний регістр FSM та SVA `sequence ##1` | Міжбанковий комутатор та конвеєрні регістри |
+| **9** | **Виклик / виконання** | `\| @ U64 (a_ > b -=b ...)` | `\| (a, b) => ... .` / `on call(...)` | Функція або протокол handshake `req/ack` | Комбінаційний або FSM-виконавець |
 
 ```mermaid
 flowchart LR
-    subgraph KPOL_World["Світ KPOL / EKPOL (Високорівневий DSL)"]
+    subgraph Auth_World["1. Оригінальний KPOL-AUTH (Кузьмін)"]
         direction TB
-        K_Ev["Подія: • (Event)"]
-        K_St["Концепт: C_Node [>= 0]"]
-        K_L3["3-значна логіка: {0, 1, _}"]
-        K_Grd["Предикат: :: param < 20"]
-        K_Seq["Каскад: ~ C0 => C1 += 1"]
-        K_Inv["Інваріант: [>= 0] Commit"]
+        A_Ev["Вхід/Вихід: ← @ x, →"]
+        A_Dot["Велика Крапка: •"]
+        A_L3["Тризначність: _ (undef)"]
+        A_Sub["Хвиля підписки: ~ C0"]
+        A_Inv["Інваріант: [>= 0]"]
     end
 
-    subgraph SV_World["Світ SystemVerilog / SVA (Стандарт IEEE 1800)"]
+    subgraph EKPOL_World["2. Ергономічний EKPOL 0.1.0 (ASCII)"]
+        direction TB
+        E_Ev["Стимули: <- x / on write(x)"]
+        E_Dot["Бар'єр: . / commit;"]
+        E_L3["Літерал: _ / undef"]
+        E_Sub["Каскад: ~ C0 / on change"]
+        E_Inv["Контракт: [>= 0]"]
+    end
+
+    subgraph SV_World["3. Стандартний кремній (IEEE 1800 SVA)"]
         direction TB
         S_Ev["Синхронізація: @(posedge clk)"]
-        S_St["Стан: logic [31:0] state_r"]
+        S_Dot["D-тригер: always_ff <= "]
         S_L3["Два біти: {valid, value}"]
-        S_Grd["Умова: assume property / wire trip"]
-        S_Seq["Конвеєр: always_ff ##1 stage2"]
-        S_Inv["Доказ: assert property (state >= 0)"]
+        S_Sub["Конвеєр: ##1 stage_next"]
+        S_Inv["Доказ: assert property"]
     end
 
-    K_Ev <==>|"Синхронний квант"| S_Ev
-    K_St <==>|"Апаратний регістр"| S_St
-    K_L3 <==>|"Апаратна достовірність"| S_L3
-    K_Grd <==>|"Вхідне припущення"| S_Grd
-    K_Seq <==>|"Конвеєризація"| S_Seq
-    K_Inv <==>|"Формальний сертифікат"| S_Inv
+    Auth_World ==>|"Трансляція в 7-бітний ASCII"| EKPOL_World
+    EKPOL_World ==>|"Апаратний синтез (--emit-sv)"| SV_World
 ```
 
 ---
@@ -111,7 +116,29 @@ flowchart LR
 * `0:25` (вихід за поріг): предикат $25 < 20$ хибний $\implies$ `REJECT_GUARD` (стан залишається `11`);
 * `0:invalid` (обрив датчика, стан невизначеності `_` / $\bot_{\text{undef}}$): шлюз достовірності відсікає подію $\implies$ `REJECT_FAULT` (стан залишається `11`).
 
-#### Діалект: EKPOL 0.1.0 — Ключова нотація (`keyword`)
+#### Діалект A: Оригінальна авторська нотація М. Ю. Кузьміна (`KPOL-AUTH` / слайди)
+*Джерело:* первинні рукописи та слайди М. Ю. Кузьміна ([`Research/sources/author/`](../Research/sources/README.md), специфікація [`kpol-auth-subset.md`](../Engineering/specifications/kpol/kpol-auth-subset.md)).
+
+```text
+Int32 Counter = 10 [>= 0]
+    ← @ Int32 Pulse : Pulse < 20 • Counter += 1
+```
+*Семантика Кузьміна:* символ `←` позначає подію запису з параметром `Pulse` (`@`), двокрапка `:` задає предикат допуску, а Велика Крапка `•` виступає апаратним транзакційним бар'єром.
+
+#### Діалект B: Символьний `EKPOL 0.1.0` (чистий 7-бітний ASCII)
+*Файл:* [`Engineering/sw/vmk-go/examples/increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol) (еквівалентний запис)
+
+```ekpol
+module Increase;
+
+@stdin
+@stdout
+concept Counter: i32 = 10 [>= 0] {
+    <- Pulse(param) :: param < 20 => Counter += 1 .
+}
+```
+
+#### Діалект C: Ключова нотація `EKPOL 0.1.0` (`keyword`)
 *Файл:* [`Engineering/sw/vmk-go/examples/increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol)  
 *Хеш образу BRAM:* `SHA-256 = 4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d`
 
@@ -125,7 +152,7 @@ concept Counter: int32 = 10 [>= 0] {
 }
 ```
 
-#### Діалект: Класичний KPOL-CME-1 (`Problem / Solution / Proof`)
+#### Діалект D: Класичний KPOL-CME-1 (`Problem / Solution / Proof`)
 *Файл:* [`Engineering/hw/tests/kpol_bram_pipeline_increase.kpol`](../Engineering/hw/tests/kpol_bram_pipeline_increase.kpol)
 
 ```kpol
@@ -149,7 +176,7 @@ Proof Increase {
 }
 ```
 
-#### Діалект: SystemVerilog RTL + SVA (IEEE 1800)
+#### Діалект E: SystemVerilog RTL + SVA (IEEE 1800)
 
 ```systemverilog
 // Синтезований модуль захищеного лічильника з формальними властивостями
@@ -215,7 +242,53 @@ endmodule
 
 Цей приклад демонструє **Рядок 7 (Підписка на зміну `~` / `on change`)** та **Рядок 5 (Fail-Closed інваріант `[>= 0]`)**.
 
-#### Діалект: EKPOL 0.1.0 — Ключова нотація (`keyword`)
+#### Діалект A: Оригінальна авторська нотація М. Ю. Кузьміна (`KPOL-AUTH` / слайди)
+*Джерело:* первинні рукописи та слайди М. Ю. Кузьміна ([`Research/sources/author/`](../Research/sources/README.md), специфікація [`kpol-auth-subset.md`](../Engineering/specifications/kpol/kpol-auth-subset.md)).
+
+```text
+Int32 Cell_Delta_mV = 0 [>= 0]
+    ← @ Int32 delta_mv : delta_mv in [ 50 .. 5000 ] • Cell_Delta_mV += 1
+
+Int32 Module_Thermal_Guard = 0 [>= 0]
+    ~ Cell_Delta_mV : Cell_Delta_mV >= 1 • Module_Thermal_Guard += 1
+
+Int32 Pack_Fault_Latch = 2 [>= 0]
+    ~ Module_Thermal_Guard : Module_Thermal_Guard >= 1 • Pack_Fault_Latch -= 1
+
+Int32 Contactor_Interlock = 10 [>= 0]
+    ~ Pack_Fault_Latch : ¬(Pack_Fault_Latch = 2) • Contactor_Interlock = Pack_Fault_Latch
+```
+*Семантика Кузьміна:* символ `~` позначає подієву підписку на зміну джерела, дужки `[ 50 .. 5000 ]` — авторську межу діапазону, а символ `¬` — логічне заперечення.
+
+#### Діалект B: Символьний `EKPOL 0.1.0` (чистий 7-бітний ASCII)
+*Файл:* [`Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol) (символьна нотація)
+
+```ekpol
+module BmsSafetyCascade;
+
+@stdin
+@stdout
+concept Cell_Delta_mV: i32 = 0 [>= 0] {
+    <- EvCellDelta(delta_mv) :: delta_mv in 50..5000 => Cell_Delta_mV += 1 .
+}
+
+@stdout
+concept Module_Thermal_Guard: i32 = 0 [>= 0] {
+    ~ Cell_Delta_mV :: Cell_Delta_mV >= 1 => Module_Thermal_Guard += 1 .
+}
+
+@stdout
+concept Pack_Fault_Latch: i32 = 2 [>= 0] {
+    ~ Module_Thermal_Guard :: Module_Thermal_Guard >= 1 => Pack_Fault_Latch -= 1 .
+}
+
+@stdout
+concept Contactor_Interlock: i32 = 10 [>= 0] {
+    ~ Pack_Fault_Latch :: !(Pack_Fault_Latch == 2) => Contactor_Interlock = Pack_Fault_Latch .
+}
+```
+
+#### Діалект C: Ключова нотація `EKPOL 0.1.0` (`keyword`)
 *Файл:* [`Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol)  
 *Хеш образу BRAM:* `SHA-256 = de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee`
 
@@ -267,7 +340,7 @@ test BmsFourLevelProtectionAndLatch {
 
 *Механізм апаратного блокування:* Зверніть увагу на концепт `Pack_Fault_Latch: int32 = 2 [>= 0]`. При кожній аварії він зменшується: `2 -> 1 -> 0`. Коли стан сягає `0`, будь-яка наступна спроба декременту `0 - 1 = -1` порушує інваріант `[>= 0]`. Вентиль Великої Крапки відкидає дію (`REJECT_INVARIANT`), і защіпка назавжди лишається в стані `0`, гарантуючи, що контактор `Contactor_Interlock` залишається розімкненим (`0`).
 
-#### Діалект: SystemVerilog RTL + SVA (IEEE 1800)
+#### Діалект D: SystemVerilog RTL + SVA (IEEE 1800)
 
 ```systemverilog
 // Апаратний 4-ступеневий синхронний каскад захисту BMS
@@ -347,7 +420,26 @@ endmodule
 
 ### Сценарій 3. Стабільність протоколу рукостискання AXI4-Lite (Handshake Stability)
 
-Цей приклад демонструє **Рядок 4 (Предикат припущення `::` $\iff$ SVA `assume property`)** та **Рядок 6 (Гарантія бар'єра $\iff$ SVA `assert property`)**.
+Цей приклад демонструє **Рядок 2 (Подія читання `→`)**, **Рядок 4 (Предикат припущення `::` $\iff$ SVA `assume property`)** та **Рядок 6 (Гарантія бар'єра `•` $\iff$ SVA `assert property`)**.
+
+#### Діалект A: Авторські патерни читання та контрактів М. Ю. Кузьміна (`KPOL-AUTH` / слайди)
+У первинних слайдах М. Ю. Кузьміна ([`Research/sources/author/`](../Research/sources/README.md)) стабільність і послідовність дій під час взаємодії вузлів описувалися через дві ключові ідіоми:
+
+1. **Пост-адресна дія після читання (`RFC-013`):**
+   ```text
+   Float Sum 0
+       ← @ Float x += x
+       → • Sum = 0
+   ```
+   *Семантика Кузьміна:* при настанні події читання `→` (Interrogation) значення `Sum` спочатку видається запитувачу, і лише після цього за транзакційним бар'єром Великої Крапки `•` виконується обнулення акумулятора.
+
+2. **Взаємні предикативні підписки (алгоритм Евкліда `Nod`):**
+   ```text
+   U64 Nod | @ U64 ( a_ > b -=b , b_ > a -=a ) =a
+   ```
+   *Семантика Кузьміна:* символ `|` позначає подію виклику/виконання, а підписки всередині групи зменшують більше число до досягнення рівності.
+
+#### Діалект B: SystemVerilog + SVA (IEEE 1800)
 
 У робочому стенді формальної верифікації шини AXI-64 нашого проєкту ([`axi64_props.sv`](../Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv)) правила комунікації формулюються через контракти оточення (`assume`) та гарантії ядра (`assert`):
 
@@ -494,7 +586,8 @@ flowchart TD
 
 | Версія | Дата | Автор | Опис змін |
 |---|---|---|---|
-| 1.2.0 | 2026-11-19 | Микола Мартинович Федчик | **Повна 1:1 відповідність прикладів матриці концепцій:** додано матрицю трасування §3.0, явно закріплено всі 7 рядків таблиці Розділу 2 (Подія `•`, Концепт, Тризначна логіка $\mathcal{L}_3$, Предикат `::`, Інваріант `[>= 0]`, Бар'єр `commit;`, Підписка `~`) за конкретними фрагментами KPOL/EKPOL та RTL/SVA коду. |
+| 1.3.0 | 2026-11-19 | Микола Мартинович Федчик | **Інтеграція оригінальної нотації М. Ю. Кузьміна (`KPOL-AUTH`):** розширено матрицю Розділу 2 окремою колонкою для оригінального авторського запису (`←`, `→`, `•`, `_`, `~`, `\|`, `!`, `¬`); у кожен сценарій Розділу 3 додано автентичні фрагменти зі слайдів автора (лічильник, каскад BMS, пост-адресне скидання `Sum`, алгоритм `Nod`). |
+| 1.2.0 | 2026-11-19 | Микола Мартинович Федчик | **Повна 1:1 відповідність прикладів матриці концепцій:** додано матрицю трасування §3.0, явно закріплено всі рядки таблиці Розділу 2 за конкретними фрагментами коду. |
 | 1.1.2 | 2026-11-19 | Микола Мартинович Федчик | **Виправлення рендерингу формул MathJax:** усунено помилку `Missing or unrecognized delimiter for \left` шляхом переходу на захищені бектіками спани `$\`...\`$` та чистий запис множини `\lbrace 0, 1, \bot_{\text{undef}} \rbrace` замість сирих `\{` / `\left\{`, які пошкоджувалися парсером CommonMark. |
 | 1.1.1 | 2026-11-19 | Микола Мартинович Федчик | **Усунення нерелевантного контексту:** вилучено помилкові згадки про сертифікацію функціональної безпеки ISO 26262 (ASIL-D) / IEC 61508; фокус статті строго скориговано на цифрове схемотехнічне проектування (RTL, FPGA/ASIC) та стандартну формальну верифікацію IEEE 1800 SVA. |
 | 1.1.0 | 2026-11-19 | Микола Мартинович Федчик | **Фундаментальний рефакторинг прикладів:** усунуто некомпіляційний псевдокод; усі приклади замінено на 100% канонічні, верифіковані програми (`increase.ekpol`, `bms_safety_cascade.ekpol`), що компілюються у бінарні образи BRAM (`CME-RAW-1`) та підтверджені натурними FPGA-тестами `CFG-P-HA` і SVA шини AXI-64. |
