@@ -31,7 +31,7 @@
 | **Нормативні специфікації мов** | [`Engineering/specifications/kpol/README.md`](../specifications/kpol/README.md) | Вхід до специфікацій [`ekpol-specification.md`](../specifications/kpol/ekpol-specification.md), [`kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md), [`kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md), [`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) та [`kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md). |
 | **Специфікація емулятора VMK** | [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) | Архітектурна та програмна специфікація двомодового емулятора `VMK v0.3.0` і TUI-дебагера на Go. |
 | **Апаратний стенд PYNQ-Z1** | [`Engineering/hw/boards/pynq-z1/README.md`](../hw/boards/pynq-z1/README.md), [`hil-bench-wiring-guide.md`](../hw/boards/pynq-z1/hil-bench-wiring-guide.md) | Профіль плати `Digilent PYNQ-Z1` (`Zynq-7020`) та посібник із фізичної комутації HIL-стенда (`PMOD JA/JB`, `RP2040 LogicTracer`, `Jetson AGX Orin`). |
-| **Процесні посібники проєкту** | [`Project/guides/project-manual.md`](../../Project/guides/project-manual.md), [`AGENTS.md`](../../AGENTS.md) | Правила організації робіт, ролей, гілок, рецензування та верифікації без бутафорії. |
+| **Процесні посібники проєкту** | [`Project/guides/project-manual.md`](../../Project/guides/project-manual.md), [політика Work Products](../../Project/policies/work-products.md) | Правила організації робіт, ролей, гілок, рецензування та верифікації без бутафорії. |
 
 ### 3. Рекомендований маршрут читання для нового інженера
 

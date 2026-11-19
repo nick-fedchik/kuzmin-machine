@@ -11,10 +11,9 @@
 XC7Z020. Серійний номер і фактичний стан конкретної плати цим
 перенесенням не перевірялися.
 
-Офіційний [Reference Manual](https://digilent.com/reference/programmable-logic/pynq-z1/reference-manual),
-локальна [схема](../../../../Research/sources/vendor/pynq-z1-sch-f0.pdf)
-та [картка Source](../../../../Research/sources/README.md) — різні
-входи; схема не є доказом фактичної комутації.
+Офіційний [Reference Manual](https://digilent.com/reference/programmable-logic/pynq-z1/reference-manual)
+та [картка джерел](../../../../Research/sources/README.md) — різні
+входи; vendor-схема не є доказом фактичної комутації.
 
 ## Поточні артефакти та використання
 
@@ -35,7 +34,8 @@ LD2 — busy, LD3 — overflow згідно з поточним top. Старе 
 
 Лінії Pmod працюють на 3,3 В і не є 5V-толерантними. Не застосовувати
 таблицю іншого top як інструкцію підключення. Для фізичної роботи
-потрібні перевірена комутація та lock за [AGENTS](../../../../AGENTS.md).
+потрібні перевірена комутація та файловий lock `/tmp/km-bench.lock`
+за [RUNBOOK](../../RUNBOOK.md).
 Ця міграція не змінювала плату й не створювала нового бітстріму.
 
 ## Історія версій

@@ -1,9 +1,6 @@
 {
   "source_commit": "707fdba697d92ef9874c9013eb6f4f3cb2796d70",
   "paths": {
-    "AGENTS.md": "AGENTS.md",
-    "CLAUDE.md": "CLAUDE.md",
-    "GEMINI.md": "GEMINI.md",
     ".gitignore": ".gitignore",
     "pytest.ini": "pytest.ini",
     ".github/ISSUE_TEMPLATE/config.yml": ".github/ISSUE_TEMPLATE/config.yml",
@@ -59,7 +56,6 @@
     "process/standards-position.md": "Project/policies/standards-position.md",
     "process/work-items.md": "Project/policies/work-items.md",
     "docs/governance/work-products.md": "Project/policies/work-products.md",
-    "docs/PUBLICATION-BOUNDARY.md": "Project/policies/publication-boundary.md",
     "docs/theory/formal-analysis.md": "Research/studies/author-semantics/formal-analysis.md",
     "docs/research/theory/formal-semantics-76-report.md": "Research/studies/author-semantics/report.md",
     "docs/research/theory/turing-completeness-77-report.md": "Research/studies/turing-construction/report.md",
@@ -82,7 +78,6 @@
     "docs/sources/author/dou/dou-43177.md": "Research/sources/author/dou/dou-43177.md",
     "docs/sources/author/kuzmin-2024-example-for-AN.pdf": "Research/sources/author/kuzmin-2024-example-for-AN.pdf",
     "docs/sources/author/kuzmin-2024-example-for-AN.pptx": "Research/sources/author/kuzmin-2024-example-for-AN.pptx",
-    "hw/pynq-z1-sch-f0.pdf": "Research/sources/vendor/pynq-z1-sch-f0.pdf",
     "hw/RUNBOOK.md": "Engineering/hw/RUNBOOK.md",
     "hw/boards/pynq-z1/README.md": "Engineering/hw/boards/pynq-z1/README.md",
     "hw/boards/pynq-z1/build_bram_pipeline.sh": "Engineering/hw/boards/pynq-z1/build_bram_pipeline.sh",
@@ -272,5 +267,5 @@
     "process/MIGRATION-REGISTER.md": "Project/registers/migration.md",
     "experiments/PLAN.md": "Engineering/validation/README.md"
   },
-  "replacement_note": "newly authored navigation, not a copy of the omitted source document"
+  "replacement_note": "Current mappings only; retired destinations removed on 2026-11-19 while their historical provenance remains in migration-manifest.json."
 }

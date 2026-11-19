@@ -45,19 +45,7 @@
       "immutable_input": false
     },
     {
-      "path": "AGENTS.md",
-      "direction": "technical-root",
-      "wp_type": "Policy",
-      "immutable_input": false
-    },
-    {
       "path": "AUTHORS.md",
-      "direction": "technical-root",
-      "wp_type": "Guide",
-      "immutable_input": false
-    },
-    {
-      "path": "CLAUDE.md",
       "direction": "technical-root",
       "wp_type": "Guide",
       "immutable_input": false
@@ -3687,12 +3675,6 @@
       "immutable_input": false
     },
     {
-      "path": "GEMINI.md",
-      "direction": "technical-root",
-      "wp_type": "Guide",
-      "immutable_input": false
-    },
-    {
       "path": "LICENSE",
       "direction": "technical-root",
       "wp_type": "Policy",
@@ -3708,168 +3690,6 @@
       "path": "Project/README.md",
       "direction": "Project",
       "wp_type": "Guide",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/github-yaml.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/links.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/namespace-import-counterexample.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/owner-preparation-checks-20261112.json",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/owner-preparation-document-tests-20261112.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/owner-preparation-links-20261112.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/owner-preparation-wp-structure-20261112.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/owner-status-decisions-20261112.json",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/provenance.json",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/pytest.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/rtl.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/shell-build_bram_pipeline.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/shell-run_open_flow.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/validation-results.json",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/raw/wp-structure.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/ng-migration/report.md",
-      "direction": "Project",
-      "wp_type": "Report / Analysis",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/ci-initial-failure.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/ci-toolset-decision.json",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/configurations.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/execution-results.json",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/github-statuses.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/links.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/pytest.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/rtl.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/tool-versions.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/raw/wp-structure.log",
-      "direction": "Project",
-      "wp_type": "Data",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/assessments/structure-migration/report.md",
-      "direction": "Project",
-      "wp_type": "Report / Analysis",
       "immutable_input": false
     },
     {
@@ -3903,36 +3723,6 @@
       "immutable_input": false
     },
     {
-      "path": "Project/patents/README.md",
-      "direction": "Project",
-      "wp_type": "Guide",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/patents/patent-apparatus-heterogeneous-event-engine.md",
-      "direction": "Project",
-      "wp_type": "Specification / Patent Draft",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/patents/patent-method-hierarchical-event-control.md",
-      "direction": "Project",
-      "wp_type": "Specification / Patent Draft",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/patents/report-177-timing-dependent-claims.md",
-      "direction": "Project",
-      "wp_type": "Report",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/plans/ng-transition.md",
-      "direction": "Project",
-      "wp_type": "Plan",
-      "immutable_input": false
-    },
-    {
       "path": "Project/policies/layout.md",
       "direction": "Project",
       "wp_type": "Policy",
@@ -3940,12 +3730,6 @@
     },
     {
       "path": "Project/policies/licensing.md",
-      "direction": "Project",
-      "wp_type": "Policy",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/policies/publication-boundary.md",
       "direction": "Project",
       "wp_type": "Policy",
       "immutable_input": false
@@ -4000,12 +3784,6 @@
     },
     {
       "path": "Project/registers/migration.md",
-      "direction": "Project",
-      "wp_type": "Register",
-      "immutable_input": false
-    },
-    {
-      "path": "Project/registers/open-work-items.md",
       "direction": "Project",
       "wp_type": "Register",
       "immutable_input": false
@@ -4311,12 +4089,6 @@
       "immutable_input": false
     },
     {
-      "path": "Research/sources/vendor/pynq-z1-sch-f0.pdf",
-      "direction": "Research",
-      "wp_type": "Source",
-      "immutable_input": true
-    },
-    {
       "path": "Research/studies/application-hypotheses/README.md",
       "direction": "Research",
       "wp_type": "Guide; Problem вбудований.",
@@ -4546,12 +4318,6 @@
     },
     {
       "path": "Research/studies/author-semantics/rfc-impact-and-q3-draft-report.md",
-      "direction": "Research",
-      "wp_type": "Report / Analysis",
-      "immutable_input": false
-    },
-    {
-      "path": "Research/studies/commercialization-and-final-conclusions.md",
       "direction": "Research",
       "wp_type": "Report / Analysis",
       "immutable_input": false

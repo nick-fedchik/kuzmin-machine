@@ -95,9 +95,6 @@ $$C_{\text{meta}} = \bigwedge_{k \in \mathcal{K}} C_k$$
    Емпірична перевірка зв'язки PYNQ-Z1 та Seeed Studio J501 (Jetson AGX Orin 64GB) за допомогою 8-канального логічного аналізатора Raspberry Pi Pico (RP2040 PIO) із вимірюванням часових діаграм наскрізної латентності ($`T_{\text{e2e}} \le 1.0\ \mu\text{с}`$).
 2. **Стендовий HIL-експеримент [EXP-GPU-02](experiments/EXP-GPU-02/README.md):**  
    Апаратна верифікація перезапису активної пам'яті через Port B BRAM під час фонового потоку подій без збоїв і без джитеру конвеєра Port A ($`\Delta T_{\text{pipeline}} = 0\text{ нс}`$).
-3. **Патентний захист:**  
-   Оформлення заявок на винахід KM-PAT-01 (пристрій) та KM-PAT-02 (спосіб) у [Project/patents/](../../../Project/patents/README.md).
-
 ---
 
 ## 6. Історія версій

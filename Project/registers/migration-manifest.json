@@ -76,7 +76,9 @@
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",
       "destination_sha256": "0e16eb0b04b7c0285f3455409e565cf1f98082c0cb1b548bca18e6c6fed0cff6",
-      "operation": "adapted"
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "source": "CLAUDE.md",
@@ -85,7 +87,9 @@
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",
       "destination_sha256": "9be95dbe21fbb6b53ee676a73f9f11806f4544a9e29a7c188a3cbda574c5b497",
-      "operation": "adapted"
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "source": "GEMINI.md",
@@ -94,7 +98,9 @@
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",
       "destination_sha256": "97811022dc05eca900deb8c7078803cf942c3e72aaa191fb5aa01f82e5f76b4c",
-      "operation": "adapted"
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "source": "architecture/bram-pipeline-event-integration.md",
@@ -184,7 +190,9 @@
       "immutable": false,
       "purpose": "current component, document, template or verification dependency",
       "destination_sha256": "9ece7d55d07cf4084b080f2398b14af1324740c8e87e03640cf3af32ea0eb047",
-      "operation": "adapted"
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "source": "docs/governance/work-products.md",
@@ -1558,10 +1566,12 @@
       "source": "hw/pynq-z1-sch-f0.pdf",
       "destination": "Research/sources/vendor/pynq-z1-sch-f0.pdf",
       "source_sha256": "b7334db87956ad8c886256bd8e1b76d57c2b142f91d21476e262f7ad811142ad",
-      "immutable": true,
+      "immutable": false,
       "purpose": "primary source, fixed evidence or executable fixture",
       "destination_sha256": "b7334db87956ad8c886256bd8e1b76d57c2b142f91d21476e262f7ad811142ad",
-      "operation": "unchanged"
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "source": "hw/rtl/bus/kpol_bram_pipeline_axi.sv",
@@ -6549,115 +6559,199 @@
     },
     {
       "destination": "Project/assessments/ng-migration/raw/github-yaml.log",
-      "sha256": "9be8ddb686157a50d40602445dbee973a7fc9b8e478540b5ed1c242d1d98929b"
+      "sha256": "9be8ddb686157a50d40602445dbee973a7fc9b8e478540b5ed1c242d1d98929b",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/links.log",
-      "sha256": "0c7ca5e876aea834eb1b437e1347603b0b13639bed002a278564f896334f8994"
+      "sha256": "0c7ca5e876aea834eb1b437e1347603b0b13639bed002a278564f896334f8994",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/namespace-import-counterexample.log",
-      "sha256": "c58bd975cffcb9e3bd4d9cfa88780fffd0cb01c855d468008bbaeaf7ccdf4d65"
+      "sha256": "c58bd975cffcb9e3bd4d9cfa88780fffd0cb01c855d468008bbaeaf7ccdf4d65",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/owner-preparation-checks-20261112.json",
-      "sha256": "96ff30d7dd10d7b9d1fd85fb0f15dbe92bcd9c51d5495b9c500eb04f01e8334c"
+      "sha256": "96ff30d7dd10d7b9d1fd85fb0f15dbe92bcd9c51d5495b9c500eb04f01e8334c",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/owner-preparation-document-tests-20261112.log",
-      "sha256": "5a0a379e47f6f0794d4ab435396633179a5ae6c2b1fb587a36bb8ef6599578a5"
+      "sha256": "5a0a379e47f6f0794d4ab435396633179a5ae6c2b1fb587a36bb8ef6599578a5",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/owner-preparation-links-20261112.log",
-      "sha256": "0c7ca5e876aea834eb1b437e1347603b0b13639bed002a278564f896334f8994"
+      "sha256": "0c7ca5e876aea834eb1b437e1347603b0b13639bed002a278564f896334f8994",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/owner-preparation-wp-structure-20261112.log",
-      "sha256": "8242b55c064bb3722a8de27c08dda685faa935cb9e10130c882090b356100b0b"
+      "sha256": "8242b55c064bb3722a8de27c08dda685faa935cb9e10130c882090b356100b0b",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/owner-status-decisions-20261112.json",
-      "sha256": "94264a7f08d3ea710ca8788fc4e8591ec8fc739d326baaa82468441af1d8c024"
+      "sha256": "94264a7f08d3ea710ca8788fc4e8591ec8fc739d326baaa82468441af1d8c024",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/provenance.json",
-      "sha256": "b975fd34657e4c4dca76c53c91b4a6222a6750215a282293f9f2689ac8288bff"
+      "sha256": "b975fd34657e4c4dca76c53c91b4a6222a6750215a282293f9f2689ac8288bff",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/pytest.log",
-      "sha256": "be5704dbbd01b6017a876b2cd218b16776157f5d78a52b9cd7d690adf75af628"
+      "sha256": "be5704dbbd01b6017a876b2cd218b16776157f5d78a52b9cd7d690adf75af628",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/rtl.log",
-      "sha256": "e9c2628b777114992d1f8cd3c5896caa6fc88bae152d4a9dd4e9584caf77ef0c"
+      "sha256": "e9c2628b777114992d1f8cd3c5896caa6fc88bae152d4a9dd4e9584caf77ef0c",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/shell-build_bram_pipeline.log",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/shell-run_open_flow.log",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/validation-results.json",
-      "sha256": "73c44f7122c125f6f3e52865c80283b066c8db8e2f594cacc450cf2dce0dfcf1"
+      "sha256": "73c44f7122c125f6f3e52865c80283b066c8db8e2f594cacc450cf2dce0dfcf1",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/raw/wp-structure.log",
-      "sha256": "497622f24229f5743a6890958f009b0b555c85ae7958f961096cdaf672772ba4"
+      "sha256": "497622f24229f5743a6890958f009b0b555c85ae7958f961096cdaf672772ba4",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/ng-migration/report.md",
-      "sha256": "5b77b0afebeeb1f901b0f4b571ae7cabc74dfe65f57877129405bfa886e876a6"
+      "sha256": "5b77b0afebeeb1f901b0f4b571ae7cabc74dfe65f57877129405bfa886e876a6",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/ci-initial-failure.log",
-      "sha256": "2ed861886f8517ccadecdfc47a7e7230f91aaca3a7ec74a049f2c3f3a42cc58c"
+      "sha256": "2ed861886f8517ccadecdfc47a7e7230f91aaca3a7ec74a049f2c3f3a42cc58c",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/ci-toolset-decision.json",
-      "sha256": "936c252233dec55efd25089bc3a6593d7d2c55bb97bc7690c0ca8a4b2c6933b9"
+      "sha256": "936c252233dec55efd25089bc3a6593d7d2c55bb97bc7690c0ca8a4b2c6933b9",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/configurations.log",
-      "sha256": "e02d9a1940aab0f2fa466e06259ff2b03d5cff432946f431496ed14108041ad7"
+      "sha256": "e02d9a1940aab0f2fa466e06259ff2b03d5cff432946f431496ed14108041ad7",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/execution-results.json",
-      "sha256": "b45a0ea8447ffd567eaf5156c0687de87ba695f40ce4a74275a7c8790a16af1e"
+      "sha256": "b45a0ea8447ffd567eaf5156c0687de87ba695f40ce4a74275a7c8790a16af1e",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/github-statuses.log",
-      "sha256": "685a129e1186aef10982b9279d3317ea51059b7859b2732a12205d106756afdb"
+      "sha256": "685a129e1186aef10982b9279d3317ea51059b7859b2732a12205d106756afdb",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/links.log",
-      "sha256": "0c7ca5e876aea834eb1b437e1347603b0b13639bed002a278564f896334f8994"
+      "sha256": "0c7ca5e876aea834eb1b437e1347603b0b13639bed002a278564f896334f8994",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/pytest.log",
-      "sha256": "a352e9df81282dd5d9f6286d7a651e79ae4130af41189d97a37f158700f37224"
+      "sha256": "a352e9df81282dd5d9f6286d7a651e79ae4130af41189d97a37f158700f37224",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/rtl.log",
-      "sha256": "90db6efe86bf16d34e3c6b3b0d66c28e452487fe08a6bba13ff6d0ad10f9edf2"
+      "sha256": "90db6efe86bf16d34e3c6b3b0d66c28e452487fe08a6bba13ff6d0ad10f9edf2",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/tool-versions.log",
-      "sha256": "ea33ee38567364b19f9b64965815cd4c40fd8bfb20cf8b131240ddb5afcbe961"
+      "sha256": "ea33ee38567364b19f9b64965815cd4c40fd8bfb20cf8b131240ddb5afcbe961",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/raw/wp-structure.log",
-      "sha256": "568223f00661ac1c11172ccfb4c5e4e917e21d07f8c1851870d2eb6a1883f526"
+      "sha256": "568223f00661ac1c11172ccfb4c5e4e917e21d07f8c1851870d2eb6a1883f526",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/assessments/structure-migration/report.md",
-      "sha256": "e2b998128ab920d5a7e286e095e9471d1abada6ba3fa278564d789c1ca4c3c15"
+      "sha256": "e2b998128ab920d5a7e286e095e9471d1abada6ba3fa278564d789c1ca4c3c15",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/plans/ng-transition.md",
-      "sha256": "956fa2e7d088375372deeaedc49a9b4c0412e37f787aa9bb41845e1f0d649c6d"
+      "sha256": "956fa2e7d088375372deeaedc49a9b4c0412e37f787aa9bb41845e1f0d649c6d",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/policies/layout.md",
@@ -6681,7 +6775,10 @@
     },
     {
       "destination": "Project/registers/open-work-items.md",
-      "sha256": "0b9df2e2ca95d32a6d4730b3af530983d49aa0ef6810b5431c0de3bbe9b9963d"
+      "sha256": "0b9df2e2ca95d32a6d4730b3af530983d49aa0ef6810b5431c0de3bbe9b9963d",
+      "operation": "retired",
+      "retired_at": "2026-11-19",
+      "retirement_reason": "Removed obsolete version or duplicate from the current tree; provenance retained in migration history."
     },
     {
       "destination": "Project/registers/path-map.json",
@@ -6759,5 +6856,86 @@
     "branch": "chore/148-research-engineering-project",
     "base_commit": "707fdba697d92ef9874c9013eb6f4f3cb2796d70",
     "scope": "migration branch; main merge is a separate owner decision"
+  },
+  "retirement_cleanup": {
+    "date": "2026-11-19",
+    "removed_from_wp_index": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "GEMINI.md",
+      "Project/assessments/ng-migration/raw/github-yaml.log",
+      "Project/assessments/ng-migration/raw/links.log",
+      "Project/assessments/ng-migration/raw/namespace-import-counterexample.log",
+      "Project/assessments/ng-migration/raw/owner-preparation-checks-20261112.json",
+      "Project/assessments/ng-migration/raw/owner-preparation-document-tests-20261112.log",
+      "Project/assessments/ng-migration/raw/owner-preparation-links-20261112.log",
+      "Project/assessments/ng-migration/raw/owner-preparation-wp-structure-20261112.log",
+      "Project/assessments/ng-migration/raw/owner-status-decisions-20261112.json",
+      "Project/assessments/ng-migration/raw/provenance.json",
+      "Project/assessments/ng-migration/raw/pytest.log",
+      "Project/assessments/ng-migration/raw/rtl.log",
+      "Project/assessments/ng-migration/raw/shell-build_bram_pipeline.log",
+      "Project/assessments/ng-migration/raw/shell-run_open_flow.log",
+      "Project/assessments/ng-migration/raw/validation-results.json",
+      "Project/assessments/ng-migration/raw/wp-structure.log",
+      "Project/assessments/ng-migration/report.md",
+      "Project/assessments/structure-migration/raw/ci-initial-failure.log",
+      "Project/assessments/structure-migration/raw/ci-toolset-decision.json",
+      "Project/assessments/structure-migration/raw/configurations.log",
+      "Project/assessments/structure-migration/raw/execution-results.json",
+      "Project/assessments/structure-migration/raw/github-statuses.log",
+      "Project/assessments/structure-migration/raw/links.log",
+      "Project/assessments/structure-migration/raw/pytest.log",
+      "Project/assessments/structure-migration/raw/rtl.log",
+      "Project/assessments/structure-migration/raw/tool-versions.log",
+      "Project/assessments/structure-migration/raw/wp-structure.log",
+      "Project/assessments/structure-migration/report.md",
+      "Project/patents/README.md",
+      "Project/patents/patent-apparatus-heterogeneous-event-engine.md",
+      "Project/patents/patent-method-hierarchical-event-control.md",
+      "Project/patents/report-177-timing-dependent-claims.md",
+      "Project/plans/ng-transition.md",
+      "Project/policies/publication-boundary.md",
+      "Project/registers/open-work-items.md",
+      "Research/sources/vendor/pynq-z1-sch-f0.pdf",
+      "Research/studies/commercialization-and-final-conclusions.md"
+    ],
+    "retired_in_manifest": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "GEMINI.md",
+      "Project/assessments/ng-migration/raw/github-yaml.log",
+      "Project/assessments/ng-migration/raw/links.log",
+      "Project/assessments/ng-migration/raw/namespace-import-counterexample.log",
+      "Project/assessments/ng-migration/raw/owner-preparation-checks-20261112.json",
+      "Project/assessments/ng-migration/raw/owner-preparation-document-tests-20261112.log",
+      "Project/assessments/ng-migration/raw/owner-preparation-links-20261112.log",
+      "Project/assessments/ng-migration/raw/owner-preparation-wp-structure-20261112.log",
+      "Project/assessments/ng-migration/raw/owner-status-decisions-20261112.json",
+      "Project/assessments/ng-migration/raw/provenance.json",
+      "Project/assessments/ng-migration/raw/pytest.log",
+      "Project/assessments/ng-migration/raw/rtl.log",
+      "Project/assessments/ng-migration/raw/shell-build_bram_pipeline.log",
+      "Project/assessments/ng-migration/raw/shell-run_open_flow.log",
+      "Project/assessments/ng-migration/raw/validation-results.json",
+      "Project/assessments/ng-migration/raw/wp-structure.log",
+      "Project/assessments/ng-migration/report.md",
+      "Project/assessments/structure-migration/raw/ci-initial-failure.log",
+      "Project/assessments/structure-migration/raw/ci-toolset-decision.json",
+      "Project/assessments/structure-migration/raw/configurations.log",
+      "Project/assessments/structure-migration/raw/execution-results.json",
+      "Project/assessments/structure-migration/raw/github-statuses.log",
+      "Project/assessments/structure-migration/raw/links.log",
+      "Project/assessments/structure-migration/raw/pytest.log",
+      "Project/assessments/structure-migration/raw/rtl.log",
+      "Project/assessments/structure-migration/raw/tool-versions.log",
+      "Project/assessments/structure-migration/raw/wp-structure.log",
+      "Project/assessments/structure-migration/report.md",
+      "Project/plans/ng-transition.md",
+      "Project/policies/publication-boundary.md",
+      "Project/registers/open-work-items.md",
+      "Research/sources/vendor/pynq-z1-sch-f0.pdf"
+    ],
+    "policy": "Historical source hashes remain recorded; retired files are no longer expected in the current tree."
   }
 }

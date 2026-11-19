@@ -43,7 +43,7 @@ Gate v2 і BRAM перевіряються строгим Verilator та XC7 log
 Скрипт потребує зовнішньої конфігурації OpenXC7 і нового `BUILD_DIR`.
 Оточення описано у [toolchain](toolchain/xc7.md).
 Loader і умови HIL — у [Solution](../solutions/compiler-bram-pipeline.md).
-Перед доступом до плати потрібен lock за [AGENTS](../../AGENTS.md).
+Перед доступом до плати потрібен файловий lock `/tmp/km-bench.lock`.
 
 ## 4. Обмеження та діагностика
 
@@ -51,8 +51,8 @@ Loader і умови HIL — у [Solution](../solutions/compiler-bram-pipeline.m
 не підтверджує фізичної затримки, автономності чи працездатності всієї МК.
 Старий gate v1, AXI-обгортка демо та iCE40-проксі вилучені з маршруту.
 Числа старого runbook не переписані як результати нового pipeline.
-Фактичні перевірки NG зафіксовано у
-[Report](../../Project/assessments/ng-migration/report.md).
+Фактичний склад перенесення NG зафіксовано у
+[реєстрі перенесення](../../Project/registers/migration.md).
 
 ## Історія версій
 

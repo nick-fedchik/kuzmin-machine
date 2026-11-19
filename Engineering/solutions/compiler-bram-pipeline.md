@@ -35,7 +35,7 @@
 містить успадкований фізичний запис двох програм на одному бітстрімі.
 
 Команди NG та межі симуляції — у [Validation](../validation/README.md).
-Результати перенесення — у [звіті NG](../../Project/assessments/ng-migration/report.md).
+Результати перенесення — у [реєстрі NG](../../Project/registers/migration.md).
 
 ## 4. Обмеження та стан прийняття
 
