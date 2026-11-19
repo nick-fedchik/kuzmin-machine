@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.13.0
+* **Версія:** 0.14.0
 * **Дата:** 2026-11-19
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -30,7 +30,7 @@
 | WP | Основне місце / шаблон | Стан і межа |
 |---|---|---|
 | Requirement | [Реєстр v0.3.0](../../Engineering/requirements/requirements.md), [KPOL v0.6.0](../../Engineering/requirements/kpol.md); [SYS](../templates/work-products/requirement-sys.md), [HW](../templates/work-products/requirement-hw.md), [SW](../templates/work-products/requirement-sw.md) | Актуалізовано трасування за результатами `#227/#237`, `#230/#234`, `#245`, `#252/#253`, `#254`, `#255` та закриття S5 (`#8`); B4 оновлено до v2.4.0 (`CFG-P-HA` HIL), B5 — v2.2.0. |
-| Specification | [KPOL](../../Engineering/specifications/kpol/README.md), [`KPOL-CME-2`](../../Engineering/specifications/kpol/kpol-cme2-profile.md), [`EKPOL 0.1.0`](../../Engineering/specifications/kpol/ekpol-specification.md), [`KPOL-AUTH` (підмножина)](../../Engineering/specifications/kpol/kpol-auth-subset.md), [Go VMK v0.3.1](../../Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md), [HW](../../Engineering/specifications/hw/README.md), [B4 v2.4.0](../../Engineering/specifications/hw/kpol-image-loader-pipeline-contract.md); [форма](../templates/work-products/specification.md) | Профілі `KPOL-CME-1` і `KPOL-CME-2` (#184) та ергономічна мова `EKPOL 0.1.0` (#278) відокремлені від ізольованого прототипу `KPOL-AUTH` (#245, частина #186/#8); оновлено специфікацію крос-платформного двомодового емулятора VMK v0.3.1 та TUI-дебагера на Go (`1.3.0`, #274, #278, #280, #289); у B4 v2.4.0 зафіксовано натурно верифікований двобанковий `CFG-P-HA` (#252/#253). |
+| Specification | [Формальна специфікація KPOL](../../Engineering/guides/kpol-formal-specification.md), [формальна специфікація EKPOL 0.1.0](../../Engineering/guides/ekpol-formal-specification.md), [KPOL](../../Engineering/specifications/kpol/README.md), [`KPOL-CME-2`](../../Engineering/specifications/kpol/kpol-cme2-profile.md), [`EKPOL 0.1.0`](../../Engineering/specifications/kpol/ekpol-specification.md), [`KPOL-AUTH` (підмножина)](../../Engineering/specifications/kpol/kpol-auth-subset.md), [Go VMK v0.3.1](../../Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md), [HW](../../Engineering/specifications/hw/README.md), [B4 v2.4.0](../../Engineering/specifications/hw/kpol-image-loader-pipeline-contract.md); [форма](../templates/work-products/specification.md) | Профілі `KPOL-CME-1` і `KPOL-CME-2` (#184) та ергономічна мова `EKPOL 0.1.0` (#278) відокремлені від ізольованого прототипу `KPOL-AUTH` (#245, частина #186/#8); оновлено специфікацію крос-платформного двомодового емулятора VMK v0.3.1 та TUI-дебагера на Go (`1.3.0`, #274, #278, #280, #289); у B4 v2.4.0 зафіксовано натурно верифікований двобанковий `CFG-P-HA` (#252/#253). |
 | Design | [B1](../../Engineering/design/system-boundary-allocation-b1.md), [B2](../../Engineering/design/bram-pipeline-event-integration.md); [форма](../templates/work-products/design.md) | Межа й інтеграція, не доказ готовності всього продукту. |
 | Decision | [Карта v0.4.1](../../Engineering/decisions/README.md), [B6 v0.5.0](../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md), [B7 (`CME-RAW-2` / `KPOL-SYS-02`)](../../Engineering/decisions/cme-raw2-kpol-sys02.md), розділи контрактів; [форма ADR](../templates/work-products/decision.md) | B6 v0.5.0 інтегрує емпіричні дані `EXP-GPU-01` (#225/#235/#240/#226) та `EXP-GPU-03` (#256); B7 v0.2.0 прийнято власником за Варіантом А (#185/#215). |
 | Solution | [Пакет](../../Engineering/solutions/compiler-bram-pipeline.md); [форма](../templates/work-products/solution.md) | Явний склад, залежності й обмеження. |
@@ -66,6 +66,7 @@
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.14.0 | 2026-11-19 | Додано формальні специфікації мов KPOL і EKPOL 0.1.0 (`Engineering/guides/`) як нормативні Specification з пріоритетом над описовими документами. |
 | 0.1.0 | 2026-11-12 | Поточні WP й місця зберігання, без старого інвентаризаційного зрізу. |
 | 0.1.1 | 2026-11-12 | Політика пропрієтарного режиму та реєстр поточних рішень щодо WI. |
 | 0.2.0 | 2026-11-12 | Source уточнень RFC, Requirement KPOL, Report профільного compiler #150 та файловий індекс. |

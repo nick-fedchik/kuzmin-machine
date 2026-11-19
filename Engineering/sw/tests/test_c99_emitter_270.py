@@ -12,8 +12,8 @@ Covers:
   3. Non-tautological Z3 SMT safety certificate verification (`prove_c99_descriptor_safety_z3`
      parsing the emitted C99 text for `P1..P4`), `z3 -in -smt2` CLI execution, and
      fail-closed `RuntimeError` when Z3 is absent (`F-02`);
-  4. Committed BMS reference artifacts, SHA-256 consistency across `report.md` and
-     `commercialization-and-final-conclusions.md` (`F-05`), and raw logs (`F-07`);
+  4. Committed BMS reference artifacts, SHA-256 consistency in `report.md` (`F-05`; the former
+     commercialization conclusions document was removed from the project), and raw logs (`F-07`);
   5. Negative mutant controls via C-source text replacement (`AGENTS.md §4.1`, `F-06`):
      - `M1_c99_bypass_invariant`
      - `M2_c99_mask_invalid_sensor`
@@ -44,7 +44,6 @@ COMPILE_CLI = REPO_ROOT / "Engineering" / "hw" / "scripts" / "compile_kpol_bram_
 BMS_DIR = REPO_ROOT / "Engineering" / "validation" / "kpol-cme" / "c99-emitter-270"
 BMS_RAW_DIR = BMS_DIR / "raw"
 BMS_REPORT_MD = BMS_DIR / "report.md"
-CONCLUSIONS_MD = REPO_ROOT / "Research" / "studies" / "commercialization-and-final-conclusions.md"
 
 if str(SW_REF_DIR) not in sys.path:
     sys.path.insert(0, str(SW_REF_DIR))
@@ -241,7 +240,7 @@ def test_bms_committed_artifacts_sha256_docs_and_multi_tu_c99_build():
     z3_path = BMS_DIR / "bms_safety_z3_certificate.json"
     bench_c_path = BMS_DIR / "bms_c99_hil_bench.c"
 
-    for p in (kpol_path, bin_path, c99_path, z3_path, bench_c_path, BMS_REPORT_MD, CONCLUSIONS_MD):
+    for p in (kpol_path, bin_path, c99_path, z3_path, bench_c_path, BMS_REPORT_MD):
         assert p.is_file(), f"Missing BMS artifact or report: {p}"
 
     c99_text = c99_path.read_text(encoding="utf-8")
@@ -254,8 +253,8 @@ def test_bms_committed_artifacts_sha256_docs_and_multi_tu_c99_build():
     z3_sha256 = hashlib.sha256(z3_path.read_bytes()).hexdigest()
     bench_sha256 = hashlib.sha256(bench_c_path.read_bytes()).hexdigest()
 
-    # F-05: Assert that both report.md and commercialization-and-final-conclusions.md record exact SHA-256
-    for doc_path in (BMS_REPORT_MD, CONCLUSIONS_MD):
+    # F-05: Assert that report.md records the exact SHA-256 of every committed artifact
+    for doc_path in (BMS_REPORT_MD,):
         doc_text = doc_path.read_text(encoding="utf-8")
         assert bin_sha256 in doc_text, f"{doc_path.name} missing exact SHA-256 of bms_safety_cascade.bin"
         assert c99_sha256 in doc_text, f"{doc_path.name} missing exact SHA-256 of bms_safety_cascade_gen.c"

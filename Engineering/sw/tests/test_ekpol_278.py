@@ -474,8 +474,9 @@ def test_ekpol_spec_report_raw_provenance_and_wp_index():
     rep_txt = REPORT_EKPOL_MD.read_text(encoding="utf-8")
 
     for marker in [
-        "* **Версія:** 1.0.1",
+        "* **Версія:** 1.0.2",
         "* **Тип WP:** Specification",
+        "ekpol-formal-specification.md",
         "AGENTS.md §4 п. 1",
         "ekpol_program",
         "EKPOL-CYCLE-ERR",
@@ -616,8 +617,8 @@ def test_markdown_math_formulas_have_no_commonmark_broken_escapes():
 
 
 def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
-    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.2`) and
-    `Engineering/guides/README.md` (`1.0.0`) structure, specification version references (`F1`),
+    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.3`) and
+    `Engineering/guides/README.md` (`1.1.0`) structure, specification version references (`F1`),
     compile and execute all embedded valid `.ekpol` (`module ...`) and `.kpol` (`Problem ...`)
     code blocks (including `Proof` verification via `kpol_reference.verify_module` / `Interpreter`
     and Go `VMK v0.3.0`, `F4`), and prove negative mutant controls (`AGENTS.md §4 п. 1`) on the
@@ -642,9 +643,11 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         "W1 operand_val between guard literal and ADD/SUB step != 1"
     )
     for required_marker in [
-        "* **Версія:** 1.0.2",
+        "* **Версія:** 1.0.3",
         "* **Тип WP:** Guide",
-        "ekpol-specification.md) (`1.0.1`)",
+        "ekpol-specification.md) (`1.0.2`)",
+        "kpol-formal-specification.md) (`1.0.0`)",
+        "ekpol-formal-specification.md) (`1.0.0`)",
         "kpol-cme-subset.md) (`0.4.0`)",
         "kpol-cme2-profile.md) (`0.1.0`)",
         "kpol-auth-subset.md) (`0.1.0`)",
@@ -672,10 +675,12 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         assert required_marker in guide_txt, f"kpol-ekpol-language-guide.md missing {required_marker!r}"
 
     for readme_marker in [
-        "* **Версія:** 1.0.0",
+        "* **Версія:** 1.1.0",
         "* **Тип WP:** Guide",
         "kpol-ekpol-language-guide.md",
-        "`1.0.2`",
+        "`1.0.3`",
+        "kpol-formal-specification.md",
+        "ekpol-formal-specification.md",
         "vmk-users-guide.md",
         "## Призначення",
         "## Навігація чи використання",

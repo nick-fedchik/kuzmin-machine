@@ -1,13 +1,14 @@
 # Специфікація мови EKPOL (Ergonomic KPOL 0.1.0): двостильова ASCII та програмістська нотація поруч із класичним KPOL
 
-* **Версія:** 1.0.1
-* **Дата:** 2026-11-18
+* **Версія:** 1.0.2
+* **Дата:** 2026-11-19
 * **Тип WP:** Specification
 * **Статус:** Запропоновано на затвердження власником (Proposed)
 * **ASPICE 4.0 процеси:** `SWE.1` (Software Requirements Analysis), `SWE.2` (Software Architectural Design), `SWE.3` (Software Detailed Design and Unit Construction)
 * **Issue:** `Closes` [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
 * **Реалізація у ПЗ:** [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/kpol-ref/kpol_debugger.py`](../../sw/kpol-ref/kpol_debugger.py), [`Engineering/sw/vmk-go/internal/vmk/ekpol.go`](../../sw/vmk-go/internal/vmk/ekpol.go) (`VMK v0.2.0`), каталог прикладів [`Engineering/sw/vmk-go/examples/`](../../sw/vmk-go/examples/bms_safety_cascade.ekpol).
+* **Формальна норма:** [`Engineering/guides/ekpol-formal-specification.md`](../../guides/ekpol-formal-specification.md) (`1.0.0`). Цей документ є описовим; у разі розбіжності діє формальна специфікація.
 * **Верифікація:** [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go) та звіт [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
 
 ---
@@ -28,7 +29,7 @@
 * **Надає дві взаємозамінні (еквівалентні на рівні AST та кодогенерації) форми запису правил у чистому 7-бітному ASCII:**
   1. **Символьна ASCII-нотація (`symbolic`):** `<-` (зовнішній запис), `->` (читання), `~` (підписка на зміну іншого концепту), `|` (виклик/виконання), `::` (предикат-охоронець), `=>` (дія), `.` (транзакційний бар'єр Великої Крапки);
   2. **Ключова програмістська нотація (`keyword`, у дусі Rust / Go / TypeScript):** `on write(x)`, `on read`, `on change(Src)`, `on call(...)`, `when`, `=>`, `commit;`, `after`;
-* **Забезпечує двосторонню безвтратну трансляцію `EKPOL <-> класичний KPOL`** (`--emit-kpol` / `--to-kpol` та `--emit-ekpol` / `--to-ekpol` зі стилем `--ekpol-style symbolic|keyword`) і **100% побітову ідентичність (SHA-256)** згенерованих 1024-байтних образів BRAM (`CME-RAW-1`), C99-модулів (`--emit-c99`) та Z3-сертифікатів (`--emit-z3-cert`).
+* **Забезпечує двосторонню трансляцію `EKPOL <-> класичний KPOL` без втрат у межах областей, визначених у [§10 формальної специфікації](../../guides/ekpol-formal-specification.md#10-трансляція-ekpol--kpol) (предикати `bitmask` і нелітеральні значення поза цими областями)** (`--emit-kpol` / `--to-kpol` та `--emit-ekpol` / `--to-ekpol` зі стилем `--ekpol-style symbolic|keyword`) і **100% побітову ідентичність (SHA-256)** згенерованих 1024-байтних образів BRAM (`CME-RAW-1`), C99-модулів (`--emit-c99`) та Z3-сертифікатів (`--emit-z3-cert`).
 
 ### 1.2. Межі та атрибуція (`AGENTS.md §6.1`, `AGENTS.md §4 п. 1–2`)
 - Автор концепції Машини Кузьміна та мови KPOL — **Михайло Ювеналійович Кузьмін** (первинні джерела в [`Research/sources/`](../../../Research/sources/README.md)). Мова `EKPOL 0.1.0`, її парсер, двосторонній транспайлер і підтримка у `VMK v0.2.0` є похідними інженерними розробками проєкту (М. Федчик, інженерні агенти), створеними для підвищення ергономіки розробки, читабельності коду та продуктивності сучасних програмістів.
@@ -61,7 +62,9 @@
 
 ## 3. Формальна EBNF-граматика мови `EKPOL 0.1.0`
 
-Нижче наведено повну, однозначну граматику `EKPOL 0.1.0` у розширеній нотації Бекуса — Наура (ISO/IEC 14977). Пробільні символи (` `, `\t`, `\r`, `\n`), однорядкові коментарі (`# ...` та `// ...`) і багаторядкові коментарі (`/* ... */`) пропускаються лексером між токенами.
+> Ця граматика описова й ширша за фактично прийнятну мову (наприклад, допускає довільні ланцюжки `&&` і порівняння з `&`). Нормативну граматику наведено у [формальній специфікації EKPOL](../../guides/ekpol-formal-specification.md).
+
+Нижче наведено граматику `EKPOL 0.1.0` у розширеній нотації Бекуса — Наура (ISO/IEC 14977). Пробільні символи (` `, `\t`, `\r`, `\n`), однорядкові коментарі (`# ...` та `// ...`) і багаторядкові коментарі (`/* ... */`) пропускаються лексером між токенами.
 
 ```ebnf
 ekpol_program      = [ module_decl ] , { top_item } ;
@@ -184,7 +187,7 @@ test_stmt          = ( "send" | "step" ) , identifier , "(" , [ [ identifier , (
 ### 4.2. Семантика інваріантів `[>= 0]` та пост-адресного бар'єра Великої Крапки
 1. **Інваріант у заголовку або тілі концепту:**
    - Запис `concept C: i32 = 0 [>= 0] { ... }` (або `invariant C >= 0;` всередині тіла) вмикає біт `CME_GUARD_INVARIANT_EN (0x02)` у слові `W2` дескриптора `CME-RAW-1` і транслюється в секцію `Invariants { inv_c: C >= 0; }` класичного `KPOL-CME-1/2`.
-   - Якщо концепт має додаткову верхню межу небезпеки `[>= 0, <= H]` (де $1 \le H \le 255$) у розширеному режимі дескрипторів, встановлюється `hazard_limit = H` та `CME_GUARD_HAZARD_EN (0x04)`.
+   - Додаткові пункти інваріанта (наприклад, верхня межа `[>= 0, <= H]`) синтаксично приймаються, але в профілі `bram64` **не виконуються**: компілятор записує `hazard_limit = 0` і не встановлює `CME_GUARD_HAZARD_EN`. Див. `D-E8` формальної специфікації.
    - Якщо в програмі профілю `bram64` (`CME-RAW-1`) інваріант `[>= 0]` відсутній або порушується початковим станом (`Init < 0`), компілятор відхиляє програму з кодом `EKPOL-INVARIANT-ERR`.
 2. **Пост-адресний бар'єр читання (`-> => . Sum = 0` / `on read => after Sum = 0;`):**
    - Відповідає авторському правилу `RFC-013` (`→ • Sum = 0`): під час операції читання спочатку поточне значення концепту видається на шину читання / у `STDOUT`, і **строго після цього** (після маркера `.` або ключового слова `after`) виконується дія скидання `Sum = 0`.
@@ -206,7 +209,7 @@ test_stmt          = ( "send" | "step" ) , identifier , "(" , [ [ identifier , (
    - `C += K` ($K \ge 2$) $\to$ `CME_ACT_ADD (0x03)`, `W1 = K`;
    - `C -= K` ($K \ge 2$) $\to$ `CME_ACT_SUB (0x04)`, `W1 = K`;
    - `C = x` або `C := x` (де `x` — вхідний параметр або стан концепту-видавця) $\to$ `CME_ACT_ASSIGN (0x00)`;
-   - `pass` або `nop` $\to$ `CME_ACT_NOP (0x05)` (у розширеному VMK) або тотожний перехід.
+   - `pass` або `nop` у профілі `bram64` відхиляються з `EKPOL-SYNTAX-ERR`: у `CME-RAW-1` немає коду порожньої дії, а код `0x05` апаратура трактує як недійсний.
 3. **Виявлення колізії `W1` (`EKPOL-COLLISION-ERR`) та циклів підписок (`EKPOL-CYCLE-ERR`):**
    - Якщо правило одночасно вимагає запису константи/діапазону в `W1` для предиката і кроку $K \ge 2$ у `W1` для дії `ADD`/`SUB`, фронтенд видає `EKPOL-COLLISION-ERR`.
    - Орієнтований граф каскадних підписок `~ Src` / `on change(Src)` у режимі `bram64` перевіряється алгоритмом пошуку циклів (3-кольоровий DFS): будь-який цикл `C0 -> ... -> C0` або самопідписка `C -> C`, а також `fan-out > 1` детерміновано блокуються з кодом `EKPOL-CYCLE-ERR`.
@@ -343,6 +346,7 @@ concept If: bool = undef {
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.2 | 2026-11-19 | Додано посилання на формальну специфікацію EKPOL як норму з пріоритетом; виправлено невідповідні реалізації твердження про `hazard_limit`/`HAZARD_EN` для `[>= 0, <= H]`, про `CME_ACT_NOP (0x05)` і про безумовно безвтратну трансляцію; уточнено розшифрування KPOL. |
 | 1.0.1 | 2026-11-18 | За рецензією `claude-sonnet-5.5` у PR #279 (`F1`): уточнено посилання на `AGENTS.md §4 п. 1` та `AGENTS.md §4 п. 2`. |
 | 1.0.0 | 2026-11-18 | Первинний випуск специфікації мови `EKPOL 0.1.0` (`Ergonomic KPOL`): двостильова ASCII-символьна та ключова програмістська граматика EBNF, правила зниження в `CME-RAW-1`, двостороння трансляція `EKPOL <-> KPOL` та діагностичні коди помилок (Issue [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278)). |
 
@@ -351,7 +355,7 @@ concept If: bool = undef {
 | Термін | Значення |
 | :--- | :--- |
 | **EKPOL** | Ergonomic KPOL (`0.1.0`) — ергономічна концептно-орієнтована мова програмування Машини Кузьміна у чистому 7-бітному ASCII з підтримкою символьної (`<-`, `->`, `~`, `::`, `=>`, `.`) та ключової (`on write`, `on read`, `on change`, `when`, `commit`, `after`) нотацій. |
-| **KPOL** | Kuzmin Concept-Oriented Language — базова мова програмування Машини Кузьміна (класичні профілі `KPOL-CME-1`, `KPOL-CME-2`, `KPOL-AUTH`). |
+| **KPOL** | Kuzmin Problem-Oriented Language — проблемно-орієнтована мова програмування Машини Кузьміна (класичні профілі `KPOL-CME-1`, `KPOL-CME-2`; авторський діалект `KPOL-AUTH`). |
 | **CME-RAW-1** | 1024-байтний двійковий формат таблиці 64 дескрипторів концептів по 16 байтів (`W0..W3`) для апаратного конвеєра `CFG-P` / `CFG-P-HA`. |
 | **VMK** | Virtual Machine of Kuzmin — двомодовий емулятор, транспайлер і 4-панельний TUI-дебагер Машини Кузьміна (`Engineering/sw/vmk-go`, `v0.2.0`). |
 | **Велика Крапка (`•` / `.` / `commit` / `after`)** | Апаратний інваріантний вентиль фіксації транзакції та пост-адресний бар'єр порядку виконання (`RFC-013`). |

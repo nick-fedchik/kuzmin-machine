@@ -1,12 +1,13 @@
 # Посібник: Керівництво користувача та чистий код мов програмування KPOL і EKPOL за принципами Кернігана, Рітчі та Мартіна
 
-* **Версія:** 1.0.2
-* **Дата:** 2026-11-18
+* **Версія:** 1.0.3
+* **Дата:** 2026-11-19
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача та стандарт кодування
 * **Issue:** `Closes` [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284); пов'язані задачі [#282](https://github.com/nick-fedchik/kuzmin-machine/issues/282), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
-* **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.1`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`0.4.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.6.1`).
+* **Формальні специфікації (мають пріоритет над цим посібником):** [`kpol-formal-specification.md`](kpol-formal-specification.md) (`1.0.0`), [`ekpol-formal-specification.md`](ekpol-formal-specification.md) (`1.0.0`).
+* **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.2`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`0.4.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.6.1`).
 * **Інструментарій та виконання:** [`Engineering/guides/vmk-users-guide.md`](vmk-users-guide.md) (`1.2.1`), [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) (`VMK v0.3.0`), [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol).
 * **Автоматична верифікація прикладів посібника:** [`Engineering/sw/tests/test_ekpol_278.py`](../sw/tests/test_ekpol_278.py) (`test_kpol_ekpol_language_guide_examples_compile_and_negative_control`, `test_markdown_math_formulas_have_no_commonmark_broken_escapes`).
 
@@ -14,7 +15,7 @@
 
 ## Призначення
 
-Цей документ є єдиним практичним керівництвом користувача з мов програмування **KPOL (`Kuzmin Concept-Oriented Language`)** та **EKPOL (`Ergonomic KPOL 0.1.0`)** проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Посібник призначений для системних, вбудованих (C99/Go/Python) і апаратних (FPGA/RTL) інженерів, дослідників реактивних архітектур та верифікаторів, яким потрібно писати, читати, рефакторити й верифікувати концептно-подієві програми.
+Цей документ є єдиним практичним керівництвом користувача з мов програмування **KPOL (`Kuzmin Problem-Oriented Language`)** та **EKPOL (`Ergonomic KPOL 0.1.0`)** проєкту **Машини Кузьміна** (`nick-fedchik/kuzmin-machine`). Посібник призначений для системних, вбудованих (C99/Go/Python) і апаратних (FPGA/RTL) інженерів, дослідників реактивних архітектур та верифікаторів, яким потрібно писати, читати, рефакторити й верифікувати концептно-подієві програми.
 
 Документ побудовано на перетині двох класичних інженерних шкіл:
 1. **Метод Браяна Кернігана і Денніса Рітчі (*The C Programming Language*, *The Practice of Programming* — Simplicity, Clarity, Generality):** навчання починається з найменшої повної, живої програми у перші 60 секунд; кожна нова конструкція вводиться лише на реальних виконуваних прикладах без зайвої води, а наприкінці подано стислий довідковий мануал (*Reference Manual*);
@@ -254,14 +255,14 @@ test CheckPositivePulses {
 * інкремент/декремент на одиницю: `C += 1` (`CME_ACT_INC`), `C -= 1` (`CME_ACT_DEC`);
 * додавання/віднімання кроку $K \ge 2$: `C += K` (`CME_ACT_ADD`), `C -= K` (`CME_ACT_SUB`);
 * пряме присвоєння: `C = x` або `C := x` (`CME_ACT_ASSIGN`);
-* порожня дія: `pass` або `nop` (`CME_ACT_NOP`).
+* порожня дія: `pass` або `nop` — лише в концептуальному записі; апаратний профіль `bram64` її відхиляє, бо коду `CME_ACT_NOP` у `CME-RAW-1` немає.
 
 ##### Дві фундаментальні ролі Великої Крапки (`•` / `.` / `commit` / `after`)
 
 У Машині Кузьміна Велика Крапка (`•` у авторській нотації, `.` у символьному `EKPOL`, `commit;` та `after` у ключовому `EKPOL`) виконує дві чітко розмежовані ролі:
 
 1. **Роль 1 — Пост-умовний транзакційний вентиль у кінці правила (`=> Action .` / `=> Action commit;`):**
-   Дія `=>` ніколи не змінює стан концепту напряму в пам'яті `W0`! Спочатку мікроядро обчислює **значення-кандидат (`candidate`)**. Потім Велика Крапка перевіряє інваріант концепту (`[>= 0]`, відсутність 32-бітного переповнення `!ovf32`, верхній поріг `hazard_limit`).
+   Дія `=>` ніколи не змінює стан концепту напряму в пам'яті `W0`! Спочатку мікроядро обчислює **значення-кандидат (`candidate`)**. Потім Велика Крапка перевіряє інваріант концепту: `[>= 0]` і відсутність 32-бітного переповнення `!ovf32`. Поле `hazard_limit` компілятори KPOL/EKPOL не заповнюють.
    - Якщо інваріант виконується — відбувається атомарний `COMMIT`: `W0 := candidate`, і лише після цієї крапки хвиля подій пробуджує підписників `~ Concept`.
    - Якщо інваріант порушено (наприклад, `0 - 1 = -1 < 0`) — вентиль Великої Крапки блокує транзакцію (`REJECT_INVARIANT`), стан `W0` залишається незмінним, а підписники не отримують хибного сигналу.
 
@@ -393,7 +394,7 @@ test CheckFactorial5 {
 
 ```mermaid
 flowchart LR
-    EK["Файл .ekpol\n(Symbolic або Keyword)"] <-->|"--to-kpol / --to-ekpol\n(безвтратна трансляція)"| KP["Класичний .kpol\n(Problem / Solution / Proof)"]
+    EK["Файл .ekpol\n(Symbolic або Keyword)"] <-->|"--to-kpol / --to-ekpol\n(трансляція в межах областей §10\nформальної специфікації EKPOL)"| KP["Класичний .kpol\n(Problem / Solution / Proof)"]
     EK --> VMK["Go VMK v0.3.0\n(--mode bram64 / conceptual\n4-панельний TUI, STDIO)"]
     EK --> BIN["1024 B CME-RAW-1 .bin\n(FPGA Zynq-7020 CFG-P / CFG-P-HA)"]
     EK --> C99["Детермінований C99\n(--emit-c99, MISRA-friendly)"]
@@ -868,20 +869,18 @@ Proof CleanTwoStageGuard {
 ```text
 Слово W0 (байти 0..3)  : state_val      (int32)  — поточне значення стану концепту
 Слово W1 (байти 4..7)  : operand_val    (int32)  — 32-бітна константа K або пара int16 [hi:16 | lo:16] для RANGE
-Слово W2 (байти 8..11) : [31:24] reserved = 0x00
-                         [23:16] hazard_limit    — верхній поріг інваріанта (якщо guard_flags[2] == 1)
+Слово W2 (байти 8..11) : [31:24] action_opcode   — код дії (0x00..0x04)
+                         [23:16] hazard_limit    — поріг небезпеки для параметра події (профілі записують 0)
                          [15:8]  guard_flags     — бітова маска вентиля безпеки (0x01..0x10)
-                         [7:4]   action_opcode   — код дії (0x00..0x05)
-                         [3:0]   pred_opcode     — код предиката припущення (0x00..0x06)
-Слово W3 (байти 12..15): [31:6]  reserved = 0
-                         [5:0]   subscriber_cid  — індекс концепту-підписника (0..63)
+                         [7:0]   pred_opcode     — код предиката припущення (0x00..0x06)
+Слово W3 (байти 12..15): [31:0]  subscriber_cid  — індекс концепту-підписника; каскад можливий лише при значенні < 64
 ```
 
 | Конструкція | `EKPOL Symbolic` | `EKPOL Keyword` | Класичний `KPOL-CME-1/2` | Авторський `KPOL-AUTH` | Відображення у 16-байтному дескрипторі `CME-RAW-1` (`W0..W3`) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Оголошення концепту** | `concept C: i32 = 10 [>= 0]` | `concept C: int32 = 10 [>= 0]` | `Invariants { I: C >= 0; }` + `state C: Int32 = 10;` | `Int32 C = 10` | `W0 = 10`, `W2.guard_flags \|= 0x02` (`INVARIANT_EN`) |
 | **Зовнішня подія запису** | `<- Ev(x)` або `<- x` | `on write(x)` / `on Ev(x)` | `event Ev(x: Int32); rule R on Ev` | `← @ Int32 x` | Вхідна подія у слот `cid` концепту `C` |
-| **Каскадна підписка** | `~ Src` | `on change(Src)` | `rule R on change(Src)` | `Src • C ...` | У дескрипторі `Src`: `W3.subscriber_cid = cid(C)`; якщо `cid(C) == 0`, то `Src.W2.guard_flags \|= 0x10` (`CASCADE_CID0_EN`) |
+| **Каскадна підписка** | `~ Src` | `on change(Src)` | `rule R on change(Src)` | `Src • C ...` | У дескрипторі `Src`: `W3.subscriber_cid = cid(C)` і `Src.W2.guard_flags \|= 0x10` (`SUBSCRIBER_EN`); прапорець обов'язковий для підписника в `CID 0` |
 | **Пост-адресне читання** | `-> => . Sum = 0` | `on read => after Sum = 0;` | *(концептуальний режим)* | `→ • Sum = 0` | Виконується у `--mode conceptual` (`PostReadBarrier = true`, `RFC-013`) |
 | **Реактивний виклик** | `\| (a, b) :: ...` | `on call(a, b) when ...` | *(концептуальний режим)* | `\| @ U64 (a, b)` | Виконується у `--mode conceptual` (`AddrExecute`) |
 | **Безумовний предикат** | `:: true` (або опущено) | `when true` (або опущено) | `when true` | `:` (без умови) | `W2.pred_opcode = 0x00` (`NOP`), `W2.guard_flags &= ~0x08` |
@@ -903,7 +902,7 @@ Proof CleanTwoStageGuard {
 
 #### 3.2. Таблиця кодів предикатів (`0x00..0x06`), кодів дій (`0x00..0x05`) і прапорців `guard_flags`
 
-##### Коди предикатів припущення (`pred_opcode`, біти `W2[3:0]`)
+##### Коди предикатів припущення (`pred_opcode`, біти `W2[7:0]`)
 
 | Код (`hex`) | Мнемоніка RTL / Python / Go | Формула базової перевірки (`base_pass`) | Роль слова `W1` (`operand_val`) |
 | :---: | :--- | :--- | :--- |
@@ -914,9 +913,9 @@ Proof CleanTwoStageGuard {
 | `0x04` | `CME_PRED_LT` | `param < int32(W1)` | 32-бітний знаковий поріг `K` (з `INVERT` дає `param >= K`) |
 | `0x05` | `CME_PRED_RANGE` | `int16(W1[15:0]) <= param <= int16(W1[31:16])` | Молодші 16 біт — знаковий `lo`, старші 16 біт — знаковий `hi` |
 | `0x06` | `CME_PRED_BITMASK` | `(uint32(param) & uint32(W1)) != 0` | 32-бітна бітова маска `MASK` |
-| `0x07..0x0F` | *Зарезервовано (`Fail-Closed`)* | `false` (апаратно блокує перехід) | — |
+| `0x07..0xFF` | *Зарезервовано (`Fail-Closed`)* | `false` (апаратно блокує перехід) | — |
 
-##### Коди дій (`action_opcode`, біти `W2[7:4]`)
+##### Коди дій (`action_opcode`, біти `W2[31:24]`)
 
 | Код (`hex`) | Мнемоніка RTL / Python / Go | Формула обчислення кандидата (`cand`) | Умова 32-бітного переповнення (`ovf32`) |
 | :---: | :--- | :--- | :--- |
@@ -925,8 +924,7 @@ Proof CleanTwoStageGuard {
 | `0x02` | `CME_ACT_DEC` | `cand = W0 - 1` | `W0 == -0x80000000` (`-2147483648`) |
 | `0x03` | `CME_ACT_ADD` | `cand = W0 + int32(W1)` | Знакове переповнення суми `W0 + W1` за межі `Int32` |
 | `0x04` | `CME_ACT_SUB` | `cand = W0 - int32(W1)` | Знакове переповнення різниці `W0 - W1` за межі `Int32` |
-| `0x05` | `CME_ACT_NOP` | `cand = W0` (тотожний перехід у розширеному VMK) | `false` |
-| `0x06..0x0F` | *Зарезервовано (`Fail-Closed`)* | Недійсний код операції (`illegal_action = true`) | Призводить до негайного `REJECT_INVARIANT` |
+| `0x05..0xFF` | *Зарезервовано (`Fail-Closed`)* | Недійсний код операції (`illegal_action = true`) | Транзакцію відхилено: кандидат недійсний |
 
 ##### Бітова маска вентиля безпеки (`guard_flags`, біти `W2[15:8]`)
 
@@ -934,9 +932,9 @@ Proof CleanTwoStageGuard {
 | :---: | :---: | :--- | :--- |
 | `guard_flags[0]` | `0x01` | `CME_GUARD_ASSUMPTION_EN` | Увімкнути перевірку вхідного предиката `pred_opcode`. |
 | `guard_flags[1]` | `0x02` | `CME_GUARD_INVARIANT_EN` | Увімкнути вентиль інваріанта Великої Крапки `[>= 0]`: вимагає `cand >= 0 && !ovf32 && !illegal_action`. |
-| `guard_flags[2]` | `0x04` | `CME_GUARD_HAZARD_EN` | Увімкнути перевірку верхньої межі небезпеки `uint32(cand) <= W2.hazard_limit`. |
+| `guard_flags[2]` | `0x04` | `CME_GUARD_HAZARD_EN` | Відхиляти транзакцію, якщо `hazard_limit != 0` і знаковий параметр події `param > hazard_limit`. Компілятори KPOL/EKPOL цей прапорець не встановлюють. |
 | `guard_flags[3]` | `0x08` | `CME_GUARD_INVERT_ASSUMPTION` | Інвертувати результат `base_pass` вхідного предиката (`!base_pass`, використовується для `>=`, `<=`, `!(x == K)`, `is even`). |
-| `guard_flags[4]` | `0x10` | `CME_GUARD_CASCADE_CID0_EN` | Дозволити каскадне збудження підписника у слоті `CID 0` (відрізняє реальну підписку на `CID 0` від порожнього `subscriber_cid = 0`). |
+| `guard_flags[4]` | `0x10` | `CME_GUARD_SUBSCRIBER_EN` | Дозволити каскад: підписник збуджується, якщо `commit`, `subscriber_cid < 64` і (`0x10` встановлено або `subscriber_cid != 0`). Компілятори встановлюють прапорець для кожного видавця; без нього неможлива підписка на `CID 0`. |
 
 ---
 
@@ -949,8 +947,8 @@ Proof CleanTwoStageGuard {
 | **`EKPOL-INVARIANT-ERR`** | `ekpol_frontend.py` | Концепт у режимі `bram64` не має інваріанта `[>= 0]` або його початкове значення від'ємне (`Init < 0`). | Додайте `[>= 0]` у заголовок концепту (`concept Name: i32 = 0 [>= 0]`) і задайте невід'ємний початковий стан. |
 | **`EKPOL-RANGE-ERR`** | `ekpol_frontend.py` / `ekpol.go` | У діапазоні `in LO..HI` нижня межа більша за верхню (`LO > HI`) або межі виходять за знаковий `int16` (`-32768..32767`). | Переконайтеся, що `-32768 <= LO <= HI <= 32767`. Для 32-бітних порогів поза `int16` використайте односторонній предикат `<` / `>` / `>=` / `<=`. |
 | **`EKPOL-COLLISION-ERR`** / **`CME2-OPERAND-COLLISION`** | `ekpol_frontend.py` / `kpol_reference.py` | Правило одночасно використовує константний/діапазонний предикат (займає `W1`) та дію `+= K` / `-= K` з $K \ge 2$ (також вимагає `W1`). | Застосуйте **Правило 2 (SRP)**: винесіть вхідний фільтр (`in LO..HI => += 1`) та інтегратор із кроком `+= K` (`~ Filter => += K`) у два послідовні концепти. |
-| **`EKPOL-CYCLE-ERR`** / **`CME2-CYCLE`** / **`KPOL-LOWER-CYCLE`** | `ekpol_frontend.py` / `kpol_reference.py` / `kpol-auth` | Цикл у графі підписок `~` (`C0 -> C1 -> C0`), самопідписка `C0 -> C0`, `fan-out > 1` або підписка на неоголошений концепт. | Застосуйте **Правило 4 (ADP)**: усуньте зворотний зв'язок у дескрипторному каскаді або виконуйте циклічний алгоритм Евкліда у `--mode conceptual`. |
-| **`EKPOL-PROOF-ERR`** / **`KPOL-PROOF-VACUOUS`** | `ekpol_frontend.py` / `kpol_reference.py` | Очікування `expect` у блоці `test` / `Proof` не збіглося з фактичним станом після `send`/`step`, або блок `Proof` порожній. | Запустіть покрокове трасування `vmk --program file.ekpol --trace-events ...`, перевірте яку фазу (`Predicate` чи `Invariant Gate`) не пройшла подія, і виправте правило або сценарій. |
+| **`EKPOL-CYCLE-ERR`** / **`CME2-CASCADE`** / **`KPOL-LOWER-CYCLE`** | `ekpol_frontend.py` / `kpol_reference.py` / `kpol-auth` | Цикл у графі підписок `~` (`C0 -> C1 -> C0`), самопідписка `C0 -> C0`, `fan-out > 1` або підписка на неоголошений концепт. | Застосуйте **Правило 4 (ADP)**: усуньте зворотний зв'язок у дескрипторному каскаді або виконуйте циклічний алгоритм Евкліда у `--mode conceptual`. |
+| **`EKPOL-PROOF-ERR`** / **`CME2-PROOF`** / **`B3-PROOF`** | `ekpol_frontend.py` / `kpol_reference.py` | Очікування `expect` у блоці `test` / `Proof` не збіглося з фактичним станом після `send`/`step`, або блок `Proof` порожній. | Запустіть покрокове трасування `vmk --program file.ekpol --trace-events ...`, перевірте яку фазу (`Predicate` чи `Invariant Gate`) не пройшла подія, і виправте правило або сценарій. |
 
 ---
 
@@ -993,6 +991,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 2. **Апаратні межі 16-байтного дескриптора `CME-RAW-1` (`--mode bram64`) проти `--mode conceptual`:**
    * Апаратний конвеєр `CFG-P` / `CFG-P-HA` у ПЛІС `Zynq-7020` виконує до 64 концептів типу `Int32` із суворо ациклічним графом підписок (`DAG`, `fan-out <= 1`, спільне 32-бітне слово операнда `W1`).
    * Концепти з типами `u64`, `f64`, `bool` (`?`), початковим станом невизначеності `_` (`undef`), пост-адресним скиданням після читання (`-> => . Sum = 0` / `RFC-013`) та реактивними циклами (`Nod`, `Factorial`) виконуються у концептуальній віртуальній машині `vmk --mode conceptual`.
+   * Семантика цих концептуальних конструкцій у EKPOL 0.1.0 **не визначена** ([`ekpol-formal-specification.md`, §11](ekpol-formal-specification.md#11-концептуальні-конструкції-статус)): `vmk --mode conceptual` обирає вбудований симулятор за іменем модуля чи концепту, тому результати прикладів `Nod`, `Factorial`, `Sum`, `If` і `Tachometer` є властивістю симулятора, а не наслідком тексту правил.
    * Розширений 32-байтний дескриптор `CME-RAW-2` (`W0..W7` з окремим апаратним бітом `W1.state_valid` для `_` та розділеними 32-бітними операндами предиката і дії) зафіксовано на рівні архітектурного рішення [`ADR B7`](../decisions/cme-raw2-kpol-sys02.md), а його реалізація в RTL `CFG-P2` відкладена до отримання відповіді Автора на `RFC-017` п. 3 ([#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)).
 3. **Відкриті питання авторської граматики `KPOL-AUTH` ([#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)):**
    * Дванадцять точок невизначеності `KPOL-AUTH-U01..U12` (`RFC-009, 015–018`: точна бітова розкладка `Def`, семантика читання `_`, пріоритет паралельних гілок без дужок, роль `Child`) залишаються заблокованими за принципом `fail-closed` у пакеті [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) до надходження відповідей Автора.
@@ -1005,6 +1004,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.3 | 2026-11-19 | Узгоджено з формальними специфікаціями KPOL та EKPOL: виправлено розшифрування KPOL (*Problem-Oriented*), розкладку слова `W2` (`pred [7:0]`, `flags [15:8]`, `hazard_limit [23:16]`, `action [31:24]`) і `W3`, вилучено неіснуючий `CME_ACT_NOP (0x05)`, уточнено семантику `HAZARD_EN` і `SUBSCRIBER_EN`, коди `CME2-CASCADE`/`CME2-PROOF`, межі трансляції та статус концептуального режиму. |
 | 1.0.2 | 2026-11-18 | Усунення помилки рендерингу GitHub MathJax (`Extra close brace or missing open brace`) у §1.2 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): замінено `\{\_\}` (де парсер GitHub CommonMark `cmark-gfm` з'їдає бекслеші перед розділовими знаками ASCII, перетворюючи формулу на невалідний індекс `{_}`) на чистий запис `\lbrace\bot_{\text{undef}}\rbrace` та додано регресійний тест `test_markdown_math_formulas_have_no_commonmark_broken_escapes` у `test_ekpol_278.py`. |
 | 1.0.1 | 2026-11-18 | Усунення зауважень рецензії `F1..F4` у PR #285 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): виправлено версії нормативних специфікацій (`kpol-cme-subset.md` `0.4.0`, `kpol-consolidated.md` `0.6.1`, `kpol-cme2-profile.md` `0.1.0`, `kpol-auth-subset.md` `0.1.0`, `ekpol-specification.md` `1.0.1`), наведено дослівний текст діагностики `EKPOL-CYCLE-ERR` та `EKPOL-COLLISION-ERR` із `compile_ekpol_to_bram_image`, розширено верифікацію класичних `.kpol` прикладів (`verify_module` / `VMK`) і додано другий негативний контроль (`EKPOL-COLLISION-ERR`) у `test_ekpol_278.py`. |
 | 1.0.0 | 2026-11-18 | Перший випуск фундаментального «Керівництва користувача та чистого коду мов програмування KPOL і EKPOL» за принципами Браяна Кернігана, Денніса Рітчі (*The C Programming Language*, *The Practice of Programming*) та Роберта Мартіна (*Clean Code*): Частина I (вступний курс від «Hello, Concept!» до каскадів BMS і реактивного алгоритму Евкліда), Частина II (7 золотих правил чистого коду з парними прикладами «Погано vs Чисто» та каталогом `SMELL-01..07`), Частина III (довідник відповідності нотацій, кодів `CME-RAW-1`, діагностики компілятора та CLI-шпаргалка) з автоматичною компіляцією всіх прикладів у `pytest` (Issue [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)). |
@@ -1015,7 +1015,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Термін | Значення |
 | :--- | :--- |
-| **KPOL** | Kuzmin Concept-Oriented Language — базова концептно-орієнтована мова програмування Машини Кузьміна (класичні профілі `KPOL-CME-1`, `KPOL-CME-2`, `KPOL-AUTH`). |
+| **KPOL** | Kuzmin Problem-Oriented Language — проблемно-орієнтована мова програмування Машини Кузьміна (класичні профілі `KPOL-CME-1`, `KPOL-CME-2`; авторський діалект `KPOL-AUTH`). |
 | **EKPOL** | Ergonomic KPOL (`0.1.0`) — ергономічна концептно-орієнтована мова програмування Машини Кузьміна у чистому 7-бітному ASCII з підтримкою символьної (`symbolic`: `<-`, `->`, `~`, `::`, `=>`, `.`) та ключової програмістської (`keyword`: `on write`, `on read`, `on change`, `when`, `commit`, `after`) нотацій. |
 | **Концепт (`Concept`)** | Неподільна реактивна капсула стану, типу даних, біта визначеності (`_` / `undef`), вхідного предиката припущення `::`, дії переходу `=>`, інваріанта безпеки Великої Крапки `[...]` та списку підписників. |
 | **Велика Крапка (`•` / `.` / `commit` / `after`)** | Апаратний транзакційний вентиль інваріанта в кінці правила (блокує порушення `[>= 0]` та переповнення `Int32` із вердиктом `REJECT_INVARIANT`) та пост-адресний бар'єр порядку виконання після читання за `RFC-013` (`-> => . Sum = 0`). |

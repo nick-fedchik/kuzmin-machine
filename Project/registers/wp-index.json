@@ -1,5 +1,5 @@
 {
-  "version": "0.35.0",
+  "version": "0.36.0",
   "date": "2026-11-19",
   "entries": [
     {
@@ -874,6 +874,12 @@
     },
     {
       "path": "Engineering/sw/tests/test_exp_gpu_03_256.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_formal_language_specs.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false

@@ -196,6 +196,12 @@ def sanitize_doc(md_text: str, is_users_guide: bool) -> str:
         r"\1",
         txt,
     )
+    # Same-directory guides that are not exported (e.g. formal specifications) become plain text
+    txt = re.sub(
+        r"\[([^\]]+)\]\((?!(?:vmk-users-guide|kpol-ekpol-language-guide)\.md)[A-Za-z0-9_-]+\.md(?:#[^)]*)?\)",
+        r"\1",
+        txt,
+    )
 
     # Remove lines invoking internal Python scripts/tests outside standalone Go bundle
     cleaned_lines = []
