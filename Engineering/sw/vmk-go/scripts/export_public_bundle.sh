@@ -8,18 +8,13 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-GUIDES_DIR="${GUIDES_DIR:-$(cd "${SRC_DIR}/../../guides" && pwd)}"
-DEST_DIR="$1"
+REPO_ROOT="$(git -C "${SRC_DIR}" rev-parse --show-toplevel 2>/dev/null || (cd "${SRC_DIR}/../../.." && pwd))"
+GUIDES_DIR="${GUIDES_DIR:-$(cd "${REPO_ROOT}/Engineering/guides" && pwd)}"
+DEST_ARG="$1"
 
-mkdir -p "${DEST_DIR}"
-DEST_DIR="$(cd "${DEST_DIR}" && pwd)"
+DEST_DIR="$(python3 -c 'import os, sys; print(os.path.abspath(sys.argv[1]))' "${DEST_ARG}")"
 
-if [[ "${DEST_DIR}" == "/" ]] || [[ "${DEST_DIR}" == "${SRC_DIR}" ]]; then
-  echo "Refusing to export into unsafe destination: ${DEST_DIR}" >&2
-  exit 2
-fi
-
-python3 - "${SRC_DIR}" "${GUIDES_DIR}" "${DEST_DIR}" <<'PY'
+python3 - "${SRC_DIR}" "${GUIDES_DIR}" "${REPO_ROOT}" "${DEST_DIR}" <<'PY'
 import os
 from pathlib import Path
 import re
@@ -29,14 +24,66 @@ import sys
 
 src_dir = Path(sys.argv[1]).resolve()
 guides_dir = Path(sys.argv[2]).resolve()
-dest_dir = Path(sys.argv[3]).resolve()
+repo_root = Path(sys.argv[3]).resolve()
+dest_dir = Path(sys.argv[4]).resolve()
+allowed_dist_root = (repo_root / "Engineering" / "sw" / "vmk-go" / "dist").resolve()
+allowed_scratch_root = (repo_root / ".pytest_cache").resolve()
+home_dir = Path.home().resolve()
+marker_name = ".vmk-public-bundle"
 
-# Clean destination directory contents safely
-for child in dest_dir.iterdir():
-    if child.is_dir():
-        shutil.rmtree(child)
-    else:
-        child.unlink()
+
+def _is_rel(path: Path, base: Path) -> bool:
+    try:
+        path.relative_to(base)
+        return True
+    except ValueError:
+        return False
+
+
+# Strict destination safety guards:
+# 1. Never allow /, $HOME, or any ancestor of $HOME, repo_root, src_dir, or guides_dir.
+if (
+    dest_dir == Path("/")
+    or dest_dir == home_dir
+    or _is_rel(home_dir, dest_dir)
+    or _is_rel(repo_root, dest_dir)
+    or _is_rel(src_dir, dest_dir)
+    or _is_rel(guides_dir, dest_dir)
+):
+    print(f"Refusing to export into unsafe ancestor/home destination: {dest_dir}", file=sys.stderr)
+    raise SystemExit(2)
+
+# 2. Never allow any path inside repo_root except git-ignored dist/<subdir> or .pytest_cache/<subdir>.
+in_allowed_dist = dest_dir != allowed_dist_root and _is_rel(dest_dir, allowed_dist_root)
+in_allowed_scratch = dest_dir != allowed_scratch_root and _is_rel(dest_dir, allowed_scratch_root)
+if _is_rel(dest_dir, repo_root) and not (in_allowed_dist or in_allowed_scratch):
+    print(
+        f"Refusing to export inside repository outside {allowed_dist_root}/<bundle>: {dest_dir}",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
+
+# 3. Only clean an existing non-empty directory if it carries our explicit bundle marker.
+if dest_dir.exists():
+    if not dest_dir.is_dir():
+        print(f"Destination exists and is not a directory: {dest_dir}", file=sys.stderr)
+        raise SystemExit(2)
+    existing_entries = list(dest_dir.iterdir())
+    if existing_entries and not (dest_dir / marker_name).is_file():
+        print(
+            f"Refusing to overwrite non-empty directory without {marker_name} marker: {dest_dir}",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+    for child in existing_entries:
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+else:
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+(dest_dir / marker_name).write_text("vmk-public-bundle\n", encoding="utf-8")
 
 (dest_dir / "cmd" / "vmk").mkdir(parents=True, exist_ok=True)
 (dest_dir / "internal" / "vmk").mkdir(parents=True, exist_ok=True)

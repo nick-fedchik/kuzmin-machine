@@ -740,6 +740,33 @@ def test_crossplatform_builds_and_public_bundle_export_289():
                 assert "kuzmin-machine" not in txt, f"Repo URL leak in exported {exported_file}"
                 assert "/dev/mem" not in txt, f"/dev/mem leak in exported {exported_file}"
 
+        # 2b. Verify destination safety guards: refuses repo paths, ancestor paths, and non-empty unmarked dirs,
+        #     while allowing idempotent re-export to an existing .vmk-public-bundle directory.
+        non_empty_unmarked = scratch / "unmarked_user_dir"
+        non_empty_unmarked.mkdir()
+        sentinel_file = non_empty_unmarked / "keep_me.txt"
+        sentinel_file.write_text("important data\n", encoding="utf-8")
+        for unsafe_dest in (REPO_ROOT, REPO_ROOT / "Engineering" / "sw", non_empty_unmarked):
+            res_unsafe = subprocess.run(
+                ["bash", str(export_script), str(unsafe_dest)],
+                cwd=str(VMK_GO_DIR),
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+            assert res_unsafe.returncode == 2, f"Unsafe destination {unsafe_dest} was not rejected!"
+        assert sentinel_file.read_text(encoding="utf-8") == "important data\n"
+
+        # Idempotent re-export into already-marked bundle_dir succeeds cleanly
+        subprocess.run(
+            ["bash", str(export_script), str(bundle_dir)],
+            cwd=str(VMK_GO_DIR),
+            env=env,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
         # 3. Negative mutant control (AGENTS.md §4 п. 1): inject private IP 192.168.68.99 into Go source
         #    and verify export_public_bundle.sh deterministically fails its leak audit!
         mut_vmk_dir = scratch / "vmk_go_leak_mutant"
