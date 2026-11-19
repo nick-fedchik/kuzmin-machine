@@ -1,0 +1,56 @@
+Problem BmsSafetyCascade {
+    Invariants {
+        inv_cell_delta: Cell_Delta_mV >= 0;
+        inv_mod_thermal: Module_Thermal_Guard >= 0;
+        inv_pack_latch: Pack_Fault_Latch >= 0;
+        inv_contactor: Contactor_Interlock >= 0;
+    }
+}
+
+Solution BmsSafetyCascade {
+    state Cell_Delta_mV: Int32 = 0;
+    state Module_Thermal_Guard: Int32 = 0;
+    state Pack_Fault_Latch: Int32 = 2;
+    state Contactor_Interlock: Int32 = 10;
+
+    event EvCellDelta(delta_mv: Int32);
+
+    rule RCellDelta on EvCellDelta when delta_mv >= 50 and delta_mv <= 5000 {
+        set Cell_Delta_mV := Cell_Delta_mV + 1;
+    }
+    rule RModuleThermal on change(Cell_Delta_mV) when Cell_Delta_mV >= 1 {
+        set Module_Thermal_Guard := Module_Thermal_Guard + 1;
+    }
+    rule RPackFaultLatch on change(Module_Thermal_Guard) when Module_Thermal_Guard >= 1 {
+        set Pack_Fault_Latch := Pack_Fault_Latch - 1;
+    }
+    rule RContactorInterlock on change(Pack_Fault_Latch) when not (Pack_Fault_Latch == 2) {
+        set Contactor_Interlock := Pack_Fault_Latch;
+    }
+}
+
+Proof BmsSafetyCascade {
+    scenario BmsFourLevelProtectionAndLatch {
+        step EvCellDelta(delta_mv = 15);
+        expect Cell_Delta_mV == 0;
+        expect Contactor_Interlock == 10;
+
+        step EvCellDelta(delta_mv = 120);
+        expect Cell_Delta_mV == 1;
+        expect Module_Thermal_Guard == 1;
+        expect Pack_Fault_Latch == 1;
+        expect Contactor_Interlock == 1;
+
+        step EvCellDelta(delta_mv = 180);
+        expect Cell_Delta_mV == 2;
+        expect Module_Thermal_Guard == 2;
+        expect Pack_Fault_Latch == 0;
+        expect Contactor_Interlock == 0;
+
+        step EvCellDelta(delta_mv = 250);
+        expect Cell_Delta_mV == 3;
+        expect Module_Thermal_Guard == 3;
+        expect Pack_Fault_Latch == 0;
+        expect Contactor_Interlock == 0;
+    }
+}

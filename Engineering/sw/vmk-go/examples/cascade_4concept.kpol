@@ -1,0 +1,35 @@
+# @stdin C0
+# @stdout C0, C1, C2, C3
+Problem Cascade4Concept {
+    Invariants {
+        I0: C0 >= 0;
+        I1: C1 >= 0;
+        I2: C2 >= 0;
+        I3: C3 >= 0;
+    }
+}
+Solution Cascade4Concept {
+    state C0: Int32 = 10;
+    state C1: Int32 = 0;
+    state C2: Int32 = 2;
+    state C3: Int32 = 0;
+
+    event E0(param: Int32);
+
+    rule R0 on E0 when param < 50 { set C0 := C0 + 1; }
+    rule R1 on change(C0) when C0 > 10 { set C1 := C1 + 1; }
+    rule R2 on change(C1) when C1 >= 1 { set C2 := C2 - 1; }
+    rule R3 on change(C2) when not (C2 == 2) { set C3 := C2; }
+}
+Proof Cascade4Concept {
+    scenario CheckCascadeAndGuardBlock {
+        step E0(param = 10);
+        expect C0 == 11;
+        expect C1 == 1;
+        expect C2 == 1;
+        expect C3 == 1;
+        step E0(param = 100);
+        expect C0 == 11;
+        expect C3 == 1;
+    }
+}

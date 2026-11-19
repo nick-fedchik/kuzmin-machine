@@ -7,9 +7,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
-	"syscall"
 	"unicode/utf8"
-	"unsafe"
 )
 
 // ANSI escape codes for alternate screen, cursor visibility, and colors.
@@ -29,95 +27,11 @@ const (
 	ANSIDim       = "\x1b[2m"
 )
 
-// Linux ioctl constants for raw terminal mode and window size detection.
+// Default full-screen TUI geometry when running on non-TTY or uninitialized winsize.
 const (
-	ioctlTCGETS     uintptr = 0x5401
-	ioctlTCSETS     uintptr = 0x5402
-	ioctlTIOCGWINSZ uintptr = 0x5413
-
-	// Default full-screen TUI geometry when running on non-TTY or uninitialized winsize.
 	DefaultTUIRows = 36
 	DefaultTUICols = 124
 )
-
-type linuxTermios struct {
-	Iflag  uint32
-	Oflag  uint32
-	Cflag  uint32
-	Lflag  uint32
-	Line   uint8
-	Cc     [32]uint8
-	Ispeed uint32
-	Ospeed uint32
-}
-
-type linuxWinsize struct {
-	Row    uint16
-	Col    uint16
-	Xpixel uint16
-	Ypixel uint16
-}
-
-// GetTerminalSize queries TIOCGWINSZ on out if it is an *os.File, or returns (DefaultTUIRows, DefaultTUICols).
-func GetTerminalSize(out io.Writer) (int, int) {
-	f, ok := out.(*os.File)
-	if !ok {
-		return DefaultTUIRows, DefaultTUICols
-	}
-	var ws linuxWinsize
-	_, _, errno := syscall.Syscall(
-		syscall.SYS_IOCTL,
-		f.Fd(),
-		ioctlTIOCGWINSZ,
-		uintptr(unsafe.Pointer(&ws)),
-	)
-	if errno != 0 || ws.Row < 20 || ws.Col < 80 {
-		return DefaultTUIRows, DefaultTUICols
-	}
-	return int(ws.Row), int(ws.Col)
-}
-
-// EnableRawTerminal switches fd into non-canonical raw keystroke mode via Linux TCGETS/TCSETS ioctl,
-// returning a restore callback that restores the original termios settings.
-func EnableRawTerminal(fd uintptr) (func(), error) {
-	var orig linuxTermios
-	_, _, errno := syscall.Syscall(
-		syscall.SYS_IOCTL,
-		fd,
-		ioctlTCGETS,
-		uintptr(unsafe.Pointer(&orig)),
-	)
-	if errno != 0 {
-		return func() {}, errno
-	}
-	raw := orig
-	// Disable canonical buffering, echo, signals, and XON/XOFF flow control; keep OPOST so \n works cleanly
-	raw.Iflag &^= syscall.IGNBRK | syscall.BRKINT | syscall.PARMRK | syscall.ISTRIP | syscall.INLCR | syscall.IGNCR | syscall.ICRNL | syscall.IXON
-	raw.Lflag &^= syscall.ECHO | syscall.ECHONL | syscall.ICANON | syscall.ISIG | syscall.IEXTEN
-	raw.Cflag &^= syscall.CSIZE | syscall.PARENB
-	raw.Cflag |= syscall.CS8
-	raw.Cc[syscall.VMIN] = 1
-	raw.Cc[syscall.VTIME] = 0
-
-	_, _, errno = syscall.Syscall(
-		syscall.SYS_IOCTL,
-		fd,
-		ioctlTCSETS,
-		uintptr(unsafe.Pointer(&raw)),
-	)
-	if errno != 0 {
-		return func() {}, errno
-	}
-	restore := func() {
-		_, _, _ = syscall.Syscall(
-			syscall.SYS_IOCTL,
-			fd,
-			ioctlTCSETS,
-			uintptr(unsafe.Pointer(&orig)),
-		)
-	}
-	return restore, nil
-}
 
 // KeyKind identifies a decoded terminal keystroke or escape sequence.
 type KeyKind string
@@ -255,7 +169,7 @@ func (op ManualEventOp) Label() string {
 	}
 }
 
-// FullScreenTUIState holds the complete state of the interactive full-screen TUI debugger (`VMK v0.3.0`).
+// FullScreenTUIState holds the complete state of the interactive full-screen TUI debugger (`VMK v0.3.1`).
 type FullScreenTUIState struct {
 	Mode              string
 	Engine            *BRAM64Engine
@@ -1738,7 +1652,7 @@ func (s *FullScreenTUIState) renderPanel4StdioAndCommandBar(width, height int) [
 		return lines[:height]
 
 	case ModalHelp:
-		lines = append(lines, " ╔══ VMK v0.3.0 FULL-SCREEN DEBUGGER — KEYBOARD SHORTCUTS HELP ([?] / [h]) ═══════════════════════════════════════════╗")
+		lines = append(lines, fmt.Sprintf(" ╔══ VMK v%s FULL-SCREEN DEBUGGER — KEYBOARD SHORTCUTS HELP ([?] / [h]) ═══════════════════════════════════════════╗", Version))
 		lines = append(lines, " ║  [↑/↓] or [j/k] : Select concept in [1] / Scroll active panel    [Tab]       : Cycle panel focus [1]->[2]->[3]->[4]║")
 		lines = append(lines, " ║  [e] or [Enter] : Open Manual Event Creator Dialog (<-, _, ->, |) [+] in [e] : Enqueue event into Pending Queue     ║")
 		lines = append(lines, " ║  [n] or [Space] : Single Micro-Step (1 Hop of Cascade Wave!)     [s]         : Full Event Step (entire cascade)     ║")
@@ -1858,9 +1772,9 @@ func RenderConceptualFullScreenTUI(vm *ConceptualVM, pendingCmds []string, phase
 }
 
 // RunFullScreenTUI runs the interactive full-screen TUI loop on (in, out).
-// If in/out is a real character-device TTY, it enables raw mode via Linux ioctl TCGETS/TCSETS,
-// switches to the alternate screen buffer (\x1b[?1049h\x1b[?25l), queries TIOCGWINSZ,
-// and restores the terminal on exit or SIGINT/SIGTERM.
+// If in/out is a real character-device TTY, it enables raw mode via platform terminal helpers
+// (term_linux.go, term_darwin.go, term_other.go), switches to the alternate screen buffer
+// (\x1b[?1049h\x1b[?25l), queries terminal size, and restores the terminal on exit or interrupt.
 // When driven by an io.Reader in tests, it processes the keystroke stream deterministically and returns the final frame.
 func RunFullScreenTUI(state *FullScreenTUIState, in io.Reader, out io.Writer, interactive bool) string {
 	if !interactive {
@@ -1886,7 +1800,7 @@ func RunFullScreenTUI(state *FullScreenTUIState, in io.Reader, out io.Writer, in
 		}
 		_, _ = fmt.Fprint(out, ANSIEnterAltScreen)
 		sigChan = make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		notifyTermSignals(sigChan)
 		go func() {
 			if _, ok := <-sigChan; ok {
 				if restoreTerm != nil {

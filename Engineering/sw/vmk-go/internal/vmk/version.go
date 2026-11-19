@@ -7,7 +7,7 @@ import (
 )
 
 // Version is the SemVer 2.0.0 release version of the Go VMK emulator and TUI debugger.
-const Version = "0.3.0"
+const Version = "0.3.1"
 
 // Execution modes supported by VMK.
 const (
@@ -61,6 +61,10 @@ const (
 	HWIDCfgPHA uint32 = 0x4B504841
 )
 
+// ErrStandaloneSimOnly is returned with exit code 2 in public standalone builds (`-tags public`)
+// when any target other than "sim" is requested.
+const ErrStandaloneSimOnly = `VMK-TARGET-IO: standalone public VMK supports only "--target sim" (hardware MMIO backends are excluded from the public companion package)`
+
 // TargetIOError represents a hardware/SSH target connection error (exit code 2).
 type TargetIOError struct {
 	Target string
@@ -69,6 +73,9 @@ type TargetIOError struct {
 }
 
 func (e *TargetIOError) Error() string {
+	if e.Host == "" && e.Detail != "" {
+		return e.Detail
+	}
 	return fmt.Sprintf("VMK-TARGET-IO: failed to connect or execute on target %q (%s): %s", e.Target, e.Host, e.Detail)
 }
 

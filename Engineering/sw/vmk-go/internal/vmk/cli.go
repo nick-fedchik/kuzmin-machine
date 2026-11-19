@@ -58,7 +58,7 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs.StringVar(&example, "example", "", "built-in example: if|sum|nod|factorial|tachometer|bms|increase|decrease|cascade|auth|all")
 	fs.StringVar(&programPath, "program", "", "path to .kpol / .ekpol source file or 1024-byte .bin BRAM image")
 	fs.StringVar(&profile, "profile", "KPOL-CME-2", "compiler profile: KPOL-CME-1, KPOL-CME-2, KPOL-AUTH, or EKPOL")
-	fs.StringVar(&target, "target", "sim", "machine target: sim, pynq1, pynq2, or ssh host")
+	fs.StringVar(&target, "target", "sim", targetFlagUsage())
 	fs.StringVar(&connectAlias, "connect", "", "alias for --target")
 	fs.StringVar(&traceEvents, "trace-events", "", "comma-separated event spec, e.g. '0:10,0:100,0:invalid'")
 	fs.BoolVar(&dumpConcepts, "dump-concepts", false, "display the BRAM concept descriptor table")
@@ -94,6 +94,14 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	if tuiCanvas {
 		tuiMode = true
+	}
+	target = strings.TrimSpace(target)
+	if target == "" {
+		target = "sim"
+	}
+	if err := validateTarget(target); err != nil {
+		_, _ = fmt.Fprintln(stderr, err)
+		return 2
 	}
 
 	exLower := strings.ToLower(strings.TrimSpace(example))
@@ -599,7 +607,9 @@ func RunCLI(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			"pre_load":            conn.PreLoadSnapshot,
 			"post_load":           conn.PostLoadSnapshot,
 			"load_diffs":          conn.LoadDiffs,
-			"pynq_hw_report":      pynqHWReport,
+		}
+		if !IsPublicBuild {
+			payload["pynq_hw_report"] = pynqHWReport
 		}
 		if stdioRes != nil {
 			payload["stdio"] = map[string]any{
