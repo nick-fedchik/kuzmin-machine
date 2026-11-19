@@ -322,4 +322,4 @@ flowchart LR
    - [«Опис недетермінованої машини Кузьміна на пальцях»](https://dou.ua/forums/topic/43177/).
 9. **Кузьмін, М. Ю.** [Авторський YouTube-канал (відеоматеріали про Машину Кузьміна)](https://www.youtube.com/watch?v=qKUoCeGvXnA).
 10. **Федчик, М. М.** (2026). [Повна технічна версія цієї статті для DOU (`DOU_Article_Kuzmin_Machine_UA.md`)](DOU_Article_Kuzmin_Machine_UA.md) — із розширеними прикладами (`Tachometer`, `Control`, `EKPOL`, TUI-дебагер `VMK`), математичним апаратом (умови Бернштейна, теорема Брента, гіллясті процеси, *Network Calculus*), детальною таблицею придатності та повними стендовими специфікаціями ПЛІС/GPU.
-11. **Федчик, М. М.** (2026). Дослідницькі матеріали проєкту: [формальний аналіз](Kuzmin-Machine-Formal-Analysis-UA.md), [науково-інженерне досьє](Kuzmin-Machine-Scientific-and-Engineering-Dossier-UA.md) та [порівняльний аналіз споріднених машин](Similar_Machines_to_KM.md).
+11. **Федчик, М. М.** (2026). Дослідницькі матеріали проєкту: [зведений науково-інженерний огляд Машини Кузьміна](Kuzmin-Machine-Overview.md) та [порівняльний аналіз споріднених машин](Similar_Machines_to_KM.md).
