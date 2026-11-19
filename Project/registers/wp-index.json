@@ -1,5 +1,5 @@
 {
-  "version": "0.32.0",
+  "version": "0.33.0",
   "date": "2026-11-19",
   "entries": [
     {
@@ -48,6 +48,66 @@
       "path": "AUTHORS.md",
       "direction": "technical-root",
       "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/DOU_Article_Kuzmin_Machine_Popular_UA.md",
+      "direction": "technical-root",
+      "wp_type": "Article",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/DOU_Article_Kuzmin_Machine_UA.md",
+      "direction": "technical-root",
+      "wp_type": "Article",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/KPOL-vs-systemVerilog.md",
+      "direction": "technical-root",
+      "wp_type": "Article",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/Kuzmin-Machine-Overview.md",
+      "direction": "technical-root",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/README.md",
+      "direction": "technical-root",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/Similar_Machines_to_KM.md",
+      "direction": "technical-root",
+      "wp_type": "Report / Analysis",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/assets/km-a-scheme-reactive-network.jpg",
+      "direction": "technical-root",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/assets/km-concept-smart-register.jpg",
+      "direction": "technical-root",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/assets/km-fedchik-manycore-fpga.jpg",
+      "direction": "technical-root",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Articles/assets/km-vs-von-neumann.jpg",
+      "direction": "technical-root",
+      "wp_type": "Source Code",
       "immutable_input": false
     },
     {
