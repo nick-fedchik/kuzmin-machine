@@ -1,5 +1,5 @@
 {
-  "version": "0.36.0",
+  "version": "0.37.0",
   "date": "2026-11-19",
   "entries": [
     {
@@ -202,6 +202,12 @@
     },
     {
       "path": "Engineering/guides/ekpol-formal-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/guides/kpol-auth-formal-specification.md",
       "direction": "Engineering",
       "wp_type": "Specification",
       "immutable_input": false

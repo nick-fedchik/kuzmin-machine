@@ -1,13 +1,13 @@
 # Посібник: Керівництво користувача та чистий код мов програмування KPOL і EKPOL за принципами Кернігана, Рітчі та Мартіна
 
-* **Версія:** 1.0.3
+* **Версія:** 1.0.4
 * **Дата:** 2026-11-19
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача та стандарт кодування
 * **Issue:** `Closes` [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284); пов'язані задачі [#282](https://github.com/nick-fedchik/kuzmin-machine/issues/282), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
-* **Формальні специфікації (мають пріоритет над цим посібником):** [`kpol-formal-specification.md`](kpol-formal-specification.md) (`1.0.0`), [`ekpol-formal-specification.md`](ekpol-formal-specification.md) (`1.0.0`).
-* **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.2`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`0.4.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.6.1`).
+* **Формальні специфікації (мають пріоритет над цим посібником):** [`kpol-formal-specification.md`](kpol-formal-specification.md) (`1.0.1`), [`ekpol-formal-specification.md`](ekpol-formal-specification.md) (`1.0.0`), [`kpol-auth-formal-specification.md`](kpol-auth-formal-specification.md) (`1.0.0`).
+* **Нормативні специфікації мов:** [`Engineering/specifications/kpol/ekpol-specification.md`](../specifications/kpol/ekpol-specification.md) (`1.0.2`), [`Engineering/specifications/kpol/kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) (`0.4.0`), [`Engineering/specifications/kpol/kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) (`0.1.0`), [`Engineering/specifications/kpol/kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) (`0.1.1`), [`Engineering/specifications/kpol/kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) (`0.6.1`).
 * **Інструментарій та виконання:** [`Engineering/guides/vmk-users-guide.md`](vmk-users-guide.md) (`1.2.1`), [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md) (`VMK v0.3.0`), [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/vmk-go/examples/`](../sw/vmk-go/examples/bms_safety_cascade.ekpol).
 * **Автоматична верифікація прикладів посібника:** [`Engineering/sw/tests/test_ekpol_278.py`](../sw/tests/test_ekpol_278.py) (`test_kpol_ekpol_language_guide_examples_compile_and_negative_control`, `test_markdown_math_formulas_have_no_commonmark_broken_escapes`).
 
@@ -32,7 +32,7 @@
 | **`EKPOL 0.1.0` — Символьна ASCII (`symbolic`)** | `.ekpol` | Лаконічний запис концептів у чистому 7-бітному ASCII (`<-`, `->`, `~`, `\|`, `::`, `=>`, `.`), де стан, інваріант `[>= 0]` і реакції зібрані в одному блоці `concept`. | Щоденна розробка інженерних каскадів і реактивних алгоритмів; компактні схеми переходів. |
 | **`EKPOL 0.1.0` — Ключова програмістська (`keyword`)** | `.ekpol` | Читабельна нотація у стилі Rust / Go / TypeScript (`on write`, `on read`, `on change`, `on call`, `when`, `=>`, `commit;`, `after`). | Командна розробка з C/Rust/Go-інженерами, код-рев'ю контурів безпеки, самодокументовані модулі. |
 | **Класичний `KPOL-CME-1` / `KPOL-CME-2`** | `.kpol` | Триблочний контракт `Problem / Solution / Proof` ([`kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md) `0.4.0`, [`kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md) `0.1.0`, [`kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md) `0.6.1`). | Формальна верифікація `Z3` / `SymbiYosys`, сумісність з еталонним корпусом тестів кроку S5 ([#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8)). |
-| **Авторський підмножинний `KPOL-AUTH`** | `.kpol` | Наближений до слайдів М. Ю. Кузьміна запис з Unicode-символами (`←`, `→`, `•`, `¬`, `!`) ([`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) `0.1.0`). | Дослідження авторської семантики (`Research/sources/author/`) та експериментальне lowering у `Do/Go`. |
+| **Авторський підмножинний `KPOL-AUTH`** | не визначене | Лінійний запис засвідчених авторських конструкцій: групи `{}`/`()`/`[]` з межами `[Min=…, Max=…]`, `Def(…)`, `A • B`, `@x`, `!`, `¬`, `_`; авторські `Go`, `Do`, `←`, `→`, `¤` лінійного запису не мають ([`kpol-auth-formal-specification.md`](kpol-auth-formal-specification.md) `1.0.0`). | Дослідження авторської семантики (`Research/sources/author/`) та експериментальне lowering у `Do/Go`. |
 
 > **Фундаментальний інваріант еквівалентності:** символьний `EKPOL`, ключовий `EKPOL` і класичний `KPOL-CME-1/2` взаємно транслюються без жодних втрат прапорцями `--to-ekpol` / `--to-kpol` і компілюються в **побітово ідентичний (SHA-256) 1024-байтний образ BRAM (`CME-RAW-1`)**, ідентичний C99-код (`--emit-c99`) та ідентичний сертифікат безпеки `Z3` (`--emit-z3-cert`).
 
@@ -200,10 +200,10 @@ test CheckIfThreeImpulses {
 | Вид події | Авторський символ (`KPOL-AUTH`) | Символьний `EKPOL` (`symbolic`) | Ключовий `EKPOL` (`keyword`) | Класичний `KPOL-CME-1/2` | Семантика спрацювання |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1. Зовнішній запис (`Write`)** | `← @ Int32 x` | `<- Ev(x)` або `<- x` | `on write(x)` / `on input(x)` / `on Ev(x)` | `event Ev(x: Int32); rule R on Ev ...` | Надходження нового вхідного значення `x` із зовнішньої шини (`STDIN`, АЦП, AXI4-Lite `0x00C`). |
-| **2. Каскадна підписка (`Subscribe`)** | `Src • Dst += 1` | `~ Src` | `on change(Src)` | `rule R on change(Src) ...` | Автоматичне збудження концепту-підписника у наступному хопі хвилі, щойно концепт `Src` успішно виконав `COMMIT` зі зміною свого стану. |
+| **2. Каскадна підписка (`Subscribe`)** | маркер події `~` у тілі `Src` (АН, слайд 6); `Src • Assign(Dst, e)` — лише лінійна нотація профілю `KPOL-AUTH-L1` | `~ Src` | `on change(Src)` | `rule R on change(Src) ...` | Автоматичне збудження концепту-підписника у наступному хопі хвилі, щойно концепт `Src` успішно виконав `COMMIT` зі зміною свого стану. |
 | **3. Адресне читання (`Read`)** | `→ • Sum = 0` | `-> => . Sum = 0` | `on read => after Sum = 0;` | *(концептуальний режим)* | Зчитування поточного значення концепту у `STDOUT` із можливим пост-адресним скиданням після Великої Крапки (`RFC-013`). |
 | **4. Реактивний виклик (`Execute`)** | `\| @ U64 (...)` | `\| (a, b)` | `on call(a, b)` / `on exec(a, b)` | *(концептуальний режим)* | Запуск обчислення концепту-алгоритму над аргументами (`Nod(a, b)`, `Factorial(n)`). |
-| **5. Ініціалізація (`Init`)** | `: 0` / `: _` | `: Type = Init` | `: Type = Init` | `state C: Int32 = Init;` | Початкове завантаження стану концепту під час фази програмування `POST-LOAD`. |
+| **5. Ініціалізація (`Init`)** | `Byte i 0` — значення після імені; `:` — підписка на ініціалізацію (АН, слайд 5; #155, слайд 2) | `: Type = Init` | `: Type = Init` | `state C: Int32 = Init;` | Початкове завантаження стану концепту під час фази програмування `POST-LOAD`. |
 
 ---
 
@@ -878,25 +878,25 @@ Proof CleanTwoStageGuard {
 
 | Конструкція | `EKPOL Symbolic` | `EKPOL Keyword` | Класичний `KPOL-CME-1/2` | Авторський `KPOL-AUTH` | Відображення у 16-байтному дескрипторі `CME-RAW-1` (`W0..W3`) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Оголошення концепту** | `concept C: i32 = 10 [>= 0]` | `concept C: int32 = 10 [>= 0]` | `Invariants { I: C >= 0; }` + `state C: Int32 = 10;` | `Int32 C = 10` | `W0 = 10`, `W2.guard_flags \|= 0x02` (`INVARIANT_EN`) |
+| **Оголошення концепту** | `concept C: i32 = 10 [>= 0]` | `concept C: int32 = 10 [>= 0]` | `Invariants { I: C >= 0; }` + `state C: Int32 = 10;` | `Int32 C 10` (за зразком `Byte Tick 0`, АН) | `W0 = 10`, `W2.guard_flags \|= 0x02` (`INVARIANT_EN`) |
 | **Зовнішня подія запису** | `<- Ev(x)` або `<- x` | `on write(x)` / `on Ev(x)` | `event Ev(x: Int32); rule R on Ev` | `← @ Int32 x` | Вхідна подія у слот `cid` концепту `C` |
-| **Каскадна підписка** | `~ Src` | `on change(Src)` | `rule R on change(Src)` | `Src • C ...` | У дескрипторі `Src`: `W3.subscriber_cid = cid(C)` і `Src.W2.guard_flags \|= 0x10` (`SUBSCRIBER_EN`); прапорець обов'язковий для підписника в `CID 0` |
+| **Каскадна підписка** | `~ Src` | `on change(Src)` | `rule R on change(Src)` | підписка в тілі `Src`, що записує `C` (напр. `= 10 Value= …`, АН, слайд 6) | У дескрипторі `Src`: `W3.subscriber_cid = cid(C)` і `Src.W2.guard_flags \|= 0x10` (`SUBSCRIBER_EN`); прапорець обов'язковий для підписника в `CID 0` |
 | **Пост-адресне читання** | `-> => . Sum = 0` | `on read => after Sum = 0;` | *(концептуальний режим)* | `→ • Sum = 0` | Виконується у `--mode conceptual` (`PostReadBarrier = true`, `RFC-013`) |
 | **Реактивний виклик** | `\| (a, b) :: ...` | `on call(a, b) when ...` | *(концептуальний режим)* | `\| @ U64 (a, b)` | Виконується у `--mode conceptual` (`AddrExecute`) |
-| **Безумовний предикат** | `:: true` (або опущено) | `when true` (або опущено) | `when true` | `:` (без умови) | `W2.pred_opcode = 0x00` (`NOP`), `W2.guard_flags &= ~0x08` |
-| **Рівність (`==` / `is null`)** | `:: x == K` / `:: x is null` | `when x == K` / `when x is null` | `when x == K` | `: x = K` / `: 0` | `W2.pred_opcode = 0x01` (`EQ`), `W1 = K` (`0` для `is null`) |
-| **Нерівність (`!=`)** | `:: x != K` / `:: !(x == K)` | `when x != K` / `when not (x == K)` | `when not (x == K)` | `: ¬(x = K)` | `W2.pred_opcode = 0x02` (`NEQ`) або `EQ + INVERT (0x08)`, `W1 = K` |
-| **Більше (`>` / `is positive`)** | `:: x > K` / `:: x is positive` | `when x > K` / `when x is positive` | `when x > K` | `: x > K` / `: +` | `W2.pred_opcode = 0x03` (`GT`), `W1 = K` (`0` для `is positive`) |
-| **Менше (`<` / `is negative`)** | `:: x < K` / `:: x is negative` | `when x < K` / `when x is negative` | `when x < K` | `: x < K` / `: -` | `W2.pred_opcode = 0x04` (`LT`), `W1 = K` (`0` для `is negative`) |
-| **Більше або рівне (`>=`)** | `:: x >= K` | `when x >= K` | `when x >= K` | `: x >= K` | `W2.pred_opcode = 0x04` (`LT`), `W2.guard_flags \|= 0x08` (`INVERT`), `W1 = K` |
-| **Менше або рівне (`<=`)** | `:: x <= K` | `when x <= K` | `when x <= K` | `: x <= K` | `W2.pred_opcode = 0x03` (`GT`), `W2.guard_flags \|= 0x08` (`INVERT`), `W1 = K` |
-| **Діапазон (`in LO..HI`)** | `:: x in LO..HI` | `when x in LO..HI` | `when x >= LO and x <= HI` | `[ LO .. HI ]` | `W2.pred_opcode = 0x05` (`RANGE`), `W1 = ((HI & 0xFFFF) << 16) \| (LO & 0xFFFF)` |
-| **Побітова маска / парність** | `:: (x & M) != 0` / `is odd` / `is even` | `when (x & M) != 0` / `is odd` / `is even` | *(розширення)* | — | `W2.pred_opcode = 0x06` (`BITMASK`), `W1 = M` (`1` для `odd`/`even`, `+ INVERT` для `even`) |
-| **Присвоєння (`=`)** | `=> C = x .` | `=> C = x commit;` | `set C := x;` | `= x •` | `W2.action_opcode = 0x00` (`ASSIGN`) |
-| **Інкремент (`+= 1`)** | `=> C += 1 .` | `=> C += 1 commit;` | `set C := C + 1;` | `+= 1 •` | `W2.action_opcode = 0x01` (`INC`) |
-| **Декремент (`-= 1`)** | `=> C -= 1 .` | `=> C -= 1 commit;` | `set C := C - 1;` | `-= 1 •` | `W2.action_opcode = 0x02` (`DEC`) |
-| **Додавання константи (`+= K`)** | `=> C += K .` ($K \ge 2$) | `=> C += K commit;` | `set C := C + K;` | `+= K •` | `W2.action_opcode = 0x03` (`ADD`), `W1 = K` |
-| **Віднімання константи (`-= K`)** | `=> C -= K .` ($K \ge 2$) | `=> C -= K commit;` | `set C := C - K;` | `-= K •` | `W2.action_opcode = 0x04` (`SUB`), `W1 = K` |
+| **Безумовний предикат** | `:: true` (або опущено) | `when true` (або опущено) | `when true` | — | `W2.pred_opcode = 0x00` (`NOP`), `W2.guard_flags &= ~0x08` |
+| **Рівність (`==` / `is null`)** | `:: x == K` / `:: x is null` | `when x == K` / `when x is null` | `when x == K` | подія-значення `= K` (АН, слайд 6); `Null` (код 1, АН, слайд 4) | `W2.pred_opcode = 0x01` (`EQ`), `W1 = K` (`0` для `is null`) |
+| **Нерівність (`!=`)** | `:: x != K` / `:: !(x == K)` | `when x != K` / `when not (x == K)` | `when not (x == K)` | — | `W2.pred_opcode = 0x02` (`NEQ`) або `EQ + INVERT (0x08)`, `W1 = K` |
+| **Більше (`>` / `is positive`)** | `:: x > K` / `:: x is positive` | `when x > K` / `when x is positive` | `when x > K` | `~ x > K` (АН, слайд 1); `Positive` (код 2) | `W2.pred_opcode = 0x03` (`GT`), `W1 = K` (`0` для `is positive`) |
+| **Менше (`<` / `is negative`)** | `:: x < K` / `:: x is negative` | `when x < K` / `when x is negative` | `when x < K` | `~ x < K`; `Negative` (код 3) | `W2.pred_opcode = 0x04` (`LT`), `W1 = K` (`0` для `is negative`) |
+| **Більше або рівне (`>=`)** | `:: x >= K` | `when x >= K` | `when x >= K` | — | `W2.pred_opcode = 0x04` (`LT`), `W2.guard_flags \|= 0x08` (`INVERT`), `W1 = K` |
+| **Менше або рівне (`<=`)** | `:: x <= K` | `when x <= K` | `when x <= K` | — | `W2.pred_opcode = 0x03` (`GT`), `W2.guard_flags \|= 0x08` (`INVERT`), `W1 = K` |
+| **Діапазон (`in LO..HI`)** | `:: x in LO..HI` | `when x in LO..HI` | `when x >= LO and x <= HI` | — | `W2.pred_opcode = 0x05` (`RANGE`), `W1 = ((HI & 0xFFFF) << 16) \| (LO & 0xFFFF)` |
+| **Побітова маска / парність** | `:: (x & M) != 0` / `is odd` / `is even` | `when (x & M) != 0` / `is odd` / `is even` | *(розширення)* | `Even` / `Uneven` (коди 4/5, АН, слайд 4) | `W2.pred_opcode = 0x06` (`BITMASK`), `W1 = M` (`1` для `odd`/`even`, `+ INVERT` для `even`) |
+| **Присвоєння (`=`)** | `=> C = x .` | `=> C = x commit;` | `set C := x;` | `=x` (`→ Voltage =0`, `! If =¬`, АН) | `W2.action_opcode = 0x00` (`ASSIGN`) |
+| **Інкремент (`+= 1`)** | `=> C += 1 .` | `=> C += 1 commit;` | `set C := C + 1;` | `+=1` (`\| +=1`, АН, слайд 5); `Do '` | `W2.action_opcode = 0x01` (`INC`) |
+| **Декремент (`-= 1`)** | `=> C -= 1 .` | `=> C -= 1 commit;` | `set C := C - 1;` | `-=1` (за зразком `-=b`, АН, слайд 3) | `W2.action_opcode = 0x02` (`DEC`) |
+| **Додавання константи (`+= K`)** | `=> C += K .` ($K \ge 2$) | `=> C += K commit;` | `set C := C + K;` | `+=K` (за зразком `+=x`, АН, слайд 6) | `W2.action_opcode = 0x03` (`ADD`), `W1 = K` |
+| **Віднімання константи (`-= K`)** | `=> C -= K .` ($K \ge 2$) | `=> C -= K commit;` | `set C := C - K;` | `-=K` (за зразком `-=b`) | `W2.action_opcode = 0x04` (`SUB`), `W1 = K` |
 
 ---
 
@@ -994,7 +994,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
    * Семантика цих концептуальних конструкцій у EKPOL 0.1.0 **не визначена** ([`ekpol-formal-specification.md`, §11](ekpol-formal-specification.md#11-концептуальні-конструкції-статус)): `vmk --mode conceptual` обирає вбудований симулятор за іменем модуля чи концепту, тому результати прикладів `Nod`, `Factorial`, `Sum`, `If` і `Tachometer` є властивістю симулятора, а не наслідком тексту правил.
    * Розширений 32-байтний дескриптор `CME-RAW-2` (`W0..W7` з окремим апаратним бітом `W1.state_valid` для `_` та розділеними 32-бітними операндами предиката і дії) зафіксовано на рівні архітектурного рішення [`ADR B7`](../decisions/cme-raw2-kpol-sys02.md), а його реалізація в RTL `CFG-P2` відкладена до отримання відповіді Автора на `RFC-017` п. 3 ([#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)).
 3. **Відкриті питання авторської граматики `KPOL-AUTH` ([#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186)):**
-   * Дванадцять точок невизначеності `KPOL-AUTH-U01..U12` (`RFC-009, 015–018`: точна бітова розкладка `Def`, семантика читання `_`, пріоритет паралельних гілок без дужок, роль `Child`) залишаються заблокованими за принципом `fail-closed` у пакеті [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) до надходження відповідей Автора.
+   * Дванадцять точок невизначеності `KPOL-AUTH-U01..U12` (`RFC-009`, `RFC-015`–`RFC-018`: зв'язок І/АБО з `Min`/`Max`, не-`Token` межі, написання й момент виконання `CloseBracket`, заміна `#`, екранування в тексті, одиниця довжини `Name`, булеве значення `•`, стан `busy`, читання `_`, роль `Child` і ширина `Def`, `Def[i]=0` проти `_`; див. [`kpol-auth-formal-specification.md`, §5](kpol-auth-formal-specification.md#5-контекстні-умови-та-гейти-невизначеності)) залишаються заблокованими за принципом `fail-closed` у пакеті [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) до надходження відповідей Автора.
 4. **Позиція щодо стандартів (`Project/policies/standards-position.md`):**
    * Дотримання практик чистого коду, формальної верифікації `Z3`, MISRA-дружньої генерації C99 та процесів ASPICE 4.0 є внутрішньою інженерною дисципліною проєкту; жодна формальна сертифікація чи відповідність стандартам ISO 26262 / IEC 61508 не заявляється.
 
@@ -1004,6 +1004,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.4 | 2026-11-19 | Додано посилання на формальну специфікацію `KPOL-AUTH` (`1.0.0`) і KPOL `1.0.1`; виправлено опис `KPOL-AUTH`: лінійна нотація не приймає `←`/`→`, перелік точок `U01..U12` узгоджено з реєстром; у таблицях §1.3 і довідника колонку `KPOL-AUTH` замінено засвідченими формами Автора з локаторами «Пример для АН» (АН), а незасвідчені форми (`: x = K`, `: ¬(x = K)`, `[ LO .. HI ]`, `= x •` тощо) прибрано. |
 | 1.0.3 | 2026-11-19 | Узгоджено з формальними специфікаціями KPOL та EKPOL: виправлено розшифрування KPOL (*Problem-Oriented*), розкладку слова `W2` (`pred [7:0]`, `flags [15:8]`, `hazard_limit [23:16]`, `action [31:24]`) і `W3`, вилучено неіснуючий `CME_ACT_NOP (0x05)`, уточнено семантику `HAZARD_EN` і `SUBSCRIBER_EN`, коди `CME2-CASCADE`/`CME2-PROOF`, межі трансляції та статус концептуального режиму. |
 | 1.0.2 | 2026-11-18 | Усунення помилки рендерингу GitHub MathJax (`Extra close brace or missing open brace`) у §1.2 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): замінено `\{\_\}` (де парсер GitHub CommonMark `cmark-gfm` з'їдає бекслеші перед розділовими знаками ASCII, перетворюючи формулу на невалідний індекс `{_}`) на чистий запис `\lbrace\bot_{\text{undef}}\rbrace` та додано регресійний тест `test_markdown_math_formulas_have_no_commonmark_broken_escapes` у `test_ekpol_278.py`. |
 | 1.0.1 | 2026-11-18 | Усунення зауважень рецензії `F1..F4` у PR #285 ([#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284)): виправлено версії нормативних специфікацій (`kpol-cme-subset.md` `0.4.0`, `kpol-consolidated.md` `0.6.1`, `kpol-cme2-profile.md` `0.1.0`, `kpol-auth-subset.md` `0.1.0`, `ekpol-specification.md` `1.0.1`), наведено дослівний текст діагностики `EKPOL-CYCLE-ERR` та `EKPOL-COLLISION-ERR` із `compile_ekpol_to_bram_image`, розширено верифікацію класичних `.kpol` прикладів (`verify_module` / `VMK`) і додано другий негативний контроль (`EKPOL-COLLISION-ERR`) у `test_ekpol_278.py`. |
@@ -1015,6 +1016,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Термін | Значення |
 | :--- | :--- |
+| **АН** | Презентація М. Ю. Кузьміна «Пример для АН» ([`Research/sources/author/kuzmin-2024-example-for-AN.pdf`](../../Research/sources/author/kuzmin-2024-example-for-AN.pdf)); номер слайда = номер сторінки PDF. |
 | **KPOL** | Kuzmin Problem-Oriented Language — проблемно-орієнтована мова програмування Машини Кузьміна (класичні профілі `KPOL-CME-1`, `KPOL-CME-2`; авторський діалект `KPOL-AUTH`). |
 | **EKPOL** | Ergonomic KPOL (`0.1.0`) — ергономічна концептно-орієнтована мова програмування Машини Кузьміна у чистому 7-бітному ASCII з підтримкою символьної (`symbolic`: `<-`, `->`, `~`, `::`, `=>`, `.`) та ключової програмістської (`keyword`: `on write`, `on read`, `on change`, `when`, `commit`, `after`) нотацій. |
 | **Концепт (`Concept`)** | Неподільна реактивна капсула стану, типу даних, біта визначеності (`_` / `undef`), вхідного предиката припущення `::`, дії переходу `=>`, інваріанта безпеки Великої Крапки `[...]` та списку підписників. |
