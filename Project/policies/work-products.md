@@ -95,7 +95,6 @@ Work Product (WP) — результат або збережений матер�
 | [`Research/software/`](https://github.com/nick-fedchik/kuzmin-machine/tree/707fdba697d92ef9874c9013eb6f4f3cb2796d70/docs/research/software) | Дослідницькі мовні та програмні пропозиції |
 | [`Research/verification/`](https://github.com/nick-fedchik/kuzmin-machine/tree/707fdba697d92ef9874c9013eb6f4f3cb2796d70/docs/research/verification) | Дослідницькі та історичні матеріали про верифікацію |
 | [`Research/opposition/`](../../Research/studies/concept-assessment) | Наукова опозиція, запитання та проміжні результати |
-| [`docs/business/`](https://github.com/nick-fedchik/kuzmin-machine/blob/707fdba697d92ef9874c9013eb6f4f3cb2796d70/docs/business/README.md) | Економічні, ринкові та комерційні сценарії |
 | [`docs/strategy/`](https://github.com/nick-fedchik/kuzmin-machine/tree/707fdba697d92ef9874c9013eb6f4f3cb2796d70/docs/strategy) | Стратегічні напрями та дорожні карти |
 | [`Project/policies/`](.) | Учасники, внески, авторство та організаційні угоди |
 | [`docs/toolchain/`](../../Engineering/hw/toolchain) | Загальні інструкції щодо інструментів |

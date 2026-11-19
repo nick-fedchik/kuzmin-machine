@@ -3,7 +3,7 @@
 * **Версія:** 1.0.1
 * **Дата:** 2026-11-17
 * **Тип WP редакції NG:** Report
-* **Issue:** `Closes` [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270). **PR:** [#271](https://github.com/nick-fedchik/kuzmin-machine/pull/271) у гілці `feat/270-commercial-conclusions-and-emit-c99`.
+* **Issue:** `Closes` [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270). **PR:** [#271](https://github.com/nick-fedchik/kuzmin-machine/pull/271).
 * **Виконавець:** GitHub Copilot CLI (Lead Engineer / Architect). **Рецензент PR #271:** `claude-sonnet-5.5` ([перший прохід `9d28d31`](https://github.com/nick-fedchik/kuzmin-machine/pull/271#issuecomment-6957224311) — «Доопрацювати», `F-01..F-10`; [другий прохід `dec3ffc`](https://github.com/nick-fedchik/kuzmin-machine/pull/271#issuecomment-6957893393) — «Прийнято із зауваженнями», `N-01` враховано у `1.0.1`).
 * **Коміт бази, на якому виконано:** робоча гілка PR на коміті `dec3ffc7334322d2dfb8406b085862389df28e8c` (`origin/main`: `6f1dc29`).
 * **Хост верифікації:** `Linux 7.0.0-42-generic x86_64` (`GCC 15.2.0`, `Python 3.14.4`, `pytest 9.0.2`, `z3-solver 5.4.1`, `/usr/bin/z3 4.13.3`, `Icarus Verilog 12.0`).
@@ -15,7 +15,6 @@
   * Формальний сертифікат Z3: [`bms_safety_z3_certificate.json`](bms_safety_z3_certificate.json) (`a6ea3460b1d50f68dad33a8318016dfe58b90c69285f26a56bde40b215ecdf51`);
   * Драйвер перевірки й бенчмарку: [`bms_c99_hil_bench.c`](bms_c99_hil_bench.c) (`1509a8a513f6528cdb78facead0c59e4495d4a2a0afcd7620cb8a275dfbdcb80`);
   * Сирі логи та JSON: [`raw/x86_64_bms_c99_verification.json`](raw/x86_64_bms_c99_verification.json), [`raw/x86_64_bms_c99_verification.log`](raw/x86_64_bms_c99_verification.log), [`raw/iverilog_bms_cfg_p_trace.log`](raw/iverilog_bms_cfg_p_trace.log), [`raw/pynq_cortex_a9_bms_c99_hil.json`](raw/pynq_cortex_a9_bms_c99_hil.json), [`raw/pynq_cortex_a9_bms_c99_hil.log`](raw/pynq_cortex_a9_bms_c99_hil.log), [`raw/pytest_c99_emitter_270.log`](raw/pytest_c99_emitter_270.log).
-* **Пов'язане аналітичне дослідження:** [`Research/studies/commercialization-and-final-conclusions.md`](../../../../Research/studies/commercialization-and-final-conclusions.md).
 
 ---
 
@@ -26,7 +25,7 @@
    * Це є **формальною SMT-верифікацією згенерованих C99-таблиць, топологічного розкладу та шаблонів переходів C99 проти еталонної моделі `CFG-P`**, а **не** формальною верифікацією об'єктного машинного коду компілятора `GCC` за допомогою `CompCert` або `CBMC`/`ESBMC` та `yosys write_smt2`. Еквівалентність скомпільованого бінарного коду `GCC` та RTL `kpol_bram_pipeline_axi.sv` підтверджується диференційними тестами на трасах подій у симуляції `Icarus Verilog` та на фізичному кристалі `Zynq-7020 PL`.
 2. **Орієнтир `MISRA-C99` та модель одиничного заголовкового файлу (`F-08`):**
    * Згенерований модуль `bms_safety_cascade_gen.c` оформлений як самодостатній C99-файл з include-guard та функціями `static inline` (що дозволяє безпечно включати його в один або декілька одиниць трансляції TU без помилок лінкера щодо повторного визначення символів) і використовує переносну функцію `km_u32_to_i32` замість implementation-defined приведення типів `(int32_t)u32`.
-   * Дотримано структурних обмежень безпечного підмножинного C99 (відсутність `malloc`/`free`, рекурсії та необмежених циклів `while`), проте перевірка комерційним сертифікованим аналізатором `MISRA-C:2012` не проводилася (`standards-position.md`).
+   * Дотримано структурних обмежень безпечного підмножинного C99 (відсутність `malloc`/`free`, рекурсії та необмежених циклів `while`), проте перевірка сертифікованим статичним аналізатором `MISRA-C:2012` не проводилася (`standards-position.md`).
 3. **Навмисне статичне звуження `subscriber_cid < 64` відносно RTL (`F-09`):**
    * В апаратному модулі `km_concept_micro_engine.sv` дескриптор із `subscriber_cid >= 64` та `SUBSCRIBER_EN == 1` приймається, але на виході каскад блокується вентилем `subscriber_target_valid_w = (subscriber_cid_w < 32'd64)`. Натомість `compute_topological_order` та `prove_c99_descriptor_safety_z3` відхиляють таблиці з `subscriber_cid >= 64` ще до генерації C99-коду (`C99-DAG-RANGE`), щоб унеможливити наявність невалідних індексів у статичній таблиці `KM_SAFETY_DESCRIPTORS`.
 4. **Середовище вимірювання часу виконання на `ARM Cortex-A9` (`F-07`):**
@@ -87,7 +86,7 @@
 
 | Критерій Issue #270 | Артефакт / Тест | Результат |
 | :--- | :--- | :---: |
-| Підсумковий інженерно-комерційний висновок + звіт верифікації WP | [`commercialization-and-final-conclusions.md`](../../../../Research/studies/commercialization-and-final-conclusions.md), цей `report.md` | **Виконано** |
+| Звіт верифікації WP | цей `report.md` | **Виконано** |
 | Генератор `c99_emitter.py` та CLI `--emit-c99` / `--emit-z3-cert`, компіляція `gcc -std=c99 -O2 -Wall -Wextra -Werror -pedantic` з `0` попереджень | [`c99_emitter.py`](../../../sw/kpol-ref/c99_emitter.py), [`compile_kpol_bram_image.py`](../../../hw/scripts/compile_kpol_bram_image.py) | **Виконано** |
 | 100% побітова тотожність C99, моделі `CFG-P`, RTL-симуляції та фізичного кристала `Zynq-7020 PL` на кейсі BMS | [`raw/x86_64_bms_c99_verification.json`](raw/x86_64_bms_c99_verification.json), [`raw/pynq_cortex_a9_bms_c99_hil.json`](raw/pynq_cortex_a9_bms_c99_hil.json) | **Виконано** |
 | Усі негативні мутанти `M1..M4` (включно з текстовими мутаціями C99 та Z3 без фейкового fallback) детерміновано вбиваються | [`test_c99_emitter_270.py`](../../../sw/tests/test_c99_emitter_270.py), [`raw/pytest_c99_emitter_270.log`](raw/pytest_c99_emitter_270.log) | **Виконано** |

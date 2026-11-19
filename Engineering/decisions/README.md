@@ -18,7 +18,7 @@
 | B5: черга та ingress | [Контракт черги](../specifications/hw/event-queue-ingress-specification.md). |
 | B6: гетерогенний симбіоз із GPU | [Persistent Mega-Kernel для підписників v0.4.0](b6-gpu-persistent-kernel-subscribers.md) (верифіковано на GPU до `1024` підписників у `EXP-GPU-01` і `EXP-GPU-03`). |
 | B7 (CR #185): `KPOL-SYS-02` та дескриптор `CME-RAW-2` | [Проєкт 32-байтного слота й біта ініціалізації `state_valid` (`_`)](cme-raw2-kpol-sys02.md) (прийнято власником за Варіантом А; RTL `CFG-P2` відкладено до відповіді на `RFC-017`). |
-| B8 (#270): комерційна оцінка та бекенд `--emit-c99 + Z3` | [Підсумковий інженерно-комерційний висновок і верифікація генератора C99](../../Research/studies/commercialization-and-final-conclusions.md) ([`c99_emitter.py`](../sw/kpol-ref/c99_emitter.py), [`test_c99_emitter_270.py`](../sw/tests/test_c99_emitter_270.py)). |
+| B8 (#270): бекенд `--emit-c99 + Z3` | [Звіт верифікації генератора детермінованого C99](../validation/kpol-cme/c99-emitter-270/report.md) ([`c99_emitter.py`](../sw/kpol-ref/c99_emitter.py), [`test_c99_emitter_270.py`](../sw/tests/test_c99_emitter_270.py)). |
 | B9 (#274): двомодовий емулятор VMK (`bram64` + `conceptual`) та TUI-дебагер на Go | [Специфікація Go VMK v0.1.0](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) ([`Engineering/sw/vmk-go/`](../sw/vmk-go/go.mod), [звіт верифікації `#274`](../validation/kpol-cme/vmk-go-274/report.md)). |
 
 ## Обмеження
@@ -32,7 +32,7 @@
 | Версія | Дата | Зміни |
 |---|---|---|
 | 0.6.0 | 2026-11-18 | #274: додано навігацію на специфікацію та реалізацію двомодового емулятора VMK і 4-панельного TUI-дебагера на Go (`Engineering/sw/vmk-go/`, `vmk-go-emulator-and-tui-debugger.md`). |
-| 0.5.0 | 2026-11-17 | #270: додано рішення та підсумковий висновок щодо комерціалізації активів МК і бекенду детермінованого C99 (`--emit-c99` + `--emit-z3-cert`, `commercialization-and-final-conclusions.md`). |
+| 0.5.0 | 2026-11-17 | #270: додано рішення щодо бекенду детермінованого C99 (`--emit-c99` + `--emit-z3-cert`). |
 | 0.4.1 | 2026-11-17 | #253: оновлено посилання на контракт B4 v2.4.0 після досягнення $100.69\text{ МГц}$ у `OpenXC7` та завершення натурної HIL-верифікації `CFG-P-HA` на `PYNQ-Z1`. |
 | 0.4.0 | 2026-11-17 | #8: актуалізовано посилання й статуси B3 (`KPOL-CME-2`), B4 v2.3.0 (`CFG-P-HA`, #252), B6 v0.4.0 (`EXP-GPU-01` v0.4.0 та `EXP-GPU-03` #256) і B7 v0.2.0 (#215). |
 | 0.3.0 | 2026-11-14 | Додано архітектурне рішення B7 / CR [#185](https://github.com/nick-fedchik/kuzmin-machine/issues/185) щодо `KPOL-SYS-02` (`state_valid`) та 32-байтного дескриптора `CME-RAW-2` (Proposed). |
