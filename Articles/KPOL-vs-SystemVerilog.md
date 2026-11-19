@@ -1,6 +1,6 @@
 # KPOL проти SystemVerilog: Як «нова парадигма» Машини Кузьміна відображається на стандартизований кремній (IEEE 1800 SVA)
 
-* **Версія:** 1.1.2
+* **Версія:** 1.2.0
 * **Дата:** 2026-11-19
 * **Тип WP:** Article
 * **Автор:** Микола Мартинович Федчик (Mykola Fedchyk)
@@ -86,11 +86,30 @@ flowchart LR
 
 Усі наведені нижче фрагменти KPOL/EKPOL є точними текстами з робочої кодової бази проєкту.
 
+### 3.0. Матриця трасування: Покриття концепцій Розділу 2 у практичних прикладах
+
+Кожен рядок порівняльної таблиці Розділу 2 знаходить своє пряме відображення у практичних прикладах коду нижче:
+
+| № | Рядок порівняльної матриці (Розділ 2) | Абстракція в KPOL / EKPOL | Реалізація в SystemVerilog / SVA | Де продемонстровано |
+|---|---|---|---|---|
+| **1** | **Подія (Event Impulse) `•`** | `<- Pulse(param)` / `on Pulse` | `posedge clk`, строб валідності `pulse_valid` | Сценарій 1 (лічильник) та Сценарій 2 (BMS) |
+| **2** | **Концепт (Concept Descriptor)** | `concept Counter: int32 = 10 [>= 0]` | Апаратний регістр `counter_state`, слоти BRAM | Сценарій 1, Сценарій 2, Сценарій 4 (`CFG-P-HA`) |
+| **3** | **Тризначна логіка ($`\mathcal{L}_3`$)** | Літерал `_` (`undef`), відсікання `REJECT_FAULT` | Розпаралелювання `{valid, value}`, SVA `p_reject_uncertainty` | Сценарій 1 (обрив датчика) та Розділ 4 |
+| **4** | **Предикат припущення (`::` / `when`)** | `when param < 20`, `when delta_mv in 50..5000` | Компаратор порогу, SVA `assume property` | Сценарій 1, Сценарій 2, Сценарій 3 (AXI stall) |
+| **5** | **Інваріант безпеки (`[>= 0]`)** | `[>= 0]`, защіпка `Pack_Fault_Latch` | SVA `assert property (state >= 0)`, Fail-Closed защіпка | Сценарій 1 (невід'ємність) та Сценарій 2 (BMS latch) |
+| **6** | **Транзакційний бар'єр (`•` / `commit;`)** | Фіксація `commit;` (`.`) за умови `[>= 0]` | Синхронний запис `always_ff`, атомарний BRAM swap | Сценарій 1, Сценарій 2 та Сценарій 4 (`CFG-P-HA`) |
+| **7** | **Підписка на зміну (`~` / `on change`)** | `on change(Cell_Delta_mV)` | Конвеєрні стадії FSM, SVA `sequence` / `\|-> ##1` | Сценарій 2 (4-рівневий каскад BMS) |
+
 ---
 
-### Сценарій 1. Захищений лічильник з інваріантом («Hello, Concept!»)
+### Сценарій 1. Захищений лічильник з інваріантом та захистом від невизначеності («Hello, Concept!»)
 
-Базова одиниця обчислення Машини Кузьміна — концепт з інваріантом невід'ємності `[>= 0]`, що приймає вхідну подію `Pulse(param)`, перевіряє поріг `param < 20` та інкрементує стан.
+Базова одиниця обчислення Машини Кузьміна — концепт з інваріантом невід'ємності `[>= 0]`, що приймає вхідну подію `Pulse(param)`, перевіряє поріг `param < 20` та інкрементує стан. 
+
+У віртуальній машині `VMK` виконання подій `trace-events "0:5,0:25,0:invalid"` демонструє всі базові фази:
+* `0:5` (номінальний вхід): предикат $5 < 20$ істинний $\implies$ `COMMIT` (новий стан `11`);
+* `0:25` (вихід за поріг): предикат $25 < 20$ хибний $\implies$ `REJECT_GUARD` (стан залишається `11`);
+* `0:invalid` (обрив датчика, стан невизначеності `_` / $\bot_{\text{undef}}$): шлюз достовірності відсікає подію $\implies$ `REJECT_FAULT` (стан залишається `11`).
 
 #### Діалект: EKPOL 0.1.0 — Ключова нотація (`keyword`)
 *Файл:* [`Engineering/sw/vmk-go/examples/increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol)  
@@ -134,50 +153,67 @@ Proof Increase {
 
 ```systemverilog
 // Синтезований модуль захищеного лічильника з формальними властивостями
+// Покриває рядки 1, 2, 3, 4, 5, 6 порівняльної матриці Розділу 2
 module concept_counter (
     input  logic        clk,
     input  logic        rst_n,
+    // [Рядки 1 і 3] Подія та тризначна логіка L3: {valid, value}
+    // pulse_valid = 1 (достовірне значення), pulse_valid = 0 (стан невизначеності '_' / обрив лінії)
     input  logic        pulse_valid,
     input  logic [31:0] pulse_param,
+    // [Рядок 2] Концепт: апаратний стан комірки (слот W0 у BRAM)
     output logic [31:0] counter_state
 );
     localparam logic [31:0] INIT_COUNTER    = 32'd10;
     localparam logic [31:0] PARAM_THRESHOLD = 32'd20;
 
-    // Регістрова логіка: оновлення лише за виконання вхідного предикату
+    // [Рядок 4] Предикат припущення: перевірка валідності та порогу (when param < 20)
+    wire guard_condition = pulse_valid && (pulse_param < PARAM_THRESHOLD);
+
+    // [Рядок 5 і 6] Транзакційний бар'єр commit; з перевіркою інваріанту невід'ємності [>= 0]
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             counter_state <= INIT_COUNTER;
-        end else if (pulse_valid && (pulse_param < PARAM_THRESHOLD)) begin
-            // Інваріант перевіряється комбінаторно перед фіксацією
+        end else if (guard_condition) begin
+            // Фіксація стану: оновлення відбувається лише за умови валідності та виконання предикату
             counter_state <= counter_state + 32'd1;
         end
+        // Якщо pulse_valid == 0 (стан '_') або param >= 20, стан гарантовано не змінюється
     end
 
     // Формальна специфікація для SMT-солвера (Z3 / SymbiYosys)
     `ifdef FORMAL
-        // Інваріант невід'ємності: Counter >= 0 у кожному такті
+        // [Рядок 5] Інваріант безпеки: Counter >= 0 у кожному такті
         property p_non_negative;
             @(posedge clk) disable iff (!rst_n)
             counter_state >= 32'd0;
         endproperty
         assert_non_neg: assert property (p_non_negative);
 
-        // Гарантія відсікання події поза допуском: стан не змінюється
+        // [Рядок 3] Тризначна логіка: захист від невизначеності '_' (Fail-Closed Gate)
+        property p_reject_uncertainty;
+            @(posedge clk) disable iff (!rst_n)
+            (!pulse_valid) |=> (counter_state == $past(counter_state));
+        endproperty
+        assert_uncertainty_safe: assert property (p_reject_uncertainty);
+
+        // [Рядок 4] Гарантія відсікання події поза допуском: стан не змінюється
         property p_reject_out_of_bound;
             @(posedge clk) disable iff (!rst_n)
             (pulse_valid && (pulse_param >= PARAM_THRESHOLD)) |=> (counter_state == $past(counter_state));
         endproperty
-        assert_reject: assert property (p_reject_out_of_bound);
+        assert_reject_guard: assert property (p_reject_out_of_bound);
     `endif
 endmodule
 ```
 
 ---
 
-### Сценарій 2. Канонічний 4-рівневий каскад захисту BMS
+### Сценарій 2. Канонічний 4-рівневий каскад захисту BMS (Підписки та защіпка)
 
-У системі керування акумуляторною батареєю (BMS) критично важливий принцип **Fail-Closed**: якщо зафіксовано аномальний перепад напруги комірок або датчик відмовив, каскад аварій повинен заблокувати високовольтний контактор без можливості самовільного відновлення.
+У системі керування акумуляторною батареєю (BMS) критично важливий принцип **Fail-Closed**: якщо зафіксовано аномальний перепад напруги комірок або датчик відмовив, каскад аварій повинен заблокувати контактор без можливості самовільного відновлення.
+
+Цей приклад демонструє **Рядок 7 (Підписка на зміну `~` / `on change`)** та **Рядок 5 (Fail-Closed інваріант `[>= 0]`)**.
 
 #### Діалект: EKPOL 0.1.0 — Ключова нотація (`keyword`)
 *Файл:* [`Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol)  
@@ -235,11 +271,14 @@ test BmsFourLevelProtectionAndLatch {
 
 ```systemverilog
 // Апаратний 4-ступеневий синхронний каскад захисту BMS
+// Покриває рядки 1, 2, 4, 5, 6, 7 порівняльної матриці Розділу 2
 module bms_safety_cascade (
     input  logic        clk,
     input  logic        rst_n,
+    // [Рядок 1] Зовнішня подія вхідного стробу EvCellDelta
     input  logic        ev_cell_delta_valid,
     input  logic [31:0] delta_mv,
+    // [Рядок 2] Апаратні концепти каскаду
     output logic [31:0] cell_delta_mv,
     output logic [31:0] module_thermal_guard,
     output logic [31:0] pack_fault_latch,
@@ -248,52 +287,53 @@ module bms_safety_cascade (
     localparam logic [31:0] DELTA_MIN = 32'd50;
     localparam logic [31:0] DELTA_MAX = 32'd5000;
 
-    // Вхідний компаратор діапазону delta_mv in 50..5000
+    // [Рядок 4] Вхідний компаратор діапазону (when delta_mv in 50..5000)
     wire delta_in_range = ev_cell_delta_valid && (delta_mv >= DELTA_MIN) && (delta_mv <= DELTA_MAX);
 
+    // [Рядок 6 і 7] Транзакційний бар'єр та реактивна підписка на зміну (on change)
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             cell_delta_mv        <= 32'd0;
             module_thermal_guard <= 32'd0;
             pack_fault_latch     <= 32'd2; // Початковий бюджет відмов: 2
-            contactor_interlock  <= 32'd10; // Нормальний замкнений контактор
+            contactor_interlock  <= 32'd10; // Нормальний стан замкненого контактора
         end else if (delta_in_range) begin
-            // 1. Інкремент лічильника аномалій напруги
+            // Рівень 1: облік аномалій напруги
             cell_delta_mv <= cell_delta_mv + 32'd1;
 
-            // 2. Реакція теплового захисту (on change(Cell_Delta_mV))
+            // [Рядок 7] Реакція підписника 1: on change(Cell_Delta_mV)
             if ((cell_delta_mv + 32'd1) >= 32'd1) begin
                 module_thermal_guard <= module_thermal_guard + 32'd1;
 
-                // 3. Защіпка аварії пакета (Pack_Fault_Latch -= 1)
-                // Апаратний захист Fail-Closed: защіпка не опускається нижче 0
+                // [Рядок 7] Реакція підписника 2: on change(Module_Thermal_Guard)
+                // [Рядок 5] Непорушний інваріант [>= 0]: защіпка блокується в 0
                 if (pack_fault_latch > 32'd0) begin
                     pack_fault_latch <= pack_fault_latch - 32'd1;
 
-                    // 4. Інтерлок контактора: спрацьовує коли latch != 2
+                    // [Рядок 7] Реакція підписника 3: on change(Pack_Fault_Latch)
                     contactor_interlock <= pack_fault_latch - 32'd1;
                 end
             end
         end
     end
 
-    // Формальні SVA-властивості для перевірки солвером (Z3 / SymbiYosys)
+    // Формальні SVA-властивості
     `ifdef FORMAL
-        // Властивість 1: Інваріант невід'ємності защіпки
+        // [Рядок 5] Інваріант невід'ємності защіпки [>= 0]
         property p_latch_non_negative;
             @(posedge clk) disable iff (!rst_n)
             pack_fault_latch >= 32'd0;
         endproperty
         assert_latch_non_neg: assert property (p_latch_non_negative);
 
-        // Властивість 2: Незворотність аварійного блокування (Latching)
+        // [Рядок 5 і 6] Незворотність блокування Fail-Closed
         property p_permanent_lockout;
             @(posedge clk) disable iff (!rst_n)
             (pack_fault_latch == 32'd0) |=> (pack_fault_latch == 32'd0);
         endproperty
         assert_perm_lock: assert property (p_permanent_lockout);
 
-        // Властивість 3: При нульовій защіпці контактор гарантовано розімкнено
+        // [Рядок 7] Часова узгодженість каскаду (SVA Sequence): аварія обов'язково розмикає контактор
         property p_contactor_safe_when_tripped;
             @(posedge clk) disable iff (!rst_n)
             (pack_fault_latch == 32'd0) |-> (contactor_interlock == 32'd0);
@@ -307,12 +347,14 @@ endmodule
 
 ### Сценарій 3. Стабільність протоколу рукостискання AXI4-Lite (Handshake Stability)
 
+Цей приклад демонструє **Рядок 4 (Предикат припущення `::` $\iff$ SVA `assume property`)** та **Рядок 6 (Гарантія бар'єра $\iff$ SVA `assert property`)**.
+
 У робочому стенді формальної верифікації шини AXI-64 нашого проєкту ([`axi64_props.sv`](../Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv)) правила комунікації формулюються через контракти оточення (`assume`) та гарантії ядра (`assert`):
 
 ```systemverilog
 // Витяг з Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv
 
-// Допущення майстра (Master Assumptions): якщо слейв у стані очікування (stall),
+// [Рядок 4] Допущення майстра (Master Assumptions): якщо слейв у стані очікування (stall),
 // майстер НЕ МАЄ ПРАВА змінювати виставлені адресу та дані
 always @(*) begin
     if (past_valid && !p_rst && aresetn) begin
@@ -322,7 +364,7 @@ always @(*) begin
     end
 end
 
-// Гарантії слейва (Slave Assertions): стабільність шини відповідей R та B
+// [Рядок 5 і 6] Гарантії слейва (Slave Assertions): стабільність шини відповідей R та B
 always @(*) begin
     if (past_valid && aresetn && !p_rst) begin
         // Властивість P1: якщо майстер не готовий прийняти відповідь B, слейв тримає її незмінною
@@ -339,6 +381,8 @@ end
 
 ### Сценарій 4. Апаратне двобанкове перемикання правил (`CFG-P-HA`)
 
+Цей приклад демонструє кремнієве втілення **Рядка 2 (Концепт як BRAM-масив дескрипторів)** та **Рядка 6 (Атомарний транзакційний бар'єр без розриву читань)**.
+
 Одним із головних практичних досягнень апаратної реалізації Машини Кузьміна на ПЛІС є ядро високої готовності **`CFG-P-HA`** ([`km_concept_bram_dual_ha.sv`](../Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv)). Воно вирішує задачу оновлення повної таблиці правил (1024 байти BRAM) під активним потоком подій без розриву читань (`0 torn-reads`):
 
 ```systemverilog
@@ -349,16 +393,17 @@ always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         active_bank_r <= 1'b0;
     end else if (swap_bank_trigger) begin
-        // Атомарна зміна старшого біта адреси BRAM за 1 такт (9.931 нс @ 100.69 МГц)
+        // [Рядок 6] Атомарна зміна старшого біта адреси BRAM за 1 такт (9.931 нс @ 100.69 МГц)
         active_bank_r <= ~active_bank_r;
     end
 end
 
+// [Рядок 2] Фізичне відображення концептів на двопортову пам'ять BRAM
 assign active_bram_addr = {active_bank_r, concept_id[5:0]};
 assign shadow_bram_addr = {~active_bank_r, loader_addr[5:0]};
 
 `ifdef FORMAL
-    // Доказ відсутності зупинки конвеєра: перемикання відбувається без втрати такту
+    // [Рядок 6] Доказ відсутності зупинки конвеєра: перемикання банку за 1 такт без torn-reads
     property p_zero_stall_swap;
         @(posedge clk) disable iff (!rst_n)
         swap_bank_trigger |=> (active_bank_r != $past(active_bank_r));
@@ -449,6 +494,7 @@ flowchart TD
 
 | Версія | Дата | Автор | Опис змін |
 |---|---|---|---|
+| 1.2.0 | 2026-11-19 | Микола Мартинович Федчик | **Повна 1:1 відповідність прикладів матриці концепцій:** додано матрицю трасування §3.0, явно закріплено всі 7 рядків таблиці Розділу 2 (Подія `•`, Концепт, Тризначна логіка $\mathcal{L}_3$, Предикат `::`, Інваріант `[>= 0]`, Бар'єр `commit;`, Підписка `~`) за конкретними фрагментами KPOL/EKPOL та RTL/SVA коду. |
 | 1.1.2 | 2026-11-19 | Микола Мартинович Федчик | **Виправлення рендерингу формул MathJax:** усунено помилку `Missing or unrecognized delimiter for \left` шляхом переходу на захищені бектіками спани `$\`...\`$` та чистий запис множини `\lbrace 0, 1, \bot_{\text{undef}} \rbrace` замість сирих `\{` / `\left\{`, які пошкоджувалися парсером CommonMark. |
 | 1.1.1 | 2026-11-19 | Микола Мартинович Федчик | **Усунення нерелевантного контексту:** вилучено помилкові згадки про сертифікацію функціональної безпеки ISO 26262 (ASIL-D) / IEC 61508; фокус статті строго скориговано на цифрове схемотехнічне проектування (RTL, FPGA/ASIC) та стандартну формальну верифікацію IEEE 1800 SVA. |
 | 1.1.0 | 2026-11-19 | Микола Мартинович Федчик | **Фундаментальний рефакторинг прикладів:** усунуто некомпіляційний псевдокод; усі приклади замінено на 100% канонічні, верифіковані програми (`increase.ekpol`, `bms_safety_cascade.ekpol`), що компілюються у бінарні образи BRAM (`CME-RAW-1`) та підтверджені натурними FPGA-тестами `CFG-P-HA` і SVA шини AXI-64. |

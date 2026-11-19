@@ -1,5 +1,5 @@
 {
-  "version": "0.33.0",
+  "version": "0.34.0",
   "date": "2026-11-19",
   "entries": [
     {
@@ -204,6 +204,12 @@
       "path": "Engineering/guides/kpol-ekpol-language-guide.md",
       "direction": "Engineering",
       "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/guides/kpol-formal-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
       "immutable_input": false
     },
     {
