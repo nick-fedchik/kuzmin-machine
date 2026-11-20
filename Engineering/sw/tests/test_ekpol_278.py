@@ -616,9 +616,34 @@ def test_markdown_math_formulas_have_no_commonmark_broken_escapes():
     assert _find_commonmark_broken_math_escapes(safe_sample) == []
 
 
+@pytest.mark.parametrize(("language", "filename", "args", "expected"), [
+    ("kpol-auth", "pages.auth", ["--check"],
+     ["2 concepts, 1 subscriptions, 5 Do/Go words"]),
+    ("kpol", "tickets.kpol", ["--profile", "KPOL-CME-1", "--trace-events", "0:5,0:1,0:1,0:1"],
+     ["REJECT_GUARD", "REJECT_INVARIANT", "commits=2, rejects=2", "last_committed_state=0"]),
+    ("ekpol", "visits.ekpol", ["--trace-events", "0:1,0:0,0:1,0:1,0:1"],
+     ["C01 (Badges): STATE_CHANGE(0->1)", "commits=5, rejects=4"]),
+])
+def test_programming_guide_example(language, filename, args, expected):
+    guides = REPO_ROOT / "Engineering" / "guides"
+    guide = guides / f"{language}-programming-guide.md"
+    assert f"]({guide.name})" in (guides / "README.md").read_text(encoding="utf-8")
+    program = re.search(rf"^```{language}\n(.*?)^```$", guide.read_text(encoding="utf-8"), re.M | re.S)
+    assert program, f"No complete {language} example in {guide.name}"
+    with _workspace_scratch_dir("guide") as scratch:
+        source = scratch / filename
+        source.write_text(program[1], encoding="utf-8")
+        cli = ([SW_REF_DIR.parent / "kpol-auth" / "__main__.py"] if language == "kpol-auth"
+               else [DEBUGGER_CLI, "--program"])
+        output = subprocess.run([sys.executable, *cli, source, *args], check=True,
+                                capture_output=True, text=True).stdout
+        for marker in expected:
+            assert marker in output
+
+
 def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
-    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` (`1.0.4`) and
-    `Engineering/guides/README.md` (`1.2.0`) structure, specification version references (`F1`),
+    """Issue #284: Verify `Engineering/guides/kpol-ekpol-language-guide.md` and
+    `Engineering/guides/README.md` structure, specification version references (`F1`),
     compile and execute all embedded valid `.ekpol` (`module ...`) and `.kpol` (`Problem ...`)
     code blocks (including `Proof` verification via `kpol_reference.verify_module` / `Interpreter`
     and Go `VMK v0.3.0`, `F4`), and prove negative mutant controls (`AGENTS.md §4 п. 1`) on the
@@ -643,7 +668,7 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         "W1 operand_val between guard literal and ADD/SUB step != 1"
     )
     for required_marker in [
-        "* **Версія:** 1.0.4",
+        "* **Версія:** 1.0.5",
         "* **Тип WP:** Guide",
         "ekpol-specification.md) (`1.0.2`)",
         "kpol-formal-specification.md) (`1.0.1`)",
@@ -676,10 +701,10 @@ def test_kpol_ekpol_language_guide_examples_compile_and_negative_control():
         assert required_marker in guide_txt, f"kpol-ekpol-language-guide.md missing {required_marker!r}"
 
     for readme_marker in [
-        "* **Версія:** 1.2.0",
+        "* **Версія:** 1.3.0",
         "* **Тип WP:** Guide",
         "kpol-ekpol-language-guide.md",
-        "`1.0.4`",
+        "`1.0.5`",
         "kpol-formal-specification.md",
         "ekpol-formal-specification.md",
         "kpol-auth-formal-specification.md",

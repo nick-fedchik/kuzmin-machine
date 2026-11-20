@@ -5,9 +5,9 @@
 * **Тип WP:** Specification
 * **Статус:** Запропоновано (*Proposed*) — на затвердження власником проєкту. Документ **не** є авторською специфікацією М. Ю. Кузьміна і не закриває дослідницьку задачу [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186): відкриті запити до Автора (`RFC-009` п. 3, `RFC-014`, `RFC-015`, `RFC-016`, `RFC-017` п. 1–3, `RFC-018` п. 2) зафіксовано як гейти, а не заповнено припущеннями.
 * **Мова:** `KPOL-AUTH` — native-діалект мови Машини Кузьміна за первинними матеріалами Автора; в цьому документі — три шари: авторська нотація (§2), лінійна нотація фронтенду (§3–§7) і похідний профіль зниження `KPOL-AUTH-L1` (§8).
-* **Первинні джерела (шар A):** картки [`Research/sources/author/`](../../Research/sources/README.md): презентація [«Пример для АН»](../../Research/sources/author/kuzmin-2024-example-for-AN.pdf) (далі — **АН**, номер сторінки PDF = номер слайда), [вступ #155](../../Research/sources/author/introduction-2026-11-13.md), [редакція #157](../../Research/sources/author/introduction-revision-2026-11-13.md), [виконання груп #159](../../Research/sources/author/group-execution-2026-11-13.md), передані відповіді [RFC-005–008](../../Research/sources/author/rfc-2026-11-12.md), [RFC-008/010–014](../../Research/sources/author/clarifications-2026-11-13.md), [RFC-009/015/017/018](../../Research/sources/author/rfc-answers-2026-11-15.md).
-* **Еталонна реалізація (шари B і C):** пакет [`Engineering/sw/kpol-auth/`](../sw/kpol-auth/__init__.py) @ `f901cf2` — [`lexer.py`](../sw/kpol-auth/lexer.py) (`tokenize`), [`cst.py`](../sw/kpol-auth/cst.py) (`_Parser`, `parse_kpol_auth`), [`uncertainty.py`](../sw/kpol-auth/uncertainty.py) (`UNCERTAINTY_REGISTRY`, `AuthFrontendConfig`), [`lowering.py`](../sw/kpol-auth/lowering.py) (`lower_kpol_auth`, `build_bram_routing_image`), [`__main__.py`](../sw/kpol-auth/__main__.py), корпус [`corpus.py`](../sw/kpol-auth/corpus.py); C99-рантайм [`km_mcu_fpga_bridge.c`](../sw/runtime/mcu/km_mcu_fpga_bridge.c); RTL [`km_concept_micro_engine.sv`](../hw/rtl/core/km_concept_micro_engine.sv).
-* **Супутні документи:** [формальна специфікація KPOL](kpol-formal-specification.md), [формальна специфікація EKPOL 0.1.0](ekpol-formal-specification.md), описова [специфікація підмножини KPOL-AUTH](../specifications/kpol/kpol-auth-subset.md), [вимоги KPOL](../requirements/kpol.md#31-кандидати-за-новою-презентацією).
+* **Первинні джерела (шар A):** картки [`Research/sources/author/`](../../../Research/sources/README.md): презентація [«Пример для АН»](../../../Research/sources/author/kuzmin-2024-example-for-AN.pdf) (далі — **АН**, номер сторінки PDF = номер слайда), [вступ #155](../../../Research/sources/author/introduction-2026-11-13.md), [редакція #157](../../../Research/sources/author/introduction-revision-2026-11-13.md), [виконання груп #159](../../../Research/sources/author/group-execution-2026-11-13.md), передані відповіді [RFC-005–008](../../../Research/sources/author/rfc-2026-11-12.md), [RFC-008/010–014](../../../Research/sources/author/clarifications-2026-11-13.md), [RFC-009/015/017/018](../../../Research/sources/author/rfc-answers-2026-11-15.md).
+* **Еталонна реалізація (шари B і C):** пакет [`Engineering/sw/kpol-auth/`](../../sw/kpol-auth/__init__.py) @ `f901cf2` — [`lexer.py`](../../sw/kpol-auth/lexer.py) (`tokenize`), [`cst.py`](../../sw/kpol-auth/cst.py) (`_Parser`, `parse_kpol_auth`), [`uncertainty.py`](../../sw/kpol-auth/uncertainty.py) (`UNCERTAINTY_REGISTRY`, `AuthFrontendConfig`), [`lowering.py`](../../sw/kpol-auth/lowering.py) (`lower_kpol_auth`, `build_bram_routing_image`), [`__main__.py`](../../sw/kpol-auth/__main__.py), корпус [`corpus.py`](../../sw/kpol-auth/corpus.py); C99-рантайм [`km_mcu_fpga_bridge.c`](../../sw/runtime/mcu/km_mcu_fpga_bridge.c); RTL [`km_concept_micro_engine.sv`](../../hw/rtl/core/km_concept_micro_engine.sv).
+* **Супутні документи:** [формальна специфікація KPOL](kpol-formal-specification.md), [формальна специфікація EKPOL 0.1.0](ekpol-formal-specification.md), описова [специфікація підмножини KPOL-AUTH](kpol-auth-subset.md), [вимоги KPOL](../../requirements/kpol.md#31-кандидати-за-новою-презентацією).
 
 ---
 
@@ -37,7 +37,7 @@
 
 1. **Зміст** авторських понять визначають первинні джерела Автора. Цей документ не може їх розширити чи змінити.
 2. **Прийняття/відхилення** тексту лінійної нотації та **артефакти зниження** визначає еталонна реалізація на зафіксованому коміті. Виявлена розбіжність з цим документом — дефект одного з артефактів; її МУСЯТЬ оформити Issue з рішенням власника, а до рішення чинною є поведінка еталона.
-3. У разі розбіжності з описовим документом [`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md), посібниками чи статтями діє цей документ.
+3. У разі розбіжності з описовим документом [`kpol-auth-subset.md`](kpol-auth-subset.md), посібниками чи статтями діє цей документ.
 
 ### 0.5. Нормативна лексика
 
@@ -126,7 +126,7 @@ END
 
 Службові елементи тієї самої таблиці без кодів: `Define` («Определение понятий»), `Convert` («Конвертация типов»), `Exit` («Выход из группы выполнения»), `Processor` («Добавить процессор»).
 
-**[В] Відповідність кодам рантайму.** Біт `n` маски подій `KM_EV_*` у [`km_mcu_fpga_bridge.c`](../sw/runtime/mcu/km_mcu_fpga_bridge.c) дорівнює коду `n` переліку `AuthDataEvent` (`ABSENT=0 … CHANGED=6`); біт `7` `KM_EV_ALWAYS` авторського відповідника не має. `KM_GO_EXEC/WRITE/READ = 0/1/2` і `KM_DO_ADD/SUB/MUL = 0/1/2`, `KM_DO_MOD_INC = 5` збігаються з кодами `AuthGoKind` та `AuthDoOp`; вид `init(3)` у рантаймі відсутній.
+**[В] Відповідність кодам рантайму.** Біт `n` маски подій `KM_EV_*` у [`km_mcu_fpga_bridge.c`](../../sw/runtime/mcu/km_mcu_fpga_bridge.c) дорівнює коду `n` переліку `AuthDataEvent` (`ABSENT=0 … CHANGED=6`); біт `7` `KM_EV_ALWAYS` авторського відповідника не має. `KM_GO_EXEC/WRITE/READ = 0/1/2` і `KM_DO_ADD/SUB/MUL = 0/1/2`, `KM_DO_MOD_INC = 5` збігаються з кодами `AuthGoKind` та `AuthDoOp`; вид `init(3)` у рантаймі відсутній.
 
 ### 2.3. Типи (АН, слайд 4, таблиця `Type`)
 
@@ -222,7 +222,7 @@ Help = "#" , "'" , 256 * [ Letter | Mark ] , "»" ;    (* 0..256 *)
 
 ### 2.9. Приклад Автора: машина Тьюрінга (АН, слайд 14)
 
-Правило переходу МТ Автор записує як підписку на подію `sᵢ`: `wi = si (Go ¤.A → (vi)Do ¤ +d.Q → (fi)` — «при истинности события si записываем новое значение a’ (получаемое из vi ) а в концепт к которому собираемся переходить (¤+ d) записываем новое значение состояния q’». Повний клас `Class MT { … }` наведено в джерелі; цей документ його не нормалізує. Похідну конструкцію — у [дослідженні](../../Research/studies/turing-construction/report.md).
+Правило переходу МТ Автор записує як підписку на подію `sᵢ`: `wi = si (Go ¤.A → (vi)Do ¤ +d.Q → (fi)` — «при истинности события si записываем новое значение a’ (получаемое из vi ) а в концепт к которому собираемся переходить (¤+ d) записываем новое значение состояния q’». Повний клас `Class MT { … }` наведено в джерелі; цей документ його не нормалізує. Похідну конструкцію — у [дослідженні](../../../Research/studies/turing-construction/report.md).
 
 ### 2.10. Неузгодженості джерел і відкриті питання шару A
 
@@ -700,7 +700,7 @@ PYTHONPATH=Engineering/sw/kpol-auth python3 -m kpol_auth <input> [--check] \
 
 ### A.1. Корпус фронтенду
 
-Вектори — приклади `AUTHOR_CORPUS` ([`corpus.py`](../sw/kpol-auth/corpus.py)) за типової конфігурації. Відповідна реалізація МУСИТЬ дати той самий вердикт і перший код.
+Вектори — приклади `AUTHOR_CORPUS` ([`corpus.py`](../../sw/kpol-auth/corpus.py)) за типової конфігурації. Відповідна реалізація МУСИТЬ дати той самий вердикт і перший код.
 
 | ID | Вхід | Вердикт | Корінь CST / код |
 |---|---|---|---|
@@ -749,7 +749,7 @@ PYTHONPATH=Engineering/sw/kpol-auth python3 -m kpol_auth <input> [--check] \
 | `KPA-CTX-1..4` | `UNCERTAINTY_REGISTRY`, `AuthFrontendConfig`, `emit_uncertainty`, `_attach_bounds`, `_contains_subscription_seq`, `_contains_busy_probe` |
 | `KPA-CST-1..6` | Датакласи `cst.py`, `_merge_spans`, `BRACKET_KIND`, `_attach_bounds`, `_build_construct` |
 | `KPA-L-1..15` | `lower_kpol_auth`, `_parse_int32`, `_emit_expr`, `_extract_assigns`, `_validate_bram_acyclic`, `build_bram_routing_image`, `km_pack_instr` |
-| `KPA-VM-1..5` | `km_eval_event_vector`, `km_write_concept`, `km_exec_subscription_line`, `km_trigger_external_input` (C99); `ReferenceDoGoVM` у [`test_kpol_auth_lowering.py`](../sw/kpol-auth/tests/test_kpol_auth_lowering.py) |
+| `KPA-VM-1..5` | `km_eval_event_vector`, `km_write_concept`, `km_exec_subscription_line`, `km_trigger_external_input` (C99); `ReferenceDoGoVM` у [`test_kpol_auth_lowering.py`](../../sw/kpol-auth/tests/test_kpol_auth_lowering.py) |
 | §8.6 | `__main__.main`, `build_arg_parser` |
 
 ---
@@ -775,9 +775,9 @@ PYTHONPATH=Engineering/sw/kpol-auth python3 -m kpol_auth <input> [--check] \
 | `D-A13` | `"…"` (Автор: `Name`) і `«…»` (Автор: `Text`) дають один вид `TEXT`; різниця видна лише зі `span`. Синтаксису `Help`/коментаря немає. | Не покладатися на вид роздільника в CST. |
 | `D-A14` | Зниження трактує `S • Assign(D, e)` як каскад «зміна `S` → запис `D ≠ S`» і забороняє самопетлі. За Автором у `A • B` значення, сформоване підпискою `B`, записується в ту саму комірку `A` («как я понял», `RFC-017`), а `w1 • w2` — дві підписки одного концепту (АН, слайд 11). Профіль `KPOL-AUTH-L1` не реалізує авторської семантики `•`. | Не видавати артефакти `KPOL-AUTH-L1` за виконання авторського `•`. |
 | `D-A15` | Корпусний приклад `EX-05` `(A, B) • Do(A, B)` використовує `Do` як звичайну конструкцію шару B, а не авторський оператор `Do op`; його не можна знизити (`KPOL-LOWER-UNSUPPORTED-CST`). | — |
-| `D-A16` | Описовий документ [`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) до версії 0.1.1 вказував класи `[A-Za-zА-Яа-я…]` для ідентифікаторів і `[0-9]+` для цілих та не згадував `D-A2`, `D-A3`, `D-A9`. | Діє цей документ (§0.4). |
+| `D-A16` | Описовий документ [`kpol-auth-subset.md`](kpol-auth-subset.md) до версії 0.1.1 вказував класи `[A-Za-zА-Яа-я…]` для ідентифікаторів і `[0-9]+` для цілих та не згадував `D-A2`, `D-A3`, `D-A9`. | Діє цей документ (§0.4). |
 | `D-A17` | Лінійна нотація не має записів для `Go`, `Do`, `¤`, маркерів подій `← → \| : ~`, `Class`, `Define`, `Static` як оголошення та авторських типів (§7). | Ці конструкції не входять до відповідного тексту. |
-| `D-A18` | Компілятор VMK (Go) `compileKPOLAuth` у [`kpol_compiler.go`](../sw/vmk-go/internal/vmk/kpol_compiler.go) — регулярно-виразна підмножина: розпізнає лише `Concept(N, n` з `n` вигляду `-?[0-9]+` і `S • Assign(D, X op n)` (також з псевдонімом `(*)` замість `•`), мовчки ігнорує решту тексту без гейтів `U01..U12`, встановлює `INVARIANT_EN` усім оголошеним концептам і будує окремі виконувані дескриптори з `ASSUMPTION_EN`. Він не є відповідною реалізацією §3–§8. | Еталонні артефакти отримувати з `Engineering/sw/kpol-auth`. |
+| `D-A18` | Компілятор VMK (Go) `compileKPOLAuth` у [`kpol_compiler.go`](../../sw/vmk-go/internal/vmk/kpol_compiler.go) — регулярно-виразна підмножина: розпізнає лише `Concept(N, n` з `n` вигляду `-?[0-9]+` і `S • Assign(D, X op n)` (також з псевдонімом `(*)` замість `•`), мовчки ігнорує решту тексту без гейтів `U01..U12`, встановлює `INVARIANT_EN` усім оголошеним концептам і будує окремі виконувані дескриптори з `ASSUMPTION_EN`. Він не є відповідною реалізацією §3–§8. | Еталонні артефакти отримувати з `Engineering/sw/kpol-auth`. |
 
 ---
 

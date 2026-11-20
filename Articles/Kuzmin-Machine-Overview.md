@@ -420,7 +420,7 @@ flowchart LR
     end
 ```
 
-3. **Мови й інструменти проєкту.** [`KPOL`](../Engineering/guides/kpol-formal-specification.md) і його ASCII-нотація [`EKPOL 0.1.0`](../Engineering/guides/ekpol-formal-specification.md) — не дослівна транскрипція слайдів Кузьміна. `VMK v0.3.1` — емулятор і налагоджувач на Go з режимами `conceptual` та `bram64`.
+3. **Мови й інструменти проєкту.** [`KPOL`](../Engineering/specifications/kpol/kpol-formal-specification.md) і його ASCII-нотація [`EKPOL 0.1.0`](../Engineering/specifications/kpol/ekpol-formal-specification.md) — не дослівна транскрипція слайдів Кузьміна. `VMK v0.3.1` — емулятор і налагоджувач на Go з режимами `conceptual` та `bram64`.
 
    **Межа перекладу.** Текстовий експорт `EKPOL-B64 → KPOL` зберігає зміст лише в окресленій підмножині: зокрема, для `bitmask` [експортер](../Engineering/sw/kpol-ref/ekpol_frontend.py) підставляє `x != 0`. Перевірка молодшого біта відхиляє `x=2`, а підставлена умова його приймає. У зворотному напрямку є обмеження на ініціалізатори, `step`, `expect` та `assert` (специфікація EKPOL, §10). Побітовий збіг прямих образів BRAM на перевірених прикладах — інша властивість, не гарантія безвтратного перекладу довільного тексту.
 

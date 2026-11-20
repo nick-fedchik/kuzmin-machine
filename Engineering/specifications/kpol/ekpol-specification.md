@@ -8,7 +8,7 @@
 * **Issue:** `Closes` [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278); пов'язані задачі [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#272](https://github.com/nick-fedchik/kuzmin-machine/issues/272), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#186](https://github.com/nick-fedchik/kuzmin-machine/issues/186), [#184](https://github.com/nick-fedchik/kuzmin-machine/issues/184), [#8](https://github.com/nick-fedchik/kuzmin-machine/issues/8).
 * **Відповідальний:** власник Микола Федчик; укладач — GitHub Copilot CLI (Lead Engineer / Programming Language Architect).
 * **Реалізація у ПЗ:** [`Engineering/sw/kpol-ref/ekpol_frontend.py`](../../sw/kpol-ref/ekpol_frontend.py), [`Engineering/hw/scripts/compile_kpol_bram_image.py`](../../hw/scripts/compile_kpol_bram_image.py), [`Engineering/sw/kpol-ref/kpol_debugger.py`](../../sw/kpol-ref/kpol_debugger.py), [`Engineering/sw/vmk-go/internal/vmk/ekpol.go`](../../sw/vmk-go/internal/vmk/ekpol.go) (`VMK v0.2.0`), каталог прикладів [`Engineering/sw/vmk-go/examples/`](../../sw/vmk-go/examples/bms_safety_cascade.ekpol).
-* **Формальна норма:** [`Engineering/guides/ekpol-formal-specification.md`](../../guides/ekpol-formal-specification.md) (`1.0.0`). Цей документ є описовим; у разі розбіжності діє формальна специфікація.
+* **Формальна норма:** [`Engineering/specifications/kpol/ekpol-formal-specification.md`](ekpol-formal-specification.md) (`1.0.0`). Цей документ є описовим; у разі розбіжності діє формальна специфікація.
 * **Верифікація:** [`Engineering/sw/tests/test_ekpol_278.py`](../../sw/tests/test_ekpol_278.py), [`Engineering/sw/vmk-go/internal/vmk/vmk_test.go`](../../sw/vmk-go/internal/vmk/vmk_test.go) та звіт [`Engineering/validation/kpol-cme/ekpol-278/report.md`](../../validation/kpol-cme/ekpol-278/report.md) (`1.0.1`).
 
 ---
@@ -29,7 +29,7 @@
 * **Надає дві взаємозамінні (еквівалентні на рівні AST та кодогенерації) форми запису правил у чистому 7-бітному ASCII:**
   1. **Символьна ASCII-нотація (`symbolic`):** `<-` (зовнішній запис), `->` (читання), `~` (підписка на зміну іншого концепту), `|` (виклик/виконання), `::` (предикат-охоронець), `=>` (дія), `.` (транзакційний бар'єр Великої Крапки);
   2. **Ключова програмістська нотація (`keyword`, у дусі Rust / Go / TypeScript):** `on write(x)`, `on read`, `on change(Src)`, `on call(...)`, `when`, `=>`, `commit;`, `after`;
-* **Забезпечує двосторонню трансляцію `EKPOL <-> класичний KPOL` без втрат у межах областей, визначених у [§10 формальної специфікації](../../guides/ekpol-formal-specification.md#10-трансляція-ekpol--kpol) (предикати `bitmask` і нелітеральні значення поза цими областями)** (`--emit-kpol` / `--to-kpol` та `--emit-ekpol` / `--to-ekpol` зі стилем `--ekpol-style symbolic|keyword`) і **100% побітову ідентичність (SHA-256)** згенерованих 1024-байтних образів BRAM (`CME-RAW-1`), C99-модулів (`--emit-c99`) та Z3-сертифікатів (`--emit-z3-cert`).
+* **Забезпечує двосторонню трансляцію `EKPOL <-> класичний KPOL` без втрат у межах областей, визначених у [§10 формальної специфікації](ekpol-formal-specification.md#10-трансляція-ekpol--kpol) (предикати `bitmask` і нелітеральні значення поза цими областями)** (`--emit-kpol` / `--to-kpol` та `--emit-ekpol` / `--to-ekpol` зі стилем `--ekpol-style symbolic|keyword`) і **100% побітову ідентичність (SHA-256)** згенерованих 1024-байтних образів BRAM (`CME-RAW-1`), C99-модулів (`--emit-c99`) та Z3-сертифікатів (`--emit-z3-cert`).
 
 ### 1.2. Межі та атрибуція (`AGENTS.md §6.1`, `AGENTS.md §4 п. 1–2`)
 - Автор концепції Машини Кузьміна та мови KPOL — **Михайло Ювеналійович Кузьмін** (первинні джерела в [`Research/sources/`](../../../Research/sources/README.md)). Мова `EKPOL 0.1.0`, її парсер, двосторонній транспайлер і підтримка у `VMK v0.2.0` є похідними інженерними розробками проєкту (М. Федчик, інженерні агенти), створеними для підвищення ергономіки розробки, читабельності коду та продуктивності сучасних програмістів.
@@ -62,7 +62,7 @@
 
 ## 3. Формальна EBNF-граматика мови `EKPOL 0.1.0`
 
-> Ця граматика описова й ширша за фактично прийнятну мову (наприклад, допускає довільні ланцюжки `&&` і порівняння з `&`). Нормативну граматику наведено у [формальній специфікації EKPOL](../../guides/ekpol-formal-specification.md).
+> Ця граматика описова й ширша за фактично прийнятну мову (наприклад, допускає довільні ланцюжки `&&` і порівняння з `&`). Нормативну граматику наведено у [формальній специфікації EKPOL](ekpol-formal-specification.md).
 
 Нижче наведено граматику `EKPOL 0.1.0` у розширеній нотації Бекуса — Наура (ISO/IEC 14977). Пробільні символи (` `, `\t`, `\r`, `\n`), однорядкові коментарі (`# ...` та `// ...`) і багаторядкові коментарі (`/* ... */`) пропускаються лексером між токенами.
 

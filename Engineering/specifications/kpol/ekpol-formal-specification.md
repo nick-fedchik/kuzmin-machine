@@ -6,10 +6,10 @@
 * **Статус:** Запропоновано (*Proposed*) — на затвердження власником проєкту.
 * **Мова:** EKPOL 0.1.0 — *Ergonomic KPOL*, концептно-орієнтований запис у файлах `.ekpol` у двох стилях: символьному (`<-`, `~`, `::`, `=>`, `.`) і ключовому (`on write`, `on change`, `when`, `=>`, `commit;`).
 * **Реалізації:**
-  * еталонна (джерело істини): [`ekpol_frontend.py`](../sw/kpol-ref/ekpol_frontend.py) @ `6a09cf6` — `_strip_comments_preserve_pragmas`, `parse_ekpol`, `_split_concept_statements`, `_parse_concept_rule`, `_parse_predicate`, `_parse_actions`, `_parse_test_block`, `validate_ekpol_for_bram64`, `transpile_ekpol_to_kpol`, `transpile_kpol_to_ekpol`, `compile_ekpol_to_bram_image`;
-  * друга: VMK, [`ekpol.go`](../sw/vmk-go/internal/vmk/ekpol.go) — `ParseEKPOL`, `ValidateEKPOLForBRAM64`, `CompileEKPOLSource`.
+  * еталонна (джерело істини): [`ekpol_frontend.py`](../../sw/kpol-ref/ekpol_frontend.py) @ `6a09cf6` — `_strip_comments_preserve_pragmas`, `parse_ekpol`, `_split_concept_statements`, `_parse_concept_rule`, `_parse_predicate`, `_parse_actions`, `_parse_test_block`, `validate_ekpol_for_bram64`, `transpile_ekpol_to_kpol`, `transpile_kpol_to_ekpol`, `compile_ekpol_to_bram_image`;
+  * друга: VMK, [`ekpol.go`](../../sw/vmk-go/internal/vmk/ekpol.go) — `ParseEKPOL`, `ValidateEKPOLForBRAM64`, `CompileEKPOLSource`.
 * **Супутній документ:** [Формальна специфікація мови KPOL](kpol-formal-specification.md) — визначає `CME-RAW-1`, апаратну семантику кроку дескриптора та профілі `KPOL-CME-1/2`.
-* **Описові документи:** [специфікація EKPOL (описова)](../specifications/kpol/ekpol-specification.md), [посібник KPOL/EKPOL](kpol-ekpol-language-guide.md).
+* **Описові документи:** [специфікація EKPOL (описова)](ekpol-specification.md), [посібник KPOL/EKPOL](../../guides/kpol-ekpol-language-guide.md).
 
 ---
 
@@ -40,7 +40,7 @@
 ### 0.4. Правило першості
 
 1. Документ укладено з еталонної реалізації. Розбіжність між ним і реалізацією є дефектом одного з артефактів і МУСИТЬ бути оформлена Issue з рішенням власника; до рішення чинною вважається поведінка еталонної реалізації на зафіксованому коміті.
-2. У разі розбіжності з [описовою специфікацією EKPOL](../specifications/kpol/ekpol-specification.md), посібником чи статтями діє цей документ. Виявлені невідповідності описової специфікації перелічено в `D-E15`.
+2. У разі розбіжності з [описовою специфікацією EKPOL](ekpol-specification.md), посібником чи статтями діє цей документ. Виявлені невідповідності описової специфікації перелічено в `D-E15`.
 
 ### 0.5. Нормативна лексика й відповідність
 
@@ -662,12 +662,12 @@ eval(P, v) = (P.inv ? ¬b : b), де
 
 | Файл | Профіль | SHA-256 образу |
 |---|---|---|
-| [`increase.ekpol`](../sw/vmk-go/examples/increase.ekpol) | B64 | `4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d` |
-| [`decrease.ekpol`](../sw/vmk-go/examples/decrease.ekpol) | B64 | `00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3` |
-| [`cascade_4concept.ekpol`](../sw/vmk-go/examples/cascade_4concept.ekpol) | B64 | `032c4705c91cea6ddddb7d449cd0dcbd6ba62359af1f9e7a846f33c341a7ef38` |
-| [`bms_safety_cascade.ekpol`](../sw/vmk-go/examples/bms_safety_cascade.ekpol) | B64 | `de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee` |
+| [`increase.ekpol`](../../sw/vmk-go/examples/increase.ekpol) | B64 | `4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d` |
+| [`decrease.ekpol`](../../sw/vmk-go/examples/decrease.ekpol) | B64 | `00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3` |
+| [`cascade_4concept.ekpol`](../../sw/vmk-go/examples/cascade_4concept.ekpol) | B64 | `032c4705c91cea6ddddb7d449cd0dcbd6ba62359af1f9e7a846f33c341a7ef38` |
+| [`bms_safety_cascade.ekpol`](../../sw/vmk-go/examples/bms_safety_cascade.ekpol) | B64 | `de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee` |
 
-Концептуальні файли [`factorial.ekpol`](../sw/vmk-go/examples/factorial.ekpol), [`if_toggle.ekpol`](../sw/vmk-go/examples/if_toggle.ekpol), [`nod_euclid.ekpol`](../sw/vmk-go/examples/nod_euclid.ekpol), [`sum_autoreset.ekpol`](../sw/vmk-go/examples/sum_autoreset.ekpol) і [`tachometer.ekpol`](../sw/vmk-go/examples/tachometer.ekpol) синтаксично відповідні, але в B64 відхиляються з `EKPOL-TYPE-ERR`, бо використовують `U64`, `Float` або `Bool`.
+Концептуальні файли [`factorial.ekpol`](../../sw/vmk-go/examples/factorial.ekpol), [`if_toggle.ekpol`](../../sw/vmk-go/examples/if_toggle.ekpol), [`nod_euclid.ekpol`](../../sw/vmk-go/examples/nod_euclid.ekpol), [`sum_autoreset.ekpol`](../../sw/vmk-go/examples/sum_autoreset.ekpol) і [`tachometer.ekpol`](../../sw/vmk-go/examples/tachometer.ekpol) синтаксично відповідні, але в B64 відхиляються з `EKPOL-TYPE-ERR`, бо використовують `U64`, `Float` або `Bool`.
 
 ---
 
@@ -709,7 +709,7 @@ eval(P, v) = (P.inv ? ¬b : b), де
 | `D-E12` | Перехресна перевірка `EKPOL-B64-20` відхиляє частину програм з одним концептом без `test`; Go такої перевірки не має. | Завжди мати `test` у B64. |
 | `D-E13` | Додаткові аргументи `send` ігноруються в `T_EK`. Python відхиляє `send` до концепту з правилом `change`, Go подає подію до його CID. | Один аргумент; `send` лише до `write`-концептів. |
 | `D-E14` | Концептуальний режим VMK використовує диспетчеризацію за іменами (§11). | Не вважати його реалізацією семантики. |
-| `D-E15` | [Описова специфікація EKPOL](../specifications/kpol/ekpol-specification.md) містила твердження, яких немає в реалізації: `[>= 0, <= H]` → `hazard_limit` і `HAZARD_EN`; `pass`/`nop` → `CME_ACT_NOP (0x05)`; «безвтратна» трансляція для всіх програм; EBNF з довільними `&&`-ланцюжками й `&`-порівняннями. | Керуватися цим документом. |
+| `D-E15` | [Описова специфікація EKPOL](ekpol-specification.md) містила твердження, яких немає в реалізації: `[>= 0, <= H]` → `hazard_limit` і `HAZARD_EN`; `pass`/`nop` → `CME_ACT_NOP (0x05)`; «безвтратна» трансляція для всіх програм; EBNF з довільними `&&`-ланцюжками й `&`-порівняннями. | Керуватися цим документом. |
 
 ---
 

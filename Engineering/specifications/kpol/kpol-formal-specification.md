@@ -5,9 +5,9 @@
 * **Тип WP:** Specification
 * **Статус:** Запропоновано (*Proposed*) — на затвердження власником проєкту.
 * **Мова:** KPOL — *Kuzmin Problem-Oriented Language*, класичний модульний запис `Problem / Solution / Proof`. Номер версії мови не присвоєно: документ фіксує поведінку еталонної реалізації на коміті нижче й **не** проголошує «KPOL v1.0».
-* **Еталонна реалізація (джерело істини):** [`kpol_reference.py`](../sw/kpol-ref/kpol_reference.py) @ `6a09cf6` — функції `tokenize`, `Parser`, `infer`, `check_module`, `_normalize`, `_eval`, `Interpreter`, `verify_module`, `_compile_cme1_profile`, `_compile_cme2_profile`; RTL [`km_concept_micro_engine.sv`](../hw/rtl/core/km_concept_micro_engine.sv), [`kpol_txn_gate_v2.sv`](../hw/rtl/core/kpol_txn_gate_v2.sv), [`km_autonomous_sequencer.sv`](../hw/rtl/core/km_autonomous_sequencer.sv).
-* **Супутній документ:** [Формальна специфікація мови EKPOL 0.1.0](../specifications/kpol/ekpol-specification.md).
-* **Пов'язані нормативні профілі:** [KPOL-CME-1](../specifications/kpol/kpol-cme-subset.md), [KPOL-CME-2](../specifications/kpol/kpol-cme2-profile.md); описовий [консолідований контракт](../specifications/kpol/kpol-consolidated.md); навчальний [посібник KPOL/EKPOL](kpol-ekpol-language-guide.md).
+* **Еталонна реалізація (джерело істини):** [`kpol_reference.py`](../../sw/kpol-ref/kpol_reference.py) @ `6a09cf6` — функції `tokenize`, `Parser`, `infer`, `check_module`, `_normalize`, `_eval`, `Interpreter`, `verify_module`, `_compile_cme1_profile`, `_compile_cme2_profile`; RTL [`km_concept_micro_engine.sv`](../../hw/rtl/core/km_concept_micro_engine.sv), [`kpol_txn_gate_v2.sv`](../../hw/rtl/core/kpol_txn_gate_v2.sv), [`km_autonomous_sequencer.sv`](../../hw/rtl/core/km_autonomous_sequencer.sv).
+* **Супутній документ:** [Формальна специфікація мови EKPOL 0.1.0](ekpol-specification.md).
+* **Пов'язані нормативні профілі:** [KPOL-CME-1](kpol-cme-subset.md), [KPOL-CME-2](kpol-cme2-profile.md); описовий [консолідований контракт](kpol-consolidated.md); навчальний [посібник KPOL/EKPOL](../../guides/kpol-ekpol-language-guide.md).
 
 ---
 
@@ -26,7 +26,7 @@
 | Поза межами | Причина |
 |---|---|
 | `KPOL-AUTH` — авторський native-діалект М. Ю. Кузьміна (`Concept`, `Define`, `Go`/`Do`, `@`, пост-адресний `•`) | Окрема [формальна специфікація KPOL-AUTH](kpol-auth-formal-specification.md) з відкритими RFC; інша граматика й інша семантика `•`. |
-| EKPOL | Окремий документ: [EKPOL 0.1.0](../specifications/kpol/ekpol-specification.md). |
+| EKPOL | Окремий документ: [EKPOL 0.1.0](ekpol-specification.md). |
 | Безпрофільне зниження `compile_concept_microcode_bram_image(..., profile=None)` і пасивний образ `compile_bram_image` | Позначені в реалізації як експериментальні; не нормуються. |
 | Підписані образи, ACL, `--emit-c99`, Z3-сертифікати, генератори Verilog/RTM, `link_modules`, `parse_triad_files` | Інструменти над AST, а не семантика мови. ACL згадано лише як гейт профілів (§7.3, §7.4). |
 
@@ -682,7 +682,7 @@ COMMIT ⇒ W0 := cand
 trigger ⇔ COMMIT ∧ W3 < 64 ∧ (flags[4] ∨ W3 ≠ 0)
 ```
 
-Якщо `trigger` істинний, секвенсер ставить каскадну подію до `CID = W3[5:0]` з параметром, що дорівнює **новому** `W0`; подія до самого активного CID не ставиться. Черга, зворотний тиск і пріоритет каскаду визначені контрактом [B5](../specifications/hw/event-queue-ingress-specification.md).
+Якщо `trigger` істинний, секвенсер ставить каскадну подію до `CID = W3[5:0]` з параметром, що дорівнює **новому** `W0`; подія до самого активного CID не ставиться. Черга, зворотний тиск і пріоритет каскаду визначені контрактом [B5](../hw/event-queue-ingress-specification.md).
 
 Нормативні наслідки:
 
@@ -759,7 +759,7 @@ W0 = init(S);  W3 = CID(dst), якщо S — видавець, інакше 0;  
 
 Гарантія відповідності обмежена:
 
-* вона перевіряється обов'язковим гейтом `Proof` (`KPOL-P1-9`, `KPOL-P2-17`) і звітами [#153](../validation/kpol-cme/behavior-153/report.md), [#184](../validation/kpol-cme/cme2-profile-184/report.md), [#227](../validation/kpol-cme/cme2-formal-227/report.md); загальний доказ для довільних трас не заявляється;
+* вона перевіряється обов'язковим гейтом `Proof` (`KPOL-P1-9`, `KPOL-P2-17`) і звітами [#153](../../validation/kpol-cme/behavior-153/report.md), [#184](../../validation/kpol-cme/cme2-profile-184/report.md), [#227](../../validation/kpol-cme/cme2-formal-227/report.md); загальний доказ для довільних трас не заявляється;
 * знакове переповнення поводиться різно: інтерпретатор дає помилку виконання, апаратура — `REJECT` (`D-K6`). Траси з переповненням не входять до гарантії;
 * аргумент `Unknown` у `step` профілю `KPOL-CME-2` статично допустимий, але не має апаратного відповідника.
 
@@ -784,10 +784,10 @@ W0 = init(S);  W3 = CID(dst), якщо S — видавець, інакше 0;  
 
 | Вхід | Профіль | SHA-256 образу (1024 Б) | Дескриптор `CID 0` (16 Б, hex) |
 |---|---|---|---|
-| [`increase.kpol`](../sw/vmk-go/examples/increase.kpol) | `KPOL-CME-1` | `4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d` | `0a000000140000000403000100000000` |
-| [`decrease.kpol`](../sw/vmk-go/examples/decrease.kpol) | `KPOL-CME-1` | `00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3` | `0a000000140000000403000200000000` |
-| [`cascade_4concept.kpol`](../sw/vmk-go/examples/cascade_4concept.kpol) | `KPOL-CME-2` | `032c4705c91cea6ddddb7d449cd0dcbd6ba62359af1f9e7a846f33c341a7ef38` | `0a000000320000000413000101000000` |
-| [`bms_safety_cascade.kpol`](../sw/vmk-go/examples/bms_safety_cascade.kpol) | `KPOL-CME-2` | `de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee` | `00000000320088130513000101000000` |
+| [`increase.kpol`](../../sw/vmk-go/examples/increase.kpol) | `KPOL-CME-1` | `4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d` | `0a000000140000000403000100000000` |
+| [`decrease.kpol`](../../sw/vmk-go/examples/decrease.kpol) | `KPOL-CME-1` | `00ba66e57e21d14913c95d7d2fc8c45c3c450548510ca3155721d7eec67b78c3` | `0a000000140000000403000200000000` |
+| [`cascade_4concept.kpol`](../../sw/vmk-go/examples/cascade_4concept.kpol) | `KPOL-CME-2` | `032c4705c91cea6ddddb7d449cd0dcbd6ba62359af1f9e7a846f33c341a7ef38` | `0a000000320000000413000101000000` |
+| [`bms_safety_cascade.kpol`](../../sw/vmk-go/examples/bms_safety_cascade.kpol) | `KPOL-CME-2` | `de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee` | `00000000320088130513000101000000` |
 
 Негативні вектори: `bms_safety_cascade.kpol` у профілі `KPOL-CME-1` дає `B3-SHAPE`; `increase.kpol` у профілі `KPOL-CME-2` дає `CME2-PROOF`, бо `Proof` відсутній.
 
@@ -821,7 +821,7 @@ W0 = init(S);  W3 = CID(dst), якщо S — видавець, інакше 0;  
 | `D-K5` | Повтор імені аргументу в `step` статично не виявляється; під час перевірки діє останнє значення. | Не повторювати імена аргументів. |
 | `D-K6` | Знакове переповнення `Int32`: інтерпретатор дає помилку виконання, апаратура — `REJECT` (`ovf`). | Для профілів не будувати трас, що досягають межі `Int32`. |
 | `D-K7` | У фазі A невизначений `Alert` (`⊥`) не журналюється, а у фазі B журналюється як `UnknownAlert`. | Не покладатися на телеметрію `Alert` у відхилених фазою A подіях. |
-| `D-K8` | Компілятор VMK [`kpol_compiler.go`](../sw/vmk-go/internal/vmk/kpol_compiler.go) — регулярно-виразна підмножина: прибирає рядкові коментарі `#` і `//`, але не обробляє блокові `/* … */`, приймає ініціалізатори лише вигляду `-?[0-9]+`, одну дію в правилі тощо. Він не є відповідною реалізацією §2–§6. | Для VMK використовувати канонічний розклад профілів `KPOL-CME-1/2`; еталоном вважати `kpol_reference.py`. |
+| `D-K8` | Компілятор VMK [`kpol_compiler.go`](../../sw/vmk-go/internal/vmk/kpol_compiler.go) — регулярно-виразна підмножина: прибирає рядкові коментарі `#` і `//`, але не обробляє блокові `/* … */`, приймає ініціалізатори лише вигляду `-?[0-9]+`, одну дію в правилі тощо. Він не є відповідною реалізацією §2–§6. | Для VMK використовувати канонічний розклад профілів `KPOL-CME-1/2`; еталоном вважати `kpol_reference.py`. |
 | `D-K9` | `•`/`(*)` у KPOL означають `not`, тоді як у `KPOL-AUTH` автор визначив `•` як пост-адресний бар'єр (RFC-013; [KPOL-AUTH §2.5](kpol-auth-formal-specification.md#25-події-підписки-та-велика-крапка-)). | Не використовувати `•`/`(*)`; профіль `KPOL-CME-2` їх забороняє. |
 
 ---

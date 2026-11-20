@@ -1,6 +1,6 @@
 {
-  "version": "0.39.0",
-  "date": "2026-11-19",
+  "version": "0.41.0",
+  "date": "2026-11-20",
   "entries": [
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
@@ -201,15 +201,15 @@
       "immutable_input": false
     },
     {
-      "path": "Engineering/guides/ekpol-formal-specification.md",
+      "path": "Engineering/guides/ekpol-programming-guide.md",
       "direction": "Engineering",
-      "wp_type": "Specification",
+      "wp_type": "Guide",
       "immutable_input": false
     },
     {
-      "path": "Engineering/guides/kpol-auth-formal-specification.md",
+      "path": "Engineering/guides/kpol-auth-programming-guide.md",
       "direction": "Engineering",
-      "wp_type": "Specification",
+      "wp_type": "Guide",
       "immutable_input": false
     },
     {
@@ -219,9 +219,9 @@
       "immutable_input": false
     },
     {
-      "path": "Engineering/guides/kpol-formal-specification.md",
+      "path": "Engineering/guides/kpol-programming-guide.md",
       "direction": "Engineering",
-      "wp_type": "Specification",
+      "wp_type": "Guide",
       "immutable_input": false
     },
     {
@@ -699,7 +699,19 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/specifications/kpol/ekpol-formal-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/specifications/kpol/ekpol-specification.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/kpol/kpol-auth-formal-specification.md",
       "direction": "Engineering",
       "wp_type": "Specification",
       "immutable_input": false
@@ -724,6 +736,12 @@
     },
     {
       "path": "Engineering/specifications/kpol/kpol-consolidated.md",
+      "direction": "Engineering",
+      "wp_type": "Specification",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/specifications/kpol/kpol-formal-specification.md",
       "direction": "Engineering",
       "wp_type": "Specification",
       "immutable_input": false

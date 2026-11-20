@@ -1,7 +1,6 @@
 """Keep the formal KPOL/EKPOL/KPOL-AUTH specifications consistent with the reference implementations.
 
-Each check fails if a normative statement in `Engineering/guides/*-formal-specification.md`
-drifts from `kpol_reference.py` / `ekpol_frontend.py` / `Engineering/sw/kpol-auth`.
+The checks cover the normative documents in Engineering/specifications/kpol.
 """
 
 from __future__ import annotations
@@ -22,11 +21,11 @@ if str(SW_REF_DIR) not in sys.path:
 import ekpol_frontend as ef  # noqa: E402
 import kpol_reference as kr  # noqa: E402
 
-GUIDES = REPO_ROOT / "Engineering" / "guides"
+SPECS = REPO_ROOT / "Engineering" / "specifications" / "kpol"
 EXAMPLES = REPO_ROOT / "Engineering" / "sw" / "vmk-go" / "examples"
-KPOL_SPEC = (GUIDES / "kpol-formal-specification.md").read_text(encoding="utf-8")
-EKPOL_SPEC = (GUIDES / "ekpol-formal-specification.md").read_text(encoding="utf-8")
-KPOL_AUTH_SPEC = (GUIDES / "kpol-auth-formal-specification.md").read_text(encoding="utf-8")
+KPOL_SPEC = (SPECS / "kpol-formal-specification.md").read_text(encoding="utf-8")
+EKPOL_SPEC = (SPECS / "ekpol-formal-specification.md").read_text(encoding="utf-8")
+KPOL_AUTH_SPEC = (SPECS / "kpol-auth-formal-specification.md").read_text(encoding="utf-8")
 
 VECTOR_ROW = re.compile(r"\| \[`(?P<file>[a-z0-9_]+\.e?kpol)`\]\([^)]*\) \| `?(?P<profile>[A-Z0-9-]+)`? \| `(?P<sha>[0-9a-f]{64})`")
 
