@@ -1,7 +1,7 @@
 # Інженерія
 
-* **Версія:** 0.1.0
-* **Дата:** 2026-11-12
+* **Версія:** 0.2.0
+* **Дата:** 2026-11-20
 * **Тип WP:** Guide
 
 ## Призначення та навігація
@@ -15,7 +15,7 @@
 | Design | [Системна межа B1](design/system-boundary-allocation-b1.md), [інтеграція B2](design/bram-pipeline-event-integration.md). |
 | Decision | [Карта рішень](decisions/README.md). |
 | Solution | [Склад compiler/BRAM-пакета](solutions/compiler-bram-pipeline.md). |
-| Source Code | [Референс KPOL](sw/kpol-ref/kpol_reference.py), [RTL](hw/rtl/), [тести](hw/tests/). |
+| Source Code | [Компілятори й трансляція на Go (`kpolc`)](sw/kpol-go/README.md), [референс KPOL (Python)](sw/kpol-ref/kpol_reference.py), [RTL](hw/rtl/), [тести](hw/tests/). |
 | Configuration | [Карта конфігурацій](configurations/README.md). |
 | Hardware | [Профіль PYNQ-Z1](hw/boards/pynq-z1/README.md), [комутація](hw/boards/pynq-z1/hil-bench-wiring-guide.md). |
 | Перевірки | [Validation](validation/README.md). |
@@ -36,6 +36,7 @@
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.2.0 | 2026-11-20 | Додано посилання на компілятори й трансляцію KPOL, EKPOL та KPOL-AUTH на Go (`sw/kpol-go`). |
 | 0.1.0 | 2026-11-12 | Вхід до актуальних інженерних WP без PoC-демонстраторів. |
 
 ## Абревіатури та глосарій

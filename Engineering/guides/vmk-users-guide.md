@@ -581,8 +581,9 @@ go run ./cmd/vmk --example bms --to-ekpol --ekpol-style keyword
 # 3. Зворотна трансляція .ekpol у класичний .kpol (Problem / Solution / Proof)
 go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --to-kpol
 
-# 4. Компіляція .ekpol у 1024-Б образ BRAM, C99-модуль і Z3-сертифікат через Python-компілятор
-python3 ../hw/scripts/compile_kpol_bram_image.py examples/bms_safety_cascade.ekpol bms.bin \
+# 4. Компіляція .ekpol у 1024-Б образ BRAM, C99-модуль і Z3-сертифікат компілятором kpolc (Go)
+go build -C ../kpol-go -o kpolc ./cmd/kpolc
+../kpol-go/kpolc build examples/bms_safety_cascade.ekpol bms.bin \
   --emit-c99 bms_safety.c --emit-z3-cert bms_z3.json --dump-concepts
 rm -f bms.bin bms_safety.c bms_z3.json
 ```

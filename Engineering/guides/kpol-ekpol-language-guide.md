@@ -1,6 +1,6 @@
 # Посібник: Керівництво користувача та чистий код мов програмування KPOL і EKPOL за принципами Кернігана, Рітчі та Мартіна
 
-* **Версія:** 1.0.5
+* **Версія:** 1.0.6
 * **Дата:** 2026-11-20
 * **Тип WP:** Guide
 * **Статус:** Чинний практичний посібник користувача та стандарт кодування
@@ -452,7 +452,8 @@ test BmsFourLevelProtectionAndLatch {
 Однією командою ви можете перевірити вбудований блок `test`, згенерувати 1024-байтний образ BRAM для ПЛІС `PYNQ-Z1`, детермінований модуль C99 для мікроконтролера ARM та математичний сертифікат безпеки `Z3`:
 
 ```bash
-python3 Engineering/hw/scripts/compile_kpol_bram_image.py \
+go build -C Engineering/sw/kpol-go -o kpolc ./cmd/kpolc
+Engineering/sw/kpol-go/kpolc build \
   Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol \
   bms.bin --emit-c99 bms_safety.c --emit-z3-cert bms_z3.json --dump-concepts
 rm -f bms.bin bms_safety.c bms_z3.json
@@ -954,7 +955,7 @@ Proof CleanTwoStageGuard {
 
 #### 3.4. Шпаргалка команд компіляції, трансляції та верифікації
 
-Усі наведені нижче команди перевірені й готові до виконання з кореня репозиторію:
+Докладний опис команд `kpolc` для кожної мови — у розділах «Користування компілятором» посібників [KPOL](kpol-programming-guide.md#8-користування-компілятором-kpolc), [EKPOL](ekpol-programming-guide.md#користування-компілятором-kpolc) і [KPOL-AUTH](kpol-auth-programming-guide.md#8-користування-компілятором-kpolc-auth). Усі наведені нижче команди перевірені й готові до виконання з кореня репозиторію:
 
 ```bash
 # 1. Запуск програми .ekpol або .kpol у Go VMK v0.3.0 із покроковим трасуванням хвилі
@@ -963,16 +964,19 @@ Proof CleanTwoStageGuard {
 # 2. Відкриття повноекранного інтерактивного TUI-дебагера (клавіші: ↑/↓, e — подія, n/Space — мікро-хоп, m — стан, d — Diff/Source, q — вихід)
 (cd Engineering/sw/vmk-go && go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --tui)
 
-# 3. Автоматичне форматування / переклад між символьним EKPOL, ключовим EKPOL та класичним KPOL
-(cd Engineering/sw/vmk-go && go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --to-ekpol --ekpol-style keyword)
-(cd Engineering/sw/vmk-go && go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --to-ekpol --ekpol-style symbolic)
-(cd Engineering/sw/vmk-go && go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --to-kpol)
+# 3. Переклад між символьним EKPOL, ключовим EKPOL та класичним KPOL компілятором kpolc (Go; спершу виконайте крок 5, щоб його зібрати)
+Engineering/sw/kpol-go/kpolc to-ekpol --ekpol-style keyword Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol
+Engineering/sw/kpol-go/kpolc to-ekpol --ekpol-style symbolic Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol
+Engineering/sw/kpol-go/kpolc to-kpol Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol
 
 # 4. Потоковий режим UNIX STDIO (COMMIT -> stdout, REJECT_* -> stderr)
 printf "0:15\n0:120\n0:invalid\nstatus\n" | (cd Engineering/sw/vmk-go && go run ./cmd/vmk --program examples/bms_safety_cascade.ekpol --stdio)
 
-# 5. Компіляція у 1024-байтний образ BRAM (CME-RAW-1), C99-модуль та формальний Z3-сертифікат
-python3 Engineering/hw/scripts/compile_kpol_bram_image.py \
+# 5. Збирання kpolc, перевірка й виконання тестів, компіляція у 1024-байтний образ BRAM (CME-RAW-1), C99-модуль та Z3-сертифікат
+go build -C Engineering/sw/kpol-go -o kpolc ./cmd/kpolc
+Engineering/sw/kpol-go/kpolc check Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol
+Engineering/sw/kpol-go/kpolc verify Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol
+Engineering/sw/kpol-go/kpolc build \
   Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol \
   bms.bin --emit-c99 bms_safety.c --emit-z3-cert bms_z3.json --dump-concepts
 rm -f bms.bin bms_safety.c bms_z3.json
@@ -1004,6 +1008,7 @@ python3 -m pytest -v Engineering/sw/tests/test_ekpol_278.py
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.0.6 | 2026-11-20 | Команди компіляції, трансляції та перевірки переведено на `kpolc` (Go); додано посилання на розділи «Користування компілятором» трьох посібників. |
 | 1.0.5 | 2026-11-20 | Додано переходи до трьох вступних практикумів і нових шляхів формальних специфікацій. |
 | 1.0.4 | 2026-11-19 | Додано посилання на формальну специфікацію `KPOL-AUTH` (`1.0.0`) і KPOL `1.0.1`; виправлено опис `KPOL-AUTH`: лінійна нотація не приймає `←`/`→`, перелік точок `U01..U12` узгоджено з реєстром; у таблицях §1.3 і довідника колонку `KPOL-AUTH` замінено засвідченими формами Автора з локаторами «Пример для АН» (АН), а незасвідчені форми (`: x = K`, `: ¬(x = K)`, `[ LO .. HI ]`, `= x •` тощо) прибрано. |
 | 1.0.3 | 2026-11-19 | Узгоджено з формальними специфікаціями KPOL та EKPOL: виправлено розшифрування KPOL (*Problem-Oriented*), розкладку слова `W2` (`pred [7:0]`, `flags [15:8]`, `hazard_limit [23:16]`, `action [31:24]`) і `W3`, вилучено неіснуючий `CME_ACT_NOP (0x05)`, уточнено семантику `HAZARD_EN` і `SUBSCRIBER_EN`, коди `CME2-CASCADE`/`CME2-PROOF`, межі трансляції та статус концептуального режиму. |

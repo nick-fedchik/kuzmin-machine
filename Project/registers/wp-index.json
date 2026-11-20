@@ -1,5 +1,5 @@
 {
-  "version": "0.41.0",
+  "version": "0.42.0",
   "date": "2026-11-20",
   "entries": [
     {
@@ -813,6 +813,642 @@
       "immutable_input": false
     },
     {
+      "path": "Engineering/sw/kpol-go/README.md",
+      "direction": "Engineering",
+      "wp_type": "Guide",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/c99.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/compile_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/emit.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/engine.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/golden_gz_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/golden_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/json.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/parse.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/prove.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/render.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/smt.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/unit_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/c99/z3.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/cmd/kpolc/auth.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/cmd/kpolc/build.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/cmd/kpolc/commands.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/cmd/kpolc/flags.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/cmd/kpolc/main.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/cmd/kpolc/main_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/action.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/bridge.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/cme.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/compile.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/ekpol_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/errors.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/golden_gz_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/golden_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/numeric.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/parse.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/predicate.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/pyutil.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/pyutil_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/rule.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/toekpol.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/transpile.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/types.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/ekpol/validate.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/go.mod",
+      "direction": "Engineering",
+      "wp_type": "Configuration",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/acl.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/ast.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/check.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/cme1.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/cme2.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/cme_golden_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/cme_rules_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/cme_vectors_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/codes.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/decimal.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/descriptor.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/doc.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/errors.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/eval.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/golden_gz_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/golden_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/interp.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/lexer.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/parse.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/parser.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/profile.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/pyunicode.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/pyunicode_tables.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/rules_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/semantics_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/triad.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/types.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/value.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpol/verify.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/bridge_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/canon_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/cli.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/cli_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/cliargs.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/corpus.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/cst.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/doc.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/dogojson.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/errors.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/gates_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/golden_gz_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/golden_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/kpolimage_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/lexer.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/lexer_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/lowering.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/lowering_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/parser_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/pyunicode.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/pyunicode_tables.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/refdata.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/spec_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/uncertainty.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/vm.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/kpolauth/vm_test.go",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/c99_golden.json.gz",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/cme_golden.json.gz",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/ekpol_golden.json.gz",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/gen_c99_golden.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/gen_cme_golden.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/gen_ekpol_golden.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/gen_kpol_golden.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/gen_kpolauth_golden.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/gen_pyunicode.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/goldenio.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/kpol_golden.json.gz",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/kpol-go/testdata/kpolauth_golden.json.gz",
+      "direction": "Engineering",
+      "wp_type": "Data",
+      "immutable_input": false
+    },
+    {
       "path": "Engineering/sw/kpol-ref/c99_emitter.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
@@ -910,6 +1546,12 @@
     },
     {
       "path": "Engineering/sw/tests/test_kpol_debugger_272.py",
+      "direction": "Engineering",
+      "wp_type": "Source Code",
+      "immutable_input": false
+    },
+    {
+      "path": "Engineering/sw/tests/test_kpol_go.py",
       "direction": "Engineering",
       "wp_type": "Source Code",
       "immutable_input": false

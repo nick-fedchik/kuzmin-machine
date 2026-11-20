@@ -1,6 +1,6 @@
 # Реєстр Work Products NG
 
-* **Версія:** 0.16.0
+* **Версія:** 0.17.0
 * **Дата:** 2026-11-20
 * **Тип WP:** Register
 * **Власник:** Микола Федчик; укладач — GitHub Copilot CLI.
@@ -34,7 +34,7 @@
 | Design | [B1](../../Engineering/design/system-boundary-allocation-b1.md), [B2](../../Engineering/design/bram-pipeline-event-integration.md); [форма](../templates/work-products/design.md) | Межа й інтеграція, не доказ готовності всього продукту. |
 | Decision | [Карта v0.4.1](../../Engineering/decisions/README.md), [B6 v0.5.0](../../Engineering/decisions/b6-gpu-persistent-kernel-subscribers.md), [B7 (`CME-RAW-2` / `KPOL-SYS-02`)](../../Engineering/decisions/cme-raw2-kpol-sys02.md), розділи контрактів; [форма ADR](../templates/work-products/decision.md) | B6 v0.5.0 інтегрує емпіричні дані `EXP-GPU-01` (#225/#235/#240/#226) та `EXP-GPU-03` (#256); B7 v0.2.0 прийнято власником за Варіантом А (#185/#215). |
 | Solution | [Пакет](../../Engineering/solutions/compiler-bram-pipeline.md); [форма](../templates/work-products/solution.md) | Явний склад, залежності й обмеження. |
-| Source Code | [HW](../../Engineering/hw/), [SW](../../Engineering/sw/) | Чинні компоненти й тести; демо-FSM виключено. |
+| Source Code | [HW](../../Engineering/hw/), [SW](../../Engineering/sw/), [компілятори й трансляція на Go](../../Engineering/sw/kpol-go/README.md) | Чинні компоненти й тести; демо-FSM виключено. Мови KPOL, EKPOL і KPOL-AUTH реалізовано на Go (`kpolc`); Python-реалізація — еталон для диференційних перевірок. |
 | Configuration | [Карта](../../Engineering/configurations/README.md), файли біля компонентів | CFG-R ≠ CFG-P. |
 | Hardware | [Платформа](../../Engineering/hw/boards/pynq-z1/README.md), [стенд](../../Engineering/hw/boards/pynq-z1/hil-bench-wiring-guide.md), [план HIL-експериментів](../../Engineering/hw/boards/pynq-z1/hil-hardware-experiment-plan.md), [інвентар](hardware-inventory.md) | Опис об'єкта, схема монтажу, план HIL-експериментів та актуальний інвентарний реєстр апаратного стенда. |
 
@@ -66,6 +66,7 @@
 
 | Версія | Дата | Зміни |
 |---|---|---|
+| 0.17.0 | 2026-11-20 | Зареєстровано модуль `Engineering/sw/kpol-go` (компілятори й трансляція KPOL, EKPOL, KPOL-AUTH на Go, команда `kpolc`) з диференційними тестами та оновлено `wp-index.json`. |
 | 0.16.0 | 2026-11-20 | Зареєстровано три вступні посібники з програмування; нормативні документи мов зібрано в `Engineering/specifications/kpol/`. |
 | 0.15.0 | 2026-11-19 | Зареєстровано формальну специфікацію `Engineering/specifications/kpol/kpol-auth-formal-specification.md` (`1.0.0`, тип WP `Specification`) та оновлено `wp-index.json`. |
 | 0.14.0 | 2026-11-19 | Додано формальні специфікації мов KPOL і EKPOL 0.1.0 (`Engineering/guides/`) як нормативні Specification з пріоритетом над описовими документами. |

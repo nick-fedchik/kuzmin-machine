@@ -1,7 +1,7 @@
 # Машина Кузьміна
 
-* **Версія:** 0.6.0
-* **Дата:** 2026-11-18
+* **Версія:** 0.7.0
+* **Дата:** 2026-11-20
 * **Тип WP:** Guide
 * **Укладач:** GitHub Copilot CLI, Auto.
 * **Підстава:** команди Миколи Федчика підготувати актуальне дерево без legacy та перенести його до Git; [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280), [#282](https://github.com/nick-fedchik/kuzmin-machine/issues/282), [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284).
@@ -29,6 +29,7 @@ sequencer/CME/gate v2, детермінований C99-автомат безп�
 [Solution](Engineering/solutions/compiler-bram-pipeline.md), а верифікація генератора детермінованого C99 та сертифіката `Z3` — у
 [Report #270](Engineering/validation/kpol-cme/c99-emitter-270/report.md).
 Реалізований фронтенд ширший за погоджений цільовий профіль KPOL-CME-1.
+Компілятори й трансляція KPOL, EKPOL та KPOL-AUTH написані на Go: команда `kpolc` у [`Engineering/sw/kpol-go/`](Engineering/sw/kpol-go/README.md); Python-реалізація в `kpol-ref` служить еталоном для перевірок.
 
 ## Використання
 
@@ -36,6 +37,7 @@ sequencer/CME/gate v2, детермінований C99-автомат безп�
 
 ```bash
 (cd Engineering/sw/vmk-go && go test -v ./...)
+(cd Engineering/sw/kpol-go && go test ./...)
 python3 -m pytest -q
 python3 Project/tools/check_links.py
 python3 Project/tools/check_wp_documents.py
@@ -77,6 +79,7 @@ AV-10/11 стосуються попередньої CFG-R. Їхні дані н
 | 0.4.1 | 2026-11-18 | #276: додано посилання на Посібник користувача VMK (`Engineering/guides/vmk-users-guide.md`) та `Engineering/sw/vmk-go/README.md`. |
 | 0.5.0 | 2026-11-18 | #278: додано навігацію на специфікацію мови `EKPOL 0.1.0` (`Engineering/specifications/kpol/ekpol-specification.md`) та оновлено версію `VMK v0.2.0`. |
 | 0.6.0 | 2026-11-18 | #284: додано навігацію на Керівництво користувача та чистий код мов KPOL і EKPOL (`Engineering/guides/kpol-ekpol-language-guide.md`), каталог посібників (`Engineering/guides/README.md`) та оновлено версію `VMK v0.3.0`. |
+| 0.7.0 | 2026-11-20 | Додано навігацію на компілятори й трансляцію KPOL, EKPOL та KPOL-AUTH на Go (`Engineering/sw/kpol-go/`) і команду перевірки `go test` модуля. |
 
 ## Абревіатури та глосарій
 

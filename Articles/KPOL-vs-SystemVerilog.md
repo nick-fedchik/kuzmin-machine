@@ -192,7 +192,7 @@ flowchart TD
 
 ## Абревіатури та глосарій
 
-- **KPOL / EKPOL** — проєктні мови опису правил Машини Кузьміна; EKPOL розшифровується як *Ergonomic KPOL*. [Каталог контрактів](../Engineering/specifications/kpol/README.md) і [посібник із прикладами](../Engineering/guides/kpol-ekpol-language-guide.md).
+- **KPOL / EKPOL** — проєктні мови опису правил Машини Кузьміна; EKPOL розшифровується як *Ergonomic KPOL*. Як написати правило й побачити його дію: [практикум KPOL](../Engineering/guides/kpol-programming-guide.md) або [практикум EKPOL](../Engineering/guides/ekpol-programming-guide.md). Точні правила — у [каталозі специфікацій](../Engineering/specifications/kpol/README.md).
 - **RTL** (*Register-Transfer Level*) — опис регістрів, обчислень між ними й умов запису.
 - **SVA** (*SystemVerilog Assertions*) — засоби SystemVerilog для опису та перевірки властивостей, зокрема в часі.
 - **BRAM** (*Block RAM*) — вбудована блокова пам’ять ПЛІС.

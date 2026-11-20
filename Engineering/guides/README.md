@@ -1,6 +1,6 @@
 # Посібник: Каталог практичних посібників користувача (`Engineering/guides/`)
 
-* **Версія:** 1.3.0
+* **Версія:** 1.6.0
 * **Дата:** 2026-11-20
 * **Тип WP:** Guide
 * **Статус:** Чинний навігаційний покажчик інженерних посібників
@@ -15,11 +15,13 @@
 
 | Хочу… | З чого почати |
 |---|---|
-| Прочитати авторський запис і з’ясувати, де лежать команди підписки | [KPOL-AUTH: прочитати значення, а вже тоді стерти](kpol-auth-programming-guide.md) |
-| Відрізнити запит на п’ять квитків від продажу останнього квитка | [KPOL: пишемо правило для двох квитків](kpol-programming-guide.md) |
-| Зв’язати дві комірки так, щоб третій візит приніс відзнаку | [EKPOL: позначка за третє відвідування](ekpol-programming-guide.md) |
+| Читати авторський запис і програмувати підписки в підмножині L1; користуватися `kpolc auth` | [Підручник KPOL-AUTH: комірки, адресація, групи, підписки та каскади](kpol-auth-programming-guide.md) |
+| Написати програму з типами, подіями, умовами й перевіркою результату; зібрати образ для виконавця | [Підручник KPOL: від першого продажу до контрактів і сценаріїв](kpol-programming-guide.md) |
+| Зв’язати дві комірки так, щоб третій візит приніс відзнаку; перекласти програму між нотаціями | [EKPOL: позначка за третє відвідування](ekpol-programming-guide.md) |
 
 Не визначилися з мовою? Почніть із каси на KPOL: там лише одна комірка. Далі спробуйте читацьку картку на EKPOL, де зміна однієї комірки запускає правило іншої. Точні визначення для всіх трьох мов зібрано в [`Engineering/specifications/kpol/`](../specifications/kpol/README.md).
+
+Усі приклади виконує інструментарій на Go: компілятор і перевірку програм дає [`kpolc`](../sw/kpol-go/README.md), покрокове трасування — [`vmk`](../sw/vmk-go/README.md). Кожен посібник починається з двох команд `go build`; Python для прикладів не потрібен.
 
 ---
 
@@ -39,7 +41,7 @@
 
 | Посібник | Версія | Цільова аудиторія та зміст |
 | :--- | :---: | :--- |
-| **[Керівництво користувача та чистий код мов KPOL і EKPOL](kpol-ekpol-language-guide.md)** | `1.0.5` | Поглиблений курс: невизначені значення, події та каскади (частина I), розбір і поліпшення коду (частина II), довідник конструкцій і діагностик (частина III). |
+| **[Керівництво користувача та чистий код мов KPOL і EKPOL](kpol-ekpol-language-guide.md)** | `1.0.6` | Поглиблений курс: невизначені значення, події та каскади (частина I), розбір і поліпшення коду (частина II), довідник конструкцій і діагностик (частина III). |
 | **[Посібник користувача VMK та повноекранного TUI-дебагера (`vmk-users-guide.md`)](vmk-users-guide.md)** | `1.2.1` | Практичний посібник зі збірки та використання виконуваного бінарника **`vmk` (`Virtual Machine of Kuzmin v0.3.0`)** у [`Engineering/sw/vmk-go/`](../sw/vmk-go/README.md):<br>• робота у двох режимах (`--mode bram64` для 64-слотового конвеєра `CME-RAW-1` та `--mode conceptual` для авторської семантики `RFC-001..018`);<br>• трифазна інспекція підключення `PRE-LOAD -> POST-LOAD -> RUNNING` із послотним `Diff`;<br>• повноекранний інтерактивний TUI-дебагер (`--tui`: навігація `↑/↓`, картка `Concept Inspector`, ручний конструктор подій `[e]`, мікро-хоп хвилі `[n/Space]`, редактор стану `[m]`);<br>• потоковий режим UNIX `STDIO` (`--stdio`) та робота з фізичною платою ПЛІС **`Digilent PYNQ-Z1`** (`--target pynq1 \| pynq2`). |
 
 ### 3. Пов'язані інженерні посібники та нормативні входи в інших каталогах
@@ -48,12 +50,13 @@
 | :--- | :--- | :--- |
 | **Нормативні специфікації мов** | [`Engineering/specifications/kpol/README.md`](../specifications/kpol/README.md) | Вхід до специфікацій [`ekpol-specification.md`](../specifications/kpol/ekpol-specification.md), [`kpol-cme-subset.md`](../specifications/kpol/kpol-cme-subset.md), [`kpol-cme2-profile.md`](../specifications/kpol/kpol-cme2-profile.md), [`kpol-auth-subset.md`](../specifications/kpol/kpol-auth-subset.md) та [`kpol-consolidated.md`](../specifications/kpol/kpol-consolidated.md). |
 | **Специфікація емулятора VMK** | [`Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md`](../specifications/sw/vmk-go-emulator-and-tui-debugger.md) | Архітектурна та програмна специфікація двомодового емулятора `VMK v0.3.0` і TUI-дебагера на Go. |
+| **Компілятори й трансляція на Go** | [`Engineering/sw/kpol-go/README.md`](../sw/kpol-go/README.md) | Команда `kpolc` (`build`, `check`, `verify`, `run`, `to-kpol`, `to-ekpol`, `auth`), пакети `kpol`, `ekpol`, `kpolauth`, `c99`, перевірка проти Python-еталона. |
 | **Апаратний стенд PYNQ-Z1** | [`Engineering/hw/boards/pynq-z1/README.md`](../hw/boards/pynq-z1/README.md), [`hil-bench-wiring-guide.md`](../hw/boards/pynq-z1/hil-bench-wiring-guide.md) | Профіль плати `Digilent PYNQ-Z1` (`Zynq-7020`) та посібник із фізичної комутації HIL-стенда (`PMOD JA/JB`, `RP2040 LogicTracer`, `Jetson AGX Orin`). |
 | **Процесні посібники проєкту** | [`Project/guides/project-manual.md`](../../Project/guides/project-manual.md), [політика Work Products](../../Project/policies/work-products.md) | Правила організації робіт, ролей, гілок, рецензування та верифікації без бутафорії. |
 
 ### 4. Рекомендований маршрут читання для нового інженера
 
-1. Оберіть один із [трьох коротких посібників](#призначення), запустіть приклад і змініть правило. Інші мови для цього знати не потрібно.
+1. Оберіть [підручник KPOL, KPOL-AUTH або практикум EKPOL](#призначення). Для кожного з них знати інші дві мови не потрібно.
 2. Опануйте **[Частину II `kpol-ekpol-language-guide.md`](kpol-ekpol-language-guide.md#частина-ii-дисципліна-чистого-коду-в-kpol-та-ekpol-за-принципами-роберта-мартіна-clean-concept-oriented-code)** (7 правил чистого коду Мартіна та таблицю антипатернів `SMELL-01..07`).
 3. Відкрийте **[`vmk-users-guide.md`](vmk-users-guide.md)** і пройдіть покрокове трасування хвилі подій у повноекранному TUI-дебагері (`vmk --program examples/bms_safety_cascade.ekpol --tui`).
 4. Для однозначного тлумачення конструкцій звіряйтеся з **[`kpol-formal-specification.md`](../specifications/kpol/kpol-formal-specification.md)**, **[`ekpol-formal-specification.md`](../specifications/kpol/ekpol-formal-specification.md)** і, для авторської нотації, **[`kpol-auth-formal-specification.md`](../specifications/kpol/kpol-auth-formal-specification.md)**.
@@ -72,6 +75,9 @@
 
 | Версія | Дата | Зміни |
 | :--- | :--- | :--- |
+| 1.6.0 | 2026-11-20 | У посібниках KPOL, EKPOL і KPOL-AUTH додано розділи «Користування компілятором `kpolc`»: команди, профілі, результати, коди виходу й повідомлення про помилки; шпаргалку довгого посібника переведено на `kpolc`. |
+| 1.5.0 | 2026-11-20 | Приклади посібників KPOL, KPOL-AUTH і EKPOL переведено на компілятор `kpolc` (Go) і налагоджувач `vmk`; команди довгих посібників оновлено. |
+| 1.4.0 | 2026-11-20 | Замість вступних прикладів для KPOL і KPOL-AUTH — два підручники з мови, програмами та вправами. |
 | 1.3.0 | 2026-11-20 | Додано окремі практикуми KPOL-AUTH, KPOL та EKPOL; формальні специфікації перенесено до `Engineering/specifications/kpol/`. |
 | 1.2.0 | 2026-11-19 | Додано формальну специфікацію `KPOL-AUTH` (`1.0.0`); оновлено версії формальної специфікації KPOL (`1.0.1`) і посібника KPOL/EKPOL (`1.0.4`). |
 | 1.1.0 | 2026-11-19 | Додано розділ формальних специфікацій мов KPOL (`1.0.0`) і EKPOL (`1.0.0`) з правилом першості; оновлено версію посібника KPOL/EKPOL до `1.0.3`. |
