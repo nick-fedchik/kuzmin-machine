@@ -1,132 +1,27 @@
-# KPOL проти SystemVerilog: Як «нова парадигма» Машини Кузьміна відображається на стандартизований кремній (IEEE 1800 SVA)
+# KPOL і SystemVerilog: як описати правило, реалізувати його в схемі й перевірити
 
-* **Версія:** 1.3.0
-* **Дата:** 2026-11-19
+* **Версія:** 1.4.0
+* **Дата:** 2026-11-20
 * **Тип WP:** Article
 * **Автор:** Микола Мартинович Федчик (Mykola Fedchyk)
-* **Статус:** Дослідницько-інженерний порівняльний аналіз
-* **Контекст проєкту:** Дослідження Машини Кузьміна (МК), архітектура ядра `CFG-P-HA` та формальна верифікація AXI-64.
-* **Нормативні джерела мов:** [каталог контрактів KPOL/EKPOL](../Engineering/specifications/kpol/README.md), [специфікація EKPOL 0.1.0](../Engineering/specifications/kpol/ekpol-specification.md), профілі [KPOL-CME-1](../Engineering/specifications/kpol/kpol-cme-subset.md), [KPOL-CME-2](../Engineering/specifications/kpol/kpol-cme2-profile.md); [практичний посібник KPOL/EKPOL](../Engineering/guides/kpol-ekpol-language-guide.md); еталонні приклади [`bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol) та [`increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol).
-
----
-
-## 0. Дидактична оцінка та інженерне позиціонування
 
 Цей матеріал призначений для цифрових схемотехніків, інженерів FPGA/ASIC, розробників мовних компіляторів та верифікаторів апаратних властивостей (Formal Verification / SVA). Його мета — провести суворе зіставлення між теоретичною моделлю Машини Кузьміна (МК), її проблемно-орієнтованими мовами **KPOL / EKPOL** та промисловим стандартом проектування і верифікації цифрових мікросхем **SystemVerilog / SystemVerilog Assertions (IEEE 1800)**.
 
-> [!IMPORTANT]
-> **Принцип достовірності прикладів:** Усі фрагменти коду KPOL та EKPOL, наведені в цьому документі, є **100% канонічними та виконуваними**. Вони взяті безпосередньо з еталонної тестової бази проєкту ([`bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol), [`increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol)), успішно компілюються у бінарні образи BRAM (`CME-RAW-1`, 1024 байти), верифікуються тестовим набором `Engineering/sw/tests/test_ekpol_278.py` та виконуються у віртуальній машині `VMK v0.3.0`.
+## 1. Три події для одного лічильника
 
----
+Лічильник показує `10`. Він рахує не суму показів датчика, а **кількість прийнятих подій**: додає одиницю, якщо показ достовірний і менший за `20`. Подамо три події поспіль:
 
-## 1. Вступ: Ілюзія «нової парадигми» та інженерна реальність кремнію
+| Що надійшло | Що вирішує виконавець VMK | Стан після події |
+|---|---|---:|
+| `5` | Показ достовірний, `5 < 20`. Записати нове значення (`COMMIT`). | `11` |
+| `25` | Показ достовірний, але умова хибна (`REJECT_GUARD`). | `11` |
+| `_` | Подія надійшла, але показу немає. Порівнювати з порогом нічого (`REJECT_FAULT`). | `11` |
 
-У процесі теоретичного дослідження Машини Кузьміна (КМ) було розроблено концептно-подієву мову програмування **KPOL** та її ергономічне розширення **EKPOL 0.1.0**. Її концептуальний апарат спирався на ідею «не-фон-нейманівських» обчислень:
-1. Квантування за подіями замість послідовного лічильника команд (`PC`);
-2. Відмова від централізованого стека на користь розподілених комірок пам'яті зі станом (**концептів**);
-3. Фіксовані дескриптори правил і вбудовані інваріанти безпеки `[>= 0]`;
-4. Тризначна логіка невизначеності $`\mathcal{L}_3 = \lbrace 0, 1, \bot_{\text{undef}} \rbrace`$ (де `_` або `undef` позначає стан відмови/невизначеності);
-5. Синтаксичні примітиви транзакційного бар'єра: Велика Крапка `•` (`commit;`), вхідний предикат `::` (`when`) та реактивна дія `=>`.
+Два останні результати на табло однакові, але причини різні. На цьому прикладі зручно розділити три завдання: **EKPOL описує, коли змінити значення; RTL визначає, як схема його змінює; SVA перевіряє, чи поводиться схема так, як домовилися.**
 
-Проте практичний перехід від теоретичних формул до фізичного кремнію ПЛІС (*Xilinx Zynq-7020 / Digilent PYNQ-Z1*) та створення формального випробувального стенда для шини AXI4-Lite ([`axi64_props.sv`](../Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv)) привели до фундаментального висновку:
+### Правило: що має відбутися
 
-> **Інженерне відкриття:** Парадигма, яку KPOL декларував як нову обчислювальну філософію, насправді вже понад два десятиліття є утвердженим індустріальним стандартом у розробці мікроелектроніки. Це мова **SystemVerilog (IEEE 1800)**, а точніше її формальне розширення — **SystemVerilog Assertions (SVA)**.
-
-SystemVerilog від свого народження створювався не як послідовний імперативний алгоритм (на кшталт C/C++ чи Python), а як **паралельна, подієво-керована мова декларативних інваріантів, конвеєрних регістрів та автоматів станів**. Усі ключові механізми KPOL знаходять прямі, строго типізовані, синтезовані та верифіковані аналоги в кремнії.
-
----
-
-## 2. Порівняльна матриця фундаментальних концепцій
-
-Нижче наведено повний концептуальний міст: від **первинної авторської нотації М. Ю. Кузьміна (`KPOL-AUTH`)** через **ергономічний `EKPOL 0.1.0`** до **стандартизованого кремнію SystemVerilog / SVA**:
-
-| № | Концепція Машини Кузьміна | Оригінальна авторська нотація (`KPOL-AUTH` / слайди) | Ергономічний еквівалент `EKPOL 0.1.0` | Реалізація в SystemVerilog / SVA (IEEE 1800) | Апаратне втілення в кремнії |
-|---|:--- |:--- |:--- |:--- |:--- |
-| **1** | **Подія запису / строб `•`** | `← @ Int32 x : ... •` | `<- Pulse(x)` або `on write(x)` | `posedge clk` або строб `pulse_valid` | Тактовий фронт D-тригера або Clock Enable |
-| **2** | **Подія читання / огляд** | `→ • Sum = 0` (пост-скидання) | `-> => . Sum = 0` / `on read => after` | Строби рукостискання `arvalid` / `rready` | Порт читання BRAM (Port A Read Enable) |
-| **3** | **Концепт (дескриптор)** | `Int32 Counter = 10 [>= 0]` | `concept Counter: int32 = 10 [>= 0]` | Апаратний регістр `counter_state`, BRAM-слот | Банк регістрів або Block RAM (RAMB36E1) |
-| **4** | **Тризначна логіка ($`\mathcal{L}_3`$)** | `_` (`? If _ ; ! If = ¬`) | `_` або `undef` | Двобітове кодування `{valid, value}` | Провід достовірності (Valid Flag / Handshake) |
-| **5** | **Предикат припущення** | `: param < 20` або `[ 50 .. 5000 ]` | `:: param < 20` або `when in 50..5000` | Компаратори та SVA `assume property` | Апаратні цифрові компаратори без затримки |
-| **6** | **Інваріант безпеки** | `[>= 0]` (або `Invariants { ... }`) | `[>= 0]` | SVA `assert property (state >= 0)` | Комбінаторний вентиль блокування (Fail-Closed) |
-| **7** | **Транзакційний бар'єр** | Велика Крапка `•` | `.` (крапка) або `commit;` | Фіксація в регістрі `always_ff @(posedge clk)` | Запис у D-FF або Port A/B Write Enable BRAM |
-| **8** | **Підписка на зміну** | `~ C0 • C1 += 1` | `~ C0 => C1 += 1 .` / `on change(C0)` | Конвеєрний регістр FSM та SVA `sequence ##1` | Міжбанковий комутатор та конвеєрні регістри |
-| **9** | **Виклик / виконання** | `\| @ U64 (a_ > b -=b ...)` | `\| (a, b) => ... .` / `on call(...)` | Функція або протокол handshake `req/ack` | Комбінаційний або FSM-виконавець |
-
-```mermaid
-flowchart LR
-    subgraph Auth_World["1. Оригінальний KPOL-AUTH (Кузьмін)"]
-        direction TB
-        A_Ev["Вхід/Вихід: ← @ x, →"]
-        A_Dot["Велика Крапка: •"]
-        A_L3["Тризначність: _ (undef)"]
-        A_Sub["Хвиля підписки: ~ C0"]
-        A_Inv["Інваріант: [>= 0]"]
-    end
-
-    subgraph EKPOL_World["2. Ергономічний EKPOL 0.1.0 (ASCII)"]
-        direction TB
-        E_Ev["Стимули: <- x / on write(x)"]
-        E_Dot["Бар'єр: . / commit;"]
-        E_L3["Літерал: _ / undef"]
-        E_Sub["Каскад: ~ C0 / on change"]
-        E_Inv["Контракт: [>= 0]"]
-    end
-
-    subgraph SV_World["3. Стандартний кремній (IEEE 1800 SVA)"]
-        direction TB
-        S_Ev["Синхронізація: @(posedge clk)"]
-        S_Dot["D-тригер: always_ff <= "]
-        S_L3["Два біти: {valid, value}"]
-        S_Sub["Конвеєр: ##1 stage_next"]
-        S_Inv["Доказ: assert property"]
-    end
-
-    Auth_World ==>|"Трансляція в 7-бітний ASCII"| EKPOL_World
-    EKPOL_World ==>|"Апаратний синтез (--emit-sv)"| SV_World
-```
-
----
-
-## 3. Практичні приклади коду: Канонічний KPOL/EKPOL проти SystemVerilog / SVA
-
-Усі наведені нижче фрагменти KPOL/EKPOL є точними текстами з робочої кодової бази проєкту.
-
-### 3.0. Матриця трасування: Покриття концепцій Розділу 2 у практичних прикладах
-
-Кожен рядок порівняльної таблиці Розділу 2 знаходить своє пряме відображення у практичних прикладах коду нижче:
-
-| № | Рядок порівняльної матриці (Розділ 2) | Абстракція в KPOL / EKPOL | Реалізація в SystemVerilog / SVA | Де продемонстровано |
-|---|---|---|---|---|
-| **1** | **Подія (Event Impulse) `•`** | `<- Pulse(param)` / `on Pulse` | `posedge clk`, строб валідності `pulse_valid` | Сценарій 1 (лічильник) та Сценарій 2 (BMS) |
-| **2** | **Концепт (Concept Descriptor)** | `concept Counter: int32 = 10 [>= 0]` | Апаратний регістр `counter_state`, слоти BRAM | Сценарій 1, Сценарій 2, Сценарій 4 (`CFG-P-HA`) |
-| **3** | **Тризначна логіка ($`\mathcal{L}_3`$)** | Літерал `_` (`undef`), відсікання `REJECT_FAULT` | Розпаралелювання `{valid, value}`, SVA `p_reject_uncertainty` | Сценарій 1 (обрив датчика) та Розділ 4 |
-| **4** | **Предикат припущення (`::` / `when`)** | `when param < 20`, `when delta_mv in 50..5000` | Компаратор порогу, SVA `assume property` | Сценарій 1, Сценарій 2, Сценарій 3 (AXI stall) |
-| **5** | **Інваріант безпеки (`[>= 0]`)** | `[>= 0]`, защіпка `Pack_Fault_Latch` | SVA `assert property (state >= 0)`, Fail-Closed защіпка | Сценарій 1 (невід'ємність) та Сценарій 2 (BMS latch) |
-| **6** | **Транзакційний бар'єр (`•` / `commit;`)** | Фіксація `commit;` (`.`) за умови `[>= 0]` | Синхронний запис `always_ff`, атомарний BRAM swap | Сценарій 1, Сценарій 2 та Сценарій 4 (`CFG-P-HA`) |
-| **7** | **Підписка на зміну (`~` / `on change`)** | `on change(Cell_Delta_mV)` | Конвеєрні стадії FSM, SVA `sequence` / `\|-> ##1` | Сценарій 2 (4-рівневий каскад BMS) |
-
----
-
-### Сценарій 1. Захищений лічильник з інваріантом та захистом від невизначеності («Hello, Concept!»)
-
-Базова одиниця обчислення Машини Кузьміна — концепт з інваріантом невід'ємності `[>= 0]`, що приймає вхідну подію `Pulse(param)`, перевіряє поріг `param < 20` та інкрементує стан. 
-
-У віртуальній машині `VMK` виконання подій `trace-events "0:5,0:25,0:invalid"` демонструє всі базові фази:
-* `0:5` (номінальний вхід): предикат $5 < 20$ істинний $\implies$ `COMMIT` (новий стан `11`);
-* `0:25` (вихід за поріг): предикат $25 < 20$ хибний $\implies$ `REJECT_GUARD` (стан залишається `11`);
-* `0:invalid` (обрив датчика, стан невизначеності `_` / $\bot_{\text{undef}}$): шлюз достовірності відсікає подію $\implies$ `REJECT_FAULT` (стан залишається `11`).
-
-#### Діалект A: Оригінальна авторська нотація М. Ю. Кузьміна (`KPOL-AUTH` / слайди)
-*Джерело:* первинні рукописи та слайди М. Ю. Кузьміна ([`Research/sources/author/`](../Research/sources/README.md), специфікація [`kpol-auth-subset.md`](../Engineering/specifications/kpol/kpol-auth-subset.md)).
-
-```text
-Int32 Counter = 10 [>= 0]
-    ← @ Int32 Pulse : Pulse < 20 • Counter += 1
-```
-*Семантика Кузьміна:* символ `←` позначає подію запису з параметром `Pulse` (`@`), двокрапка `:` задає предикат допуску, а Велика Крапка `•` виступає апаратним транзакційним бар'єром.
-
-#### Діалект B: Символьний `EKPOL 0.1.0` (чистий 7-бітний ASCII)
-*Файл:* [`Engineering/sw/vmk-go/examples/increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol) (еквівалентний запис)
+*Дослівно з файлу [`increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol):*
 
 ```ekpol
 module Increase;
@@ -138,472 +33,174 @@ concept Counter: i32 = 10 [>= 0] {
 }
 ```
 
-#### Діалект C: Ключова нотація `EKPOL 0.1.0` (`keyword`)
-*Файл:* [`Engineering/sw/vmk-go/examples/increase.ekpol`](../Engineering/sw/vmk-go/examples/increase.ekpol)  
-*Хеш образу BRAM:* `SHA-256 = 4df05b189b9bf12052d98ab6084e0256454c60cae4afd4449469c060ba8dcc5d`
+`Counter` — **концепт**, тобто реактивна комірка пам’яті: разом зі значенням описано, на яку подію вона реагує. Читайте останній рядок зліва направо: на запис `Pulse(param)` перевір умову `param < 20`; якщо відповідь «так», збільш лічильник на одиницю. Така перевірка «так чи ні» називається **предикатом**. Обмеження `[>= 0]` стосується не датчика, а самого лічильника: новий стан має бути невід’ємним. Це його **інваріант**.
+
+*Еквівалентний запис того самого правила ключовими словами EKPOL, не окрема програма:*
 
 ```ekpol
-module Increase;
-
-@stdin
-@stdout
-concept Counter: int32 = 10 [>= 0] {
-    on Pulse(param) when param < 20 => Counter += 1 commit;
-}
+on Pulse(param) when param < 20 => Counter += 1 commit;
 ```
 
-#### Діалект D: Класичний KPOL-CME-1 (`Problem / Solution / Proof`)
-*Файл:* [`Engineering/hw/tests/kpol_bram_pipeline_increase.kpol`](../Engineering/hw/tests/kpol_bram_pipeline_increase.kpol)
+Це інженерна нотація [EKPOL](../Engineering/specifications/kpol/ekpol-specification.md), а не цитата зі слайдів М. Ю. Кузьміна. [Той самий лічильник у профілі KPOL-CME-1](../Engineering/hw/tests/kpol_bram_pipeline_increase.kpol) розділяє оголошення інваріанта (`Problem`) і правило переходу (`Solution`). [Тести компілятора](../Engineering/sw/tests/test_ekpol_278.py) порівнюють образи пам’яті для еталонних програм; [тести VMK](../Engineering/sw/vmk-go/internal/vmk/vmk_test.go) перевіряють, зокрема, три наведені вище рішення. Це не тест еквівалентності довільного модуля SystemVerilog.
 
-```kpol
-Problem Increase {
-    Invariants { NonNeg: Counter >= 0; }
-}
-Solution Increase {
-    state Counter: Int32 = 10;
-    event Pulse(param: Int32);
-    rule Step on Pulse when param < 20 {
-        set Counter := Counter + 1;
-    }
-}
-Proof Increase {
-    scenario S {
-        step Pulse(param = 5);
-        expect Counter == 11;
-        step Pulse(param = 25);
-        expect Counter == 11;
-    }
-}
-```
+### Реалізація: хто дозволяє запис у регістр
 
-#### Діалект E: SystemVerilog RTL + SVA (IEEE 1800)
+*Навчальна схема, написана вручну.* Тут `pulse` означає «подія надійшла», а `param_valid` — «значенню можна довіряти». Без першого сигналу схема не відрізняла б відсутність події від події без показу. Для стислості модуль виводить лише стан, а не діагностичний код VMK.
 
 ```systemverilog
-// Синтезований модуль захищеного лічильника з формальними властивостями
-// Покриває рядки 1, 2, 3, 4, 5, 6 порівняльної матриці Розділу 2
 module concept_counter (
-    input  logic        clk,
-    input  logic        rst_n,
-    // [Рядки 1 і 3] Подія та тризначна логіка L3: {valid, value}
-    // pulse_valid = 1 (достовірне значення), pulse_valid = 0 (стан невизначеності '_' / обрив лінії)
-    input  logic        pulse_valid,
-    input  logic [31:0] pulse_param,
-    // [Рядок 2] Концепт: апаратний стан комірки (слот W0 у BRAM)
-    output logic [31:0] counter_state
+    input  logic clk, rst_n, pulse, param_valid,
+    input  logic signed [31:0] param,
+    output logic signed [31:0] counter
 );
-    localparam logic [31:0] INIT_COUNTER    = 32'd10;
-    localparam logic [31:0] PARAM_THRESHOLD = 32'd20;
+    localparam logic signed [31:0] MAX_I32 = 32'sh7fff_ffff;
+    wire accept = pulse && param_valid && param < 32'sd20 && counter < MAX_I32;
 
-    // [Рядок 4] Предикат припущення: перевірка валідності та порогу (when param < 20)
-    wire guard_condition = pulse_valid && (pulse_param < PARAM_THRESHOLD);
-
-    // [Рядок 5 і 6] Транзакційний бар'єр commit; з перевіркою інваріанту невід'ємності [>= 0]
     always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            counter_state <= INIT_COUNTER;
-        end else if (guard_condition) begin
-            // Фіксація стану: оновлення відбувається лише за умови валідності та виконання предикату
-            counter_state <= counter_state + 32'd1;
-        end
-        // Якщо pulse_valid == 0 (стан '_') або param >= 20, стан гарантовано не змінюється
+        if (!rst_n)      counter <= 32'sd10;
+        else if (accept) counter <= counter + 32'sd1;
     end
-
-    // Формальна специфікація для SMT-солвера (Z3 / SymbiYosys)
-    `ifdef FORMAL
-        // [Рядок 5] Інваріант безпеки: Counter >= 0 у кожному такті
-        property p_non_negative;
-            @(posedge clk) disable iff (!rst_n)
-            counter_state >= 32'd0;
-        endproperty
-        assert_non_neg: assert property (p_non_negative);
-
-        // [Рядок 3] Тризначна логіка: захист від невизначеності '_' (Fail-Closed Gate)
-        property p_reject_uncertainty;
-            @(posedge clk) disable iff (!rst_n)
-            (!pulse_valid) |=> (counter_state == $past(counter_state));
-        endproperty
-        assert_uncertainty_safe: assert property (p_reject_uncertainty);
-
-        // [Рядок 4] Гарантія відсікання події поза допуском: стан не змінюється
-        property p_reject_out_of_bound;
-            @(posedge clk) disable iff (!rst_n)
-            (pulse_valid && (pulse_param >= PARAM_THRESHOLD)) |=> (counter_state == $past(counter_state));
-        endproperty
-        assert_reject_guard: assert property (p_reject_out_of_bound);
-    `endif
-endmodule
-```
-
----
-
-### Сценарій 2. Канонічний 4-рівневий каскад захисту BMS (Підписки та защіпка)
-
-У системі керування акумуляторною батареєю (BMS) критично важливий принцип **Fail-Closed**: якщо зафіксовано аномальний перепад напруги комірок або датчик відмовив, каскад аварій повинен заблокувати контактор без можливості самовільного відновлення.
-
-Цей приклад демонструє **Рядок 7 (Підписка на зміну `~` / `on change`)** та **Рядок 5 (Fail-Closed інваріант `[>= 0]`)**.
-
-#### Діалект A: Оригінальна авторська нотація М. Ю. Кузьміна (`KPOL-AUTH` / слайди)
-*Джерело:* первинні рукописи та слайди М. Ю. Кузьміна ([`Research/sources/author/`](../Research/sources/README.md), специфікація [`kpol-auth-subset.md`](../Engineering/specifications/kpol/kpol-auth-subset.md)).
-
-```text
-Int32 Cell_Delta_mV = 0 [>= 0]
-    ← @ Int32 delta_mv : delta_mv in [ 50 .. 5000 ] • Cell_Delta_mV += 1
-
-Int32 Module_Thermal_Guard = 0 [>= 0]
-    ~ Cell_Delta_mV : Cell_Delta_mV >= 1 • Module_Thermal_Guard += 1
-
-Int32 Pack_Fault_Latch = 2 [>= 0]
-    ~ Module_Thermal_Guard : Module_Thermal_Guard >= 1 • Pack_Fault_Latch -= 1
-
-Int32 Contactor_Interlock = 10 [>= 0]
-    ~ Pack_Fault_Latch : ¬(Pack_Fault_Latch = 2) • Contactor_Interlock = Pack_Fault_Latch
-```
-*Семантика Кузьміна:* символ `~` позначає подієву підписку на зміну джерела, дужки `[ 50 .. 5000 ]` — авторську межу діапазону, а символ `¬` — логічне заперечення.
-
-#### Діалект B: Символьний `EKPOL 0.1.0` (чистий 7-бітний ASCII)
-*Файл:* [`Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol) (символьна нотація)
-
-```ekpol
-module BmsSafetyCascade;
-
-@stdin
-@stdout
-concept Cell_Delta_mV: i32 = 0 [>= 0] {
-    <- EvCellDelta(delta_mv) :: delta_mv in 50..5000 => Cell_Delta_mV += 1 .
-}
-
-@stdout
-concept Module_Thermal_Guard: i32 = 0 [>= 0] {
-    ~ Cell_Delta_mV :: Cell_Delta_mV >= 1 => Module_Thermal_Guard += 1 .
-}
-
-@stdout
-concept Pack_Fault_Latch: i32 = 2 [>= 0] {
-    ~ Module_Thermal_Guard :: Module_Thermal_Guard >= 1 => Pack_Fault_Latch -= 1 .
-}
-
-@stdout
-concept Contactor_Interlock: i32 = 10 [>= 0] {
-    ~ Pack_Fault_Latch :: !(Pack_Fault_Latch == 2) => Contactor_Interlock = Pack_Fault_Latch .
-}
-```
-
-#### Діалект C: Ключова нотація `EKPOL 0.1.0` (`keyword`)
-*Файл:* [`Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol`](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol)  
-*Хеш образу BRAM:* `SHA-256 = de03442454424b5cf64478506f118c13f095ae24ba58db8894583c43567ea3ee`
-
-```ekpol
-module BmsSafetyCascade;
-
-@stdin
-@stdout
-concept Cell_Delta_mV: int32 = 0 [>= 0] {
-    on EvCellDelta(delta_mv) when delta_mv in 50..5000 => Cell_Delta_mV += 1 commit;
-}
-
-@stdout
-concept Module_Thermal_Guard: int32 = 0 [>= 0] {
-    on change(Cell_Delta_mV) when Cell_Delta_mV >= 1 => Module_Thermal_Guard += 1 commit;
-}
-
-@stdout
-concept Pack_Fault_Latch: int32 = 2 [>= 0] {
-    on change(Module_Thermal_Guard) when Module_Thermal_Guard >= 1 => Pack_Fault_Latch -= 1 commit;
-}
-
-@stdout
-concept Contactor_Interlock: int32 = 10 [>= 0] {
-    on change(Pack_Fault_Latch) when not (Pack_Fault_Latch == 2) => Contactor_Interlock = Pack_Fault_Latch commit;
-}
-
-test BmsFourLevelProtectionAndLatch {
-    send Cell_Delta_mV(15);
-    expect Cell_Delta_mV == 0;
-    expect Contactor_Interlock == 10;
-    send Cell_Delta_mV(120);
-    expect Cell_Delta_mV == 1;
-    expect Module_Thermal_Guard == 1;
-    expect Pack_Fault_Latch == 1;
-    expect Contactor_Interlock == 1;
-    send Cell_Delta_mV(180);
-    expect Cell_Delta_mV == 2;
-    expect Module_Thermal_Guard == 2;
-    expect Pack_Fault_Latch == 0;
-    expect Contactor_Interlock == 0;
-    send Cell_Delta_mV(250);
-    expect Cell_Delta_mV == 3;
-    expect Module_Thermal_Guard == 3;
-    expect Pack_Fault_Latch == 0;
-    expect Contactor_Interlock == 0;
-}
-```
-
-*Механізм апаратного блокування:* Зверніть увагу на концепт `Pack_Fault_Latch: int32 = 2 [>= 0]`. При кожній аварії він зменшується: `2 -> 1 -> 0`. Коли стан сягає `0`, будь-яка наступна спроба декременту `0 - 1 = -1` порушує інваріант `[>= 0]`. Вентиль Великої Крапки відкидає дію (`REJECT_INVARIANT`), і защіпка назавжди лишається в стані `0`, гарантуючи, що контактор `Contactor_Interlock` залишається розімкненим (`0`).
-
-#### Діалект D: SystemVerilog RTL + SVA (IEEE 1800)
-
-```systemverilog
-// Апаратний 4-ступеневий синхронний каскад захисту BMS
-// Покриває рядки 1, 2, 4, 5, 6, 7 порівняльної матриці Розділу 2
-module bms_safety_cascade (
-    input  logic        clk,
-    input  logic        rst_n,
-    // [Рядок 1] Зовнішня подія вхідного стробу EvCellDelta
-    input  logic        ev_cell_delta_valid,
-    input  logic [31:0] delta_mv,
-    // [Рядок 2] Апаратні концепти каскаду
-    output logic [31:0] cell_delta_mv,
-    output logic [31:0] module_thermal_guard,
-    output logic [31:0] pack_fault_latch,
-    output logic [31:0] contactor_interlock
-);
-    localparam logic [31:0] DELTA_MIN = 32'd50;
-    localparam logic [31:0] DELTA_MAX = 32'd5000;
-
-    // [Рядок 4] Вхідний компаратор діапазону (when delta_mv in 50..5000)
-    wire delta_in_range = ev_cell_delta_valid && (delta_mv >= DELTA_MIN) && (delta_mv <= DELTA_MAX);
-
-    // [Рядок 6 і 7] Транзакційний бар'єр та реактивна підписка на зміну (on change)
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            cell_delta_mv        <= 32'd0;
-            module_thermal_guard <= 32'd0;
-            pack_fault_latch     <= 32'd2; // Початковий бюджет відмов: 2
-            contactor_interlock  <= 32'd10; // Нормальний стан замкненого контактора
-        end else if (delta_in_range) begin
-            // Рівень 1: облік аномалій напруги
-            cell_delta_mv <= cell_delta_mv + 32'd1;
-
-            // [Рядок 7] Реакція підписника 1: on change(Cell_Delta_mV)
-            if ((cell_delta_mv + 32'd1) >= 32'd1) begin
-                module_thermal_guard <= module_thermal_guard + 32'd1;
-
-                // [Рядок 7] Реакція підписника 2: on change(Module_Thermal_Guard)
-                // [Рядок 5] Непорушний інваріант [>= 0]: защіпка блокується в 0
-                if (pack_fault_latch > 32'd0) begin
-                    pack_fault_latch <= pack_fault_latch - 32'd1;
-
-                    // [Рядок 7] Реакція підписника 3: on change(Pack_Fault_Latch)
-                    contactor_interlock <= pack_fault_latch - 32'd1;
-                end
-            end
-        end
-    end
-
-    // Формальні SVA-властивості
-    `ifdef FORMAL
-        // [Рядок 5] Інваріант невід'ємності защіпки [>= 0]
-        property p_latch_non_negative;
-            @(posedge clk) disable iff (!rst_n)
-            pack_fault_latch >= 32'd0;
-        endproperty
-        assert_latch_non_neg: assert property (p_latch_non_negative);
-
-        // [Рядок 5 і 6] Незворотність блокування Fail-Closed
-        property p_permanent_lockout;
-            @(posedge clk) disable iff (!rst_n)
-            (pack_fault_latch == 32'd0) |=> (pack_fault_latch == 32'd0);
-        endproperty
-        assert_perm_lock: assert property (p_permanent_lockout);
-
-        // [Рядок 7] Часова узгодженість каскаду (SVA Sequence): аварія обов'язково розмикає контактор
-        property p_contactor_safe_when_tripped;
-            @(posedge clk) disable iff (!rst_n)
-            (pack_fault_latch == 32'd0) |-> (contactor_interlock == 32'd0);
-        endproperty
-        assert_contactor_safe: assert property (p_contactor_safe_when_tripped);
-    `endif
-endmodule
-```
-
----
-
-### Сценарій 3. Стабільність протоколу рукостискання AXI4-Lite (Handshake Stability)
-
-Цей приклад демонструє **Рядок 2 (Подія читання `→`)**, **Рядок 4 (Предикат припущення `::` $\iff$ SVA `assume property`)** та **Рядок 6 (Гарантія бар'єра `•` $\iff$ SVA `assert property`)**.
-
-#### Діалект A: Авторські патерни читання та контрактів М. Ю. Кузьміна (`KPOL-AUTH` / слайди)
-У первинних слайдах М. Ю. Кузьміна ([`Research/sources/author/`](../Research/sources/README.md)) стабільність і послідовність дій під час взаємодії вузлів описувалися через дві ключові ідіоми:
-
-1. **Пост-адресна дія після читання (`RFC-013`):**
-   ```text
-   Float Sum 0
-       ← @ Float x += x
-       → • Sum = 0
-   ```
-   *Семантика Кузьміна:* при настанні події читання `→` (Interrogation) значення `Sum` спочатку видається запитувачу, і лише після цього за транзакційним бар'єром Великої Крапки `•` виконується обнулення акумулятора.
-
-2. **Взаємні предикативні підписки (алгоритм Евкліда `Nod`):**
-   ```text
-   U64 Nod | @ U64 ( a_ > b -=b , b_ > a -=a ) =a
-   ```
-   *Семантика Кузьміна:* символ `|` позначає подію виклику/виконання, а підписки всередині групи зменшують більше число до досягнення рівності.
-
-#### Діалект B: SystemVerilog + SVA (IEEE 1800)
-
-У робочому стенді формальної верифікації шини AXI-64 нашого проєкту ([`axi64_props.sv`](../Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv)) правила комунікації формулюються через контракти оточення (`assume`) та гарантії ядра (`assert`):
-
-```systemverilog
-// Витяг з Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv
-
-// [Рядок 4] Допущення майстра (Master Assumptions): якщо слейв у стані очікування (stall),
-// майстер НЕ МАЄ ПРАВА змінювати виставлені адресу та дані
-always @(*) begin
-    if (past_valid && !p_rst && aresetn) begin
-        if (p_awstall) assume (awvalid && awaddr == p_awaddr && awprot == p_awprot);
-        if (p_wstall)  assume (wvalid  && wdata  == p_wdata  && wstrb  == p_wstrb);
-        if (p_arstall) assume (arvalid && araddr == p_araddr && arprot == p_arprot);
-    end
-end
-
-// [Рядок 5 і 6] Гарантії слейва (Slave Assertions): стабільність шини відповідей R та B
-always @(*) begin
-    if (past_valid && aresetn && !p_rst) begin
-        // Властивість P1: якщо майстер не готовий прийняти відповідь B, слейв тримає її незмінною
-        P1_b_stable: assert (!p_bstall || (bvalid && bresp == p_bresp));
-        // Властивість P2: дані читання RDATA не мають права дрижати (glitch) під час очікування
-        P2_r_stable: assert (!p_rstall || (rvalid && rdata == p_rdata && rresp == p_rresp));
-    end
-end
-```
-
-*Семантичний зв'язок з KPOL:* Конструкція `assume` відповідає вхідному предикату концепту `::` (`when`), який ігнорує транзакцію, якщо передумова не виконана. Конструкція `assert` відповідає постумові Великої Крапки `•` (`commit;`), яка гарантує, що невалідний стан ніколи не потрапить у регістри.
-
----
-
-### Сценарій 4. Апаратне двобанкове перемикання правил (`CFG-P-HA`)
-
-Цей приклад демонструє кремнієве втілення **Рядка 2 (Концепт як BRAM-масив дескрипторів)** та **Рядка 6 (Атомарний транзакційний бар'єр без розриву читань)**.
-
-Одним із головних практичних досягнень апаратної реалізації Машини Кузьміна на ПЛІС є ядро високої готовності **`CFG-P-HA`** ([`km_concept_bram_dual_ha.sv`](../Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv)). Воно вирішує задачу оновлення повної таблиці правил (1024 байти BRAM) під активним потоком подій без розриву читань (`0 torn-reads`):
-
-```systemverilog
-// Витяг логіки атомарного перемикання банків ядра CFG-P-HA
-// (Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv)
-
-always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-        active_bank_r <= 1'b0;
-    end else if (swap_bank_trigger) begin
-        // [Рядок 6] Атомарна зміна старшого біта адреси BRAM за 1 такт (9.931 нс @ 100.69 МГц)
-        active_bank_r <= ~active_bank_r;
-    end
-end
-
-// [Рядок 2] Фізичне відображення концептів на двопортову пам'ять BRAM
-assign active_bram_addr = {active_bank_r, concept_id[5:0]};
-assign shadow_bram_addr = {~active_bank_r, loader_addr[5:0]};
 
 `ifdef FORMAL
-    // [Рядок 6] Доказ відсутності зупинки конвеєра: перемикання банку за 1 такт без torn-reads
-    property p_zero_stall_swap;
-        @(posedge clk) disable iff (!rst_n)
-        swap_bank_trigger |=> (active_bank_r != $past(active_bank_r));
-    endproperty
-    assert_swap: assert property (p_zero_stall_swap);
+    // Якщо запису не дозволено, на наступному фронті стан той самий.
+    assert property (@(posedge clk) disable iff (!rst_n)
+                     !accept |=> $stable(counter));
+    assert property (@(posedge clk) disable iff (!rst_n)
+                     accept |=> counter == $past(counter) + 32'sd1);
+    assert property (@(posedge clk) disable iff (!rst_n) counter >= 32'sd0);
 `endif
+endmodule
 ```
 
-У натурних випробуваннях на стенді `PYNQ-Z1 + LogicTracer Pico` це ядро показало **10 003 гарячих перемикання банків під безперервним потоком 40 011 подій** за 39.35 мс з 0 колізій BRAM та 0 torn-reads.
+Дві деталі тут змінюють поведінку, а не лише синтаксис. По-перше, `param` **знаковий**: достовірне `−1` задовольняє `param < 20`, а з тими самими бітами у беззнаковому регістрі порівняння дало б «ні». По-друге, на найбільшому `Int32` схема не записує результат додавання: він уже не поміщається у 32-бітне знакове число. Якби `counter` був беззнаковим, твердження `counter >= 0` нічого б не перевіряло.
 
----
+### Перевірка: хто помітить помилку
 
-## 4. Математика тризначної логіки ($`\mathcal{L}_3`$) у SystemVerilog
+У модулі вище `if (accept)` керує фізичним записом. Рядок `assert property` не керує ним: він задає твердження, порушення якого може виявити симулятор або формальний інструмент. Наприклад, `|=>` пропонує подивитися на **наступний** фронт такту, а `$stable(counter)` — перевірити, що значення не змінилося.
 
-У класичному програмуванні мовами C/C++ відсутність даних або помилка датчика `_` часто маскується числовим нулем `0` або константою `-1`, що веде до катастрофічних прихованих відмов.
+Чому ж не написати `assume (param < 20)` замість компаратора? Бо у формальній перевірці `assume` обмежує набір входів, які розглядає інструмент. Якщо заздалегідь виключити `25`, ми вже не перевіримо, що схема його відхиляє. Навіть правильна перевірка «без `accept` регістр не змінюється» не доводить, що сам `accept` обчислений правильно.
 
-У Машині Кузьміна невизначеність $`\bot_{\text{undef}}`$ (літерал `_` або `undef`) є першокласним станом. У кремнії SystemVerilog для точного математичного моделювання тризначної логіки Кліні/Бочвара використовується розпаралелювання на два бітові вектори: **Value Vector ($V$)** та **Validity Mask ($M$)**:
+## 2. Довідка: що саме ми зіставляємо
 
-$$X = \langle V_X, M_X \rangle, \quad \text{де } M_X = 1 \iff X \in \lbrace 0, 1 \rbrace, \quad M_X = 0 \iff X = \bot_{\text{undef}}$$
+М. Ю. Кузьмін запропонував модель і [авторську нотацію KPOL-AUTH](../Engineering/guides/kpol-auth-formal-specification.md). KPOL-CME та EKPOL — інженерні профілі й мова проєкту. Наприклад, у записі Кузьміна `→ • Sum = 0` читаємо **стару** суму і лише потім скидаємо її. Крапка `•` визначає порядок цих дій. Вона не вказує, скільки між ними тактів.
 
-Апаратний вентиль трьозначного логічного «І» за Кліні реалізується комбінаторною функцією:
+| Поняття | У правилі | Як це можна реалізувати або перевірити |
+|---|---|---|
+| Концепт | Значення та реакції на звернення до нього | Регістр `counter` у простій схемі; запис у пам’яті правил у табличному виконавці |
+| Запис / виклик | `←` / `\|` в авторській нотації | Строб або передача запиту за протоколом; сам фронт такту ще не означає подію |
+| Читання з дією після нього | `→ • Sum = 0` | Видати попереднє значення; дозвіл скидання прив’язати до завершення читання |
+| Невідоме значення | `_` | Значення плюс ознака достовірності; це не `0` і не симуляційний `X` |
+| Умова допуску | `::` / `when` в EKPOL | Компаратор обчислює дозвіл на дію; SVA може перевіряти наслідки дозволу чи відмови |
+| Інваріант | `[>= 0]` | Схема має не допустити недозволеного переходу; `assert` окремо перевіряє властивість |
+| Порядок / фіксація | Авторське `•` впорядковує дії; `commit;` в EKPOL фіксує дію правила | Запис на дозволеному тактовому фронті — один зі способів реалізації, не визначення символу `•` |
+| Підписка на зміну | `~ Cell_Delta_mV` / `on change(Cell_Delta_mV)` | Виконавець передає подію наступному правилу. `##1` у SVA описує інтервал в один такт, але не запускає підписника |
+
+## 3. Три приклади, де аналогія має межу
+
+### Каскад батареї: відхилити подію — не те саме, що розімкнути контактор
+
+У [виконуваному прикладі BMS](../Engineering/sw/vmk-go/examples/bms_safety_cascade.ekpol) перше правило рахує покази перепаду напруги в діапазоні `50..5000` мВ. Зміна лічильника активує наступне правило. Ланцюжок доходить до `Pack_Fault_Latch` — лічильника із початковим запасом `2` — та до модельного виходу `Contactor_Interlock`. Простежмо саме ті входи, які подає тест у кінці файлу:
+
+| Показ, мВ | `Cell_Delta_mV` | `Module_Thermal_Guard` | `Pack_Fault_Latch` | `Contactor_Interlock` |
+|---:|---:|---:|---:|---:|
+| Початковий стан | 0 | 0 | 2 | 10 |
+| 15 | 0 | 0 | 2 | 10 |
+| 120 | 1 | 1 | 1 | 1 |
+| 180 | 2 | 2 | 0 | 0 |
+| 250 | 3 | 3 | 0 | 0 |
+
+На останньому рядку перші два лічильники зросли. Третій мав би перейти з `0` у `−1`, але його інваріант забороняє запис. Тому немає **зміни**, на яку підписаний останній концепт. Нуль утримується до скидання або повторної ініціалізації.
+
+*Навчальна властивість SVA для реалізації з такими виходами:*
 
 ```systemverilog
-// Трьозначний логічний AND за Кліні:
-// Якщо хоча б один операнд '0' (навіть при іншому '_'), результат строго '0'.
-// Якщо один операнд '1', а інший '_', результат невизначений '_'.
+assert property (@(posedge clk) disable iff (!rst_n)
+                 (pack_fault_latch == 0) |-> (contactor_interlock == 0));
+```
+
+Це твердження пов’язує два стани на одному фронті такту. Воно не каже, **чому** защіпка дійшла до нуля. Якщо вхідний шлюз просто відхиляє недостовірний показ, попередній стан зберігається: відмова датчика сама по собі не розмикає контактор. Для такої вимоги потрібні окреме правило реакції на відмову й окрема перевірка. Назва `Interlock` їх не замінює.
+
+### AXI4-Lite: хто обіцяє тримати дані стабільними
+
+На шині передача відбувається на фронті такту, коли для **того самого каналу** одночасно істинні `VALID` і `READY`. Припустімо, пристрій уже виставив результат читання (`RVALID`), але отримувач ще не готовий (`RREADY = 0`). На наступному фронті отримувач має побачити ту саму відповідь: виставити нові дані зарано.
+
+*Дослівно зі [стенда `axi64_props.sv`](../Engineering/validation/experiments/AXI-64/scripts/axi64_props.sv), окремі рядки всередині перевірок після скидання:*
+
+```systemverilog
+if (p_arstall) assume (arvalid && araddr == p_araddr && arprot == p_arprot);
+```
+
+```systemverilog
+P2_r_stable:  assert (!p_rstall || (rvalid && rdata == p_rdata && rresp == p_rresp));
+```
+
+Перший рядок — **припущення про оточення**: якщо запит адреси чекав, ініціатор тримає його стабільним. Другий — **вимога до модуля**, який ми перевіряємо: якщо відповідь чекала, модуль зберігає і дані, і код відповіді. `p_` позначає збережені на попередньому фронті сигнали. Це дві сторони контракту, а не два способи ввімкнути регістр.
+
+### Два банки пам’яті: коли нові правила стають активними
+
+У ядрі `CFG-P-HA` один банк містить активні правила, інший можна готувати до заміни. Якщо переключити банк посеред читання чотирислівного дескриптора, початок правила може виявитися старим, а кінець — новим. Тому **запит** на заміну й **момент заміни** — різні події.
+
+*Дослівно з [RTL двобанкової пам’яті](../Engineering/hw/rtl/core/km_concept_bram_dual_ha.sv):*
+
+```systemverilog
+wire swap_commit_w     = (swap_pending_q || swap_req_accept) && seq_at_idle_boundary_i;
+```
+
+Прийнятий запит може чекати. У стані `SYNC_IDLE` вибір банку змінюється на тактовому фронті, коли секвенсер дійшов до межі між подіями. Перевірити лише те, що біт банку змінився, недостатньо: треба окремо перевірити, що всі чотири слова однієї події прочитані узгоджено.
+
+[Звіт експерименту на PYNQ-Z1](../Research/studies/fpga-gpu-symbiosis/experiments/EXP-GPU-02/report-stage1-2-cfg-p-ha.md) розрізняє формальну перевірку на зменшеній моделі та вимірювання на платі. У стендовій серії з **10 003 перемиканнями і 40 011 подіями** не зафіксовано жодного змішаного читання. Це результат конкретного прогону, а не доказ для всіх можливих послідовностей.
+
+## 4. Чому «невідомо» — не те саме, що «ні»
+
+Візьмімо логічне «І» двох показів. Перший достовірно хибний, другий невідомий. За **сильною тризначною логікою Кліні** результат уже відомий: `0 AND _ = 0`. Якби перший був істинний, відповідь залежала б від другого: `1 AND _ = _`. У строгій логіці Бочвара невідомість поширюється в обох випадках. Наявність літерала `_` сама по собі не визначає, яку таблицю істинності обрала мова для кожної операції.
+
+*Навчальна комбінаційна функція SystemVerilog для булевого «І» за Кліні.* Кожен операнд має біт значення та біт достовірності; коли результат недостовірний, його біт значення не інтерпретуємо.
+
+```systemverilog
 function automatic logic [1:0] kleene_and(
-    input logic val_a, input logic valid_a,
-    input logic val_b, input logic valid_b
+    input logic val_a, valid_a, val_b, valid_b
 );
-    logic res_val;
-    logic res_valid;
-    begin
-        res_val   = val_a & val_b;
-        res_valid = (!val_a && valid_a) || (!val_b && valid_b) || (valid_a && valid_b);
-        kleene_and = {res_valid, res_val};
-    end
+    logic known_zero, both_known;
+    known_zero = (valid_a && !val_a) || (valid_b && !val_b);
+    both_known = valid_a && valid_b;
+    return {known_zero || both_known, val_a && val_b};
 endfunction
 ```
 
-Синтезатори ПЛІС (*OpenXC7 / Vivado / Yosys*) транслюють таку функцію рівно у **2 логічні комірки LUT6**, забезпечуючи нульову тактову затримку обчислення невизначеності.
+Окремий біт `valid` можна передавати й вимірювати в реальній схемі. Натомість `X` у симуляції SystemVerilog означає, що симулятор не знає рівня сигналу. Функція вище не додає конвеєрного регістра; це не означає нульову фізичну затримку. Кількість LUT і затримку шляху визначають для конкретної ПЛІС після синтезу й трасування.
 
----
+## 5. Що насправді видає компілятор
 
-## 5. Порівняльний аналіз для розробки апаратури (KPOL vs SystemVerilog)
-
-При оцінці впровадження у цифрові інтегральні схеми (ПЛІС / ASIC) інженери мікроелектроніки керуються чіткими технічними критеріями:
-
-| Критерій | Авторський DSL (KPOL / EKPOL) | Промисловий стандарт (SystemVerilog / SVA) |
-| :--- | :--- | :--- |
-| **Екосистема інструментів** | Потребує власної розробки компіляторів, лінтерів, плагінів до IDE та транспайлерів. | **Універсальна.** Підтримується всіма EDA-пакетами: Cadence JasperGold, Synopsys VC Formal, Siemens Questa, Verilator, Yosys. |
-| **Формальна верифікація та докази** | Потребує побудови власної формальної семантики та окремої трансляції у Z3 SMT. | **Стандартизована (IEEE 1800).** Властивості й послідовності SVA безпосередньо приймаються всіма комерційними та відкритими formal-солверами. |
-| **Поріг входження для інженерів** | Високий. Необхідне окреме навчання розробників нотаціям МК. | **Нульовий.** Мову знає кожен випускник спеціальності «Мікроелектроніка / Комп'ютерна інженерія» у світі. |
-| **Швидкість обчислення в кремнії** | Вимагає BRAM-конвеєра або емулятора на ПЛІС. | **Нативна.** Синтезується безпосередньо у логічні комірки LUT та тригери кристала. |
-
----
-
-## 6. Стратегічний висновок: Ідеальний тандем
-
-Порівняння показує, що KPOL та SystemVerilog не конкурують, а ідеально доповнюють один одного, якщо кожен займає своє правильне місце в архітектурі:
+Коли змінюється поріг правила, не обов’язково змінювати саму схему. Для підтримуваних профілів [компілятор образів](../Engineering/hw/scripts/compile_kpol_bram_image.py) кодує правило як **дані** для вже спроєктованого RTL-виконавця. У цих двох прикладах вихід — образ `CME-RAW-1` на 1024 байти: лічильник відповідає [профілю CME-1](../Engineering/specifications/kpol/kpol-cme-subset.md), каскад — [CME-2](../Engineering/specifications/kpol/kpol-cme2-profile.md).
 
 ```mermaid
 flowchart TD
-    Architect["Апаратний архітектор / Розробник логіки"]
-    KPOL_DSL["KPOL / EKPOL 0.1.0<br/>(Лаконічна специфікація правил без апаратного бойлерплейту)"]
-    Compiler["SMT-Компілятор Машини Кузьміна"]
-
-    SV_Out["Чистий SystemVerilog / SVA<br/>(Для синтезу на FPGA/ASIC та formal verification)"]
-    C_Out["Чистий C99<br/>(Для мікроконтролерів та вбудованих ядер)"]
-    Z3_Cert["Z3 SMT Сертифікат<br/>(Формальний математичний доказ інваріантів)"]
-
-    Architect -->|"Описує матрицю правил"| KPOL_DSL
-    KPOL_DSL --> Compiler
-    Compiler -->|"--emit-sv"| SV_Out
-    Compiler -->|"--emit-c99"| C_Out
-    Compiler -->|"--emit-z3-cert"| Z3_Cert
+    Rules["Правила KPOL або EKPOL"] --> Compiler["Компілятор образів"]
+    Compiler --> Image["Образ правил для BRAM"]
+    Image --> Core["Готове RTL-ядро читає правила"]
+    Compiler --> C["Модуль C99"]
+    Compiler --> Cert["Сертифікат перевірки Z3"]
 ```
 
-1. **KPOL/EKPOL як високорівневий Frontend:** Розробник формулює компактну, чисту матрицю реактивних правил на EKPOL, не витрачаючи час на низькорівневий апаратний бойлерплейт — опис тактових доменів, синхронізаторів скидання чи розлогих інтерфейсів рукостискання AXI.
-2. **SystemVerilog як апаратний Backend (`--emit-sv`):** Компілятор автоматично транслює концептно-подієву мережу у синтезовані RTL-модулі з супроводжуючими SVA-властивостями.
-3. **Результат:** Інженер отримує стандартизований код SystemVerilog, який відкривається у його звичному середовищі розробки та миттєво підтверджується зеленими вердиктами формальних верифікаторів.
+Утиліта також має виходи `--emit-c99` та `--emit-z3-cert`. Загальної команди `--emit-sv`, яка б перетворювала ці програми на довільні RTL-модулі разом із SVA, у цьому CLI немає. Тому модуль лічильника в §1 позначено як навчальний, а не як результат трансляції. Сертифікат для правил не доводить коректності іншої, написаної вручну схеми.
 
-*Машина Кузьміна знайшла своє завершення: її математичні ідеї живі, але розмовляють вони мовою кремнію — мовою SystemVerilog.*
+## 6. Що обрати для власної задачі
 
----
+Якщо потрібно змінити **правило** — наприклад, приймати покази нижче `30` замість `20`, — його зручніше читати й переглядати в EKPOL. Якщо важливо, **на якому фронті** приймається подія або **який банк** віддає слово, відповідь шукайте в RTL. Якщо вимога звучить як **«цього ніколи не має статися»**, сформулюйте її як перевірну властивість і назвіть припущення про вхід. Обсяг підтримки SVA залежить від інструмента; сам запис властивості ще не означає, що її доведено.
 
-## 7. Історія версій
+Повернімося до показу `25`. Добре сформульована вимога не забороняє датчику його надіслати. Вона вимагає, щоб схема **прийняла подію до розгляду й залишила лічильник незмінним**. Саме це розрізнення й робить порівняння мов корисним.
 
-| Версія | Дата | Автор | Опис змін |
-|---|---|---|---|
-| 1.3.0 | 2026-11-19 | Микола Мартинович Федчик | **Інтеграція оригінальної нотації М. Ю. Кузьміна (`KPOL-AUTH`):** розширено матрицю Розділу 2 окремою колонкою для оригінального авторського запису (`←`, `→`, `•`, `_`, `~`, `\|`, `!`, `¬`); у кожен сценарій Розділу 3 додано автентичні фрагменти зі слайдів автора (лічильник, каскад BMS, пост-адресне скидання `Sum`, алгоритм `Nod`). |
-| 1.2.0 | 2026-11-19 | Микола Мартинович Федчик | **Повна 1:1 відповідність прикладів матриці концепцій:** додано матрицю трасування §3.0, явно закріплено всі рядки таблиці Розділу 2 за конкретними фрагментами коду. |
-| 1.1.2 | 2026-11-19 | Микола Мартинович Федчик | **Виправлення рендерингу формул MathJax:** усунено помилку `Missing or unrecognized delimiter for \left` шляхом переходу на захищені бектіками спани `$\`...\`$` та чистий запис множини `\lbrace 0, 1, \bot_{\text{undef}} \rbrace` замість сирих `\{` / `\left\{`, які пошкоджувалися парсером CommonMark. |
-| 1.1.1 | 2026-11-19 | Микола Мартинович Федчик | **Усунення нерелевантного контексту:** вилучено помилкові згадки про сертифікацію функціональної безпеки ISO 26262 (ASIL-D) / IEC 61508; фокус статті строго скориговано на цифрове схемотехнічне проектування (RTL, FPGA/ASIC) та стандартну формальну верифікацію IEEE 1800 SVA. |
-| 1.1.0 | 2026-11-19 | Микола Мартинович Федчик | **Фундаментальний рефакторинг прикладів:** усунуто некомпіляційний псевдокод; усі приклади замінено на 100% канонічні, верифіковані програми (`increase.ekpol`, `bms_safety_cascade.ekpol`), що компілюються у бінарні образи BRAM (`CME-RAW-1`) та підтверджені натурними FPGA-тестами `CFG-P-HA` і SVA шини AXI-64. |
-| 1.0.2 | 2026-11-19 | Микола Мартинович Федчик | Додано дидактичну оцінку викладення, нормативні посилання на KPOL/EKPOL, явні позначення діалектів. |
-| 1.0.1 | 2026-11-19 | Микола Мартинович Федчик | Нормалізовано MathJax-запис множини тризначної логіки та екранування символу невизначеності. |
-| 1.0.0 | 2026-11-19 | Микола Мартинович Федчик | Початкова редакція: порівняльний аналіз KPOL/EKPOL проти SystemVerilog та SVA, матриця відображення і апаратні паралелі. |
+## Абревіатури та глосарій
 
----
+- **KPOL / EKPOL** — проєктні мови опису правил Машини Кузьміна; EKPOL розшифровується як *Ergonomic KPOL*. [Каталог контрактів](../Engineering/specifications/kpol/README.md) і [посібник із прикладами](../Engineering/guides/kpol-ekpol-language-guide.md).
+- **RTL** (*Register-Transfer Level*) — опис регістрів, обчислень між ними й умов запису.
+- **SVA** (*SystemVerilog Assertions*) — засоби SystemVerilog для опису та перевірки властивостей, зокрема в часі.
+- **BRAM** (*Block RAM*) — вбудована блокова пам’ять ПЛІС.
+- **BMS** (*Battery Management System*) — система керування акумуляторною батареєю.
+- **SMT** (*Satisfiability Modulo Theories*) — перевірка здійсненності логічних формул із використанням теорій, наприклад бітових векторів; Z3 — один із таких розв’язувачів.
+- **Torn read** — читання, що змішує частини різних версій одного запису.
 
-## 8. Абревіатури та глосарій
-
-- **KPOL / EKPOL** — предметно-орієнтована мова опису правил і концептів Машини Кузьміна та її розширений людино-читаний синтаксис (Extended KPOL 0.1.0).
-- **SVA (SystemVerilog Assertions)** — підмножина стандарту IEEE 1800 для декларативного опису часових послідовностей (`sequence`), властивостей (`property`) та формальних контрактів (`assert`, `assume`, `cover`).
-- **RTL (Register-Transfer Level)** — рівень регістрових передач цифрових схем, стандартний рівень проектування цифрових інтегральних схем та ПЛІС.
-- **SMT (Satisfiability Modulo Theories)** — автоматизоване доведення теорем для логіки першого порядку з теоріями (наприклад, Z3 Prover).
-- **EDA (Electronic Design Automation)** — засоби автоматизації проектування електронних пристроїв та інтегральних схем.
-- **BRAM (Block RAM)** — вбудована апаратна статична пам'ять у кристалах ПЛІС (RAMB36E1).
-- **Fail-Closed** — принцип безпечного відмовного стану: будь-яка невизначеність або збій призводить до гарантованого блокування виходів.
-- **Torn-Read** — аномалія неузгодженого читання даних з пам'яті під час її одночасного перезапису іншим процесом.
+<!--
+## Історія версій
+Зміни статті збережено в історії Git.
+-->
