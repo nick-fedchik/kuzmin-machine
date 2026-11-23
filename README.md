@@ -1,35 +1,58 @@
 # Машина Кузьміна
 
-* **Версія:** 0.7.0
-* **Дата:** 2026-11-20
+* **Версія:** 0.8.0
+* **Дата:** 2026-11-23
 * **Тип WP:** Guide
 * **Укладач:** GitHub Copilot CLI, Auto.
 * **Підстава:** команди Миколи Федчика підготувати актуальне дерево без legacy та перенести його до Git; [#148](https://github.com/nick-fedchik/kuzmin-machine/issues/148), [#270](https://github.com/nick-fedchik/kuzmin-machine/issues/270), [#274](https://github.com/nick-fedchik/kuzmin-machine/issues/274), [#276](https://github.com/nick-fedchik/kuzmin-machine/issues/276), [#278](https://github.com/nick-fedchik/kuzmin-machine/issues/278), [#280](https://github.com/nick-fedchik/kuzmin-machine/issues/280), [#282](https://github.com/nick-fedchik/kuzmin-machine/issues/282), [#284](https://github.com/nick-fedchik/kuzmin-machine/issues/284).
 
 ## Призначення
 
-Робоче дерево досліджень та апаратно-програмної реалізації.
-Автор концепції — Михайло Ювеналійович Кузьмін; інженерні специфікації,
-код і похідні аналізи не приписуються йому автоматично.
+Цей репозиторій — інженерно-дослідницьке робоче дерево Машини Кузьміна (МК).
+Воно об'єднує матеріали про концепцію, дослідницькі питання та джерела,
+специфікації, програмні й апаратні прототипи, перевірки та проєктну
+простежуваність.
 
-**Пропрієтарний проєкт, не open source:** [LICENSE](LICENSE),
-[AUTHORS](AUTHORS.md), [NOTICE](NOTICE).
-Сторонні Source зберігають власні права й умови.
+Автор концепції — Михайло Ювеналійович Кузьмін. Інженерні специфікації,
+реалізації та похідні аналізи не приписуються йому автоматично; межі
+авторства й походження матеріалів описані в [AUTHORS](AUTHORS.md) та
+[NOTICE](NOTICE).
+
+**Проєкт пропрієтарний, не open source.** Умови використання визначає
+[LICENSE](LICENSE); включені сторонні матеріали зберігають власні права
+та умови.
 
 ## Навігація
 
-| Напрям | Зміст |
+| Розділ | Що знайдете |
 |---|---|
-| [Research](Research/README.md) | Джерела, питання, моделі, методи та дослідницькі висновки. |
-| [Engineering](Engineering/README.md) | Вимоги, контракти, рішення, compiler/loader/BRAM/CME та перевірки. |
-| [Project](Project/README.md) | Правила, плани, реєстри, оцінювання й шаблони WP. |
+| [Articles](Articles/README.md) | Огляд концепції, порівняльні матеріали та статті про МК, KPOL/EKPOL і реалізації. |
+| [Research](Research/README.md) | Карта дослідницьких питань, джерел, моделей, аналізів та їхніх обмежень. |
+| [Engineering](Engineering/README.md) | Вимоги, специфікації, проєктні рішення, програмна й апаратна реалізація та валідація. |
+| [Project](Project/README.md) | Правила роботи, політики, реєстри, простежуваність, оцінювання та шаблони. |
+| [AUTHORS](AUTHORS.md) · [LICENSE](LICENSE) · [NOTICE](NOTICE) | Авторство, умови використання та походження сторонніх матеріалів. |
 
-Поточний цільовий тракт: текст KPOL або ергономічний `EKPOL 0.1.0` ([Керівництво користувача та чистий код KPOL/EKPOL](Engineering/guides/kpol-ekpol-language-guide.md), [каталог посібників `Engineering/guides/`](Engineering/guides/README.md), [специфікація `EKPOL`](Engineering/specifications/kpol/ekpol-specification.md)) → CME-образ (`--emit-c99` / `--emit-z3-cert`) → loader → BRAM (`CFG-P` / `CFG-P-HA`) →
-sequencer/CME/gate v2, детермінований C99-автомат безпеки або двомодовий Go-емулятор **VMK (`v0.3.0`)** і повноекранний TUI-дебагер ([`Engineering/sw/vmk-go/`](Engineering/sw/vmk-go/README.md), [Посібник користувача VMK `1.2.1`](Engineering/guides/vmk-users-guide.md), [специфікація `vmk-go` `1.2.0`](Engineering/specifications/sw/vmk-go-emulator-and-tui-debugger.md)). Опис складу — у
-[Solution](Engineering/solutions/compiler-bram-pipeline.md), а верифікація генератора детермінованого C99 та сертифіката `Z3` — у
-[Report #270](Engineering/validation/kpol-cme/c99-emitter-270/report.md).
-Реалізований фронтенд ширший за погоджений цільовий профіль KPOL-CME-1.
-Компілятори й трансляція KPOL, EKPOL та KPOL-AUTH написані на Go: команда `kpolc` у [`Engineering/sw/kpol-go/`](Engineering/sw/kpol-go/README.md); Python-реалізація в `kpol-ref` служить еталоном для перевірок.
+### З чого почати
+
+* **Огляд і матеріали про концепцію:** [Articles](Articles/README.md).
+* **Дослідницький стан і відкриті питання:** [Research](Research/README.md).
+* **Технічний контекст і контракти:** [Engineering](Engineering/README.md).
+* **Мова KPOL/EKPOL:** [посібник](Engineering/guides/kpol-ekpol-language-guide.md),
+  [специфікація EKPOL](Engineering/specifications/kpol/ekpol-specification.md)
+  та [Go-компілятор `kpolc`](Engineering/sw/kpol-go/README.md).
+* **Емуляція та налагодження:** [VMK](Engineering/sw/vmk-go/README.md) і
+  [посібник користувача](Engineering/guides/vmk-users-guide.md).
+* **Перевірка на апаратурі:** [інженерна валідація](Engineering/validation/README.md)
+  та [HIL runbook](Engineering/hw/RUNBOOK.md).
+* **Організація робіт і походження перенесених матеріалів:** [Project](Project/README.md)
+  та [реєстр міграції](Project/registers/migration.md).
+
+Один із цільових трактів — KPOL/EKPOL → Go-компілятор `kpolc` → CME/BRAM-образ
+або підтримані виходи C99 і Z3-сертифіката → емулятор VMK чи апаратний loader.
+Реалізований фронтенд ширший за погоджений профіль KPOL-CME-1; склад,
+контракти й докази для окремих компонентів наведені в документах
+[Engineering](Engineering/README.md), а не узагальнюються як підтвердження
+властивостей усієї системи.
 
 ## Використання
 
@@ -80,6 +103,7 @@ AV-10/11 стосуються попередньої CFG-R. Їхні дані н
 | 0.5.0 | 2026-11-18 | #278: додано навігацію на специфікацію мови `EKPOL 0.1.0` (`Engineering/specifications/kpol/ekpol-specification.md`) та оновлено версію `VMK v0.2.0`. |
 | 0.6.0 | 2026-11-18 | #284: додано навігацію на Керівництво користувача та чистий код мов KPOL і EKPOL (`Engineering/guides/kpol-ekpol-language-guide.md`), каталог посібників (`Engineering/guides/README.md`) та оновлено версію `VMK v0.3.0`. |
 | 0.7.0 | 2026-11-20 | Додано навігацію на компілятори й трансляцію KPOL, EKPOL та KPOL-AUTH на Go (`Engineering/sw/kpol-go/`) і команду перевірки `go test` модуля. |
+| 0.8.0 | 2026-11-23 | Переписано опис призначення, додано карту основних розділів і маршрути входу до досліджень, реалізацій та перевірок. |
 
 ## Абревіатури та глосарій
 
